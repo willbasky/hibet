@@ -1,12 +1,17 @@
-# Change log
+# Changelog
 
-`tibet` uses [PVP Versioning][1].
-The change log is available [on GitHub][2].
+All notable changes to this project will be documented in this file.
 
-0.0.0
-=====
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to
+[Compatible Versioning](https://github.com/staltz/comver).
 
-* Initially created.
+## [Unreleased]
 
-[1]: https://pvp.haskell.org
-[2]: https://github.com/willbasky/tibet/releases
+## [0.1] - 2018-09-22
+### Added
+- Add berzin library
+- Add primitive translator
+
+### Fix
+- Fix output delay

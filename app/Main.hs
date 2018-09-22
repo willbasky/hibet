@@ -1,4 +1,4 @@
-import Tibet (cli)
+import           Tibet (cli)
 
 main :: IO ()
 main = cli
