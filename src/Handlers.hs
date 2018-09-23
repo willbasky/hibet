@@ -5,17 +5,18 @@ module Handlers
 
 import           Data.Map (Map)
 import           Data.Text (Text)
-import           System.IO (hPutStrLn, stderr, hPrint)
+import           System.IO (hPrint, stderr)
 
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import qualified Data.Text.IO as IO
 
+
 -- | Show duplicates and write to file.
 getDubs :: IO ()
 getDubs = do
     berzin <- IO.readFile "dics/03-Berzin"
-    hPutStrLn stderr "Berzin file is loaded"
+    IO.hPutStrLn stderr "Berzin file is loaded"
     let dubs = findDups berzin
     IO.writeFile "dics/dubs" $ T.pack $ show dubs
     hPrint stderr dubs
