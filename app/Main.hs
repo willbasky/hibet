@@ -1,5 +1,5 @@
-import           Tibet (cli)
+import           Tibet (start)
 
 main :: IO ()
-main = cli
+main = start
 
