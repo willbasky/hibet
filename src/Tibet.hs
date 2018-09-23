@@ -2,16 +2,16 @@ module Tibet
        ( start
        ) where
 
-import           Data.Map (Map)
+import           Handlers (makeTextMap)
+
 import           Data.Maybe (fromMaybe)
-import           Data.Text.Lazy (Text)
+import           Data.Text (Text)
 import           System.IO (hPutStr, hPutStrLn, stderr)
--- import           Data.ByteString.Lazy (ByteString)
 
 import qualified Data.Map as Map
-import qualified Data.Text.Lazy as TL
-import qualified Data.Text.Lazy.IO as IO
--- import qualified Data.ByteString.Lazy as BL
+import qualified Data.Text as T
+import qualified Data.Text.IO as IO
+
 
 start :: IO ()
 start = do
@@ -22,17 +22,15 @@ cli :: IO ()
 cli = do
     query <- hPutStr stderr "> " >> getLine
     berzin <- IO.readFile "dics/03-Berzin"
-    -- hPutStrLn stderr "Berzin file is loaded"
     let mapped = makeTextMap berzin
-    -- hPutStrLn stderr "mapped dic is done"
-    let value = fromMaybe "Nothing found" $ Map.lookup (TL.pack query) mapped
-    if TL.null value then putStrLn "No query, no value"
-    else hPutStrLn stderr $ TL.unpack value
+    let valueDsc = fromMaybe "Nothing found" $ Map.lookup (T.pack query) mapped
+    if valueDsc == "Nothing found" then putStrLn "Nothing found"
+    else IO.hPutStrLn stderr $ valueAsc valueDsc
     cli
 
-makeTextMap :: Text -> Map Text Text
-makeTextMap
-    = Map.fromList
-    . map ((\(y,x) -> (y, TL.drop 1 x))
-    . TL.span (<'|'))
-    . TL.splitOn "\n"
+valueAsc :: Text -> Text
+valueAsc valueDsc
+    = T.unlines
+    $ zipWith T.append
+        (map ((\x -> T.append (T.pack x) ". ") . show) [1::Int ..])
+        (reverse . T.lines $ valueDsc)
