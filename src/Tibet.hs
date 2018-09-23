@@ -1,28 +1,38 @@
 module Tibet
-       ( cli
+       ( start
        ) where
 
 import           Data.Map (Map)
 import           Data.Maybe (fromMaybe)
-import           Data.Text (Text)
+import           Data.Text.Lazy (Text)
 import           System.IO (hPutStr, hPutStrLn, stderr)
+-- import           Data.ByteString.Lazy (ByteString)
 
 import qualified Data.Map as Map
-import qualified Data.Text as T
-import qualified Data.Text.IO as IO
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.IO as IO
+-- import qualified Data.ByteString.Lazy as BL
 
+start :: IO ()
+start = do
+    hPutStrLn stderr "What tibetan word to translate?"
+    cli
 
 cli :: IO ()
 cli = do
-    hPutStrLn stderr "What tibetan word to translate?"
-    query <- hPutStr stderr "Put query: " >> getLine
+    query <- hPutStr stderr "> " >> getLine
     berzin <- IO.readFile "dics/03-Berzin"
     -- hPutStrLn stderr "Berzin file is loaded"
-    let mapped = makeMap berzin
+    let mapped = makeTextMap berzin
     -- hPutStrLn stderr "mapped dic is done"
-    let value = fromMaybe "Nothing found" $ Map.lookup (T.pack query) mapped
-    if T.null value then putStrLn "No query, no value"
-    else hPutStrLn stderr $ T.unpack value
+    let value = fromMaybe "Nothing found" $ Map.lookup (TL.pack query) mapped
+    if TL.null value then putStrLn "No query, no value"
+    else hPutStrLn stderr $ TL.unpack value
+    cli
 
-makeMap :: Text -> Map Text Text
-makeMap raw = Map.fromList $ map ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|')) $ T.splitOn "\n" raw
+makeTextMap :: Text -> Map Text Text
+makeTextMap
+    = Map.fromList
+    . map ((\(y,x) -> (y, TL.drop 1 x))
+    . TL.span (<'|'))
+    . TL.splitOn "\n"

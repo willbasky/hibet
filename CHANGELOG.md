@@ -7,11 +7,12 @@ and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
 ## [Unreleased]
+- Changed text to lazy text
 
 ## [0.1] - 2018-09-22
 ### Added
-- Add berzin library
-- Add primitive translator
+- Added berzin library
+- Added primitive translator
 
 ### Fix
-- Fix output delay
+- Fixed output delay
