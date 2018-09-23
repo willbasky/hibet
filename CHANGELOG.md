@@ -7,12 +7,18 @@ and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
 ## [Unreleased]
+
+- Added looking up through all libraries
+- Added output values of duplicate keys
 - Changed text to lazy text
 
 ## [0.1] - 2018-09-22
+
 ### Added
+
 - Added berzin library
 - Added primitive translator
 
 ### Fix
+
 - Fixed output delay

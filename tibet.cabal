@@ -37,6 +37,9 @@ library
   build-depends:       base
                      , containers
                      , bytestring
+                     , directory
+                     , path
+                     , path-io >= 1.4.0
                      , text
 
   default-language:    Haskell2010
