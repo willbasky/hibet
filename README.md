@@ -7,7 +7,7 @@
 
 ## About
 
-The TibetCli maked with dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. `TibetCli` use Berzin (03-berzin) dictionary yet. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back, if you wish.
+The TibetCli translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back, if you wish.
 
 ## Installation
 
