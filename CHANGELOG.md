@@ -8,14 +8,21 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2] - 2018-09-24
+
+### Added
+
 * [#2](https://github.com/willbasky/TibetCli/issues/2):
   Looking up through all libraries.
 * [#8](https://github.com/willbasky/TibetCli/issues/8):
   Show values of duplicate keys.
-* [#5](https://github.com/willbasky/TibetCli/issues/5):
-  Changed text to lazy text.
 * [#14](https://github.com/willbasky/TibetCli/issues/14):
   Show dictionary name where translation is from.
+
+### Changed
+
+* [#5](https://github.com/willbasky/TibetCli/issues/5):
+  Changed text to lazy text.
 
 ## [0.1] - 2018-09-22
 
@@ -29,4 +36,4 @@ and this project adheres to
 * [#4](https://github.com/willbasky/TibetCli/issues/4):
   Fixed output delay.
 * [#7](https://github.com/willbasky/TibetCli/issues/7):
-  Show values ascending from dublicate keys.
+  Show values ascending from duplicate keys.

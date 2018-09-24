@@ -7,43 +7,43 @@ module Tibet
 import           Handlers (makeTextMap, mapMaybeTuple)
 
 import           Data.Map (Map)
-import           Data.Text (Text)
+import           Data.Text.Lazy (Text)
 import           Path (File, Path, filename, fromAbsFile, fromRelFile, mkRelDir)
 import           Path.IO (listDir)
 import           System.IO (stderr)
 
 import qualified Data.Map as Map
-import qualified Data.Text as T
-import qualified Data.Text.IO as IO
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.IO as LIO
 
 
 start :: IO ()
 start = do
-    IO.hPutStrLn stderr "What tibetan word to translate?"
+    LIO.hPutStrLn stderr "What tibetan word to translate?"
     cli
 
 cli :: IO ()
 cli = do
-    query <- IO.hPutStr stderr "> " >> IO.getLine
+    query <- LIO.hPutStr stderr "> " >> LIO.getLine
     (_, files) <- listDir $(mkRelDir "./dics/")
-    texts <- mapM (IO.readFile . fromAbsFile) files
+    texts <- mapM (LIO.readFile . fromAbsFile) files
     let zipped = zipWithTitles texts files
     let dscValues = mapMaybeTuple (Map.lookup query) zipped
     if null dscValues then putStrLn "Nothing found"
-    else IO.hPutStrLn stderr $ mergeWithTitles dscValues
+    else LIO.hPutStrLn stderr $ mergeWithTitles dscValues
     cli
 
 mergeWithTitles :: [(Text, Text)] -> Text
-mergeWithTitles dscValues = T.unlines $ zipWith flatten numbers ascValues
+mergeWithTitles dscValues = TL.unlines $ zipWith flatten numbers ascValues
   where
     ascValues :: [(Text, Text)]
-    ascValues = map (\(v,t) -> (T.unlines . reverse . T.lines $ v, t)) dscValues
+    ascValues = map (\(v,t) -> (TL.unlines . reverse . TL.lines $ v, t)) dscValues
 
     numbers :: [Text]
-    numbers = map ((\x -> T.append (T.pack x) ". ") . show) [1::Int ..]
+    numbers = map ((\x -> TL.append (TL.pack x) ". ") . show) [1::Int ..]
 
     flatten :: Text -> (Text, Text) -> Text
-    flatten n (v, t) = T.append (T.append n (T.append t "\n")) v
+    flatten n (v, t) = TL.append (TL.append n (TL.append t "\n")) v
 
 zipWithTitles :: [Text] -> [Path b File] -> [(Map Text Text, Text)]
 zipWithTitles texts files = zip mapped titles
@@ -52,4 +52,4 @@ zipWithTitles texts files = zip mapped titles
     mapped = map makeTextMap texts
 
     titles :: [Text]
-    titles = map (T.drop 3 . T.pack . fromRelFile . filename) files
+    titles = map (TL.drop 3 . TL.pack . fromRelFile . filename) files
