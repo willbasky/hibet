@@ -4,11 +4,11 @@ module Tibet
        ( start
        ) where
 
-import           Handlers (makeTextMap)
+import           Handlers (makeTextMap, mapMaybeTuple)
 
-import           Data.Maybe (mapMaybe)
+import           Data.Map (Map)
 import           Data.Text (Text)
-import           Path (fromAbsFile, mkRelDir)
+import           Path (File, Path, filename, fromAbsFile, fromRelFile, mkRelDir)
 import           Path.IO (listDir)
 import           System.IO (stderr)
 
@@ -27,16 +27,29 @@ cli = do
     query <- IO.hPutStr stderr "> " >> IO.getLine
     (_, files) <- listDir $(mkRelDir "./dics/")
     texts <- mapM (IO.readFile . fromAbsFile) files
-    let mapped = map makeTextMap texts
-    let valueDsc = mapMaybe (Map.lookup query) mapped
-    if null valueDsc then putStrLn "Nothing found"
-    else IO.hPutStrLn stderr $ valueAsc valueDsc
+    let zipped = zipWithTitles texts files
+    let dscValues = mapMaybeTuple (Map.lookup query) zipped
+    if null dscValues then putStrLn "Nothing found"
+    else IO.hPutStrLn stderr $ mergeWithTitles dscValues
     cli
 
-valueAsc :: [Text] -> Text
-valueAsc valueDsc
-    = T.unlines
-    $ zipWith T.append
-        (map ((\x -> T.append (T.pack x) ".\n") . show) [1::Int ..])
-        (map (T.unlines . reverse . T.lines) valueDsc)
+mergeWithTitles :: [(Text, Text)] -> Text
+mergeWithTitles dscValues = T.unlines $ zipWith flatten numbers ascValues
+  where
+    ascValues :: [(Text, Text)]
+    ascValues = map (\(v,t) -> (T.unlines . reverse . T.lines $ v, t)) dscValues
 
+    numbers :: [Text]
+    numbers = map ((\x -> T.append (T.pack x) ". ") . show) [1::Int ..]
+
+    flatten :: Text -> (Text, Text) -> Text
+    flatten n (v, t) = T.append (T.append n (T.append t "\n")) v
+
+zipWithTitles :: [Text] -> [Path b File] -> [(Map Text Text, Text)]
+zipWithTitles texts files = zip mapped titles
+  where
+    mapped :: [Map Text Text]
+    mapped = map makeTextMap texts
+
+    titles :: [Text]
+    titles = map (T.drop 3 . T.pack . fromRelFile . filename) files

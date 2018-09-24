@@ -1,6 +1,7 @@
 module Handlers
-       ( makeTextMap
-       , getDubs
+       ( getDubs
+       , makeTextMap
+       , mapMaybeTuple
        ) where
 
 import           Data.Map (Map)
@@ -24,7 +25,7 @@ getDubs = do
 -- | Make Map from raw file. Merge duplicates to on key without delete
 makeTextMap :: Text -> Map Text Text
 makeTextMap
-    = Map.fromAscListWithKey (\_ a1 a2 -> T.concat [a1, "\n", a2])
+    = Map.fromAscListWithKey (\_ a1 a2 -> T.concat ["- ", a1, "\n- ", a2])
     . map ((\(y,x) -> (y, T.drop 1 x))
     . T.span (<'|'))
     . T.lines
@@ -46,3 +47,11 @@ dups (x:xs) =  d ++ dups r
     isDub = filter (\(y,_) -> fst x == y) xs
     resultDub first | null isDub = []
                     | otherwise  = first : isDub
+
+mapMaybeTuple :: (a -> Maybe b) -> [(a,t)] -> [(b,t)]
+mapMaybeTuple _ [] = []
+mapMaybeTuple f ((x, t):xs) =
+    let rs = mapMaybeTuple f xs in
+    case (f x, t) of
+        (Nothing, _) -> rs
+        (Just r, n)  -> (r,n):rs
