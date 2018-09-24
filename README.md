@@ -11,7 +11,11 @@ The TibetCli translates with all dictionaries from [tibetan-dictionary](https://
 
 ## Installation
 
+install [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
+    
     git clone https://github.com/willbasky/TibetCli.git
+    
+    cd ./TibetCli
 
     stack install tibet
 
