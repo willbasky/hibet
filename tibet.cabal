@@ -1,6 +1,6 @@
 cabal-version:       1.24
 name:                tibet
-version:             0.0.0
+version:             0.2
 description:         tibetan-english translator
 synopsis:            tibetan-english translator
 homepage:            https://github.com/willbasky/tibet
