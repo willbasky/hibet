@@ -14,6 +14,8 @@ import           Data.Text (Text)
 import           System.IO (hPrint, stderr)
 import           Path (File, Abs, Path, filename,fromRelFile)
 
+import           Prettify (greenCode, boldCode, blueCode, cyanCode, resetCode, putTextFlush)
+
 import qualified Data.Map as Map
 import qualified Data.Text as T
 import qualified Data.Text.IO as IO
@@ -25,7 +27,7 @@ type Title = Text
 getDubs :: IO ()
 getDubs = do
     berzin <- IO.readFile "dics/03-Berzin"
-    IO.hPutStrLn stderr "Berzin file is loaded"
+    putTextFlush "Berzin file is loaded"
     let dubs = findDups berzin
     IO.writeFile "dics/dubs" $ T.pack $ show dubs
     hPrint stderr dubs
@@ -80,7 +82,7 @@ zipWithRaw :: [Text] -> [Path Abs File] -> [(Text, Title)]
 zipWithRaw texts files = zip texts titles
   where
     titles :: [Text]
-    titles = map (T.drop 3 . T.pack . fromRelFile . filename) files
+    titles = map ((\x -> blueCode <> boldCode<> x <> resetCode) . T.drop 3 . T.pack . fromRelFile . filename) files
 
 -- | Search in raw dictionary files.
 directSearch :: Text -> [(Text, Title)] -> [(Text, Title)]
@@ -89,7 +91,7 @@ directSearch query = foldl (\ acc (x,y) -> if search x == "" then acc else (sear
     search :: Text -> Text
     search
         = T.unlines
-        . map (T.append "- " . T.drop 1 . T.dropWhile (/= '|'))
+        . map (T.append (cyanCode <> "༔ " <> resetCode) . T.drop 1 . T.dropWhile (/= '|'))
         . filter (T.isPrefixOf (T.append query "|"))
         . T.lines
 
@@ -102,7 +104,7 @@ mergeWithNum = T.unlines . zipWith flatten numbers
     -- ascValues = map (\(v,t) -> (T.unlines . reverse . T.lines $ v, t)) dscValues
 
     numbers :: [Text]
-    numbers = map ((\x -> T.append (T.pack x) ". ") . show) [1::Int ..]
+    numbers = map ((\x -> greenCode <> T.append (T.pack x) ". " <> resetCode) . show) [1::Int ..]
 
     flatten :: Text -> (Text, Text) -> Text
     flatten n (v, t) = T.append (T.append n (T.append t "\n")) v
