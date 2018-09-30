@@ -1,5 +1,4 @@
-import           Tibet (start)
+import           Tibet (trans)
 
 main :: IO ()
-main = start
-
+main = trans

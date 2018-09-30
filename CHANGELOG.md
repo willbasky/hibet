@@ -7,8 +7,26 @@ and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
 ## [Unreleased]
+
+## [0.3] - 2018-10-01
+
+### Added
+
+* [#3](https://github.com/willbasky/TibetCli/issues/3):
+  Move to `optparse-applicative`.
+* [#13](https://github.com/willbasky/TibetCli/issues/13):
+  Colorize output.
+* Add `--version` option.
+* Prettified header and footer in `--help` option.
+
+### Changed
+
 * [#6](https://github.com/willbasky/TibetCli/issues/6):
   Looking up directly through raw dictionary files.
+* Roll back to strict text
+
+### Fixed
+
 * [#18](https://github.com/willbasky/TibetCli/issues/18):
   Fix erasing part of searched result.
 

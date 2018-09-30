@@ -3,8 +3,8 @@ name:                tibet
 version:             0.2
 description:         tibetan-english translator
 synopsis:            tibetan-english translator
-homepage:            https://github.com/willbasky/tibet
-bug-reports:         https://github.com/willbasky/tibet/issues
+homepage:            https://github.com/willbasky/TibetCli
+bug-reports:         https://github.com/willbasky/TibetCli/issues
 license:             MIT
 license-file:        LICENSE
 author:              willbasky
@@ -18,12 +18,16 @@ tested-with:         GHC == 8.4.3
 
 source-repository head
   type:                git
-  location:            https://github.com/willbasky/tibet.git
+  location:            https://github.com/willbasky/TibetCli.git
 
 library
   hs-source-dirs:      src
   exposed-modules:     Tibet
                      , Handlers
+                     , Prettify
+
+  other-modules:       Paths_tibet
+  autogen-modules:     Paths_tibet
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
@@ -35,9 +39,13 @@ library
                        -Wmissing-export-lists
                        -Wpartial-fields
   build-depends:       base
+                     , ansi-terminal
                      , containers
                      , bytestring
                      , directory
+                     , gitrev
+                     , neat-interpolation ^>= 0.3.2.2
+                     , optparse-applicative
                      , path
                      , path-io >= 1.4.0
                      , text
