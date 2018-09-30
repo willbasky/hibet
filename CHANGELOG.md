@@ -7,6 +7,10 @@ and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
 ## [Unreleased]
+* [#6](https://github.com/willbasky/TibetCli/issues/6):
+  Looking up directly through raw dictionary files.
+* [#18](https://github.com/willbasky/TibetCli/issues/18):
+  Fix erasing part of searched result.
 
 ## [0.2] - 2018-09-24
 
