@@ -1,4 +1,4 @@
-import           Tibet (trans)
+import           Cli (trans)
 
 main :: IO ()
 main = trans

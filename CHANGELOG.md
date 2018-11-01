@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+* Optimize `cli` to hold mapped dictinary in memory.
+
 ## [0.3] - 2018-10-01
 
 ### Added
