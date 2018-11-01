@@ -4,6 +4,7 @@ module Tibet
        ( start
        ) where
 
+import           Control.DeepSeq (deepseq)
 import           Control.Monad (when)
 import           Path (fromAbsFile, mkRelDir)
 import           Path.IO (listDir)
@@ -20,7 +21,7 @@ start = do
     (_, files) <- listDir $(mkRelDir "./dics/")
     texts <- mapM (IO.readFile . fromAbsFile) files
     let mapped = zipWithMap texts files
-    cli mapped
+    mapped `deepseq` cli mapped
 
 cli :: [(Dictionary, Title)] -> IO ()
 cli mapped = do
@@ -33,5 +34,3 @@ cli mapped = do
             when (null dscValues) $ putTextFlush $ redCode <> "Nothing found." <> resetCode
             putTextFlush $ mergeWithNum dscValues
             cli mapped
-
-

@@ -43,3 +43,21 @@ mapMaybeTuple f ((x, t):xs) =
     case (f x, t) of
         (Nothing, _) -> rs
         (Just r, n)  -> (r,n):rs
+
+-- | Combine answers with numbering for raw text.
+zipWithRaw :: [Text] -> [Path Abs File] -> [(Text, Title)]
+zipWithRaw texts files = zip texts titles
+  where
+    titles :: [Text]
+    titles = map (T.drop 3 . T.pack . fromRelFile . filename) files
+
+-- | Search in raw dictionary files.
+searchInRaw :: Text -> [(Text, Title)] -> [(Text, Title)]
+searchInRaw query = foldl (\ acc (x,y) -> if search x == "" then acc else (search x, y) : acc) []
+  where
+    search :: Text -> Text
+    search
+        = T.unlines
+        . map (T.append (cyanCode <> "༔ " <> resetCode) . T.drop 1 . T.dropWhile (/= '|'))
+        . filter (T.isPrefixOf (T.append query "|"))
+        . T.lines
