@@ -17,6 +17,8 @@ and this project adheres to
 * Fix new lines in value.
 * [#27](https://github.com/willbasky/TibetCli/issues/27):
   Access to dictionaries from wherever.
+* [#32](https://github.com/willbasky/TibetCli/issues/32):
+  Add `om` command.
 
 ## [0.3] - 2018-10-01
 
