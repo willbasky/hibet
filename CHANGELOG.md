@@ -11,7 +11,8 @@ and this project adheres to
 * [#28](https://github.com/willbasky/TibetCli/issues/28):
   Hold `HashMap` dictinaries in memory. Preload it before a first query.
 * Move unused functions to Sandbox module.
-* Create map without dublicate values.
+* [#22](https://github.com/willbasky/TibetCli/issues/22):
+  Create map without dublicate values.
 
 
 ## [0.3] - 2018-10-01
