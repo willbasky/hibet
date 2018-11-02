@@ -13,6 +13,8 @@ and this project adheres to
 * Move unused functions to Sandbox module.
 * [#22](https://github.com/willbasky/TibetCli/issues/22):
   Create map without dublicate values.
+* Move to ByteString (It reduced using operative memory from 327 Mb to 186 Mb).
+* Fix new lines in value.
 
 
 ## [0.3] - 2018-10-01

@@ -4,11 +4,13 @@ import           Data.Text (Text)
 import           Path (Abs, File, Path, filename, fromRelFile)
 import           Prettify (cyanCode, putTextFlush, resetCode)
 import           System.IO (hPrint, stderr)
+import           Data.ByteString.Char8 (ByteString)
 
 import           Handlers (Title)
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as IO
+import qualified Data.ByteString.Char8 as BC
 
 
 -- | Show duplicates and write to file.
@@ -48,11 +50,11 @@ mapMaybeTuple f ((x, t):xs) =
         (Just r, n)  -> (r,n):rs
 
 -- | Combine answers with numbering for raw text.
-zipWithRaw :: [Text] -> [Path Abs File] -> [(Text, Title)]
+zipWithRaw :: [ByteString] -> [Path Abs File] -> [(ByteString, Title)]
 zipWithRaw texts files = zip texts titles
   where
-    titles :: [Text]
-    titles = map (T.drop 3 . T.pack . fromRelFile . filename) files
+    titles :: [Title]
+    titles = map (BC.drop 3 . BC.pack . fromRelFile . filename) files
 
 -- | Search in raw dictionary files.
 searchInRaw :: Text -> [(Text, Title)] -> [(Text, Title)]
