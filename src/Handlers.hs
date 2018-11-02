@@ -25,7 +25,7 @@ type Dictionary = HashMap Text Text
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary
 makeTextMap
-    = HMS.fromListWith (\a1 a2 -> T.concat [a1, "\n", a2])
+    = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
     . map ((\(y,x) -> (y, T.drop 1 x))
     . T.span (<'|'))
     . T.lines
@@ -54,10 +54,6 @@ searchInMap query mapped = [(text, title) | (Just text, title) <- searched]
 mergeWithNum :: [(Text, Title)] -> Text
 mergeWithNum = T.unlines . zipWith flatten numbers
   where
-    -- uncomment to use mapped data
-    -- ascValues :: [(Text, Text)]
-    -- ascValues = map (\(v,t) -> (T.unlines . reverse . T.lines $ v, t)) dscValues
-
     -- Add numbers.
     numbers :: [Text]
     numbers = map ((\x -> greenCode <> T.append (T.pack x) ". " <> resetCode) . show) [1::Int ..]
@@ -68,4 +64,5 @@ mergeWithNum = T.unlines . zipWith flatten numbers
     prettyT :: Title -> Title
     prettyT title = blueCode <> boldCode <> title <> resetCode
 
-    marked value = T.unlines . map (\v -> cyanCode <> "༔ " <> resetCode <> v) $ T.lines value
+    marked :: Text -> Text
+    marked value = T.unlines . map (\v -> cyanCode <> "► " <> resetCode <> v) $ T.lines value
