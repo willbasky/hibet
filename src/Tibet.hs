@@ -1,16 +1,16 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Tibet
        ( start
        ) where
 
 import           Control.DeepSeq (deepseq)
 import           Control.Monad (when)
-import           Path (fromAbsFile, mkRelDir)
+import           Path (fromAbsFile)
+import           Path.Internal (Path(..))
 import           Path.IO (listDir)
 import           System.IO (stderr)
 
 import           Handlers (Dictionary, Title, mergeWithNum, searchInMap, zipWithMap)
+import           Paths_tibet (getDataFileName)
 import           Prettify (blueCode, greenCode, putTextFlush, redCode, resetCode)
 
 import qualified Data.ByteString.Char8 as BC
@@ -18,7 +18,8 @@ import qualified Data.ByteString.Char8 as BC
 
 start :: IO ()
 start = do
-    (_, files) <- listDir $(mkRelDir "./dics/")
+    dir <- getDataFileName "dicts/"
+    (_, files) <- listDir $ Path dir
     texts <- mapM (BC.readFile . fromAbsFile) files
     let mapped = zipWithMap texts files
     mapped `deepseq` cli mapped

@@ -15,7 +15,8 @@ and this project adheres to
   Create map without dublicate values.
 * Move to ByteString (It reduced using operative memory from 327 Mb to 186 Mb).
 * Fix new lines in value.
-
+* [#27](https://github.com/willbasky/TibetCli/issues/27):
+  Access to dictionaries from wherever.
 
 ## [0.3] - 2018-10-01
 
