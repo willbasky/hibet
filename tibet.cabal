@@ -22,9 +22,10 @@ source-repository head
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Tibet
+  exposed-modules:     Cli
                      , Handlers
                      , Prettify
+                     , Tibet
 
   other-modules:       Paths_tibet
   autogen-modules:     Paths_tibet
@@ -38,10 +39,11 @@ library
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
+
   build-depends:       base
                      , ansi-terminal
-                     , containers
                      , bytestring
+                     , deepseq
                      , directory
                      , gitrev
                      , neat-interpolation ^>= 0.3.2.2
@@ -49,6 +51,7 @@ library
                      , path
                      , path-io >= 1.4.0
                      , text
+                     , unordered-containers
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric

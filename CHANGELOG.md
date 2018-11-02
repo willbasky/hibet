@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+* [#28](https://github.com/willbasky/TibetCli/issues/28):
+  Hold `HashMap` dictinaries in memory. Preload it before a first query.
+* Move unused functions to Sandbox module.
+
+
 ## [0.3] - 2018-10-01
 
 ### Added
