@@ -62,11 +62,16 @@ mergeWithNum = T.unlines . zipWith flatten numbers
     numbers = map ((\x -> greenCode <> T.append (T.pack x) ". " <> resetCode) . show) [1::Int ..]
 
     flatten :: Text -> (ByteString, Title) -> Text
-    flatten number (value, title) = T.append (T.append number (T.append (prettyT title) "\n")) (marked value)
-    -- Paint title
+    flatten number (value, title) =
+        T.append (T.append number (T.append (prettyT title) "\n")) (valueMarked value)
+    -- Decode and paint title.
     prettyT :: Title -> Text
     prettyT title = blueCode <> boldCode <> decodeUtf8 title <> resetCode
-
-    marked :: ByteString -> Text
-    marked value = T.unlines . map (\v -> cyanCode <> "► " <> resetCode <> v) $ T.lines (decodeUtf8 value)
+    -- Decode value and add mark.
+    valueMarked :: ByteString -> Text
+    valueMarked value =
+        T.unlines . map (\v -> cyanCode <> "► " <> resetCode <> insideNewLine v) $ T.lines (decodeUtf8 value)
+    -- Fix new lines inside value.
+    insideNewLine :: Text -> Text
+    insideNewLine = T.replace "\\n" "\n  "
 
