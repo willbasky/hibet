@@ -10,12 +10,13 @@ import           Data.Version (showVersion)
 import           Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import           NeatInterpolation (text)
 import           Options.Applicative (Parser, ParserInfo, command, execParser, fullDesc, help,
-                                      helper, info, infoFooter, infoHeader, infoOption, long,
-                                      progDesc, short, subparser)
+                                      helper, info, infoHeader, infoOption, long, progDesc, short,
+                                      subparser)
 import           Options.Applicative.Help.Chunk (stringChunk)
 
 import           Paths_tibet (version)
-import           Prettify (blueCode, boldCode, endLine, redCode, resetCode)
+import           Prettify (blueCode, boldCode, endLine, magentaCode, putTextFlush, redCode,
+                           resetCode, yellowCode)
 import           Tibet (start)
 
 import qualified Data.Text as T
@@ -28,6 +29,7 @@ import qualified Data.Text as T
 data Command
     -- | @shell@ command launch translating shell
     = Shell
+    | Om
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -40,6 +42,7 @@ trans = execParser prsr >>= runCommand
 runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
+    Om -> putTextFlush $ magentaCode <> om <> resetCode
 
 ----------------------------------------------------------------------------
 -- Parsers
@@ -48,8 +51,7 @@ runCommand = \case
 -- | Main parser of the app.
 prsr :: ParserInfo Command
 prsr = modifyHeader
-    $ modifyFooter
-    $ info ( helper <*> versionP <*> shellP )
+    $ info ( helper <*> versionP <*> shellP)
     $ fullDesc
    <> progDesc "Translate from Tibetan to English"
 
@@ -71,6 +73,7 @@ tibetCliVersion = T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(g
 shellP :: Parser Command
 shellP = subparser
     $ command "shell" (info (helper <*> pure Shell) $ progDesc "Start translate shell")
+   <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
 
 ----------------------------------------------------------------------------
 -- Beauty util
@@ -80,12 +83,8 @@ shellP = subparser
 modifyHeader :: ParserInfo a -> ParserInfo a
 modifyHeader p = p {infoHeader = stringChunk $ T.unpack artHeader}
 
--- to put custom footer which doesn't cut all spaces
-modifyFooter :: ParserInfo a -> ParserInfo a
-modifyFooter p = p {infoFooter = stringChunk $ T.unpack artFooter}
-
 artHeader :: Text
-artHeader = [text|
+artHeader = yellowCode <> [text|
 $endLine
                                   .+-
                            .:+sydNMd`
@@ -113,10 +112,10 @@ $endLine
                                             `M.
                                             `N.
                                              d`
-            |]
+            |] <> resetCode
 
-artFooter :: Text
-artFooter = [text|
+om :: Text
+om = [text|
 $endLine
                              /hd+
                            /Nd::ohs.
