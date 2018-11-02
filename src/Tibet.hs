@@ -13,20 +13,20 @@ import           System.IO (stderr)
 import           Handlers (Dictionary, Title, mergeWithNum, searchInMap, zipWithMap)
 import           Prettify (blueCode, greenCode, putTextFlush, redCode, resetCode)
 
-import qualified Data.Text.IO as IO
+import qualified Data.ByteString.Char8 as BC
 
 
 start :: IO ()
 start = do
     (_, files) <- listDir $(mkRelDir "./dics/")
-    texts <- mapM (IO.readFile . fromAbsFile) files
+    texts <- mapM (BC.readFile . fromAbsFile) files
     let mapped = zipWithMap texts files
     mapped `deepseq` cli mapped
 
 cli :: [(Dictionary, Title)] -> IO ()
 cli mapped = do
     putTextFlush $ blueCode <> "Which a tibetan word to translate?" <> resetCode
-    query <- IO.hPutStr stderr "> " >> IO.getLine
+    query <- BC.hPutStr stderr "> " >> BC.getLine
     case query of
         ":q" -> putTextFlush $ greenCode <> "Bye-bye!" <> resetCode
         _    -> do
