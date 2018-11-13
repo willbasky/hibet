@@ -15,6 +15,7 @@ build-type:          Simple
 extra-doc-files:     README.md
                    , CHANGELOG.md
 data-files:          dicts/*.txt
+                   , titles.json
 tested-with:         GHC == 8.4.3
 
 source-repository head
@@ -27,6 +28,7 @@ library
                      , Handlers
                      , Prettify
                      , Tibet
+                     , Titles
 
   other-modules:       Paths_tibet
   autogen-modules:     Paths_tibet
@@ -42,6 +44,7 @@ library
                        -Wpartial-fields
 
   build-depends:       base
+                     , aeson
                      , ansi-terminal
                      , bytestring
                      , deepseq

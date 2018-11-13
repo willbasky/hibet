@@ -12,13 +12,15 @@ and this project adheres to
   Hold `HashMap` dictinaries in memory. Preload it before a first query.
 * Move unused functions to Sandbox module.
 * [#22](https://github.com/willbasky/TibetCli/issues/22):
-  Create map without dublicate values.
+  Creat map without dublicate values.
 * Move to ByteString (It reduced using operative memory from 327 Mb to 186 Mb).
 * Fix new lines in value.
 * [#27](https://github.com/willbasky/TibetCli/issues/27):
   Access to dictionaries from wherever.
 * [#32](https://github.com/willbasky/TibetCli/issues/32):
   Add `om` command.
+* [#21](https://github.com/willbasky/TibetCli/issues/21):
+  Add command `show` to show all titles
 
 ## [0.3] - 2018-10-01
 

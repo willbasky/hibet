@@ -18,6 +18,7 @@ import           Paths_tibet (version)
 import           Prettify (blueCode, boldCode, endLine, magentaCode, putTextFlush, redCode,
                            resetCode, yellowCode)
 import           Tibet (start)
+import           Titles (showTitles)
 
 import qualified Data.Text as T
 
@@ -30,6 +31,7 @@ data Command
     -- | @shell@ command launch translating shell
     = Shell
     | Om
+    | ShowTitles
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -43,6 +45,7 @@ runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
     Om -> putTextFlush $ magentaCode <> om <> resetCode
+    ShowTitles -> showTitles
 
 ----------------------------------------------------------------------------
 -- Parsers
@@ -74,6 +77,7 @@ shellP :: Parser Command
 shellP = subparser
     $ command "shell" (info (helper <*> pure Shell) $ progDesc "Start translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
+   <> command "show" (info (helper <*> pure ShowTitles) $ progDesc "Show titles of dictionaris")
 
 ----------------------------------------------------------------------------
 -- Beauty util
