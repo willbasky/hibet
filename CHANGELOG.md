@@ -19,6 +19,8 @@ and this project adheres to
   Access to dictionaries from wherever.
 * [#32](https://github.com/willbasky/TibetCli/issues/32):
   Add `om` command.
+* [#21](https://github.com/willbasky/TibetCli/issues/21):
+  Add command `show` to show all titles
 
 ## [0.3] - 2018-10-01
 

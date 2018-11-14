@@ -8,13 +8,15 @@ module Handlers
        ) where
 
 import           Data.ByteString.Char8 (ByteString)
+import           Data.Foldable (find)
 import           Data.HashMap.Strict (HashMap)
-import           Data.Maybe (isNothing)
+import           Data.Maybe (isNothing, maybe)
 import           Data.Text (Text)
-import           Data.Text.Encoding (decodeUtf8)
+import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Path (Abs, File, Path, filename, fromRelFile)
 
 import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
+import           Labels (LabelFull (..))
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
@@ -34,14 +36,22 @@ makeTextMap
     . BC.lines
 
 -- | Combine dictionary titles with mapped dictionaries.
-zipWithMap :: [ByteString] -> [Path Abs File] -> [(Dictionary, Title)]
-zipWithMap texts files = zip mapped titles
+zipWithMap :: [ByteString] -> [Path Abs File] -> [LabelFull] -> [(Dictionary, Title)]
+zipWithMap texts files labels = zip mapped (titles labels)
   where
     mapped :: [Dictionary]
     mapped = map makeTextMap texts
 
-    titles :: [Title]
-    titles = map (BC.drop 3 . BC.pack . fromRelFile . filename) files
+    titles :: [LabelFull] -> [Title]
+    titles labels' = map findTitle filepathes
+      where
+        -- Trim filepath
+        filepathes :: [Text]
+        filepathes = map (T.dropEnd 4 . T.pack . fromRelFile . filename) files
+        -- Match filpath with labels
+        findTitle :: Text -> Title
+        findTitle f = maybe "Invalid title" (encodeUtf8 . tiLabel) $
+            find (\LabelFull{..} -> f == tiPath) labels'
 
 -- Search in mapped dictionary.
 searchInMap :: ByteString -> [(Dictionary, Title)] -> [(ByteString, Title)]
