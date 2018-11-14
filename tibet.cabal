@@ -28,7 +28,7 @@ library
                      , Handlers
                      , Prettify
                      , Tibet
-                     , Titles
+                     , Labels
 
   other-modules:       Paths_tibet
   autogen-modules:     Paths_tibet

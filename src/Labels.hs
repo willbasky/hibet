@@ -1,4 +1,4 @@
-module Titles
+module Labels
        ( LabelFull(..)
        , labels
        ) where
@@ -14,20 +14,20 @@ import qualified Data.HashMap.Strict as HM
 labels :: IO [LabelFull]
 labels = do
     file <- getDataFileName "/titles.json"
-    titles <- BLC.readFile file
-    case decode titles :: Maybe Labels of
+    meta <- BLC.readFile file
+    case decode meta :: Maybe Labels of
         Nothing               -> error "Not decoded"
         Just (Labels decoded) -> pure decoded
 
 data Label = Label
     { tLabel :: Text
-    , tAbout :: Text
+    , tMeta  :: Text
     } deriving (Eq, Show)
 
 instance ToJSON Label where
     toJSON Label{..} = object
         [ "label"  .= tLabel
-        , "about"  .= tAbout
+        , "about"  .= tMeta
         ]
 
 instance FromJSON Label where
@@ -38,7 +38,7 @@ instance FromJSON Label where
 data LabelFull = LabelFull
     { tiPath  :: Text
     , tiLabel :: Text
-    , tiAbout :: Text
+    , tiMeta  :: Text
     } deriving (Eq, Show)
 
 newtype Labels = Labels [LabelFull]

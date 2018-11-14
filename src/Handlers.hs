@@ -16,7 +16,7 @@ import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Path (Abs, File, Path, filename, fromRelFile)
 
 import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
-import           Titles (LabelFull (..))
+import           Labels (LabelFull (..))
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
@@ -37,13 +37,13 @@ makeTextMap
 
 -- | Combine dictionary titles with mapped dictionaries.
 zipWithMap :: [ByteString] -> [Path Abs File] -> [LabelFull] -> [(Dictionary, Title)]
-zipWithMap texts files titlesId = zip mapped (titles titlesId)
+zipWithMap texts files labels = zip mapped (titles labels)
   where
     mapped :: [Dictionary]
     mapped = map makeTextMap texts
 
     titles :: [LabelFull] -> [Title]
-    titles labels = map findTitle filepathes
+    titles labels' = map findTitle filepathes
       where
         -- Trim filepath
         filepathes :: [Text]
@@ -51,7 +51,7 @@ zipWithMap texts files titlesId = zip mapped (titles titlesId)
         -- Match filpath with labels
         findTitle :: Text -> Title
         findTitle f = maybe "Invalid title" (encodeUtf8 . tiLabel) $
-            find (\LabelFull{..} -> f == tiPath) labels
+            find (\LabelFull{..} -> f == tiPath) labels'
 
 -- Search in mapped dictionary.
 searchInMap :: ByteString -> [(Dictionary, Title)] -> [(ByteString, Title)]

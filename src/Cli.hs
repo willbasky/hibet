@@ -15,10 +15,10 @@ import           Options.Applicative (Parser, ParserInfo, command, execParser, f
 import           Options.Applicative.Help.Chunk (stringChunk)
 
 import           Paths_tibet (version)
-import           Prettify (blueCode, boldCode, endLine, magentaCode, putTextFlush, redCode,
+import           Prettify (blueCode, boldCode, endLine, greenCode, magentaCode, putTextFlush, redCode,
                            resetCode, yellowCode)
 import           Tibet (start)
-import           Titles (LabelFull(..), labels)
+import           Labels (LabelFull(..), labels)
 
 import qualified Data.Text as T
 
@@ -31,7 +31,10 @@ data Command
     -- | @shell@ command launch translating shell
     = Shell
     | Om
-    | ShowTitles
+    | ShowOpt Opt
+
+-- | Commands parsed with @show@ command
+data Opt = Names | Meta
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -45,9 +48,19 @@ runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
     Om -> putTextFlush $ magentaCode <> om <> resetCode
-    ShowTitles -> do
+    ShowOpt opt -> runShow opt
+
+runShow :: Opt -> IO ()
+runShow = \case
+    Names -> do
         titles <- labels
         mapM_ (\LabelFull{..} -> putTextFlush (blueCode <> "- " <> tiLabel <> resetCode)) titles
+    Meta -> do
+        titles <- labels
+        mapM_ (\LabelFull{..} ->
+            putTextFlush (blueCode <> " - " <> tiLabel <> resetCode) <>
+            putTextFlush (greenCode <> tiMeta <> resetCode)
+            ) titles
 
 ----------------------------------------------------------------------------
 -- Parsers
@@ -79,7 +92,13 @@ shellP :: Parser Command
 shellP = subparser
     $ command "shell" (info (helper <*> pure Shell) $ progDesc "Start translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
-   <> command "show" (info (helper <*> pure ShowTitles) $ progDesc "Show titles of dictionaris")
+   <> command "show" (info (helper <*> showP) $ progDesc "Show commands")
+
+showP :: Parser Command
+showP = ShowOpt <$> subparser
+    ( command "names" (info (helper <*> pure Names) $ progDesc "Show dictionary titles")
+   <> command "meta" (info (helper <*> pure Meta) $ progDesc "Show dictionary descriptions")
+    )
 
 ----------------------------------------------------------------------------
 -- Beauty util

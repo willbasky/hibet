@@ -12,7 +12,7 @@ import           System.IO (stderr)
 import           Handlers (Dictionary, Title, mergeWithNum, searchInMap, zipWithMap)
 import           Paths_tibet (getDataFileName)
 import           Prettify (blueCode, greenCode, putTextFlush, redCode, resetCode)
-import           Titles (labels)
+import           Labels (labels)
 
 import qualified Data.ByteString.Char8 as BC
 
