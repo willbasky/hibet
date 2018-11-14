@@ -1,55 +1,53 @@
 module Titles
-       ( Title(..)
-       , showTitles
+       ( LabelFull(..)
+       , labels
        ) where
 
 import           Data.Aeson
 import           Data.Text (Text)
 
-import           Prettify (blueCode, putTextFlush, resetCode)
 import           Paths_tibet (getDataFileName)
 
 import qualified Data.ByteString.Lazy.Char8 as BLC
 import qualified Data.HashMap.Strict as HM
 
-showTitles :: IO ()
-showTitles = do
+labels :: IO [LabelFull]
+labels = do
     file <- getDataFileName "/titles.json"
     titles <- BLC.readFile file
-    case decode titles :: Maybe TitleIdList of
-        Nothing -> error "Not decoded"
-        Just (TitleIdList decoded) ->
-            mapM_ (\title -> putTextFlush (blueCode <> "- " <> tiLabel title <> resetCode)) decoded
+    case decode titles :: Maybe Labels of
+        Nothing               -> error "Not decoded"
+        Just (Labels decoded) -> pure decoded
 
-data Title = Title
-    { titleLabel :: Text
-    , titleAbout :: Text
+data Label = Label
+    { tLabel :: Text
+    , tAbout :: Text
     } deriving (Eq, Show)
 
-instance ToJSON Title where
-    toJSON Title{..} = object
-        [ "label"  .= titleLabel
-        , "about"  .= titleAbout
+instance ToJSON Label where
+    toJSON Label{..} = object
+        [ "label"  .= tLabel
+        , "about"  .= tAbout
         ]
 
-instance FromJSON Title where
-    parseJSON = withObject "title" $ \v -> Title
+instance FromJSON Label where
+    parseJSON = withObject "label" $ \v -> Label
         <$> v .: "label"
         <*> v .: "about"
 
-data TitleId = TitleId
+data LabelFull = LabelFull
     { tiPath  :: Text
     , tiLabel :: Text
     , tiAbout :: Text
     } deriving (Eq, Show)
 
-newtype TitleIdList = TitleIdList [TitleId]
+newtype Labels = Labels [LabelFull]
     deriving (Eq, Show)
 
-instance FromJSON TitleIdList where
+instance FromJSON Labels where
     parseJSON v
-        = fmap ( TitleIdList
-        . map (\(path, Title label about) -> TitleId path label about)
+        = fmap ( Labels
+        . map (\(path, Label label about) -> LabelFull path label about)
         . HM.toList )
         $ parseJSON v
 

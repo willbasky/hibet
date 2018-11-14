@@ -18,7 +18,7 @@ import           Paths_tibet (version)
 import           Prettify (blueCode, boldCode, endLine, magentaCode, putTextFlush, redCode,
                            resetCode, yellowCode)
 import           Tibet (start)
-import           Titles (showTitles)
+import           Titles (LabelFull(..), labels)
 
 import qualified Data.Text as T
 
@@ -45,7 +45,9 @@ runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
     Om -> putTextFlush $ magentaCode <> om <> resetCode
-    ShowTitles -> showTitles
+    ShowTitles -> do
+        titles <- labels
+        mapM_ (\LabelFull{..} -> putTextFlush (blueCode <> "- " <> tiLabel <> resetCode)) titles
 
 ----------------------------------------------------------------------------
 -- Parsers

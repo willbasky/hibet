@@ -5,13 +5,14 @@ module Tibet
 import           Control.DeepSeq (deepseq)
 import           Control.Monad (when)
 import           Path (fromAbsFile)
-import           Path.Internal (Path(..))
+import           Path.Internal (Path (..))
 import           Path.IO (listDir)
 import           System.IO (stderr)
 
 import           Handlers (Dictionary, Title, mergeWithNum, searchInMap, zipWithMap)
 import           Paths_tibet (getDataFileName)
 import           Prettify (blueCode, greenCode, putTextFlush, redCode, resetCode)
+import           Titles (labels)
 
 import qualified Data.ByteString.Char8 as BC
 
@@ -21,7 +22,7 @@ start = do
     dir <- getDataFileName "dicts/"
     (_, files) <- listDir $ Path dir
     texts <- mapM (BC.readFile . fromAbsFile) files
-    let mapped = zipWithMap texts files
+    mapped <- zipWithMap texts files <$> labels
     mapped `deepseq` cli mapped
 
 cli :: [(Dictionary, Title)] -> IO ()
