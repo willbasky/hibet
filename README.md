@@ -34,8 +34,8 @@ Help commands:
     Available commands:
       shell                    Start translate shell
       om                       Print Om to a terminal
-      show                     Show commands 
-        
+      show                     Show commands
+
     $ tibet show -h
     
     Usage: tibet show COMMAND
@@ -51,20 +51,21 @@ Help commands:
 Input `tibet shell` in terminal. And then write your `query` using _Wylie_ transcribtion:
 
     $ tibet shell
-    What tibetan word to translate?
-    > sems
-    1. IvesWaldo
-    ༔ cognitive act; 1) cognition, awareness, mind, experience, heart; 2) gtso sems [primary mind/ stream of consciousness/ cognitive   act; 3) alaya/ consciousness; 4) attitude, intent; 5) grasping
+    Which a tibetan word to translate?
+    > mo
+    1. Rangjung Yeshe
+    ► the girl
+    ► lady, female, woman. 2) divination, prophecy
+    ► 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun    forming particle [R]; 5) is [don ci mo: what is the meaning]
 
-    2. GatewayToKnowledge
-    ༔ cognitive acts
+    2. Ives Waldo
+    ► 1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing particle [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo, chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo: what is the meaning]. 1) auspicious, mo divination/ prophesy; 2) feminine particle, female, woman, she; 3) terminative after MA; 4) noun forming particle; 5) is
 
-    3. Verbinator
-    ༔ Present: {sems} KYT, KYN, TD, LZ, CD, ND, DK, DS, TC. \nPast: {bsams} KYT, KYN, TD, LZ, CD, ND, DK, DS, TC. {sems} CD.\nFuture:   {bsam} KYT, KYN, TD, LZ, CD, ND, DK, DS, TC. \nImperative: {soms} KYT, KYN, TD, LZ, ND, DK, DS, TC. {som} CD.\nVoluntary: KYT, KYN,   TD, CD, ND, DS, TC, (Hoshi 2003).Involuntary:(Tournadre & Dorje 2003: 176).\nTransitive: DS, TC.\nSyntax: [Erg. Abs.] (Tournadre &    Dorje 2003: 176). [Erg. Obl.] (Hackett 2003).\nCharacteristic Example: {yid kyis} TD. {thos don sogs} LZ. {yid la} ND.\nMeaning: 1.    To think. 2. To fancy, imagine CD. To think, to consider DK. To think DS. To examine, think about TC.
+    3. Hopkins 2015
+    ► (1) female; woman; wife; feminine particle; she; (2) particle indicating the end of a statement
 
     4. Berzin
-    ༔ mind
-    ༔ sem
+    ► prognostication
 
     etc...
 
