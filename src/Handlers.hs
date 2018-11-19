@@ -1,6 +1,7 @@
 module Handlers
        ( Title
        , Dictionary
+       , History
        , makeTextMap
        , mergeWithNum
        , searchInMap
@@ -14,9 +15,10 @@ import           Data.Maybe (isNothing, maybe)
 import           Data.Text (Text)
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Path (Abs, File, Path, filename, fromRelFile)
+import           Control.Monad.Trans.State.Strict (StateT)
 
-import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
 import           Labels (LabelFull (..))
+import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
@@ -26,6 +28,8 @@ import qualified Data.Text as T
 type Title = ByteString
 
 type Dictionary = HashMap ByteString ByteString
+
+type History = StateT [ByteString] IO [ByteString]
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: ByteString -> Dictionary
@@ -65,7 +69,7 @@ searchInMap query mapped = [(text, title) | (Just text, title) <- searched]
 
 -- | Add numbers and flatten.
 mergeWithNum :: [(ByteString, Title)] -> Text
-mergeWithNum = T.unlines . zipWith flatten numbers
+mergeWithNum = T.intercalate "\n" . zipWith flatten numbers
   where
     -- Add numbers.
     numbers :: [Text]
