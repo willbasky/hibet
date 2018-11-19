@@ -20,6 +20,34 @@ install from [stack](https://docs.haskellstack.org/en/stable/README/#how-to-inst
 
 ## Usage
 
+Help commands:
+
+    $ tibet -h
+    
+    Usage: tibet [-v|--version] COMMAND
+      Translate from Tibetan to English
+
+    Available options:
+      -h,--help                Show this help text
+      -v,--version             Show TibetCli's version
+
+    Available commands:
+      shell                    Start translate shell
+      om                       Print Om to a terminal
+      show                     Show commands 
+        
+    $ tibet show -h
+    
+    Usage: tibet show COMMAND
+      Show commands
+
+    Available options:
+      -h,--help                Show this help text
+
+    Available commands:
+      names                    Show dictionary titles
+      meta                     Show dictionary descriptions
+
 Input `tibet shell` in terminal. And then write your `query` using _Wylie_ transcribtion:
 
     $ tibet shell
