@@ -44,6 +44,10 @@ To quit, just input:
 
     :q
 
+To get queries of the session, input:
+
+    :h
+
 ## ToDo
 
 - [x] Lookup throuth all available libaries.

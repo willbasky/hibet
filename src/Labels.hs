@@ -50,5 +50,3 @@ instance FromJSON Labels where
         . map (\(path, Label label about) -> LabelFull path label about)
         . HM.toList )
         $ parseJSON v
-
-

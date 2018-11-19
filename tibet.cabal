@@ -52,6 +52,7 @@ library
                      , gitrev
                      , neat-interpolation ^>= 0.3.2.2
                      , optparse-applicative
+                     , transformers
                      , path
                      , path-io >= 1.4.0
                      , text

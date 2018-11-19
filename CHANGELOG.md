@@ -9,29 +9,31 @@ and this project adheres to
 ## [Unreleased]
 
 * [#28](https://github.com/willbasky/TibetCli/issues/28):
-  Hold `HashMap` dictinaries in memory. Preload it before a first query.
-* Move unused functions to Sandbox module.
+  `HashMap` holds dictinaries in memory and preloads them before a first query.
+* Unused functions moved to Sandbox module.
 * [#22](https://github.com/willbasky/TibetCli/issues/22):
-  Create map without dublicate values.
-* Move to ByteString (It reduced using operative memory from 327 Mb to 186 Mb).
+  Map without dublicate values created.
+* ByteString used instead Text (It reduced using operative memory from 327 Mb to 186 Mb).
 * Fix new lines in value.
 * [#27](https://github.com/willbasky/TibetCli/issues/27):
   Access to dictionaries from wherever.
 * [#32](https://github.com/willbasky/TibetCli/issues/32):
-  Add `om` command.
+  `om` command to show Om.
 * [#21](https://github.com/willbasky/TibetCli/issues/21):
-  Add command `show` to show all titles
+  Command `show` to show all titles
+* [#40](https://github.com/willbasky/TibetCli/issues/40):
+  Query history. Command `:h` on fly.
 
 ## [0.3] - 2018-10-01
 
 ### Added
 
 * [#3](https://github.com/willbasky/TibetCli/issues/3):
-  Move to `optparse-applicative`.
+  Cli moved to `optparse-applicative`.
 * [#13](https://github.com/willbasky/TibetCli/issues/13):
-  Colorize output.
-* Add `--version` option.
-* Prettified header and footer in `--help` option.
+  Colorized output.
+* Command `--version` option to show current version.
+* Pretty header and footer in `--help` option.
 
 ### Changed
 
