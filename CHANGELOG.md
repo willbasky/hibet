@@ -32,7 +32,7 @@ and this project adheres to
   Cli moved to `optparse-applicative`.
 * [#13](https://github.com/willbasky/TibetCli/issues/13):
   Colorized output.
-* `--version` option.
+* Command `--version` option to show current version.
 * Pretty header and footer in `--help` option.
 
 ### Changed
