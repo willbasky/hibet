@@ -5,6 +5,7 @@ module Cli
        ( trans
        ) where
 
+import           Data.List (sortBy)
 import           Data.Text (Text)
 import           Data.Version (showVersion)
 import           Development.GitRev (gitCommitDate, gitDirty, gitHash)
@@ -14,11 +15,11 @@ import           Options.Applicative (Parser, ParserInfo, command, execParser, f
                                       subparser)
 import           Options.Applicative.Help.Chunk (stringChunk)
 
+import           Labels (LabelFull (..), labels)
 import           Paths_tibet (version)
-import           Prettify (blueCode, boldCode, endLine, greenCode, magentaCode, putTextFlush, redCode,
-                           resetCode, yellowCode)
+import           Prettify (blueCode, boldCode, endLine, greenCode, magentaCode, putTextFlush,
+                           redCode, resetCode, yellowCode)
 import           Tibet (start)
-import           Labels (LabelFull(..), labels)
 
 import qualified Data.Text as T
 
@@ -54,12 +55,15 @@ runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- labels
-        mapM_ (\LabelFull{..} -> putTextFlush (blueCode <> "- " <> tiLabel <> resetCode)) titles
+        mapM_ (\LabelFull{..} -> putTextFlush
+            ( greenCode <> T.pack (show lfId) <>  ". " <> resetCode
+            <> blueCode <> lfLabel <> resetCode
+            ) ) $ sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b) titles
     Meta -> do
         titles <- labels
         mapM_ (\LabelFull{..} ->
-            putTextFlush (blueCode <> " - " <> tiLabel <> resetCode) <>
-            putTextFlush (greenCode <> tiMeta <> resetCode)
+            putTextFlush (blueCode <> " - " <> lfLabel <> resetCode) <>
+            putTextFlush (greenCode <> lfMeta <> resetCode)
             ) titles
 
 ----------------------------------------------------------------------------

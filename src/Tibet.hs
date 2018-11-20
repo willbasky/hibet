@@ -27,7 +27,7 @@ start = do
     let historyS = get
     mapped `deepseq` cli mapped historyS ""
 
-cli :: [(Dictionary, Title)] -> History -> ByteString -> IO ()
+cli :: [(Dictionary, (Title, Int))] -> History -> ByteString -> IO ()
 cli mapped historyOldS _ = do
     putTextFlush $ blueCode <> "Which a tibetan word to translate?" <> resetCode
     query <- BC.hPutStr stderr "> " >> BC.getLine

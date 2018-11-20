@@ -20,25 +20,29 @@ labels = do
         Just (Labels decoded) -> pure decoded
 
 data Label = Label
-    { tLabel :: Text
-    , tMeta  :: Text
+    { labelId    :: Int
+    , labelLabel :: Text
+    , labelMeta  :: Text
     } deriving (Eq, Show)
 
 instance ToJSON Label where
     toJSON Label{..} = object
-        [ "label"  .= tLabel
-        , "about"  .= tMeta
+        [ "id"     .= labelId
+        , "label"  .= labelLabel
+        , "about"  .= labelMeta
         ]
 
 instance FromJSON Label where
     parseJSON = withObject "label" $ \v -> Label
-        <$> v .: "label"
+        <$> v .: "id"
+        <*> v .: "label"
         <*> v .: "about"
 
 data LabelFull = LabelFull
-    { tiPath  :: Text
-    , tiLabel :: Text
-    , tiMeta  :: Text
+    { lfPath  :: Text
+    , lfId    :: Int
+    , lfLabel :: Text
+    , lfMeta  :: Text
     } deriving (Eq, Show)
 
 newtype Labels = Labels [LabelFull]
@@ -47,6 +51,6 @@ newtype Labels = Labels [LabelFull]
 instance FromJSON Labels where
     parseJSON v
         = fmap ( Labels
-        . map (\(path, Label label about) -> LabelFull path label about)
+        . map (\(path, Label number label about) -> LabelFull path number label about)
         . HM.toList )
         $ parseJSON v
