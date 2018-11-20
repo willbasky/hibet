@@ -5,6 +5,7 @@ module Cli
        ( trans
        ) where
 
+import           Data.List (sortBy)
 import           Data.Text (Text)
 import           Data.Version (showVersion)
 import           Development.GitRev (gitCommitDate, gitDirty, gitHash)
@@ -14,11 +15,11 @@ import           Options.Applicative (Parser, ParserInfo, command, execParser, f
                                       subparser)
 import           Options.Applicative.Help.Chunk (stringChunk)
 
+import           Labels (LabelFull (..), labels)
 import           Paths_tibet (version)
-import           Prettify (blueCode, boldCode, endLine, greenCode, magentaCode, putTextFlush, redCode,
-                           resetCode, yellowCode)
+import           Prettify (blue, bold, endLine, green, magenta, putTextFlush,
+                           red, resetCode, yellow)
 import           Tibet (start)
-import           Labels (LabelFull(..), labels)
 
 import qualified Data.Text as T
 
@@ -47,19 +48,21 @@ trans = execParser prsr >>= runCommand
 runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
-    Om -> putTextFlush $ magentaCode <> om <> resetCode
+    Om -> putTextFlush $ magenta om
     ShowOpt opt -> runShow opt
 
 runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- labels
-        mapM_ (\LabelFull{..} -> putTextFlush (blueCode <> "- " <> tiLabel <> resetCode)) titles
+        mapM_ (\LabelFull{..} -> putTextFlush
+            (green (T.pack (show lfId) <>  ". ") <> blue lfLabel))
+            $ sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b) titles
     Meta -> do
         titles <- labels
         mapM_ (\LabelFull{..} ->
-            putTextFlush (blueCode <> " - " <> tiLabel <> resetCode) <>
-            putTextFlush (greenCode <> tiMeta <> resetCode)
+            putTextFlush (blue $ " - " <> lfLabel) <>
+            putTextFlush (green lfMeta)
             ) titles
 
 ----------------------------------------------------------------------------
@@ -82,10 +85,10 @@ versionP = infoOption (T.unpack tibetCliVersion)
 tibetCliVersion :: Text
 tibetCliVersion = T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(gitDirty)]
   where
-    sVersion = blueCode <> boldCode <> "TibetCli " <> "v" <> T.pack (showVersion version) <> resetCode
-    sHash = " ➤ " <> blueCode <> boldCode <> "Git revision: " <> resetCode <> $(gitHash)
-    sDate = " ➤ " <> blueCode <> boldCode <> "Commit date:  " <> resetCode <> $(gitCommitDate)
-    sDirty = redCode <> "There are non-committed files." <> resetCode
+    sVersion = blue . bold $ "TibetCli " <> "v" <> T.pack (showVersion version)
+    sHash = " ➤ " <> (blue . bold $ "Git revision: " <> resetCode <> $(gitHash))
+    sDate = " ➤ " <> (blue . bold $ "Commit date:  " <> resetCode <> $(gitCommitDate))
+    sDirty = red "There are non-committed files."
 
 -- All possible commands.
 shellP :: Parser Command
@@ -109,7 +112,7 @@ modifyHeader :: ParserInfo a -> ParserInfo a
 modifyHeader p = p {infoHeader = stringChunk $ T.unpack artHeader}
 
 artHeader :: Text
-artHeader = yellowCode <> [text|
+artHeader = yellow [text|
 $endLine
                                   .+-
                            .:+sydNMd`
@@ -137,7 +140,7 @@ $endLine
                                             `M.
                                             `N.
                                              d`
-            |] <> resetCode
+            |]
 
 om :: Text
 om = [text|

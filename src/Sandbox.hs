@@ -2,7 +2,7 @@ module Sandbox where
 
 import           Data.Text (Text)
 import           Path (Abs, File, Path, filename, fromRelFile)
-import           Prettify (cyanCode, putTextFlush, resetCode)
+import           Prettify (cyan, putTextFlush)
 import           System.IO (hPrint, stderr)
 import           Data.ByteString.Char8 (ByteString)
 
@@ -63,6 +63,6 @@ searchInRaw query = foldl (\ acc (x,y) -> if search x == "" then acc else (searc
     search :: Text -> Text
     search
         = T.unlines
-        . map (T.append (cyanCode <> "༔ " <> resetCode) . T.drop 1 . T.dropWhile (/= '|'))
+        . map (T.append (cyan "༔ ") . T.drop 1 . T.dropWhile (/= '|'))
         . filter (T.isPrefixOf (T.append query "|"))
         . T.lines

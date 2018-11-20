@@ -8,17 +8,18 @@ module Handlers
        , zipWithMap
        ) where
 
+import           Control.Monad.Trans.State.Strict (StateT)
 import           Data.ByteString.Char8 (ByteString)
 import           Data.Foldable (find)
 import           Data.HashMap.Strict (HashMap)
+import           Data.List (sortBy)
 import           Data.Maybe (isNothing, maybe)
 import           Data.Text (Text)
 import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Path (Abs, File, Path, filename, fromRelFile)
-import           Control.Monad.Trans.State.Strict (StateT)
 
 import           Labels (LabelFull (..))
-import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
+import           Prettify (blue, bold, cyan, green)
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
@@ -27,9 +28,9 @@ import qualified Data.Text as T
 
 type Title = ByteString
 
-type Dictionary = HashMap ByteString ByteString
+type Dictionary = HashMap ByteString ByteString -- | key and value
 
-type History = StateT [ByteString] IO [ByteString]
+type History = StateT [ByteString] IO [ByteString] -- | first value is state
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: ByteString -> Dictionary
@@ -40,51 +41,53 @@ makeTextMap
     . BC.lines
 
 -- | Combine dictionary titles with mapped dictionaries.
-zipWithMap :: [ByteString] -> [Path Abs File] -> [LabelFull] -> [(Dictionary, Title)]
+zipWithMap :: [ByteString] -> [Path Abs File] -> [LabelFull] -> [(Dictionary, (Title, Int))]
 zipWithMap texts files labels = zip mapped (titles labels)
   where
     mapped :: [Dictionary]
     mapped = map makeTextMap texts
 
-    titles :: [LabelFull] -> [Title]
+    titles :: [LabelFull] -> [(Title, Int)]
     titles labels' = map findTitle filepathes
       where
         -- Trim filepath
         filepathes :: [Text]
         filepathes = map (T.dropEnd 4 . T.pack . fromRelFile . filename) files
         -- Match filpath with labels
-        findTitle :: Text -> Title
-        findTitle f = maybe "Invalid title" (encodeUtf8 . tiLabel) $
-            find (\LabelFull{..} -> f == tiPath) labels'
+        findTitle :: Text -> (Title, Int)
+        findTitle f = maybe ("Invalid title",0) (\LabelFull{..} -> (encodeUtf8 lfLabel, lfId)) $
+            find (\LabelFull{..} -> f == lfPath) labels'
 
 -- Search in mapped dictionary.
-searchInMap :: ByteString -> [(Dictionary, Title)] -> [(ByteString, Title)]
-searchInMap query mapped = [(text, title) | (Just text, title) <- searched]
+searchInMap :: ByteString -> [(Dictionary, (Title, Int))] -> [(ByteString, (Title, Int))]
+searchInMap query mapped =
+    sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
+        [(text, (title, number)) | (Just text, (title, number)) <- searched]
   where
-    searched :: [(Maybe ByteString, Title)]
-    searched = foldl (\ acc (x,y) -> if isNothing (search x) then acc else (search x, y) : acc) [] mapped
+    searched :: [(Maybe ByteString, (Title, Int))]
+    searched = foldl (\ acc (x,(t,i)) -> if isNothing (search x) then acc else (search x, (t,i)) : acc) [] mapped
 
     search :: Dictionary -> Maybe ByteString
     search = HMS.lookup query
 
 -- | Add numbers and flatten.
-mergeWithNum :: [(ByteString, Title)] -> Text
-mergeWithNum = T.intercalate "\n" . zipWith flatten numbers
+mergeWithNum :: [(ByteString, (Title, Int))] -> Text
+mergeWithNum = T.intercalate "\n" . map flatten
   where
-    -- Add numbers.
-    numbers :: [Text]
-    numbers = map ((\x -> greenCode <> T.append (T.pack x) ". " <> resetCode) . show) [1::Int ..]
+    -- Prettify number.
+    prettyN :: Int -> Text
+    prettyN = ((\x -> green $ T.append (T.pack x) ". ") . show)
 
-    flatten :: Text -> (ByteString, Title) -> Text
-    flatten number (value, title) =
-        T.append (T.append number (T.append (prettyT title) "\n")) (valueMarked value)
+    flatten :: (ByteString, (Title, Int)) -> Text
+    flatten (value, (title, number)) =
+        T.append (T.append (prettyN number) (T.append (prettyT title) "\n")) (valueMarked value)
     -- Decode and paint title.
     prettyT :: Title -> Text
-    prettyT title = blueCode <> boldCode <> decodeUtf8 title <> resetCode
+    prettyT title = blue $ bold $ decodeUtf8 title
     -- Decode value and add mark.
     valueMarked :: ByteString -> Text
     valueMarked value =
-        T.unlines . map (\v -> cyanCode <> "► " <> resetCode <> insideNewLine v) $ T.lines (decodeUtf8 value)
+        T.unlines . map (\v -> cyan "► " <> insideNewLine v) $ T.lines (decodeUtf8 value)
     -- Fix new lines inside value.
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "

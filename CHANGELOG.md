@@ -23,6 +23,8 @@ and this project adheres to
   Command `show` to show all titles
 * [#40](https://github.com/willbasky/TibetCli/issues/40):
   Query history. Command `:h` on fly.
+* [#38](https://github.com/willbasky/TibetCli/issues/38):
+  Add ordering number to json field and use it when ordering.
 
 ## [0.3] - 2018-10-01
 
