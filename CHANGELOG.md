@@ -6,25 +6,37 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
-## [Unreleased]
+## [0.4] - 2018-11-20
+
+### Added
+
+* [#21](https://github.com/willbasky/TibetCli/issues/21):
+  Command `show` to show all titles.
+* [#25](https://github.com/willbasky/TibetCli/issues/25):
+  Show commands:
+  * Command tibet show meta to show all dictionary descriptions.
+  * Command `tibet show -d NUMBER` to show a specific dictionary description.
+* [#32](https://github.com/willbasky/TibetCli/issues/32):
+  Command `om` to show Om.
+* [#38](https://github.com/willbasky/TibetCli/issues/38):
+  Add ordering number to json field and use it when ordering.
+* [#40](https://github.com/willbasky/TibetCli/issues/40):
+  Command `:h` on fly to query history.
+
+### Changed
 
 * [#28](https://github.com/willbasky/TibetCli/issues/28):
   `HashMap` holds dictinaries in memory and preloads them before a first query.
 * Unused functions moved to Sandbox module.
+* ByteString used instead Text (It reduced using operative memory from 327 Mb to 186 Mb).
+
+### Fixed
+
 * [#22](https://github.com/willbasky/TibetCli/issues/22):
   Map without dublicate values created.
-* ByteString used instead Text (It reduced using operative memory from 327 Mb to 186 Mb).
-* Fix new lines in value.
 * [#27](https://github.com/willbasky/TibetCli/issues/27):
   Access to dictionaries from wherever.
-* [#32](https://github.com/willbasky/TibetCli/issues/32):
-  `om` command to show Om.
-* [#21](https://github.com/willbasky/TibetCli/issues/21):
-  Command `show` to show all titles
-* [#40](https://github.com/willbasky/TibetCli/issues/40):
-  Query history. Command `:h` on fly.
-* [#38](https://github.com/willbasky/TibetCli/issues/38):
-  Add ordering number to json field and use it when ordering.
+* Fix new lines in value.
 
 ## [0.3] - 2018-10-01
 
