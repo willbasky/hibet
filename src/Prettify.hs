@@ -2,29 +2,34 @@
 
 module Prettify
        ( Color (..)
-       , putTextFlush
-       , beautyPrint
-       , boldCode
+       , blue
        , blueCode
        , bold
-       , boldText
-       , boldDefault
+       , boldCode
+       , cyan
        , cyanCode
        , endLine
+       , green
        , greenCode
-       , italic
+       , magenta
        , magentaCode
+       , putTextFlush
        , redCode
-       , reset
+       , red
        , resetCode
-       , prompt
-       , setColor
-       , successMessage
-       , warningMessage
+       , yellow
+       , yellowCode
+
+       -- Unused
        , errorMessage
+       , warningMessage
+       , successMessage
        , infoMessage
        , skipMessage
-       , yellowCode
+       , boldDefault
+       , prompt
+       , italicIO
+       , beautyPrint
        ) where
 
 import           Data.Text (Text)
@@ -33,8 +38,8 @@ import           System.Console.ANSI (Color (..), ColorIntensity (Vivid),
                                       SGR (..), setSGR, setSGRCode)
 import           System.IO (hFlush, stdout)
 
-import qualified Data.Text.IO as IO
 import qualified Data.Text as T
+import qualified Data.Text.IO as IO
 
 ----------------------------------------------------------------------------
 -- Ansi-terminal
@@ -50,15 +55,15 @@ setColor :: Color -> IO ()
 setColor color = setSGR [SetColor Foreground Vivid color]
 
 -- | Starts bold printing.
-bold :: IO ()
-bold = setSGR [SetConsoleIntensity BoldIntensity]
+boldIO :: IO ()
+boldIO = setSGR [SetConsoleIntensity BoldIntensity]
 
-italic :: IO ()
-italic = setSGR [SetItalicized True]
+italicIO :: IO ()
+italicIO = setSGR [SetItalicized True]
 
 -- | Resets all previous settings.
-reset :: IO ()
-reset = do
+resetIO :: IO ()
+resetIO = do
     setSGR [Reset]
     hFlush stdout
 
@@ -67,17 +72,17 @@ beautyPrint :: [IO ()] -> Text -> IO ()
 beautyPrint formats msg = do
     sequence_ formats
     IO.hPutStrLn stdout msg
-    reset
+    resetIO
 
 prompt :: IO Text
 prompt = do
     setColor Blue
     putTextFlush "  ->   "
-    reset
+    resetIO
     IO.getLine
 
 boldText :: Text -> IO ()
-boldText message = bold >> putTextFlush message >> reset
+boldText message = boldIO >> putTextFlush message >> resetIO
 
 boldDefault :: Text -> IO ()
 boldDefault message = boldText (" [" <> message <> "]")
@@ -86,7 +91,7 @@ colorMessage :: Color -> Text -> IO ()
 colorMessage color message = do
     setColor color
     IO.hPutStrLn stdout $ "  " <> message
-    reset
+    resetIO
 
 errorMessage, warningMessage, successMessage, infoMessage, skipMessage :: Text -> IO ()
 errorMessage   = colorMessage Red
@@ -104,6 +109,15 @@ yellowCode = T.pack $ setSGRCode [SetColor Foreground Vivid Yellow]
 magentaCode = T.pack $ setSGRCode [SetColor Foreground Vivid Magenta]
 boldCode = T.pack $ setSGRCode [SetConsoleIntensity BoldIntensity]
 resetCode = T.pack $ setSGRCode [Reset]
+
+red, blue, cyan, green, yellow, magenta, bold :: Text -> Text
+red t = redCode <> t <> resetCode
+blue t = blueCode <> t <> resetCode
+cyan t = cyanCode <> t <> resetCode
+green t = greenCode <> t <> resetCode
+yellow t = yellowCode <> t <> resetCode
+magenta t = magentaCode <> t <> resetCode
+bold t = boldCode <> t <> resetCode
 
 endLine :: Text
 endLine = "\n"

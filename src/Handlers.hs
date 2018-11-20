@@ -19,7 +19,7 @@ import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import           Path (Abs, File, Path, filename, fromRelFile)
 
 import           Labels (LabelFull (..))
-import           Prettify (blueCode, boldCode, cyanCode, greenCode, resetCode)
+import           Prettify (blue, bold, cyan, green)
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
@@ -76,18 +76,18 @@ mergeWithNum = T.intercalate "\n" . map flatten
   where
     -- Prettify number.
     prettyN :: Int -> Text
-    prettyN = ((\x -> greenCode <> T.append (T.pack x) ". " <> resetCode) . show)
+    prettyN = ((\x -> green $ T.append (T.pack x) ". ") . show)
 
     flatten :: (ByteString, (Title, Int)) -> Text
     flatten (value, (title, number)) =
         T.append (T.append (prettyN number) (T.append (prettyT title) "\n")) (valueMarked value)
     -- Decode and paint title.
     prettyT :: Title -> Text
-    prettyT title = blueCode <> boldCode <> decodeUtf8 title <> resetCode
+    prettyT title = blue $ bold $ decodeUtf8 title
     -- Decode value and add mark.
     valueMarked :: ByteString -> Text
     valueMarked value =
-        T.unlines . map (\v -> cyanCode <> "► " <> resetCode <> insideNewLine v) $ T.lines (decodeUtf8 value)
+        T.unlines . map (\v -> cyan "► " <> insideNewLine v) $ T.lines (decodeUtf8 value)
     -- Fix new lines inside value.
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "
