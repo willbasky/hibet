@@ -5,20 +5,21 @@ module Cli
        ( trans
        ) where
 
+import           Data.Foldable (find)
 import           Data.List (sortBy)
 import           Data.Text (Text)
 import           Data.Version (showVersion)
 import           Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import           NeatInterpolation (text)
-import           Options.Applicative (Parser, ParserInfo, command, execParser, fullDesc, help,
-                                      helper, info, infoHeader, infoOption, long, progDesc, short,
-                                      subparser)
+import           Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullDesc, help,
+                                      helper, info, infoHeader, infoOption, long, metavar, option,
+                                      optional, progDesc, short, subparser)
 import           Options.Applicative.Help.Chunk (stringChunk)
 
 import           Labels (LabelFull (..), labels)
 import           Paths_tibet (version)
-import           Prettify (blue, bold, endLine, green, magenta, putTextFlush,
-                           red, resetCode, yellow)
+import           Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode,
+                           yellow)
 import           Tibet (start)
 
 import qualified Data.Text as T
@@ -32,10 +33,10 @@ data Command
     -- | @shell@ command launch translating shell
     = Shell
     | Om
-    | ShowOpt Opt
+    | ShowOption Option
 
 -- | Commands parsed with @show@ command
-data Opt = Names | Meta
+data Option = Names | Meta (Maybe Int)
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -49,21 +50,30 @@ runCommand :: Command -> IO ()
 runCommand = \case
     Shell -> start
     Om -> putTextFlush $ magenta om
-    ShowOpt opt -> runShow opt
+    ShowOption opt -> runShow opt
 
-runShow :: Opt -> IO ()
+runShow :: Option -> IO ()
 runShow = \case
     Names -> do
+        titles <- sortLabels <$> labels
+        mapM_ (\LabelFull{..} -> putTextFlush $ green $ number lfId <> blue lfLabel)
+            $ titles
+    Meta Nothing -> do
         titles <- labels
-        mapM_ (\LabelFull{..} -> putTextFlush
-            (green (T.pack (show lfId) <>  ". ") <> blue lfLabel))
-            $ sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b) titles
-    Meta -> do
-        titles <- labels
-        mapM_ (\LabelFull{..} ->
-            putTextFlush (blue $ " - " <> lfLabel) <>
-            putTextFlush (green lfMeta)
+        mapM_ (\LabelFull{..} -> do
+            putTextFlush $ green $ number lfId <> green lfLabel
+            putTextFlush $ blue lfMeta
             ) titles
+    Meta (Just n) -> find (\LabelFull{..} -> n == lfId) <$> labels >>= \case
+        Nothing -> putTextFlush $ red "No such number of dictionary!"
+        Just LabelFull{..} -> do
+            putTextFlush $ green $ number lfId <> green lfLabel
+            putTextFlush $ blue lfMeta
+  where
+    number :: Int -> Text
+    number n = green . T.pack $ show n <> ". "
+    sortLabels :: [LabelFull] -> [LabelFull]
+    sortLabels = sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b)
 
 ----------------------------------------------------------------------------
 -- Parsers
@@ -98,10 +108,19 @@ shellP = subparser
    <> command "show" (info (helper <*> showP) $ progDesc "Show commands")
 
 showP :: Parser Command
-showP = ShowOpt <$> subparser
+showP = ShowOption <$> subparser
     ( command "names" (info (helper <*> pure Names) $ progDesc "Show dictionary titles")
-   <> command "meta" (info (helper <*> pure Meta) $ progDesc "Show dictionary descriptions")
+   <> command "meta" (info (helper <*> dictNumber) $ progDesc "Show dictionary descriptions")
     )
+
+dictNumber :: Parser Option
+dictNumber = Meta <$> optional
+    (option auto
+        (  long "dictionary"
+        <> short 'd'
+        <> metavar "DICTIONARY_NUMBER"
+        <> help "Show specific dictionary description"
+        ))
 
 ----------------------------------------------------------------------------
 -- Beauty util
