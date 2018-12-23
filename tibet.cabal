@@ -2,7 +2,7 @@ cabal-version:       2.2
 name:                tibet
 version:             0.4
 description:         tibetan-english translator
-synopsis:            tibetan-english translator
+synopsis:            translator
 homepage:            https://github.com/willbasky/TibetCli
 bug-reports:         https://github.com/willbasky/TibetCli/issues
 license:             MIT
@@ -26,9 +26,9 @@ library
   hs-source-dirs:      src
   exposed-modules:     Cli
                      , Handlers
+                     , Labels
                      , Prettify
                      , Tibet
-                     , Labels
 
   other-modules:       Paths_tibet
   autogen-modules:     Paths_tibet
@@ -43,7 +43,7 @@ library
                        -Wmissing-export-lists
                        -Wpartial-fields
 
-  build-depends:       base
+  build-depends:       base >= 4.10 && < 4.13
                      , aeson
                      , ansi-terminal
                      , bytestring
@@ -83,7 +83,7 @@ executable tibet
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base
+  build-depends:       base >= 4.10 && < 4.13
                      , tibet
 
   default-language:    Haskell2010
@@ -112,7 +112,7 @@ test-suite tibet-test
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base
+  build-depends:       base >= 4.10 && < 4.13
                      , tibet
 
   default-language:    Haskell2010

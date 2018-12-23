@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
+## Unrealesed
+
+* Added iteration with state holding.
+
 ## [0.4] - 2018-11-20
 
 ### Added

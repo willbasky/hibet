@@ -8,18 +8,18 @@ module Handlers
        , zipWithMap
        ) where
 
-import           Control.Monad.Trans.State.Strict (StateT)
-import           Data.ByteString.Char8 (ByteString)
-import           Data.Foldable (find)
-import           Data.HashMap.Strict (HashMap)
-import           Data.List (sortBy)
-import           Data.Maybe (isNothing, maybe)
-import           Data.Text (Text)
-import           Data.Text.Encoding (decodeUtf8, encodeUtf8)
-import           Path (Abs, File, Path, filename, fromRelFile)
+import Control.Monad.Trans.State.Strict (StateT)
+import Data.ByteString.Char8 (ByteString)
+import Data.Foldable (find)
+import Data.HashMap.Strict (HashMap)
+import Data.List (sortBy)
+import Data.Maybe (isNothing, maybe)
+import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import Path (Abs, File, Path, filename, fromRelFile)
 
-import           Labels (LabelFull (..))
-import           Prettify (blue, bold, cyan, green)
+import Labels (LabelFull (..))
+import Prettify (blue, bold, cyan, green)
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS

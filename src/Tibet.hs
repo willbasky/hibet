@@ -2,21 +2,27 @@ module Tibet
        ( start
        ) where
 
-import           Control.DeepSeq (deepseq)
-import           Control.Monad.Trans.State.Strict (execStateT, get, withStateT)
-import           Data.ByteString.Char8 (ByteString)
-import           Path (fromAbsFile)
-import           Path.Internal (Path (..))
-import           Path.IO (listDir)
-import           System.IO (stderr)
+import Control.DeepSeq (deepseq)
+import Control.Monad (forever, when)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.State.Strict (evalStateT, execStateT, get, put, withStateT)
+import Path (fromAbsFile)
+import Path.Internal (Path (..))
+import Path.IO (listDir)
+import Paths_tibet (getDataFileName)
+import System.Exit
+import System.IO (stderr)
 
-import           Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, zipWithMap)
-import           Labels (labels)
-import           Paths_tibet (getDataFileName)
-import           Prettify (blue, green, putTextFlush, red)
+import Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, zipWithMap)
+import Labels (labels)
+import Prettify (blue, green, putTextFlush, red)
 
 import qualified Data.ByteString.Char8 as BC
 
+
+-- | Iterator with state holding.
+iterateM :: Monad m => (History -> m History) -> History -> m ()
+iterateM f = evalStateT $ forever $ get >>= lift . f >>= put
 
 start :: IO ()
 start = do
@@ -24,32 +30,31 @@ start = do
     (_, files) <- listDir $ Path dir
     texts <- mapM (BC.readFile . fromAbsFile) files
     mapped <- zipWithMap texts files <$> labels
-    let historyS = get
-    mapped `deepseq` cli mapped historyS ""
+    let history = get
+    mapped `deepseq` translator mapped history
 
-cli :: [(Dictionary, (Title, Int))] -> History -> ByteString -> IO ()
-cli mapped historyOldS _ = do
+-- | A loop handler of user commands.
+translator :: [(Dictionary, (Title, Int))] -> History -> IO ()
+translator mapped = iterateM $ \history -> do
     putTextFlush $ blue "Which a tibetan word to translate?"
     query <- BC.hPutStr stderr "> " >> BC.getLine
     case query of
-        ":q" -> putTextFlush $ green "Bye-bye!"
+        ":q" -> do
+            putTextFlush $ green "Bye-bye!"
+            exitSuccess
         ":h" -> do
-            history <- execStateT historyOldS []
-            if null history then do
-                putTextFlush $ red "No success queries."
-                putTextFlush ""
-            else do
-                putTextFlush $ green "Success queries:"
-                mapM_ (\h -> BC.putStrLn $ "- " <> h) history
-                putTextFlush ""
-            cli mapped historyOldS ""
+            history' <- execStateT history []
+            when (null history') (putTextFlush $ red "No success queries.")
+            putTextFlush $ green "Success queries:"
+            mapM_ (\h -> BC.putStrLn $ "- " <> h) history'
+            putTextFlush ""
+            pure history
         _    -> do
             let dscValues = searchInMap query mapped
-            if (null dscValues) then do
+            if null dscValues then do
                 putTextFlush $ red "Nothing found."
                 putTextFlush ""
-                cli mapped historyOldS ""
+                pure history
             else do
-                let historyNewS = withStateT (query :) historyOldS
                 putTextFlush $ mergeWithNum dscValues
-                cli mapped historyNewS ""
+                pure $ withStateT (query :) history
