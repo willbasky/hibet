@@ -11,6 +11,7 @@ import           Paths_tibet (getDataFileName)
 import qualified Data.ByteString.Lazy.Char8 as BLC
 import qualified Data.HashMap.Strict as HM
 
+
 labels :: IO [LabelFull]
 labels = do
     file <- getDataFileName "/titles.json"
