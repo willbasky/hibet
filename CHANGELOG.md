@@ -9,6 +9,8 @@ and this project adheres to
 ## Unrealesed
 
 * Added iteration with state holding.
+* [#19](https://github.com/willbasky/TibetCli/issues/19):
+  Select dictionaries by id for search.
 
 ## [0.4] - 2018-11-20
 
