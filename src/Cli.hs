@@ -5,24 +5,25 @@ module Cli
        ( trans
        ) where
 
-import           Data.Foldable (find)
-import           Data.List (sortBy)
-import           Data.Text (Text)
-import           Data.Version (showVersion)
-import           Development.GitRev (gitCommitDate, gitDirty, gitHash)
-import           NeatInterpolation (text)
-import           Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullDesc, help,
-                                      helper, info, infoHeader, infoOption, long, metavar, option,
-                                      optional, progDesc, short, subparser)
-import           Options.Applicative.Help.Chunk (stringChunk)
+import Data.Foldable (find)
+import Data.List (sortBy)
+import Data.Text (Text)
+import Data.Version (showVersion)
+import Development.GitRev (gitCommitDate, gitDirty, gitHash)
+import NeatInterpolation (text)
+import Options.Applicative (Parser, ParserInfo, ReadM, auto, command, eitherReader, execParser,
+                            fullDesc, help, helper, info, infoHeader, infoOption, long, metavar,
+                            option, optional, progDesc, short, subparser)
+import Options.Applicative.Help.Chunk (stringChunk)
 
-import           Labels (LabelFull (..), labels)
-import           Paths_tibet (version)
-import           Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode,
-                           yellow)
-import           Tibet (start)
+import Labels (LabelFull (..), labels)
+import Paths_tibet (version)
+import Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode, yellow)
+import Tibet (start)
 
+import qualified Data.Attoparsec.Text as A
 import qualified Data.Text as T
+
 
 ----------------------------------------------------------------------------
 -- Command data types
@@ -31,12 +32,14 @@ import qualified Data.Text as T
 -- | Represent all available commands
 data Command
     -- | @shell@ command launch translating shell
-    = Shell
+    = Shell Select
     | Om
-    | ShowOption Option
+    | ShowOption Opt
 
 -- | Commands parsed with @show@ command
-data Option = Names | Meta (Maybe Int)
+data Opt = Names | Meta (Maybe Int)
+
+type Select = Maybe [Int]
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -48,11 +51,11 @@ trans = execParser prsr >>= runCommand
 -- | Run 'tibet' with cli command
 runCommand :: Command -> IO ()
 runCommand = \case
-    Shell -> start
+    Shell select -> start select
     Om -> putTextFlush $ magenta om
     ShowOption opt -> runShow opt
 
-runShow :: Option -> IO ()
+runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- sortLabels <$> labels
@@ -103,9 +106,19 @@ tibetCliVersion = T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(g
 -- All possible commands.
 shellP :: Parser Command
 shellP = subparser
-    $ command "shell" (info (helper <*> pure Shell) $ progDesc "Start translate shell")
+    $ command "shell" (info (helper <*> selectP) $ progDesc "Start the translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
-   <> command "show" (info (helper <*> showP) $ progDesc "Show commands")
+   <> command "show" (info (helper <*> showP) $ progDesc "Show titles or descriptions of dictionaries")
+
+selectP :: Parser Command
+selectP = Shell <$> optional idListP
+
+idListP :: Parser [Int]
+idListP = option attoparsecIdReader
+    $ long "select"
+   <> short 's'
+   <> help "Select id list of dictionaries separeted by space or comma"
+   <> metavar "ID_LIST"
 
 showP :: Parser Command
 showP = ShowOption <$> subparser
@@ -113,7 +126,7 @@ showP = ShowOption <$> subparser
    <> command "meta" (info (helper <*> dictNumber) $ progDesc "Show dictionary descriptions")
     )
 
-dictNumber :: Parser Option
+dictNumber :: Parser Opt
 dictNumber = Meta <$> optional
     (option auto
         (  long "dictionary"
@@ -131,35 +144,7 @@ modifyHeader :: ParserInfo a -> ParserInfo a
 modifyHeader p = p {infoHeader = stringChunk $ T.unpack artHeader}
 
 artHeader :: Text
-artHeader = yellow [text|
-$endLine
-                                  .+-
-                           .:+sydNMd`
-      `ymMMmy:         :sdMMMMMMMd/
-      /MMMMMMMm/    `oNMMMMNdyo:`
-       `.-:/sdMMy` +NNho/-`
-              `oNdhy:
-                `y/
-          /yyyyyyyyyyyyyyy+   -syyyyyyyyyyyys`   oyyy.
-         yMMMMMMMMMMMMMMMMN  -MMMMMMMMMMMMMMN`  `dMMd`
-         :yMMMhsssssssNMMMy  `omMMmysssssss+`    `oo`
-         `dMs`        :MMM.   /Md:
-         sM:           hMm   `Ny
-         ms            :My  `sMdddddhyo:`
-        oNNMMMMNds:     Ns  yMMMMMMMMMMMMy-
-       -MMMMMMMMMMMNo`  do  .ooo+///+oymMMMy`
-        ://:-.-:+ymMMm: ho              -hMMd`
-                   .+dMoho                +MMo
-                      .sNo                 oMN
-                        `.                  NM`
-                                            sM.
-                                            /M.
-                                            -M.
-                                            .M.
-                                            `M.
-                                            `N.
-                                             d`
-            |]
+artHeader = yellow "TibetCli is command line translator from Tibet to English language."
 
 om :: Text
 om = [text|
@@ -167,23 +152,33 @@ $endLine
                              /hd+
                            /Nd::ohs.
                           /MM- .NMm+
-                          :MMdosMMN.        `.-.
-                  `oNNmdyo:/dMMMms/ohmNNNNNmy:`
-                 `hMMMMMNmNN+.` .dmhyyso+/.
-                 `.` `...:+ohy:.+.
-                              .-     `.
-              :yddddo `/mmNNmmdddmNNNm-  .mhhd-
+                          :MMdosMMN.        '.-.
+                  'oNNmdyo:/dMMMms/ohmNNNNNmy:'
+                 'hMMMMMNmNN+.' .dmhyyso+/.
+                 '.' '...:+ohy:.+.
+                              .-     '.
+              :yddddo '/mmNNmmdddmNNNm-  .mhhd-
              -mMMMMN. yMMMMMMMMMMMMMm+  +NMMMMo
              dMMMMM/  .+smMMMMMMMMd:.  :NMMMMMs
-             `mMMMh    .hMMMs:hMMMM/    .mMMMMo
-              +MMM/   -NNh/`   :mMMN:    .mMMMo
-              `NMm    ms``-.`   `oNMN-    :MMM+
+             'mMMMh    .hMMMs:hMMMM/    .mMMMMo
+              +MMM/   -NNh/'   :mMMN:    .mMMMo
+              'NMm    ms''-.'   'oNMN-    :MMM+
                mMy   -o+dNMMMNh:  .hMN-    hMM/
                yMy   .shydMMMMMM+   /Nm.   :MM:
-               :Mh    `   :NMMMMm    -mm-  `mM`
+               :Mh    '   :NMMMMm    -mm-  'mM'
                 dN.        yMMMMo      sN-  sm
-                `ym.      :NMMMo`       /d: /d
-                  -yo:`.:yMMdo.          `yo.s
-                     .--:--`               +y+
+                'ym.      :NMMMo'       /d: /d
+                  -yo:'.:yMMdo.          'yo.s
+                     .--:--'               +y+
                                             :+
             |]
+
+-- Customized error message.
+attoparsecIdReader :: ReadM [Int]
+attoparsecIdReader = eitherReader $ \select ->
+    either (\err -> Left (select <> " could not be parsed. An error has occured: " <> err))
+        Right . A.parseOnly numListParser $ T.pack select
+
+-- Parse list of numbers. Possible to parse: 1,2,3 or "1,2 3" or "1 2 3" or "1,2,3"
+numListParser :: A.Parser [Int]
+numListParser = A.decimal `A.sepBy1` (A.choice [A.char ',', A.space])

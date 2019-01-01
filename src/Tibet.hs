@@ -13,7 +13,7 @@ import Paths_tibet (getDataFileName)
 import System.Exit
 import System.IO (stderr)
 
-import Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, zipWithMap)
+import Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, selectDict, zipWithMap)
 import Labels (labels)
 import Prettify (blue, green, putTextFlush, red)
 
@@ -24,12 +24,13 @@ import qualified Data.ByteString.Char8 as BC
 iterateM :: Monad m => (History -> m History) -> History -> m ()
 iterateM f = evalStateT $ forever $ get >>= lift . f >>= put
 
-start :: IO ()
-start = do
+start :: Maybe [Int] -> IO ()
+start mSelectedId = do
     dir <- getDataFileName "dicts/"
     (_, files) <- listDir $ Path dir
     texts <- mapM (BC.readFile . fromAbsFile) files
-    mapped <- zipWithMap texts files <$> labels
+    mappedFull <- zipWithMap texts files <$> labels
+    let mapped = selectDict mSelectedId mappedFull
     let history = get
     mapped `deepseq` translator mapped history
 

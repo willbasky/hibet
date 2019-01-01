@@ -5,6 +5,7 @@ module Handlers
        , makeTextMap
        , mergeWithNum
        , searchInMap
+       , selectDict
        , zipWithMap
        ) where
 
@@ -39,6 +40,12 @@ makeTextMap
     . map ((\(y,x) -> (y, BC.drop 1 x))
     . BC.span (<'|'))
     . BC.lines
+
+-- | Select several dictionaries by id.
+selectDict :: Maybe [Int] -> [(Dictionary, (Title, Int))] -> [(Dictionary, (Title, Int))]
+selectDict mSelected dicts = case mSelected of
+    Nothing         -> dicts
+    Just selectedId -> filter (\(_, (_, i)) -> i `elem` selectedId) dicts
 
 -- | Combine dictionary titles with mapped dictionaries.
 zipWithMap :: [ByteString] -> [Path Abs File] -> [LabelFull] -> [(Dictionary, (Title, Int))]
