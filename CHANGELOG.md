@@ -11,6 +11,10 @@ and this project adheres to
 * Added iteration with state holding.
 * [#19](https://github.com/willbasky/TibetCli/issues/19):
   Select dictionaries by id for search.
+* [#47](https://github.com/willbasky/TibetCli/issues/47):
+  Fix sorting in meta output.
+* [#49](https://github.com/willbasky/TibetCli/issues/49):
+  Add video of usage.
 
 ## [0.4] - 2018-11-20
 
