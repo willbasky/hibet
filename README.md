@@ -10,34 +10,38 @@ The TibetCli translates with all dictionaries from [tibetan-dictionary](https://
 
 ## Installation
 
-install from [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
+1. Install [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 
-    git clone https://github.com/willbasky/TibetCli.git
+2. Install TibetCli
 
-    cd ./TibetCli
+        git clone https://github.com/willbasky/TibetCli.git
 
-    stack install tibet
+        cd ./TibetCli
+
+        stack install tibet
 
 ## Usage
+
+[![asciicast](https://asciinema.org/a/219676.svg)](https://asciinema.org/a/219676)
 
 Help commands:
 
     $ tibet -h
-    
+    TibetCli is command line translator from Tibet to English language.
+
     Usage: tibet [-v|--version] COMMAND
       Translate from Tibetan to English
-
     Available options:
       -h,--help                Show this help text
       -v,--version             Show TibetCli's version
 
     Available commands:
-      shell                    Start translate shell
+      shell                    Start the translate shell
       om                       Print Om to a terminal
-      show                     Show commands
+      show                     Show titles or descriptions of dictionaries
 
     $ tibet show -h
-    
+
     Usage: tibet show COMMAND
       Show commands
 
@@ -53,18 +57,15 @@ Input `tibet shell` in terminal. And then write your `query` using _Wylie_ trans
     $ tibet shell
     Which a tibetan word to translate?
     > mo
-    1. Rangjung Yeshe
-    ► the girl
-    ► lady, female, woman. 2) divination, prophecy
-    ► 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun    forming particle [R]; 5) is [don ci mo: what is the meaning]
-
-    2. Ives Waldo
-    ► 1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing particle [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo, chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo: what is the meaning]. 1) auspicious, mo divination/ prophesy; 2) feminine particle, female, woman, she; 3) terminative after MA; 4) noun forming particle; 5) is
-
-    3. Hopkins 2015
+    5. Hopkins 2015
     ► (1) female; woman; wife; feminine particle; she; (2) particle indicating the end of a statement
 
-    4. Berzin
+    7. Rangjung Yeshe
+    ► the girl
+    ► lady, female, woman. 2) divination, prophecy
+    ► 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3)  terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo: what is the meaning]
+
+    8. Berzin
     ► prognostication
 
     etc...
