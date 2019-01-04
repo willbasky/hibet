@@ -3,10 +3,11 @@ module Labels
        , labels
        ) where
 
-import           Data.Aeson
-import           Data.Text (Text)
+import Data.Aeson (FromJSON (parseJSON), ToJSON (toJSON), decode, object, withObject, (.:), (.=))
+import Data.List (sortOn)
+import Data.Text (Text)
 
-import           Paths_tibet (getDataFileName)
+import Paths_tibet (getDataFileName)
 
 import qualified Data.ByteString.Lazy.Char8 as BLC
 import qualified Data.HashMap.Strict as HM
@@ -18,13 +19,13 @@ labels = do
     meta <- BLC.readFile file
     case decode meta :: Maybe Labels of
         Nothing               -> error "Not decoded"
-        Just (Labels decoded) -> pure decoded
+        Just (Labels decoded) -> pure $ sortOn lfId decoded
 
 data Label = Label
     { labelId    :: Int
     , labelLabel :: Text
     , labelMeta  :: Text
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Ord)
 
 instance ToJSON Label where
     toJSON Label{..} = object
@@ -44,7 +45,7 @@ data LabelFull = LabelFull
     , lfId    :: Int
     , lfLabel :: Text
     , lfMeta  :: Text
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Ord)
 
 newtype Labels = Labels [LabelFull]
     deriving (Eq, Show)
