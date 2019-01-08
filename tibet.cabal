@@ -27,6 +27,7 @@ library
   exposed-modules:     Cli
                      , Handlers
                      , Labels
+                     , Parse
                      , Prettify
                      , Tibet
 
@@ -51,6 +52,7 @@ library
                      , deepseq
                      , directory
                      , gitrev
+                     , file-embed
                      , neat-interpolation ^>= 0.3.2.2
                      , optparse-applicative
                      , transformers

@@ -16,6 +16,7 @@ import System.IO (stderr)
 import Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, selectDict, zipWithMap)
 import Labels (labels)
 import Prettify (blue, green, putTextFlush, red)
+import Parse (fromTibetan)
 
 import qualified Data.ByteString.Char8 as BC
 
@@ -50,12 +51,21 @@ translator mapped = iterateM $ \history -> do
             mapM_ (\h -> BC.putStrLn $ "- " <> h) history'
             putTextFlush ""
             pure history
-        _    -> do
-            let dscValues = searchInMap query mapped
-            if null dscValues then do
-                putTextFlush $ red "Nothing found."
-                putTextFlush ""
-                pure history
-            else do
-                putTextFlush $ mergeWithNum dscValues
-                pure $ withStateT (query :) history
+        _    ->
+            case fromTibetan query of
+                Nothing -> do
+                    nothingFound
+                    pure history
+                Just query' -> do
+                    let dscValues = searchInMap query' mapped
+                    if null dscValues then do
+                        nothingFound
+                        pure history
+                    else do
+                        putTextFlush $ mergeWithNum dscValues
+                        pure $ withStateT (query :) history
+
+nothingFound :: IO ()
+nothingFound = do
+    putTextFlush $ red "Nothing found."
+    putTextFlush ""
