@@ -11,14 +11,15 @@ import Path.Internal (Path (..))
 import Path.IO (listDir)
 import Paths_tibet (getDataFileName)
 import System.Exit
-import System.IO (stderr)
+import System.IO (stdout)
 
-import Handlers (Dictionary, History, Title, mergeWithNum, searchInMap, selectDict, zipWithMap)
+import Handlers (DictionaryMeta, History, mergeWithNum, searchInMap, selectDict, zipWithMap)
 import Labels (labels)
 import Prettify (blue, green, putTextFlush, red)
-import Parse (fromTibetan)
 
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text.Encoding as T
+import qualified Data.Text.IO as T
 
 
 -- | Iterator with state holding.
@@ -29,17 +30,17 @@ start :: Maybe [Int] -> IO ()
 start mSelectedId = do
     dir <- getDataFileName "dicts/"
     (_, files) <- listDir $ Path dir
-    texts <- mapM (BC.readFile . fromAbsFile) files
+    texts <- mapM (fmap T.decodeUtf8 . BC.readFile . fromAbsFile) files
     mappedFull <- zipWithMap texts files <$> labels
     let mapped = selectDict mSelectedId mappedFull
     let history = get
     mapped `deepseq` translator mapped history
 
 -- | A loop handler of user commands.
-translator :: [(Dictionary, (Title, Int))] -> History -> IO ()
+translator :: [DictionaryMeta] -> History -> IO ()
 translator mapped = iterateM $ \history -> do
     putTextFlush $ blue "Which a tibetan word to translate?"
-    query <- BC.hPutStr stderr "> " >> BC.getLine
+    query <- fmap T.decodeUtf8 $ BC.hPutStr stdout "> " >> BC.getLine
     case query of
         ":q" -> do
             putTextFlush $ green "Bye-bye!"
@@ -48,21 +49,25 @@ translator mapped = iterateM $ \history -> do
             history' <- execStateT history []
             when (null history') (putTextFlush $ red "No success queries.")
             putTextFlush $ green "Success queries:"
-            mapM_ (\h -> BC.putStrLn $ "- " <> h) history'
+            mapM_ (\h -> T.putStrLn $ "- " <> h) history'
             putTextFlush ""
             pure history
-        _    ->
-            case fromTibetan query of
-                Nothing -> do
-                    nothingFound
-                    pure history
-                Just query' -> do
-                    let dscValues = searchInMap query' mapped
+        _    -> do
+            -- syllablesByte <- BC.readFile "parser/tibetan-syllables"
+            -- let syllables = T.decodeUtf8 syllablesByte
+            -- case fromTibetan (T.decodeUtf8 query) syllables of
+            --     Nothing -> do
+            --         nothingFound
+            --         pure history
+                -- Just query' -> do
+                    -- let dscValues = searchInMap (T.encodeUtf8 query) mapped
+                    let dscValues = searchInMap query mapped
                     if null dscValues then do
                         nothingFound
                         pure history
                     else do
-                        putTextFlush $ mergeWithNum dscValues
+                        -- T.putStrLn $ toTibet (mergeWithNum dscValues) syllables
+                        T.putStrLn $ mergeWithNum dscValues
                         pure $ withStateT (query :) history
 
 nothingFound :: IO ()

@@ -44,15 +44,15 @@ library
                        -Wmissing-export-lists
                        -Wpartial-fields
 
-  build-depends:       base >= 4.10 && < 4.13
+  build-depends:       base >= 4.10 && < 5
                      , aeson
                      , ansi-terminal
-                     , attoparsec
                      , bytestring
                      , deepseq
                      , directory
                      , gitrev
                      , file-embed
+                     , megaparsec
                      , neat-interpolation ^>= 0.3.2.2
                      , optparse-applicative
                      , transformers
