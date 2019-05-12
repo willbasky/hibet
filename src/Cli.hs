@@ -20,9 +20,13 @@ import Labels (LabelFull (..), labels)
 import Paths_tibet (version)
 import Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode, yellow)
 import Tibet (start)
+import Data.Void (Void)
 
-import qualified Data.Attoparsec.Text as A
 import qualified Data.Text as T
+import qualified Text.Megaparsec as M
+import qualified Text.Megaparsec.Char as MC
+import qualified Text.Megaparsec.Char.Lexer as MCL
+
 
 
 ----------------------------------------------------------------------------
@@ -176,9 +180,10 @@ $endLine
 -- Customized error message.
 attoparsecIdReader :: ReadM [Int]
 attoparsecIdReader = eitherReader $ \select ->
-    either (\err -> Left (select <> " could not be parsed. An error has occured: " <> err))
-        Right . A.parseOnly numListParser $ T.pack select
+    either (\err -> Left (select <> " could not be parsed. An error has occured: " <> show err))
+        Right (M.parse numListParserM "" select)
 
 -- Parse list of numbers. Possible to parse: 1,2,3 or "1,2 3" or "1 2 3" or "1,2,3"
-numListParser :: A.Parser [Int]
-numListParser = A.decimal `A.sepBy1` (A.choice [A.char ',', A.space])
+numListParserM :: M.Parsec Void String [Int]
+numListParserM = MCL.decimal `M.sepBy1` M.choice [MC.char ',', MC.char ' ']
+

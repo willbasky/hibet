@@ -1,22 +1,22 @@
 module Sandbox where
 
-import           Data.Text (Text)
-import           Path (Abs, File, Path, filename, fromRelFile)
-import           Prettify (cyan, putTextFlush)
-import           System.IO (hPrint, stderr)
-import           Data.ByteString.Char8 (ByteString)
+import Data.ByteString.Char8 (ByteString)
+import Data.Text (Text)
+import Path (Abs, File, Path, filename, fromRelFile)
+import Prettify (cyan, putTextFlush)
+import System.IO (hPrint, stderr)
 
-import           Handlers (Title)
+import Handlers (Title)
 
+import qualified Data.ByteString.Char8 as BC
 import qualified Data.Text as T
 import qualified Data.Text.IO as IO
-import qualified Data.ByteString.Char8 as BC
 
 
 -- | Show duplicates and write to file.
 getDubs :: IO ()
 getDubs = do
-    berzin <- IO.readFile "dics/03-Berzin"
+    berzin <- IO.readFile "dicts/03-Berzin"
     putTextFlush "Berzin file is loaded"
     let dubs = findDups berzin
     IO.writeFile "dics/dubs" $ T.pack $ show dubs
