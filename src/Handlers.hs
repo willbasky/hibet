@@ -9,6 +9,7 @@ module Handlers
        , mergeWithNum
        , searchInMap
        , selectDict
+       , separator
        , zipWithMap
        ) where
 
@@ -24,6 +25,7 @@ import Path (Abs, File, Path, filename, fromRelFile)
 
 import Labels (LabelFull (..))
 import Prettify (blue, bold, cyan, green)
+import Parse (Tibet, toTibet)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -112,3 +114,9 @@ mergeWithNum = T.intercalate "\n" . map flatten
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "
 
+-- It converts selected dictionary result to tibetan only and passes through other.
+separator :: [Int] -> Text -> ([Text], (Title, Int)) -> ([Tibet], (Title, Int))
+separator dicNumbers syls d@(ts, (t,i)) = if i `elem` dicNumbers then  (listToTibet syls ts, (t,i)) else d
+
+listToTibet :: Text -> [Text] -> [Tibet]
+listToTibet syls = map (T.intercalate "\n" . toTibet syls)

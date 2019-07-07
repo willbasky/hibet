@@ -6,15 +6,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
-## Unrealesed
+## [0.5] - 2019-07-07
 
-* Added iteration with state holding.
+### Added
+
+* Iteration with state holding.
 * [#19](https://github.com/willbasky/TibetCli/issues/19):
-  Select dictionaries by id for search.
-* [#47](https://github.com/willbasky/TibetCli/issues/47):
-  Fix sorting in meta output.
+  Selection dictionaries by id for search.
 * [#49](https://github.com/willbasky/TibetCli/issues/49):
-  Add video of usage.
+  Video how to usage.
+* [#1](https://github.com/willbasky/TibetCli/issues/1):
+  Parser to transcibe wylie to tibetan. Not it works for 37th dictionary and for query.
+
+### Fixed
+
+* [#47](https://github.com/willbasky/TibetCli/issues/47):
+  Sorting of meta output.
+* Query trailing spaces is striping now.
+
+### Changed
+
+* Moved from attoparsec library ro megaparsec
 
 ## [0.4] - 2018-11-20
 

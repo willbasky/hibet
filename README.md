@@ -2,11 +2,16 @@
 
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-![Bod](bod.jpg)
+![Bod](bod.png)
 
 ## About
 
-The TibetCli translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back, if you wish.
+The TibetCli translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back.
+
+## Features
+
+1. TibetCli uses about 40 dictionaries to translate from Tibetan (wylie yet) to English or Tibetan
+2. Tibetan text outputs with wylie transcribtion or tibetan (check 37 dictionary).
 
 ## Installation
 
@@ -20,13 +25,14 @@ The TibetCli translates with all dictionaries from [tibetan-dictionary](https://
 
         stack install tibet
 
-## Usage
+## Usage video
 
-[![asciicast](https://asciinema.org/a/219676.svg)](https://asciinema.org/a/219676)
+[![asciicast](https://asciinema.org/a/Me0raohKWoXNLFd9YbFeTNQZt.svg)](https://asciinema.org/a/Me0raohKWoXNLFd9YbFeTNQZt)
 
 Help commands:
 
-    $ tibet -h
+$ tibet -h
+
     TibetCli is command line translator from Tibet to English language.
 
     Usage: tibet [-v|--version] COMMAND
@@ -40,7 +46,7 @@ Help commands:
       om                       Print Om to a terminal
       show                     Show titles or descriptions of dictionaries
 
-    $ tibet show -h
+$ tibet show -h
 
     Usage: tibet show COMMAND
       Show commands
@@ -50,7 +56,19 @@ Help commands:
 
     Available commands:
       names                    Show dictionary titles
-      meta                     Show dictionary descriptions
+      meta                     Show dictionary description
+
+$ tibet shell -h
+
+    Usage: tibet shell [-s|--select ID_LIST]
+      Start the translate shell
+
+    Available options:
+      -h,--help                Show this help text
+      -s,--select ID_LIST      Select id list of dictionaries separeted by space or comma
+
+
+
 
 Input `tibet shell` in terminal. And then write your `query` using _Wylie_ transcribtion:
 
@@ -82,5 +100,5 @@ To get queries of the session, input:
 
 - [x] Lookup throuth all available libaries.
 - [x] move backand to [lib](https://hackage.haskell.org/package/optparse-applicative-0.14.2.0)
-- [ ] Handle unicode (native tibetan script) from input
+- [] Handle unicode (native tibetan script) from input
 

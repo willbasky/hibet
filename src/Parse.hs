@@ -1,141 +1,277 @@
--- {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Parse
-       ( Parser
-       , fromTibetan
-       , toTibet
+       ( toTibet
+       , Tibet
        ) where
 
--- import Data.ByteString.Char8 (ByteString)
--- import Data.FileEmbed
 import Data.HashMap.Strict (HashMap)
-import Data.Char (isLatin1)
--- import Control.Applicative ((<|>))
-import Control.Monad (join)
-import Data.Maybe (isJust, mapMaybe)
 import Data.Text (Text)
+import Data.Either (fromRight)
+import Data.Maybe (fromMaybe)
+import Control.Applicative
+import Data.Functor.Identity (Identity)
 import Data.Void (Void)
-import Text.Megaparsec (Parsec, many, try)
--- import Text.Megaparsec.Char.Lexer (lexeme)
--- import Text.Megaparsec.Char (oneOf)
+import Text.Megaparsec.Parsers
+import Data.RadixTree
 
--- import qualified Data.ByteString.Char8 as BC
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
--- import qualified Data.Set             as E
--- import qualified Data.Text.Encoding as T
--- import qualified Data.Text.IO as T
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
--- import qualified Text.Megaparsec.Char.Lexer as MCL
+import qualified Text.Megaparsec.Char.Lexer as ML
+import qualified Text.Megaparsec.Error as ME
 
 
--- The parser
-type Parser = Parsec Void Text
+type Parser a = ParsecT Void Text Identity a
+type ParseError = ME.ParseErrorBundle Text Void
 
-fromTibetan :: Text -> Text -> Maybe Text
-fromTibetan query syllables =
-    case checkTranslit query of
-        Tibet -> toWylie query syllables
-        Wylie -> Just query
-        Other -> Nothing
+parseT :: Parser a -> String -> Text -> Either ParseError a
+parseT = M.runParser . unParsecT
 
-toWylie :: Text -> Text -> Maybe Text
-toWylie query syllables = fmap T.unwords
-    $ mapM (\x -> HMS.lookup x $ makeTibetWylie syllables)
-    $ filter (/= "")
-    $ T.splitOn "\3851" query
+-- parseTest :: Show a => Parser a -> Text -> IO ()
+-- parseTest = M.parseTest . unParsecT
 
-toTibet :: Text -> Text -> Text
-toTibet translation syllables = T.unwords
-    $ mapMaybe (\x -> if isJust (parseWylie x) then convertorT (parseWylie x) else Just x)
-    $ filter (/= "")
-    $ T.splitOn " " translation
-  where
-    parseWylie :: Text -> Maybe String
-    parseWylie = M.parseMaybe (identifier2 syllables)
-    convertorT :: Maybe String -> Maybe Text
-    convertorT = join . mapM (\t -> if isJust (lookerW t) then lookerW t else Just t) . fmap T.pack
-    lookerW :: Text -> Maybe Text
-    lookerW q = HMS.lookup q $ makeWylieTibet syllables
+toTibet :: Text -> Wylie -> [Tibet]
+toTibet syls = makeTibet (makeWylieTibet syls) . parsedRadex syls
+
+radexTree :: Text -> (Text -> Either ParseError [Text])
+radexTree syls =
+    let linedSyls = T.lines syls
+        firstPart = map (T.takeWhile (/= '|')) linedSyls
+        radex = fromFoldable firstPart
+    in  parseT (search radex) ""
+
+makeTibet :: WylieTibet -> [([Wylie], [[Wylie]])] -> [Tibet]
+makeTibet wt ts =
+    let look = flip HMS.lookup wt
+        fromLook = T.concat . fromMaybe ["errorT"] . traverse look
+    in map (\(f,s) -> uncurry spaceBetween (fromLook f, T.concat $ map fromLook s)) ts
+
+parsedInput :: Text -> [(Text, [Text])]
+parsedInput txt = map (\(f,s) -> (f, fromRight ["error3"] $ parseT tibSentEndList "" s))
+    $ fromRight [("error2","")] $ tibList
+    $ fromRight ["error1"] $ parseT tibLines "" txt
+
+parsedRadex :: Text -> Text -> [([Text], [[Text]])]
+parsedRadex syls wylie = map
+    (\(f,s)
+        -> (fromRight ["errorR"] $ radexTree syls f
+        , map (fromRight ["errorR"] . radexTree syls) s)
+    ) $ parsedInput wylie
 
 
--- parseTibet2 :: Text -> Text -> Maybe Text
--- parseTibet2 syllables query = fmap T.unwords
---     $ mapM (\x -> HMS.lookup x $ makeTibetWylie syllables)
---     $ filter (/= "")
---     $ T.splitOn "\3851" query
+spaceBetween :: Text -> Text -> Text
+spaceBetween a b = a <> " " <> b
 
--- tibetanText :: Parser Text
--- tibetanText = AT.takeTill (\x -> AT.isEndOfLine x || (x == '\3851') || (x == '\r'))
+symbolM :: M.Tokens Text -> Parser (M.Tokens Text)
+symbolM = ML.symbol MC.space
 
--- parsed :: Text -> Maybe [Text]
--- parsed = AT.maybeResult . AT.parse (tibetanText `AT.sepBy` tibetanSpace)
+parensMNoSpace :: Parser a -> Parser a
+parensMNoSpace = M.between (symbolM "(") (symbolM ")")
 
--- parsed2 :: Text -> Text -> Maybe Text
--- parsed2 syllables = fmap T.concat . AT.maybeResult . AT.parse (parserT syllables)
+parensM :: Parser a -> Parser a
+parensM = M.between (char '(') (char ')')
 
-syllablesListWylie :: Text -> [String]
-syllablesListWylie syllables = map T.unpack $ HMS.keys (makeWylieTibet syllables)
+dotM :: Parser (M.Tokens Text)
+dotM = symbolM "."
 
-identifier2 :: Text -> Parser String
-identifier2 syllables = try (p >>= check)
-  where
-    p :: Parser String
-    p = (:) <$> MC.letterChar <*> many M.anySingle
-    check :: String -> Parser String
-    check x = if x `elem` syllablesListWylie syllables
-                then return x
-                else fail $ "keyword " ++ show x ++ " cannot be an identifier"
+digitInParens :: Parser Text
+digitInParens = do
+    d <- parensM ML.decimal :: Parser Int
+    pure $ T.concat ["(", T.pack $ show d, ")"]
 
--- lexeme :: Parser a -> Parser a
--- lexeme = MCL.lexeme sc
+letterInParens :: Parser Text
+letterInParens = do
+    d <- parensMNoSpace (some tibTextMP)
+    -- It gives (bla ). With space that converted to tibetan dot
+    pure $ T.concat ["(", T.pack d, ")"]
+    -- It gives (bla).  Without space.
+    -- pure $ T.concat ["(", T.pack d, " ", ")"]
 
--- sc :: Parser ()
--- sc = MC.space1
+letterInParensSen :: Parser Text
+letterInParensSen = do
+    d <- parensMNoSpace (some tibTextMP)
+    pure $ T.concat ["(", T.pack d, ")"]
 
--- rws :: [String] -- list of reserved words
--- rws = ["if","then","else","while","do","skip","true","false","not","and","or"]
+digitAndDot :: Parser Text
+digitAndDot = do
+    di <- ML.decimal
+    d <- dotM
+    pure $ T.concat [T.pack $ show (di :: Integer), d]
 
--- identifier :: Parser String
--- identifier = (lexeme . try) (p >>= check)
---   where
---     p       = (:) <$> MC.letterChar <*> many MC.alphaNumChar
---     check x = if x `elem` rws
---                 then fail $ "keyword " ++ show x ++ " cannot be an identifier"
---                 else return x
---  HMS.lookup query $ makeTibetWylie syllables
+digits :: Parser Text
+digits = do
+    di <- ML.decimal <* M.notFollowedBy (MC.char '.' <|> MC.char ')')
+    pure $ T.concat [T.pack $ show (di :: Integer)]
 
--- t :: IO ()
--- t = do q <- BC.getLine
---        BC.putStrLn q
---        let q' = fromMaybe "0" (fromTibetan q)
---        BC.putStrLn q'
+chooseDigit :: Parser Text
+chooseDigit = digitInParens <|> digitAndDot
 
-type WylieTibet = HashMap Text Text
+oneLine :: Parser Text
+oneLine = do
+    d <- chooseDigit
+    b <- T.concat <$> some tibBase
+    pure $ d <> b
 
-type TibetWylie = HashMap Text Text
+tibBase :: Parser Text
+tibBase = try tibBaseSub
+    <|> try letterInParens
+    <|> T.singleton <$> try tibParens
+    <|> try digits
 
-data Translit = Wylie | Tibet | Other
-    deriving (Eq, Show)
+tibBaseSen :: Parser Text
+tibBaseSen = try tibBaseSub
+    <|> try letterInParensSen
+    <|> T.singleton <$> try tibParens
+    <|> try digits
+
+tibBaseSub :: Parser Text
+tibBaseSub = do
+    t <- some tibTextMP
+    pure $ T.pack t
+
+-- > parseTest tibLines "(sdf)sdf(1)sd1.sdf"
+-- ["(sdf)sdf","(1)sd","1.sdf"]
+
+-- > parseT tibLines "" "(sdf)sdf(1)sd1.sdf"
+-- Right ["(sdf)sdf","(1)sd","1.sdf"]
+tibLines :: Parser [Text]
+tibLines = do
+    first <- T.concat <$> many tibBase
+    second <- many (try oneLine)
+    pure $ if T.null first then second else first : second
+
+-- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
+-- Right [("","(sdf)sdf"),("1.","df")]
+tibList :: [Text] -> Either ParseError [(Text, Text)]
+tibList = traverse (parseT tibSentences "")
+
+tibSentences :: Parser (Text, Text)
+tibSentences = try tibSen <|> try tibSenD <|> try tibSenDT
+
+tibSenDT :: Parser (Text,Text)
+tibSenDT = do
+    d <- chooseDigit
+    sens <- T.concat <$> some tibBaseSen
+    pure (d, sens)
+
+tibSenD :: Parser (Text,Text)
+tibSenD = do
+    d <- chooseDigit <* M.eof
+    pure (d, "")
+
+tibSen :: Parser (Text,Text)
+tibSen = do
+    sens <- T.concat <$> some tibBaseSen
+    pure ("", sens)
+
+tibTextMP :: Parser Char
+tibTextMP = tibEnd <|> MC.letterChar <|> MC.spaceChar <|> tibChars
+
+tibTextMPNoEnd :: Parser Char
+tibTextMPNoEnd = MC.letterChar <|> MC.spaceChar <|> tibChars <|> tibParens
+
+tibChars :: Parser Char
+tibChars
+    =   MC.char '+'
+    <|> MC.char '\''
+    <|> MC.char ':'
+    <|> MC.char '-'
+    <|> MC.char '.'
+    <|> MC.char '%'
+    <|> MC.char '_'
+    <|> MC.char '”'
+    <|> MC.char '“'
+    <|> MC.char '@'
+    <|> MC.char '~'
+
+tibEnd :: Parser Char
+tibEnd = MC.char '/'
+
+tibEndSpace :: Parser Text
+tibEndSpace = symbolM "/"
+
+tibParens :: Parser Char
+tibParens = MC.char '(' <* M.notFollowedBy afterParen <|> MC.char ')'
+
+afterParen :: Parser Char
+afterParen = do
+    _ <- ML.decimal :: Parser Int
+    MC.char ')'
+
+tibSentEnd :: Parser Text
+tibSentEnd = do
+    t <- T.pack <$> some tibTextMPNoEnd <* M.eof
+    pure $ T.concat [T.stripEnd t]
+
+tibSentEndE :: Parser Text
+tibSentEndE = do
+    MC.space
+    t <- T.pack <$> some tibTextMPNoEnd
+    e2 <- tibEndSpace
+    pure $ T.concat [T.stripEnd t, e2]
+
+tibSentEndFE :: Parser Text
+tibSentEndFE = do
+    MC.space
+    e1 <- tibEndSpace
+    t <- T.pack <$> some tibTextMPNoEnd
+    e2 <- tibEndSpace
+    pure $ T.concat [e1, T.stripEnd t, e2]
+
+-- > parseTest tibSentEndList "sdf / /sdf  / fgdg / /sdf/"
+-- ["sdf/","/sdf/","fgdg/","/sdf/"]
+tibSentEndList :: Parser [Text]
+tibSentEndList = some $ try tibSentEndFE <|> try tibSentEndE <|> try tibSentEnd
+
+-- safeListCall :: Foldable t => (t a -> b) -> t a -> Maybe b
+-- safeListCall f xs
+--     | null xs = Nothing
+--     | otherwise = Just $ f xs
+
+syllableParserWT :: Parser (Text, Text)
+syllableParserWT = do
+    w <- some $ M.anySingleBut '|'
+    _ <- char '|'
+    t <- some M.anySingle
+    pure (T.pack w, T.pack t)
+
+-- syllableParserTW :: Parser (Text, Text)
+-- syllableParserTW = do
+--     w <- some $ M.anySingleBut '|'
+--     _ <- char '|'
+--     t <- some M.anySingle
+--     pure (T.pack t, T.pack w)
+
+
+type WylieTibet = HashMap Wylie Tibet
+-- type TibetWylie = HashMap Tibet Wylie
+
+type Wylie = Text
+type Tibet = Text
 
 makeWylieTibet :: Text -> WylieTibet
 makeWylieTibet
     = HMS.fromList
-    . map ((\(y,x) -> (y, T.drop 1 x))
-    . T.span (<'|'))
+    . either (error . ME.errorBundlePretty) id
+    . traverse (parseT syllableParserWT "")
     . T.lines
 
-makeTibetWylie :: Text -> TibetWylie
-makeTibetWylie
-    = HMS.fromList
-    . map ((\(y,x) -> (T.drop 1 x, y))
-    . T.span (<'|'))
-    . T.lines
+-- makeTibetWylie :: Text -> TibetWylie
+-- makeTibetWylie
+--     = HMS.fromList
+--     . either (error . ME.errorBundlePretty) id
+--     . traverse (parseT syllableParserTW "")
+--     . T.lines
 
-checkTranslit :: Text -> Translit
-checkTranslit query =
-    if queryFirstWord then Wylie else Tibet
-  where
-    queryFirstWord = T.all isLatin1 query
+
+-------------
+-- Sandbox --
+-------------
+
+-- All possible wylie chars and symbols from syllables file.
+-- %'()+-./0123456789:@ADHIMNRSTUWXY_abcdefghijklmnoprstuvwyz~нсᨵ“”
+
+-- sortWords :: Text -> IO ()
+-- sortWords tibText = do
+--     syls <- T.readFile "./tibetan-syllables"
+--     T.putStrLn $ T.intercalate "\n" $ toTibet syls tibText
