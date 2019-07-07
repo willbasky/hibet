@@ -6,6 +6,7 @@ import Control.DeepSeq (deepseq)
 import Control.Monad (forever, when)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (evalStateT, execStateT, get, put, withStateT)
+import Data.Text (Text)
 import Path (fromAbsFile)
 import Path.Internal (Path (..))
 import Path.IO (listDir)
@@ -13,11 +14,14 @@ import Paths_tibet (getDataFileName)
 import System.Exit
 import System.IO (stdout)
 
-import Handlers (DictionaryMeta, History, mergeWithNum, searchInMap, selectDict, zipWithMap)
+import Handlers (DictionaryMeta, History, mergeWithNum, searchInMap, selectDict, separator,
+                 zipWithMap)
 import Labels (labels)
-import Prettify (blue, green, putTextFlush, red)
+import Parse (toTibet)
+import Prettify (blue, cyan, green, putTextFlush, red)
 
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.IO as T
 
@@ -28,19 +32,20 @@ iterateM f = evalStateT $ forever $ get >>= lift . f >>= put
 
 start :: Maybe [Int] -> IO ()
 start mSelectedId = do
+    syls <- T.readFile "./parser/tibetan-syllables"
     dir <- getDataFileName "dicts/"
     (_, files) <- listDir $ Path dir
     texts <- mapM (fmap T.decodeUtf8 . BC.readFile . fromAbsFile) files
     mappedFull <- zipWithMap texts files <$> labels
     let mapped = selectDict mSelectedId mappedFull
     let history = get
-    mapped `deepseq` translator mapped history
+    mapped `deepseq` translator mapped syls history
 
 -- | A loop handler of user commands.
-translator :: [DictionaryMeta] -> History -> IO ()
-translator mapped = iterateM $ \history -> do
+translator :: [DictionaryMeta] -> Text -> History -> IO ()
+translator mapped syls = iterateM $ \history -> do
     putTextFlush $ blue "Which a tibetan word to translate?"
-    query <- fmap T.decodeUtf8 $ BC.hPutStr stdout "> " >> BC.getLine
+    query <- fmap (T.strip . T.decodeUtf8) $ BC.hPutStr stdout "> " >> BC.getLine
     case query of
         ":q" -> do
             putTextFlush $ green "Bye-bye!"
@@ -53,22 +58,16 @@ translator mapped = iterateM $ \history -> do
             putTextFlush ""
             pure history
         _    -> do
-            -- syllablesByte <- BC.readFile "parser/tibetan-syllables"
-            -- let syllables = T.decodeUtf8 syllablesByte
-            -- case fromTibetan (T.decodeUtf8 query) syllables of
-            --     Nothing -> do
-            --         nothingFound
-            --         pure history
-                -- Just query' -> do
-                    -- let dscValues = searchInMap (T.encodeUtf8 query) mapped
-                    let dscValues = searchInMap query mapped
-                    if null dscValues then do
-                        nothingFound
-                        pure history
-                    else do
-                        -- T.putStrLn $ toTibet (mergeWithNum dscValues) syllables
-                        T.putStrLn $ mergeWithNum dscValues
-                        pure $ withStateT (query :) history
+            let dscValues = searchInMap query mapped
+            if null dscValues then do
+                nothingFound
+                pure history
+            else do
+                let translations = mergeWithNum $ map (separator [37] syls) dscValues
+                let tibQuery = cyan $ T.concat $ toTibet syls query
+                T.putStrLn tibQuery
+                T.putStrLn translations
+                pure $ withStateT (query :) history
 
 nothingFound :: IO ()
 nothingFound = do

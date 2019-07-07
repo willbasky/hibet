@@ -51,8 +51,6 @@ newtype Labels = Labels [LabelFull]
     deriving (Eq, Show)
 
 instance FromJSON Labels where
-    parseJSON v
-        = fmap ( Labels
-        . map (\(path, Label number label about) -> LabelFull path number label about)
-        . HM.toList )
-        $ parseJSON v
+    parseJSON v = Labels . map toLabelFull . HM.toList <$> parseJSON v
+      where
+        toLabelFull (path, Label number label about) = LabelFull path number label about

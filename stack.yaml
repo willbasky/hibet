@@ -2,6 +2,8 @@ resolver: lts-13.19
 
 extra-deps:
     - path-io-1.4.0
+    - radixtree-0.4.0.0
+    - parsers-megaparsec-0.1.0.1
 
 ghc-options:
   "$locals": -fhide-source-paths
