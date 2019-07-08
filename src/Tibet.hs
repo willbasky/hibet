@@ -32,7 +32,8 @@ iterateM f = evalStateT $ forever $ get >>= lift . f >>= put
 
 start :: Maybe [Int] -> IO ()
 start mSelectedId = do
-    syls <- T.readFile "./parser/tibetan-syllables"
+    sylsPath <- getDataFileName "parser/tibetan-syllables"
+    syls <- T.readFile sylsPath
     dir <- getDataFileName "dicts/"
     (_, files) <- listDir $ Path dir
     texts <- mapM (fmap T.decodeUtf8 . BC.readFile . fromAbsFile) files
