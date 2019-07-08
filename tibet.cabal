@@ -16,6 +16,7 @@ extra-doc-files:     README.md
                    , CHANGELOG.md
 data-files:          dicts/*.txt
                    , titles.json
+                   , parser/tibetan-syllables.txt
 tested-with:         GHC == 8.4.4
 
 source-repository head
