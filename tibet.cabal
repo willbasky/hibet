@@ -48,6 +48,7 @@ library
   build-depends:       base ^>= 4.12
                      , aeson
                      , ansi-terminal
+                     , bifunctors
                      , bytestring
                      , deepseq
                      , directory

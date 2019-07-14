@@ -1,17 +1,19 @@
 module Parse
        ( toTibet
        , Tibet
+       , ParseError
+       , Wylie
        ) where
 
 import Data.HashMap.Strict (HashMap)
 import Data.Text (Text)
-import Data.Either (fromRight)
 import Data.Maybe (fromMaybe)
 import Control.Applicative
 import Data.Functor.Identity (Identity)
 import Data.Void (Void)
 import Text.Megaparsec.Parsers
 import Data.RadixTree
+import Data.Bitraversable (Bitraversable(..))
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -19,6 +21,7 @@ import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
 import qualified Text.Megaparsec.Error as ME
+import qualified Data.Foldable as F
 
 
 type Parser a = ParsecT Void Text Identity a
@@ -30,34 +33,40 @@ parseT = M.runParser . unParsecT
 -- parseTest :: Show a => Parser a -> Text -> IO ()
 -- parseTest = M.parseTest . unParsecT
 
-toTibet :: Text -> Wylie -> [Tibet]
-toTibet syls = makeTibet (makeWylieTibet syls) . parsedRadex syls
+toTibet :: Text -> Wylie -> Either ParseError [Tibet]
+toTibet syls = makeTibet (makeWylieTibet syls) . parseWylieInput syls
 
-radexTree :: Text -> (Text -> Either ParseError [Text])
-radexTree syls =
+makeTibet
+    :: Either ParseError WylieTibet
+    -> Either ParseError [([Wylie], [[Wylie]])]
+    -> Either ParseError [Tibet]
+makeTibet wt ts = do
+    wylietibet <- wt
+    txt <- ts
+    let look :: Wylie -> Tibet
+        look = fromMaybe "" . flip HMS.lookup wylietibet
+        fromLook :: [Wylie] -> Tibet
+        fromLook = F.foldMap look
+    pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
+
+parseWylieInput :: Text -> Text -> Either ParseError [([Wylie], [[Wylie]])]
+parseWylieInput syls txt  = do
+    ls <- parseT tibLines "" txt
+    list <- tibList ls
+    let radex = radexTreeMaker syls
+    traverse (bitraverse radex (applyRadex radex . parseT tibSentEndList "")) list
+
+applyRadex :: (Text -> Either ParseError [Text]) -> Either ParseError [Text] -> Either ParseError [[Text]]
+applyRadex radex eitherList = do
+    list <- eitherList
+    traverse radex list
+
+radexTreeMaker :: Text -> (Text -> Either ParseError [Text])
+radexTreeMaker syls =
     let linedSyls = T.lines syls
         firstPart = map (T.takeWhile (/= '|')) linedSyls
         radex = fromFoldable firstPart
     in  parseT (search radex) ""
-
-makeTibet :: WylieTibet -> [([Wylie], [[Wylie]])] -> [Tibet]
-makeTibet wt ts =
-    let look = flip HMS.lookup wt
-        fromLook = T.concat . fromMaybe ["errorT"] . traverse look
-    in map (\(f,s) -> uncurry spaceBetween (fromLook f, T.concat $ map fromLook s)) ts
-
-parsedInput :: Text -> [(Text, [Text])]
-parsedInput txt = map (\(f,s) -> (f, fromRight ["error3"] $ parseT tibSentEndList "" s))
-    $ fromRight [("error2","")] $ tibList
-    $ fromRight ["error1"] $ parseT tibLines "" txt
-
-parsedRadex :: Text -> Text -> [([Text], [[Text]])]
-parsedRadex syls wylie = map
-    (\(f,s)
-        -> (fromRight ["errorR"] $ radexTree syls f
-        , map (fromRight ["errorR"] . radexTree syls) s)
-    ) $ parsedInput wylie
-
 
 spaceBetween :: Text -> Text -> Text
 spaceBetween a b = a <> " " <> b
@@ -249,12 +258,9 @@ type WylieTibet = HashMap Wylie Tibet
 type Wylie = Text
 type Tibet = Text
 
-makeWylieTibet :: Text -> WylieTibet
-makeWylieTibet
-    = HMS.fromList
-    . either (error . ME.errorBundlePretty) id
-    . traverse (parseT syllableParserWT "")
-    . T.lines
+-- Make hashmap from syllables text
+makeWylieTibet :: Text -> Either ParseError WylieTibet
+makeWylieTibet syls = HMS.fromList <$> traverse (parseT syllableParserWT "") (T.lines syls)
 
 -- makeTibetWylie :: Text -> TibetWylie
 -- makeTibetWylie

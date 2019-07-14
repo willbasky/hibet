@@ -22,10 +22,11 @@ import Data.Maybe (mapMaybe, maybe)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Path (Abs, File, Path, filename, fromRelFile)
+import Data.Bitraversable (Bitraversable(..))
 
 import Labels (LabelFull (..))
+import Parse (ParseError, Tibet, Wylie, toTibet)
 import Prettify (blue, bold, cyan, green)
-import Parse (Tibet, toTibet)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -114,9 +115,12 @@ mergeWithNum = T.intercalate "\n" . map flatten
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "
 
--- It converts selected dictionary result to tibetan only and passes through other.
-separator :: [Int] -> Text -> ([Text], (Title, Int)) -> ([Tibet], (Title, Int))
-separator dicNumbers syls d@(ts, (t,i)) = if i `elem` dicNumbers then  (listToTibet syls ts, (t,i)) else d
+-- Convert dictionaries from list to tibetan and pass others.
+separator :: [Int] -> Text -> ([Text], (Title, Int)) -> Either ParseError ([Tibet], (Title, Int))
+separator dictNumbers syls d@(_, (_,i)) =
+  if i `elem` dictNumbers then bitraverse (listToTibet syls) pure d else Right d
 
-listToTibet :: Text -> [Text] -> [Tibet]
-listToTibet syls = map (T.intercalate "\n" . toTibet syls)
+listToTibet :: Text -> [Wylie] -> Either ParseError [Tibet]
+listToTibet syls list = do
+  tibets <- traverse (toTibet syls) list
+  pure $ map (T.intercalate "\n" ) tibets

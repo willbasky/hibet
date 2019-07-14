@@ -6,6 +6,7 @@ import Control.DeepSeq (deepseq)
 import Control.Monad (forever, when)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (evalStateT, execStateT, get, put, withStateT)
+import Data.Either (fromRight)
 import Data.Text (Text)
 import Path (fromAbsFile)
 import Path.Internal (Path (..))
@@ -24,6 +25,7 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.IO as T
+import qualified Text.Megaparsec.Error as ME
 
 
 -- | Iterator with state holding.
@@ -64,10 +66,13 @@ translator mapped syls = iterateM $ \history -> do
                 nothingFound
                 pure history
             else do
-                let translations = mergeWithNum $ map (separator [37] syls) dscValues
-                let tibQuery = cyan $ T.concat $ toTibet syls query
-                T.putStrLn tibQuery
-                T.putStrLn translations
+                case traverse (separator [37] syls) dscValues of
+                    Left err -> putStrLn $ ME.errorBundlePretty err
+                    Right list -> do
+                        let translations = mergeWithNum list
+                        let tibQuery = cyan . fromRight query $ T.concat <$> toTibet syls query
+                        T.putStrLn tibQuery
+                        T.putStrLn translations
                 pure $ withStateT (query :) history
 
 nothingFound :: IO ()
