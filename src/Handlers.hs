@@ -3,7 +3,6 @@
 module Handlers
        ( Title
        , Dictionary
-       , History
        , DictionaryMeta
        , makeTextMap
        , mergeWithNum
@@ -14,7 +13,6 @@ module Handlers
        ) where
 
 import Control.DeepSeq
-import Control.Monad.Trans.State.Strict (StateT)
 import Data.Foldable (find)
 import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
@@ -42,8 +40,6 @@ data DictionaryMeta = DictionaryMeta
   , dmNumber     :: Int
   }
   deriving (Generic, NFData)
-
-type History = StateT [Text] IO [Text] -- | first value is state
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary
