@@ -3,7 +3,6 @@
 module Handlers
        ( Title
        , Dictionary
-       , History
        , DictionaryMeta
        , makeTextMap
        , mergeWithNum
@@ -14,7 +13,7 @@ module Handlers
        ) where
 
 import Control.DeepSeq
-import Control.Monad.Trans.State.Strict (StateT)
+import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
@@ -24,8 +23,8 @@ import GHC.Generics (Generic)
 import Path (Abs, File, Path, filename, fromRelFile)
 
 import Labels (LabelFull (..))
+import Parse (ParseError, Tibet, Wylie, WylieTibet, toTibet)
 import Prettify (blue, bold, cyan, green)
-import Parse (Tibet, toTibet)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -41,8 +40,6 @@ data DictionaryMeta = DictionaryMeta
   , dmNumber     :: Int
   }
   deriving (Generic, NFData)
-
-type History = StateT [Text] IO [Text] -- | first value is state
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary
@@ -114,9 +111,17 @@ mergeWithNum = T.intercalate "\n" . map flatten
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "
 
--- It converts selected dictionary result to tibetan only and passes through other.
-separator :: [Int] -> Text -> ([Text], (Title, Int)) -> ([Tibet], (Title, Int))
-separator dicNumbers syls d@(ts, (t,i)) = if i `elem` dicNumbers then  (listToTibet syls ts, (t,i)) else d
+-- Convert dictionaries from list to tibetan and pass others.
+separator
+  :: [Int]
+  -> WylieTibet
+  -> Text
+  -> ([Text], (Title, Int))
+  -> Either ParseError ([Tibet], (Title, Int))
+separator dictNumbers wt syls d@(_, (_,i)) =
+  if i `elem` dictNumbers then bitraverse (listToTibet syls wt) pure d else Right d
 
-listToTibet :: Text -> [Text] -> [Tibet]
-listToTibet syls = map (T.intercalate "\n" . toTibet syls)
+listToTibet :: Text -> WylieTibet -> [Wylie] -> Either ParseError [Tibet]
+listToTibet syls wt list = do
+  tibets <- traverse (toTibet wt syls) list
+  pure $ map (T.intercalate "\n" ) tibets

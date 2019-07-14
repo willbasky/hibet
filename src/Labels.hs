@@ -54,3 +54,5 @@ instance FromJSON Labels where
     parseJSON v = Labels . map toLabelFull . HM.toList <$> parseJSON v
       where
         toLabelFull (path, Label number label about) = LabelFull path number label about
+
+
