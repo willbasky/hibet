@@ -13,6 +13,7 @@ module Handlers
        ) where
 
 import Control.DeepSeq
+import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
@@ -20,10 +21,9 @@ import Data.Maybe (mapMaybe, maybe)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Path (Abs, File, Path, filename, fromRelFile)
-import Data.Bitraversable (Bitraversable(..))
 
 import Labels (LabelFull (..))
-import Parse (ParseError, Tibet, Wylie, toTibet)
+import Parse (ParseError, Tibet, Wylie, WylieTibet, toTibet)
 import Prettify (blue, bold, cyan, green)
 
 import qualified Data.HashMap.Strict as HMS
@@ -112,11 +112,16 @@ mergeWithNum = T.intercalate "\n" . map flatten
     insideNewLine = T.replace "\\n" "\n  "
 
 -- Convert dictionaries from list to tibetan and pass others.
-separator :: [Int] -> Text -> ([Text], (Title, Int)) -> Either ParseError ([Tibet], (Title, Int))
-separator dictNumbers syls d@(_, (_,i)) =
-  if i `elem` dictNumbers then bitraverse (listToTibet syls) pure d else Right d
+separator
+  :: [Int]
+  -> WylieTibet
+  -> Text
+  -> ([Text], (Title, Int))
+  -> Either ParseError ([Tibet], (Title, Int))
+separator dictNumbers wt syls d@(_, (_,i)) =
+  if i `elem` dictNumbers then bitraverse (listToTibet syls wt) pure d else Right d
 
-listToTibet :: Text -> [Wylie] -> Either ParseError [Tibet]
-listToTibet syls list = do
-  tibets <- traverse (toTibet syls) list
+listToTibet :: Text -> WylieTibet -> [Wylie] -> Either ParseError [Tibet]
+listToTibet syls wt list = do
+  tibets <- traverse (toTibet wt syls) list
   pure $ map (T.intercalate "\n" ) tibets

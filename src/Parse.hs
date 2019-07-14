@@ -1,8 +1,10 @@
 module Parse
        ( toTibet
+       , makeWylieTibet
        , Tibet
        , ParseError
        , Wylie
+       , WylieTibet
        ) where
 
 import Data.HashMap.Strict (HashMap)
@@ -33,18 +35,17 @@ parseT = M.runParser . unParsecT
 -- parseTest :: Show a => Parser a -> Text -> IO ()
 -- parseTest = M.parseTest . unParsecT
 
-toTibet :: Text -> Wylie -> Either ParseError [Tibet]
-toTibet syls = makeTibet (makeWylieTibet syls) . parseWylieInput syls
+toTibet :: WylieTibet -> Text -> Wylie -> Either ParseError [Tibet]
+toTibet wt syls = makeTibet wt . parseWylieInput syls
 
 makeTibet
-    :: Either ParseError WylieTibet
+    :: WylieTibet
     -> Either ParseError [([Wylie], [[Wylie]])]
     -> Either ParseError [Tibet]
 makeTibet wt ts = do
-    wylietibet <- wt
     txt <- ts
     let look :: Wylie -> Tibet
-        look = fromMaybe "" . flip HMS.lookup wylietibet
+        look = fromMaybe "" . flip HMS.lookup wt
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
     pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
@@ -259,8 +260,12 @@ type Wylie = Text
 type Tibet = Text
 
 -- Make hashmap from syllables text
-makeWylieTibet :: Text -> Either ParseError WylieTibet
-makeWylieTibet syls = HMS.fromList <$> traverse (parseT syllableParserWT "") (T.lines syls)
+makeWylieTibet :: Text -> WylieTibet
+makeWylieTibet
+    = HMS.fromList
+    . either (error . ME.errorBundlePretty) id
+    . traverse (parseT syllableParserWT "")
+    . T.lines
 
 -- makeTibetWylie :: Text -> TibetWylie
 -- makeTibetWylie
