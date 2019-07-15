@@ -45,8 +45,7 @@ data DictionaryMeta = DictionaryMeta
 makeTextMap :: Text -> Dictionary
 makeTextMap
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-    . map ((\(y,x) -> (y, T.drop 1 x))
-    . T.span (<'|'))
+    . map ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|'))
     . T.lines
 
 -- | Select several dictionaries by id.

@@ -2,29 +2,30 @@ module Parse
        ( makeTibet
        , makeWylieTibet
        , parseWylieInput
+       , splitter
        , Tibet
        , ParseError
        , Wylie
        , WylieTibet
        ) where
 
-import Data.HashMap.Strict (HashMap)
-import Data.Text (Text)
-import Data.Maybe (fromMaybe)
 import Control.Applicative
+import Data.Bitraversable (Bitraversable (..))
 import Data.Functor.Identity (Identity)
+import Data.HashMap.Strict (HashMap)
+import Data.Maybe (fromMaybe)
+import Data.RadixTree
+import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec.Parsers
-import Data.RadixTree
-import Data.Bitraversable (Bitraversable(..))
 
+import qualified Data.Foldable as F
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
 import qualified Text.Megaparsec.Error as ME
-import qualified Data.Foldable as F
 
 
 type Parser a = ParsecT Void Text Identity a
@@ -33,14 +34,8 @@ type ParseError = ME.ParseErrorBundle Text Void
 parseT :: Parser a -> String -> Text -> Either ParseError a
 parseT = M.runParser . unParsecT
 
--- parseTest :: Show a => Parser a -> Text -> IO ()
--- parseTest = M.parseTest . unParsecT
-
--- toTibet :: WylieTibet
---     -> (Text -> Either ParseError [([Wylie], [[Wylie]])])
---     -> Text
---     -> Either ParseError [Tibet]
--- toTibet syls wylie = makeTibet (makeWylieTibet syls) . radex
+parseTest :: Show a => Parser a -> Text -> IO ()
+parseTest = M.parseTest . unParsecT
 
 makeTibet
     :: WylieTibet
@@ -267,7 +262,11 @@ type Tibet = Text
 makeWylieTibet :: Text -> WylieTibet
 makeWylieTibet
     = HMS.fromList
-    . either (error . ME.errorBundlePretty) id
+    . splitter
+
+splitter :: Text -> [(Text,Text)]
+splitter
+    = either (error . ME.errorBundlePretty) id
     . traverse (parseT syllableParserWT "")
     . T.lines
 

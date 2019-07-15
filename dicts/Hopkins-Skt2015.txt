@@ -117,7 +117,7 @@
 'byed par byed par 'gyur te|{C}bhedaṃ prakṣipati
 'byin|'bras bu 'byin = (√phal): {MSA}phalasi
 'byin pa|{C}uddharati; {C}janayitrī; {MSA}udbheda (e.g.: udaka-dhāraṇa-udbheda); {MV}dāna; {MSA}tshig ... 'byin pa = vacana
-'byin pa po|{PU} sraṣṭā 
+'byin pa po|{PU} sraṣṭā
 'byin par 'gyur ro|{C}uddharati
 'byor|vibhutā
 'byor 'brel|yoga
@@ -460,7 +460,7 @@
 'dzam bu gling|{LCh}jambu-dvīpa
 'dzam bu'i gling|{C}jambu-dvīpa; {C}jāmbudvīpa
 'dzam gling|jambudvīpa
-#'dzam gling/ 'dzam bu gling|jambu-dvīpa
+'dzam gling/ 'dzam bu gling|jambu-dvīpa
 'dzangs pa|{C,L}`vijña
 'dzeg pa yin pa|{C}adhirohin
 'dzigs|saṃluḍita
@@ -511,7 +511,7 @@
 'gal ba'i tshig|{Toh.1785} viruddhālāpa
 'gal bar byed|{C}prativahati; {C} virodhayati
 'gal bar byed pa bya ba|{C}virodhayati
-#'gal bar byed/ 'gal bar mi byed|{C}virodhayati
+'gal bar byed/ 'gal bar mi byed|{C}virodhayati
 'gal zla|{LCh}pratidvandin
 'go|{MSA}avabodha
 'go ba|{MSA}avasaṃbodha; {MSA}gamika
@@ -620,7 +620,7 @@
 'jam por smra|{C}mṛdu-bhāṣin
 'jig|{MSA}nāśa; {N}vinaśa; {MSA}vinaśyati; {C}mriyate; {C}bhidyate (=bhindati)
 'jig bskal|{LCh}saṃvarta-kalpa
-#'jig lta; 'jig tshogs la lta ba|satkāyadṛṣṭi
+'jig lta; 'jig tshogs la lta ba|satkāyadṛṣṭi
 'jig med|{C}alujyana; {MSA}na vyeti
 'jig med gnas|{LCh}abhayagirika; {LCh}abhayagirivāsin
 'jig pa|{C,L}vināśa; {C}nāśa; {C}bhedana; {C}bhidyate (=bhindati); {MV}bhaṅga; {MSA}bhaṅgura;{C} rūpaṇa (=rūpa); {C}lujyate; {C,MSA,MV}vyaya (={C}nirodho); {MSA}saṃvarta; {C}bhetsyati; {C}vivartanaṃ (=vivṛtān); naṣṭa
@@ -780,7 +780,7 @@
 'khor lo rin po che|{MSA}cakra-ratna
 'khor lo rtsibs stong dang ldan pa|{C}sahasrāracakra
 'khor lo sgyur ba|cakravartin
-#'khor lo sgyur ba; 'khor sgyur|cakravartin
+'khor lo sgyur ba; 'khor sgyur|cakravartin
 'khor los bsgyur ba'i rgyal po|cakravartin
 'khor los mtshan|{C}cakrāṅka
 'khor los sgyur ba|{MV,MSA,C}cakra-vartin
@@ -790,7 +790,7 @@
 'khor phun sum tshogs pa|{MSA}paricāra-saṃpad
 'khor rgya mtsho mi 'khrugs pa|{C}sāgaropamayā parṣadā akṣobhyaya
 'khor sgyur|cakravartin
-#'khor zhi ro gcig pa; 'khor ba dang zhi ba ro gcig pa|{MSA}saṃsāra-śānty-eka-rasa
+'khor zhi ro gcig pa; 'khor ba dang zhi ba ro gcig pa|{MSA}saṃsāra-śānty-eka-rasa
 'khren pa|{C}mātsarya
 'khri shing|{C}latā
 'khrid pa|{MV}nayana
@@ -1031,7 +1031,7 @@ a ka ru nag po|{L}kṛṣṇāgaru
 a nu|anu
 a ru ra|{L}haritakī
 a ti|ati
-#an da rnyil; an dha rnyil|indranīla
+an da rnyil; an dha rnyil|indranīla
 ba glang|go
 ba glang gnas pa|gokulika
 ba gling spyod|godānīya
@@ -1128,11 +1128,11 @@ bcad pa|{C}chin(n)atti; {C}samuccheda; {L}gāthā
 bcad par bya ba yin|{C}utsārayati
 bcad shes|{C}paricchinna-jñāna; *pariccinnajñāna
 bcad shes don mthun|*anvartha-paricchinna-jñāna
-#bcad shes; dpyad shes|*paricchinnajñāna
+bcad shes; dpyad shes|*paricchinnajñāna
 bcag 'phro|{C}avabhedaka
-#bcas pa, bcas|saha; {MV,MSA}sa- (e.g.: sa-prajñapti; sa-dauṣṭhulya; etc.); {MSA} -vat; {MSA}prajñapta; {MSA}prajñapti
+bcas pa, bcas|saha; {MV,MSA}sa- (e.g.: sa-prajñapti; sa-dauṣṭhulya; etc.); {MSA} -vat; {MSA}prajñapta; {MSA}prajñapti
 bcas pa'i skye ba|{C}samutpāda
-#bcas, bcas pa|saha; {MV,MSA}sa- (e.g.: sa-prajñapti; sa-dauṣṭhulya; etc.); {MSA} -vat; {MSA}prajñapta; {MSA}prajñapti
+bcas, bcas pa|saha; {MV,MSA}sa- (e.g.: sa-prajñapti; sa-dauṣṭhulya; etc.); {MSA} -vat; {MSA}prajñapta; {MSA}prajñapti
 bcing|{C}bandhana
 bcings|bandhu (=baddha)
 bcings pa|{MV}bandha; {MSA}baddha; {C}bandhana; {C}vadhya
@@ -1153,7 +1153,7 @@ bcos ma|{MSA}kṛtrima; {MSA}pratirūpa
 bcos ma ma yin pa|akṛtrima
 bcos ma ma yin pa'i myong ba|akṛtrimānubhava
 bcos ma yin pa|kṛtrimam
-#bcos min, bcos ma min pa|akṛtrimaḥ; {LCh}akṛtrima; akṛtaka
+bcos min, bcos ma min pa|akṛtrimaḥ; {LCh}akṛtrima; akṛtaka
 bcos pa|{MSA}prativarṇika
 bcos pu|{C}prativarṇika
 bcu|{LCh,MSA,MV}daśa; {MV}daśan
@@ -1707,7 +1707,7 @@ brten par bya'o|{C}pratisarati
 brten par byed|{C}dṛḍhī-karoti; {C}bhajaṃte
 brten par byed pa|{C}ālayo
 brten par mi bya|{C}pratiṣṭhatvaya; {C}pratitiṣṭhati (=pratiṣṭhate)
-#brtogs nas; brtags nas|{C}upanidhyāyati
+brtogs nas; brtags nas|{C}upanidhyāyati
 brtsad pa|{MSA}vivāda
 brtsad pa'i gzhi|{MSA}adhikaraṇa
 brtsal ba|{C}paryeṣṭi
@@ -1907,7 +1907,7 @@ bsdus nas|{C}paripiṇḍyati
 bsdus pa|{MSA}samuccaya; {C}saṃkṣipta; {C}saṃkṣepa; {C,MSA,MV}saṃgraha; {C,MSA,MV 3.22def.}saṃgṛhīta; {C}pratisaṃhṛte
 bse ru|{LCh,C}khaḍga
 bse ru lta bu rang sangs rgyas|khaḍgaviṣāṇakalpa-pratyekabuddha
-#bse ru lta bu; bse ru lta bu'i rang rgyal|khaḍgaviṣāṇakalpa
+bse ru lta bu; bse ru lta bu'i rang rgyal|khaḍgaviṣāṇakalpa
 bse yab|{Das} cicaṃ; {CG} ciñcā
 bsgo|pari-bhu
 bsgo bar|{C}adhīṣṭa (=adhyeṣita)
@@ -2204,7 +2204,7 @@ btags chos|prajñaptadharma
 btags nas|{C}ksipati; prajñapti
 btags pa tsam du|{C}prajñapti-mātram
 btags pa tsam du yod pa|prajñaptisat
-#btags pa; rnam brtags|{LCh,C,MSA,MV}prajñapti; {C.MV}prajñapta; {N}parikalpita; {LCH}upacāra; {C}prakṣipta = prajñaptam = adhyāropitaṃ saṃvṛti-mātram; prajñaptir
+btags pa; rnam brtags|{LCh,C,MSA,MV}prajñapti; {C.MV}prajñapta; {N}parikalpita; {LCH}upacāra; {C}prakṣipta = prajñaptam = adhyāropitaṃ saṃvṛti-mātram; prajñaptir
 btags pa'i kun rdzob|{MV}prajñapti-saṃvṛti
 btags pa'i yod pa|{MV}prajñapti-sat
 btags par mdzad pa|{MV}prajñaptita
@@ -2493,9 +2493,9 @@ byas pa shes pa|{C}kṛta-jñatā
 byas pa'i sa|kṛtāvi-bhūmi
 byas zin|{A4C} kṛta
 bye ba|{C}koṭi
-bye ba khrag khrig 'bum phrag|{C}koṭi-niyuta-śatasahasra 
+bye ba khrag khrig 'bum phrag|{C}koṭi-niyuta-śatasahasra
 bye ba khrag khrig brgya stong|{C}koṭi-niyuta-śatasahasra
-bye ba khrag khrig phrag 'bum|{C}koṭi-niyuta-śatasahasra 
+bye ba khrag khrig phrag 'bum|{C}koṭi-niyuta-śatasahasra
 bye brag|{LCh,MV}viśeṣa; {L}viśiṣṭa; {C}prativiśeṣa; {C}viśeṣatā; {LCh,MSA,C}bheda {C}(=dharma-bheda); {C}nānātva; {C}prakāra
 bye brag 'byed pa|{L}nitīraṇa
 bye brag bshad mdzod chen mo|mahāvibhāṣa
@@ -2947,7 +2947,7 @@ chos mngon pa|{LCh,MSA}abhidharma
 chos mngon pa'i mdzod|abhidharmakoṣa; abhidharmakośa
 chos mngon pa'i mdzod kyi bshad pa|abhidharmakoṣa-bhāṣya
 chos mngon pa'i mdzod kyi tshig le'ur byas pa|abhidharmakoṣa-kārikā
-#chos mngon par rtogs pa; chos mngon rtogs|{MSA}dharmābhisamaya
+chos mngon par rtogs pa; chos mngon rtogs|{MSA}dharmābhisamaya
 chos mngon rtogs|{MSA}dharmābhisamaya
 chos mnyam nyid|{C}dharma-samatā
 chos mnyam pa nyid|{MSA}dharma-samatā
@@ -3223,7 +3223,7 @@ dang po|{C, MV}ādya; {MSA}ādi; {LCh,MSA,MV,C}prathama; {MV}prathamam
 dang po ba|ādhikarmika
 dang po dang 'og|{MV}prathama-dvitīya
 dang po kho na nas brtsams pa|{MSA}ādita evārabdha(ṃ)
-dang po nyid|{Śāntideva} 
+dang po nyid|{Śāntideva}
 dang po'i las|{C}ādikarma
 dang po'i las can|{C}ādhikarmaka
 dang po'i pa'i sa|{C}ādhikarmika-bhūmi
@@ -3311,9 +3311,9 @@ dbu ma la 'jug pa'i bshad pa|madhyamakāvatāra-bhāṣya
 dbu ma pa|madhyamaka; mādhyamika
 dbu ma rang rgyud pa|svātantrika-mādhyamika
 dbu ma rgyan|madhyamakālṃkāra
-#dbu ma rtsa ba'i 'grel pa budd pA li ta; 'grel pa buddh pA li ta|buddhapālita-mūla-madhyamaka-vṛtti
+dbu ma rtsa ba'i 'grel pa budd pA li ta; 'grel pa buddh pA li ta|buddhapālita-mūla-madhyamaka-vṛtti
 dbu ma rtsa ba'i 'grel pa shes rab sgron ma|prajñā-pradīpa-mūla-madhyamaka-vṛtti
-#dbu ma rtsa ba'i 'grel pa tshig gsal ba; tshig gsal|mūla-madhyamaka-vṛtti-prasannapadā
+dbu ma rtsa ba'i 'grel pa tshig gsal ba; tshig gsal|mūla-madhyamaka-vṛtti-prasannapadā
 dbu ma rtsa ba'i tshig le'ur byas pa shes rab ces bya ba|prajñā-nāma-mūla-madhyamaka-kārikā
 dbu ma snang ba|madhyamakāloka
 dbu ma thal 'gyur pa|prāsaṅgika-Mādhyamika; prāsaṅgikamādhyamika
@@ -3477,8 +3477,8 @@ de nyid dang gzhan las rnam par grol ba|{MV}tattvānyatva-vinirmukta
 de nyid don|{MSA}tattvārtha
 de nyid mchog|{MSA}sutattva
 de nyid zab mo mthong|{MSA}tattva-gambhīra-dṛṣṭi
-#de nyid; de kho na nyid|{C,MSA}tattva; {MSA}satattva; tathatā
-#de nyid; de kho na nyid|tattva
+de nyid; de kho na nyid|{C,MSA}tattva; {MSA}satattva; tathatā
+de nyid; de kho na nyid|tattva
 de phyir|{C}artha; {C}sattvārthi (=tasmāhu?)
 de snyed|{C}tāntaka
 de tsam gyi tshod kyis ni|{C}tāvatā
@@ -3642,7 +3642,7 @@ dge ba'i yon tan|{MSA}guṇa ... śubha
 dge bar bya ba|{C}kalyāṇa
 dge bas 'phel bar byed pa|{MSA}kuśalair vardhayanti
 dge bcu'i las kyi lam|{MSA}daśa-kuśala-karma-patha
-#dge bshes; dge ba'i bshes gnyen/|{LCh}kalyāṇa-mitra
+dge bshes; dge ba'i bshes gnyen/|{LCh}kalyāṇa-mitra
 dge bsnyen|{LCh}upāsaka
 dge bsnyen ma|upāsikā
 dge byed pa|{MSA}śubha-kara
@@ -3678,13 +3678,13 @@ dgon pa nags khrod chen po|{L}araṇyamahāvana-prastha
 dgon pa pa|{C}āraṇyaka
 dgon pa'i lam|{C}kāntāra-mārgi
 dgon pa'i thig le|{GC-GT} araṇyetilaka
-#dgongs 'grel; dgongs pa nges par 'grel pa'i mdo|saṃdhinirmocana-sūtra
+dgongs 'grel; dgongs pa nges par 'grel pa'i mdo|saṃdhinirmocana-sūtra
 dgongs pa|{LCh,C,MSA}abhiprāya; {L}abhiprāyika; {C}samanvāhāra; {MSA}anusaṃdhi; {MSA}abhisaṃdhi; {MSA}āśaya; {MSA}bhāva; {MSA}saṃdhi; abhipreta
 dgongs pa bzhi|catvāro 'bhiprāyā
 dgongs pa can|{MSA}abhiprāyika
 dgongs pa can gyi don|{MSA}abhiprāyikārtha
 dgongs pa mdzad de|{C}samanvāharati
-#dgongs pa nges par 'grel pa'i mdo; mdo sde dgongs 'grel|{MV}saṃdhinirmocana-sūtra
+dgongs pa nges par 'grel pa'i mdo; mdo sde dgongs 'grel|{MV}saṃdhinirmocana-sūtra
 dgongs pa rtogs pa|{MV}abhisandhi-praveśa
 dgongs pa shin tu zab|{MSA}bhāvātigahana
 dgongs pa'i skad|{CG} sadhyā-bhāṣa
@@ -3692,7 +3692,7 @@ dgongs par|{C} samanvāharati (=bhavatyā-rūpeṇa-avadhāraṇāt)
 dgongs par 'gyur|{C} samanvāharati
 dgongs par mdzad|{C}samanvāharati
 dgongs te|{C}saṃdhāya
-#dgongs; dgongs pa|{L}saṃdhi; abhipretya; {MSA}abhiprāya; {C,L,MSA}(saṃ√dhā): saṃdhāya
+dgongs; dgongs pa|{L}saṃdhi; abhipretya; {MSA}abhiprāya; {C,L,MSA}(saṃ√dhā): saṃdhāya
 dgos|{C}kārya; {MSA}prayojana
 dgos pa|{LCh,MSA}prayojana; {C}kṛtya; {MSA}kārya [yid ches par bya dgos pa = {MSA}pratyetavya]
 dgos pa byed do|{C}kāryaṃ karoti
@@ -3731,22 +3731,22 @@ dka' 'grel|{LCh}pañjikā
 dka' ba|{C,MSA}duṣkara; {C}dhandaka; {MSA}duḥkha
 dka' ba bgyid pa|{C}duṣkara-kāraka
 dka' ba byed pa yin pa|{C}duṣkara-kāraka
-#dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|{LCh}tapasyā; {MSA}duṣkara; {C}duṣkara-caryā
-#dka' ba spyod pa; dka' spyod; dka' spyad; dka' ba spyad pa|{MSA}duṣkara-caraṇa; {MSA}duṣkara-caryā; {MSA}duṣkara-vyāyāma
+dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|{LCh}tapasyā; {MSA}duṣkara; {C}duṣkara-caryā
+dka' ba spyod pa; dka' spyod; dka' spyad; dka' ba spyad pa|{MSA}duṣkara-caraṇa; {MSA}duṣkara-caryā; {MSA}duṣkara-vyāyāma
 dka' ba yin|{C}duṣkaratara; duṣkara
 dka' ba yun ring pos mi skyo ba|{MSA}dīrgha-kālika-duṣkarākheda
-#dka' spyad; dka' ba spyad; dka' ba spyad pa; dka' ba spyod pa|{LCh}tapasyā
-#dka' spyod; dka' ba spyod pa; dka' spyad; dka' ba spyad pa|{MSA}duṣkara; {MSA}duṣkara-caryā
+dka' spyad; dka' ba spyad; dka' ba spyad pa; dka' ba spyod pa|{LCh}tapasyā
+dka' spyod; dka' ba spyod pa; dka' spyad; dka' ba spyad pa|{MSA}duṣkara; {MSA}duṣkara-caryā
 dkar po|{C,MSA}śukla; {C}avadāta; {C}sita
 dkar po rnam par mthong ba'i sa|śukla-vidarśanā-bhūmi; {C}śukla-vipaśyanā-bhūmi
 dkar po'i chos|{MSA}śukla-dharma; {MSA}śukla ... dharma
 dkar po'i chos rnams kun tu bcom|{MSA}samudghātita-śukla-dharma
 dkar po'i phyogs|{MSA,MV}śukla-pakṣa
-#dkar; dkar po|{C,MSA}śukla; {C}sita
+dkar; dkar po|{C,MSA}śukla; {C}sita
 dkhyil 'khor|{LCh,L,C,MSA}maṇḍala; {C,MSA}parṣan-maṇḍala
-#dkhyil 'khor gyi cho ga; dkhyil chog|{LCh}maṇḍalavidhi; maṇḍalopāyikā
+dkhyil 'khor gyi cho ga; dkhyil chog|{LCh}maṇḍalavidhi; maṇḍalopāyikā
 dkhyil 'khor gyi khyams na|{C}maṇḍala-māḍa
-#dkhyil chog; dkhyil 'khor gyi cho ga|{LCh}maṇḍalavidhi; maṇḍalopāyikā
+dkhyil chog; dkhyil 'khor gyi cho ga|{LCh}maṇḍalavidhi; maṇḍalopāyikā
 dkon mchog|{LCh,MSA,MV,C}ratna
 dkon mchog brtsegs pa|{MV}ratnakūṭa
 dkon mchog gi sprin|{LCh} ratnamegha
@@ -3755,7 +3755,7 @@ dkon mchog sprin|{LCh} ratnamegha
 dkon mchog sprin gyi mdo|{LCh}ratnameghasūtra
 dkon pa|{MSA}durlabha
 dkon po|durlabha
-#dkon; dkon po|durlabha
+dkon; dkon po|durlabha
 dkri|{C}parīta; {C}veṣṭayati
 dkris|{C}parīta; {C}veṣṭayati
 dkris sam bcings te|{C}baddhvā
@@ -3775,7 +3775,7 @@ dman pa nyid|{C}nyūnatva; {MSA}hīnatva
 dman pa'i 'gro ba|{C}hīna-gati
 dman pa'i sa pa|{MSA}hīna-bhūmika
 dman pa'i sems|{MSA}nihīna-citta; {MV}hīna-cittatva
-#dman pa/ 'bring/ mchog|{MSA}hīna ... madhya ... uttama
+dman pa/ 'bring/ mchog|{MSA}hīna ... madhya ... uttama
 dman par mos|{MSA}hīnādhimukti
 dmar|{C}rakta
 dmar pa|{L}hīna
@@ -3878,7 +3878,7 @@ dngos por smra ba|vastusat-padārthavādin
 dngos rgyu|{LCh}sākṣāt-kāraṇa
 dngos smra ba|vastusat-padārtha-vādin
 dngos stobs kyi rtags|*vastu-bala-liṅga
-#dngos stobs rjes dpag, dngos stobs kyi rjes dpag|*vastubalānumāna
+dngos stobs rjes dpag, dngos stobs kyi rjes dpag|*vastubalānumāna
 dngos su|{LCh}vastutaḥ; vastutas; {LCh}sākṣāt
 dngul|{C}rajata
 do gal|{BCA} bala
@@ -3911,7 +3911,7 @@ don dam pa|{C,MV,MSA}paramārtha; {MV}paramārthatā
 don dam pa dang ldan pa yin te|{C}paramārtha-upasaṃhita
 don dam pa ngo bo med pa|paramārtha-niḥsvabhāva
 don dam pa ngo bo nyid med pa nyid|paramārthaniḥsvabhāvatā
-#don dam pa ngo bo nyid med pa nyid; don dam pa ngo bo nyid med pa|paramārthaniḥsvabhāvatā
+don dam pa ngo bo nyid med pa nyid; don dam pa ngo bo nyid med pa|paramārthaniḥsvabhāvatā
 don dam pa stong pa nyid|{MSA}paramārtha-śūnyatā
 don dam pa'i bden pa|{MSA}paramārtha-satya
 don dam pa'i bden pa'i yul can|{MSA}paramārtha-viṣaya
@@ -4259,7 +4259,7 @@ dus su|{MSA}kālena kālam; {C}adhvan
 dus su smra ba|{C}kāla-vāditva
 dus thams cad|{MSA}sarva-kāla
 dus tshigs|saṃvatsara
-#dvang ba'i dad pa; dang ba'i dad pa|*prasādaśraddhā
+dvang ba'i dad pa; dang ba'i dad pa|*prasādaśraddhā
 dwangs|{LCh}prasanna
 dzab dbyangs|jāpa
 dzam bu bri kSha|{C}jambu-vṛkṣa
@@ -4316,7 +4316,7 @@ gang gi|{MSA}yasya
 gang gi don du|{MV}yad-artham
 gang gi phyir|{MV}yad-artham; {MSA}yasmai
 gang gi tshe|yadā; {MV}kasyām avasthāyām
-#gang gi tshe/ de'i tshe|{MV}yadā ... tadā
+gang gi tshe/ de'i tshe|{MV}yadā ... tadā
 gang gis|{MSA}yena
 gang gis dang gang du sgrub pa|{MSA}yena ca pratipadyante yatra ca
 gang la|{C}kutra; {C}kutu; {MSA}yatra
@@ -4362,7 +4362,7 @@ gang zag yin par gyur pa'i ldan min 'du byed|*pudgala-viprayukta-saṃskāra
 gang zag yod par khas blang bar mi bya|{MSA}na vā pudgalo 'sti
 gang zag yod par smra ba|pudgala-vādin
 gang zag zla med pa|{C}apratipudgala
-#gang zag; skyes bu|pudgala/puruṣa
+gang zag; skyes bu|pudgala/puruṣa
 gang zhe na|{C}katamāni
 gang zhig|{MSA}yad
 gang zhig gang|{Śāntideva}yadanyasaṃ
@@ -4706,7 +4706,7 @@ go gyon pa|{MSA}saṃnahana
 go gyon te|{C}saṃnahati
 go rim|{LCh}krama; {LCh,MV,MSA}anukrama; {MSA}ānupūrvī
 go rim bzhin du|yathātram
-#go rim bzhin; go rim bzhin du|{MV}yathā-kramaṃ
+go rim bzhin; go rim bzhin du|{MV}yathā-kramaṃ
 go rim pa|{C}anukrama
 go sgrub|{LCh}saṃnāha-pratipatti
 go skabs|{LCh,MSA} avakāśa
@@ -4722,7 +4722,7 @@ goms pa can|abhyāsavat
 goms pa'i lam|{C} abhyāsa-mārga
 goms par byas pas|{C}āsevana; {C}sevanā; {MV}abhyāsa
 gong|{MSA}upari
-#gong bar 'gyur; 'gong bar mi 'gyur|{C}avalīyate
+gong bar 'gyur; 'gong bar mi 'gyur|{C}avalīyate
 gong bu|{LCh}piṇḍa
 gong du|{MSA}uttara; {MSA}ūrdhva
 gong du 'gro ba dang ldan pa'i phyir|{MSA}ūrdhvaṃ gamana-yogāt
@@ -4781,7 +4781,7 @@ grangs su 'gro|{C}saṃkhyāṃ gacchati; {C} parisaṃkhyāta
 grangs su 'gro 'gyur ro|{C}parisaṃkhyāta
 grangs su bgrang bar gtogs pa|{C} saṃkhyāṃ-gaṇanāṃ praviṣṭa
 grangs su mchi'o|{C}saṃkhyāṃ gacchati
-#grel pa don gsal; 'grel chung don gsal|abhisamayālaṃkārāloka
+grel pa don gsal; 'grel chung don gsal|abhisamayālaṃkārāloka
 grib ma|{LCh}cchāyā; {MSA}chāyā
 grib pa|chāyā
 grib pa med par|{L}anāvaraṇa
@@ -4856,9 +4856,9 @@ gsal nas|{MSA}apāsya
 gsal snang|spuṭābha
 gsal zhing rags pa|{L}vyakta-sthūla
 gsang|{LCh}guhya
-#gsang 'dus; gsang ba 'dus pa na|guhyasamāja
+gsang 'dus; gsang ba 'dus pa na|guhyasamāja
 gsang ba|{LCh,C,L}guhya; {MSA}vinigūhana; rahasya
-#gsang ba 'dus pa; gsang 'dus|guhyasamāja
+gsang ba 'dus pa; gsang 'dus|guhyasamāja
 gsang ba la mkhas pa|{L}guhya-kuśala
 gsang ba snying po'i rgyud|guhyagarbha-tantra
 gsang ba'i gnas spubs su nub pa|{C}kośāvahita-vasti-guhyatā
@@ -4932,7 +4932,7 @@ gtan|{LCh,C}atyanta
 gtan du|{LCh,MSA}atyanta; {MV}atyantam
 gtan du ba|{MSA}atyanta; {MSA}ātyantikatva
 gtan la 'bebs pa|nirṇaya{LCH}; viniścaya{LCH}
-#gtan la 'bebs pa; gtan la 'babs pa|{N}niścaya; {N}viniścaya; nirṇaya
+gtan la 'bebs pa; gtan la 'babs pa|{N}niścaya; {N}viniścaya; nirṇaya
 gtan la 'phebs|nirṇaya; viniścaya
 gtan la bab par bstan pa'i sde|{L}upadeśa
 gtan la dbab|nirṇaya; viniścaya
@@ -5042,7 +5042,7 @@ gzhan dag la sbyin pa|{MV}parebhyo dānaṃ
 gzhan dbang|{MV}paratantra
 gzhan dbang can|{MSA}paratantra
 gzhan dbang gi mtshan nyid|paratantralakṣaṇa
-#gzhan dbang gi ngo bo nyid; gzhan dbang gi rang bzhin|paratantrasvabhāva
+gzhan dbang gi ngo bo nyid; gzhan dbang gi rang bzhin|paratantrasvabhāva
 gzhan dbang gi rang bzhin|paratantrasvabhāva
 gzhan don|parārtha
 gzhan don rjes dpag|parārtha-anumāna
@@ -5347,7 +5347,7 @@ kha dog shin tu 'jam pa|{C}ślakṣṇa-cchavitā
 kha dog sna tshogs pa|{C}nānāvarṇa
 kha dog sngon po|{MSA}nīla-varṇa
 kha lo bsgyur ba|{C}sārathi
-kha na ma tho|{MSA}avadya 
+kha na ma tho|{MSA}avadya
 kha na ma tho ba|{MSA}avadya
 kha na ma tho ba dang bcas pa|{MSA,C} sāvadya
 kha na ma tho ba med pa|{MSA,C}anavadya; {MSA}niravadya
@@ -5440,7 +5440,7 @@ khong khro bar 'gyur|{C}pratihanyate
 khong khro dang yal bar 'dor dang nga rgyal|{MSA}pratighopekṣā-māna
 khong na 'dzin par byed|{MSA}garbheṇa dhārayati
 khong nas|{MSA}gata
-#khor ba las nges par 'byung ba; nges 'byung|{MSA}saṃsārān niḥsaraṇaṃ
+khor ba las nges par 'byung ba; nges 'byung|{MSA}saṃsārān niḥsaraṇaṃ
 khor yug|{C}parisāmanta; {C}parisāmantaka
 khor yug tu|{C}parisāmantaka
 khra bo|{MSA}citra
@@ -5556,17 +5556,17 @@ kri ya|kriyā
 kri yA|kriyā
 kun|{C,MSA}sarva; {MSA}akhila; {MSA}kṛtsna; {MSA}samagra; {TN}mātra
 kun 'byung|samudaya
-#kun 'byung ba; kun 'byung|{C}samudācāra; samudaya
-#kun 'byung ba'i bden pa; kun 'byung bden pa; kun 'byung gi bden pa|{C,MV}samudaya-satya
+kun 'byung ba; kun 'byung|{C}samudācāra; samudaya
+kun 'byung ba'i bden pa; kun 'byung bden pa; kun 'byung gi bden pa|{C,MV}samudaya-satya
 kun 'byung ba'i don rnam pa gsum|{MV}trividhaḥ samudaya-artha
 kun 'byung bden pa|samudayasatya
-#kun 'byung bden pa; kun 'byung gi bden pa|samudaya-satya
-#kun 'byung gi bden pa; kun 'byung bden pa|{MV}samudaya-satya
+kun 'byung bden pa; kun 'byung gi bden pa|samudaya-satya
+kun 'byung gi bden pa; kun 'byung bden pa|{MV}samudaya-satya
 kun 'dri|{C}sampraśna
 kun 'dzin|{MV}saṃparigraha
 kun 'dzin pa'i rgyu|{MV}parigraha-hetu
 kun 'gro bdag nyid|{MSA}sarva-gātmika
-#kun 'gro; kun tu 'gro ba|{L,MSA}sarvatra-ga
+kun 'gro; kun tu 'gro ba|{L,MSA}sarvatra-ga
 kun 'gro'i rgyu|sarvatraga-hetu
 kun brjod pa'i cho 'phrul|{C,MSA}ādeśanā-prātihārya
 kun brtags|{MSA, MV, LCh}parikalpita; {LCh}parikalpana; {C}saṃkalpita; {MSA}kalpita; {MV}parikḷp; parikalpyate
@@ -5584,7 +5584,7 @@ kun bsdus pa|{MSA} saṃgraha
 kun btags|{MSA}parikalpita
 kun btags kyi mtshan nyid|parikalpitalakṣaṇa
 kun btags kyi ngo bo nyid|parikalpitasvabhāva
-#kun btags kyi rang bzhin; kun btags kyi ngo bo nyid|parikalpitasvabhāva
+kun btags kyi rang bzhin; kun btags kyi ngo bo nyid|parikalpitasvabhāva
 kun btags pa'i chos|{ME} parikalpita-dharma
 kun btags pa'i ma rig pa|parikalpitāvidyā
 kun btags pa'i mtshan nyid|parikalpita-lakṣaṇa
@@ -5593,7 +5593,7 @@ kun btus|{LCh}samuccaya
 kun bzang|Samantabhadra
 kun bzang |samanta-bhadra
 kun bzang |samanta-bhadra
-#kun bzang; kun tu bzang po|samantabhadra
+kun bzang; kun tu bzang po|samantabhadra
 kun chub par bya ba|{C}paryava-āpnoti
 kun chub par byed|{C}paryava-āpnoti
 kun da|kunda
@@ -5602,13 +5602,13 @@ kun dga' ra ba phun sum tshogs pa|{C}ārāma-sampad
 kun dga' snying po|Ānandagarbha
 kun dga'i sgra|{MSA}ānanda-śabda
 kun dkris|paryavasthāna
-#kun dkris; dkun nas dkris pa na|{LCh}paryavasthāna
+kun dkris; dkun nas dkris pa na|{LCh}paryavasthāna
 kun gtong|{C}saṃtyāga
 kun gtong ba|{MSA}sarvāsti-dāna
 kun gyi don 'grub byed|(MSA)sarvārtha-siddhi
 kun gzhi|{LCh,L,ME}ālaya
-#kun gzhi rnam par shes pa; kun gzhi rnam shes|{LCh,ME,MSA,MV}ālaya-vijñāna
-#kun gzhi rnam shes; kun gzhi rnam par shes pa|{LCh,ME,MSA,MV}ālaya-vijñāna
+kun gzhi rnam par shes pa; kun gzhi rnam shes|{LCh,ME,MSA,MV}ālaya-vijñāna
+kun gzhi rnam shes; kun gzhi rnam par shes pa|{LCh,ME,MSA,MV}ālaya-vijñāna
 kun la|{C}sarvatra
 kun las btus pa|samuccaya
 kun ma stud pa|{C}asaṃgraha
@@ -5618,7 +5618,7 @@ kun mkhyen nyid|sarva-jñatva
 kun nas|{C,MSA}samantāt; {C}sarvatas
 kun nas bslang ba|{C}samutthāpita
 kun nas byung ba ma mchis pa|asamutthāna
-#kun nas dkris pa; kun dkris|paryavasthāna
+kun nas dkris pa; kun dkris|paryavasthāna
 kun nas langs pa nyid las byung ba|{C}samutthita
 kun nas ldang ba|{C}paryutthāna
 kun nas mdzes pa|{C}samanta-prasādika
@@ -5626,13 +5626,13 @@ kun nas mi ldang ba|{C}asamutthāna
 kun nas mnar|{L}āghāta
 kun nas mnar sems byed de|{C}āghātayati
 kun nas mnar sems kyi sems|{L}āghāta-citta
-#kun nas nyon mongs can; kun nas nyon mongs pa can|{MSA}saṃkliṣṭa
+kun nas nyon mongs can; kun nas nyon mongs pa can|{MSA}saṃkliṣṭa
 kun nas nyon mongs gnyen po|{MSA}saṃkleśa-prātipakṣika
 kun nas nyon mongs kyi dmigs pa|saṃkleśa-ālambana
 kun nas nyon mongs med rnam dag|{MSA}niḥsaṃkleśa-viśuddhitā
 kun nas nyon mongs pa bsal|{MV}kleśāpaśama (=apagama?)
 kun nas nyon mongs pa bstan pa|{MSA}saṃkleśa-nirdeśa
-#kun nas nyon mongs pa can; kun nas nyon mongs can|{C,MV}saṃkliṣṭa; {MV}saṃkliṣṭa(tva)
+kun nas nyon mongs pa can; kun nas nyon mongs can|{C,MV}saṃkliṣṭa; {MV}saṃkliṣṭa(tva)
 kun nas nyon mongs pa dang rnam par byang ba|{MSA}saṃkleśa-vyavadāna; {MV}saṃkleśa-viśuddhi; {MV}saṃkliṣṭa-vyavadāna; {MV}saṃkleśo vyavadānam; {MV}saṃkleśika-vaiyavadānika
 kun nas nyon mongs pa dang rnam par byang ba dag|{MSA}saṃkleśa-vyavadāna-pakṣa
 kun nas nyon mongs pa dang rnam par byang ba mi lta ba|{MSA}saṃkleśa-vyavadānādarśana
@@ -5652,7 +5652,7 @@ kun nas nyon mongs pa rjes su bsrung ba|{MSA}saṃkleśasyānurakṣaṇā
 kun nas nyon mongs pa spang bar bya ba|{MSA}saṃkleśa-prahāṇa
 kun nas nyon mongs pa spangs pa|{MSA}saṃkleśa-varjita
 kun nas nyon mongs pa yang med|{MSA}na saṃkleśaḥ
-#kun nas nyon mongs pa; kun nas nyon mongs|{L,MSA,MV}saṃkleśa; {N}saṃkleśika;  {MSA}sāṃkleśikā-dharmāḥ; {C}saṃkileśa
+kun nas nyon mongs pa; kun nas nyon mongs|{L,MSA,MV}saṃkleśa; {N}saṃkleśika;  {MSA}sāṃkleśikā-dharmāḥ; {C}saṃkileśa
 kun nas nyon mongs pa'i chos|{MSA}kliṣṭo dharmaḥ
 kun nas nyon mongs pa'i mtshan nyid|{MSA,MV}saṃkleśa-lakṣaṇa
 kun nas nyon mongs pa'i nad kyi gnyen po|{MSA}kleśa-vyādhi-pratipakṣatva
@@ -5661,19 +5661,19 @@ kun nas nyon mongs pa'i phyogs 'gag pa|{MSA}saṃkleśa-pakṣa-nirodha
 kun nas nyon mongs pa'i rgyu|{MSA}saṃkleśa-hetu
 kun nas nyon mongs par 'gyur pa|{MV}saṃkliśyate
 kun nas nyon mongs shin tu grol|{MSA}suvimokṣāya saṃklesāt
-#kun nas nyon mongs; kun nas nyon mongs pa|{MV}saṃkliśyate; {MV}saṃkliṣṭa
+kun nas nyon mongs; kun nas nyon mongs pa|{MV}saṃkliśyate; {MV}saṃkliṣṭa
 kun nas slong|{C}samutthāpayati
 kun nas slong ba dang mi ldan pa|{C}asamutthāna-yoga
 kun nas slong ba med pa gtogs pa|{C}asamutthāna-paryāpanna
 kun nas slong ba po|{C}samutthāpaka
-#kun nas slong ba; kun slong|{C}samutthāna
+kun nas slong ba; kun slong|{C}samutthāna
 kun nas slong ba'i thabs|{MSA}samutthāna-upāya
 kun nas slong bar mi bgyid pa|{C}asamutthāpika
 kun nas snang ba|{C}saṃdrśyate
 kun nyon mongs rnam par byang|{MV}saṃkleśa-vyavadāna
-#kun nyon mongs; kun nas nyon mongs pa|{L}saṃkleśa
+kun nyon mongs; kun nas nyon mongs pa|{L}saṃkleśa
 kun rdzob|{LCh,C,MV,MSA,L}saṃvṛti; {MSA}saṃvṛta
-#kun rdzob bden pa; kun rdzob kyi bden pa|{MSA}saṃvṛti-satya(ta); {LCh,ME}saṃvṛtisatya
+kun rdzob bden pa; kun rdzob kyi bden pa|{MSA}saṃvṛti-satya(ta); {LCh,ME}saṃvṛtisatya
 kun rdzob byang chub kyi sems|saṃvṛtibodhicitta
 kun rdzob dang don dam pa|{MSA}saṃvṛti-paramārtha
 kun rdzob kyi bden pa nyid|{MV}saṃvṛti-satyatva
@@ -5682,28 +5682,28 @@ kun rdzob sems bskyed|*saṃvṛticittotpāda
 kun rdzob tsam|saṃvṛtimātra
 kun rdzob tu|{C}saṃvṛtyā; saṃvṛtitaḥ
 kun rdzob tu yod pa|{ME} saṃvṛtisat
-#kun rdzob; tha snyad|saṃvṛti; vyavahāra
-#kun rdzob/ tha snyad|saṃvṛti/vyavahāra
+kun rdzob; tha snyad|saṃvṛti; vyavahāra
+kun rdzob/ tha snyad|saṃvṛti/vyavahāra
 kun rdzogs|{MSA}saṃpūrṇa
-#kun rtog; kun tu rtog pa|parikalpa
+kun rtog; kun tu rtog pa|parikalpa
 kun rtogs pa|{C}āvidhyate
 kun sbyong ba|{C}saṃśuddhi
-#kun sbyor; kun tu sbyor ba|{LCh}saṃyojana
+kun sbyor; kun tu sbyor ba|{LCh}saṃyojana
 kun shes pa dang ldan pa|{MSA}parijñātāvin
 kun shes pa rig pa'i dbang po|{C}ājñātāvīndriya
-#kun shes pa; kun shes|{C}samajñā (=vastu-sametam aham iti jñānam); {MSA}parijñā
+kun shes pa; kun shes|{C}samajñā (=vastu-sametam aham iti jñānam); {MSA}parijñā
 kun shes pa'i dbang po|{C}ājñendriya
 kun shes par bya'o zhes|{C}ājñāsyāmi-iti
 kun shes shing|{C}ājñāyate
-#kun shes; kun shes pa|{LCh}ājñāta; {LCh}ājñā
+kun shes; kun shes pa|{LCh}ājñāta; {LCh}ājñā
 kun slong|{LCh}samutthāna
 kun slong ba dang bcas pa'i ngag gis|{MV}samutthānayā vācā
-#kun song; kun tu song; kun tu song ba|{MSA}sarva-gata
+kun song; kun tu song; kun tu song ba|{MSA}sarva-gata
 kun spyod|{C}samācāra
 kun tshol ba|{C}paryeṣaṇa
 kun tu|{MSA}sarvatra; samantatas; samanta
 kun tu 'byin|{C}samudācarati
-#kun tu 'byung ba; kun 'byung|{L}samudaya; {MV}samudācāra
+kun tu 'byung ba; kun 'byung|{L}samudaya; {MV}samudācāra
 kun tu 'dren pa|{MSA}ākarṣaṇa
 kun tu 'dres pa|ākīrṇa
 kun tu 'dzin pa|{MSA,C}āgraha; {MSA}dhāraṇa
@@ -5718,7 +5718,7 @@ kun tu bsrung bar byed pa|{MSA}ārakṣa
 kun tu bstan pa|{C}ādarśayati
 kun tu btsal|{C}paryeṣamāṇa
 kun tu bzang po|Samantabhadra
-#kun tu bzang po; kun bzang|samantabhadra
+kun tu bzang po; kun bzang|samantabhadra
 kun tu bzod|{MSA}kṣāntiḥ sarvatra
 kun tu chad pa dge ba'i rtsa ba|{MSA}samucchinna-kuśala-mūla
 kun tu dngang bar 'gyur ba|{C}saṃtrāsam āpadyante
@@ -5727,7 +5727,7 @@ kun tu mi sbyor bar byed pa|{C}visaṃyojayati
 kun tu rgyal|saṃjaya
 kun tu rgyu ba|{C}parivrājaka
 kun tu rgyu ste|{C}saṃdhāvati
-#kun tu rmongs pa; kun rmongs; kun rmongs pa|{MSA,PP}saṃmoha; saṃmūḍha
+kun tu rmongs pa; kun rmongs; kun rmongs pa|{MSA,PP}saṃmoha; saṃmūḍha
 kun tu rmongs pa'i sa bon|saṃmohabīja
 kun tu rtog pa|{MSA, MV, C}parikalpita; {MSA}parikalpana
 kun tu rtog pa tsam|{MSA}parikalpa-mātra
@@ -5747,11 +5747,11 @@ kun tu skyo ba|{MV}saṃvega
 kun tu snang|{C}saṃdṛśyate
 kun tu snang ba|{C}samanta-avabhāso; {C}samanta-āloko
 kun tu snang bar byas nas|{C}ābhāya-avabhāsya
-#kun tu song; kun song; kun tu song ba|{MSA}sarvaga
+kun tu song; kun song; kun tu song ba|{MSA}sarvaga
 kun tu spyan ras gzigs dbang po|{C} avalokiteśvara
 kun tu spyod|{C}paricārayati (kāmaguṇaiḥ)
 kun tu spyod pa med pa|{C}asamudācāra
-#kun tu spyod pa; kun spyod|{C, MSA, MV}samudācāra; {MSA}samācaraṇa; {C}samudācarati
+kun tu spyod pa; kun spyod|{C, MSA, MV}samudācāra; {MSA}samācaraṇa; {C}samudācarati
 kun tu ston pa|{C}ādarśana; {C}avadarśika; {C}ākhyāna; {MSA}darśana; {MSA, MV}saṃdarśana
 kun tu tshim pa skye|{C}saṃharṣa-jāta
 kun tu zhum|{C}avalīyate
@@ -5924,7 +5924,7 @@ ldang ba ma mchis pa|{C}asamutthāna
 ldang ba'i thabs|{MSA}vyutthānopāya
 ldem dgongs|abhisaṃdhaya
 ldem dgongs bzhi|catvāro 'bhisaṃdhaya
-#ldem por dgongs pa/ ldem dgongs|{MSA}abhisaṃdhi
+ldem por dgongs pa/ ldem dgongs|{MSA}abhisaṃdhi
 ldog|vyatireka; {C}nivṛtta; {C}nirvṛtta; {MSA}nirvṛtti; (vyā √vṛt): {MV}vyāvartate; {C}vivartate
 ldog chos|vyatireka-dharma
 ldog khyab|vyatireka-vyāpti
@@ -6105,7 +6105,7 @@ lhang nger byed pa|{C}virocate
 lhar bcas|{L}sahadeva
 lhar bcas pa|sahadeva
 lhas sbyin|{LCh}devadatta
-#lho 'dzam bu gling; 'dzam gling|jambu-dvīpa
+lho 'dzam bu gling; 'dzam gling|jambu-dvīpa
 lhod pa|{C}śaithilya
 lhums|{LCh,MSA}garbha; {MSA}kukṣi
 lhums su zhugs pa|garbhāvakrānta
@@ -6113,7 +6113,7 @@ lhun|{C}skandha
 lhun grub pa|{C}anābhoga; {L}nirābhoga
 lhun grub par bzod pa 'thob|{MSA}anābhoga ... kṣānti-lābha
 lhun grub tu 'jug pa|anābhogovāhana; anābhogavāhana
-#lhun grub; lhun gyis grub pa|{LCh}anābhoga; nirābhoga
+lhun grub; lhun gyis grub pa|{LCh}anābhoga; nirābhoga
 lhun gyis grub pa|{LCh,C,MSA}anābhoga; {L}nirābhoga
 lhun gyis grub par bzod pa 'thob|{MSA}anābhoga ... kṣānti-lābha
 lhun po|{LCh}meru
@@ -6801,7 +6801,7 @@ mes tshig pa|{C}agni-dāha
 mgo dang rkang lag|{C}śira-hasta-padā
 mgo gcig tu|{L}ekāṃśika
 mgo gcod pa|{C}śiraś (c)cheda; śīrṣa-ccheda
-#mgo smos pas go ba/  mgo smos pas go ba ma yin pa|{C,MSA}udghaṭita-jña
+mgo smos pas go ba/  mgo smos pas go ba ma yin pa|{C,MSA}udghaṭita-jña
 mgon|{C}nātha
 mgon bcas pa|{C}sanātha
 mgon bgyid pa|{C}nātha-karin
@@ -7154,7 +7154,7 @@ mig gi dbang po|caksur-indriya ; cakṣurindriya
 mig gi dbang po'i spyod yul du snang bar gyur to|{C}cakṣuṣā-ābhāsam āgacchati
 mig gi khams|cakṣur-dhātu
 mig gi rnam par shes pa|{MSA}cakṣur-vijñāna
-#mig gi rnam par shes pa; mig gi rnam shes|cakṣurvijñāna
+mig gi rnam par shes pa; mig gi rnam shes|cakṣurvijñāna
 mig gi rnam shes|cakṣur-vijñāna
 mig gi skye mched|cakṣur-āyatana
 mig gis mi rtsol bar bya ba'i phyir|{C}vicakṣuḥ-karaṇa (=vighna-karaṇa)
@@ -7225,7 +7225,7 @@ mkhas pa rnam pa bcu|{MV}daśavidhaṃ kauśalyam
 mkhas pa rnams kyi las rnam gsum po|{MSA}budheṣu karma trividhaṃ
 mkhas pa rnams kyis tshul bzhin brtags na|{MSA}viduṣāṃ yoni-vicayāt
 mkhas pa shes phyir 'jig rten|{C} loka-vidusya
-#mkhas pa'i dmigs pa; mkhas par byed pa'i dmigs pa|kauśalyālambana
+mkhas pa'i dmigs pa; mkhas par byed pa'i dmigs pa|kauśalyālambana
 mkhas pa'i rang bzhin can|{C}paṇḍita-jātīya
 mkhas par bya ba|{C}kauśalya
 mkhas par ldan|{MSA}kauśalya-yukta
@@ -7255,12 +7255,12 @@ mngal las skyes pa|{C}jarāyu-ja
 mngal lci bar gyur pa|{C}guru-garbha
 mngal nas skye ba|{L}jarayu-ja
 mngar ba|madhura
-mngon|{MSA}kathaṃ gamyate (√gam); {C}prajñāyate (=pravartate = tat-kṛta-cihna-abhāvān) · 
+mngon|{MSA}kathaṃ gamyate (√gam); {C}prajñāyate (=pravartate = tat-kṛta-cihna-abhāvān) ·
 mngon 'dod|{C}abhikāṃkṣī
 mngon brjod kyi bag chags|abhilāpavāsanā
-#mngon byang; mngon par rdzogs par byang chub|abhisaṃbodhi
+mngon byang; mngon par rdzogs par byang chub|abhisaṃbodhi
 mngon dga' zhing|{C}abhinandamāno
-#mngon dga', mngon par dga' ba|{MSA}abhirāma; {MSA}abhirata
+mngon dga', mngon par dga' ba|{MSA}abhirāma; {MSA}abhirata
 mngon du|{LCh}abhi; {C}saṃmukhī-bhavati; {C,MSA}abhimukha; {MV}ābhimukhya
 mngon du 'grub par gtogs par bstan pa|{C}abhinirvṛtti-paryāpanna-nirdeśaḥ
 mngon du bgyid pa|{L}sākṣātkāra
@@ -7270,7 +7270,7 @@ mngon du gyur pa|{C}abhimukhī; {C}abhimukha; {C}saṃmukhī-bhuta; {MSA}abhimuk
 mngon du phyogs pa|{L}abhimukhya; {MSA}āmukha; {MSA}abhimukha (e.g.: nirvāṇa-abhimukha); abhimukhī
 mngon du zin|{C}abhigṛhīta
 mngon gyur|{LCh}pratyakṣa; {LCh}abhimukhī
-#mngon mtho, mngon par mtho ba|{LCh,MV}abhyudaya
+mngon mtho, mngon par mtho ba|{LCh,MV}abhyudaya
 mngon pa|abhidharma; {L}abhi; {C}prajñāyate
 mngon pa kun btus|abhidharma-samuccaya
 mngon pa'i chos|{MSA}abhidharma
@@ -7319,7 +7319,7 @@ mngon par bstod pa|{C}abhyananda
 mngon par byed pa|{MV}ābhimukhī-karaṇa
 mngon par chags pa|{C}abhiniveśa; {C}niviśate (=abhiniveśo)
 mngon par dga' ba yid la byed pa|{MSA}abhinanda-manasikāra; {MSA}abhinandanā-manaskāra
-#mngon par dga' ba, mngon dga'|{C}abhirāma; {C}abhirati; abhivadati
+mngon par dga' ba, mngon dga'|{C}abhirāma; {C}abhirati; abhivadati
 mngon par dga' ba'i bsam pa|{MSA}abhinandanāśaya
 mngon par dga' ba'i che ba'i bdag nyid|{MSA}abhirati-māhātmya
 mngon par dga' ba'i yid la byed pa|{MSA}abhinandana-manaskāra
@@ -7368,11 +7368,11 @@ mngon par thob byed|{C}abhiprāpuṇi
 mngon par yid ches par 'gyur ba 'byung la lta mchis lags sam|{C}abhiśraddadhāti (=abhisampratyayaṃ kurvāṇaḥ)
 mngon par zhen pa|{C,MSA,MV}abhiniveśa; {MSA}abhiniviṣṭa; {C}adhyavasāna; {C}abhiṣvaṅga
 mngon par zhugs|{C}abhiprasthita
-#mngon phyogs, mngon du phyogs pa|{LCh}abhimukha
+mngon phyogs, mngon du phyogs pa|{LCh}abhimukha
 mngon rtogs|abhisamaya
 mngon rtogs rgyan|abhisamayālaṃkāra
-#mngon rtogs; mngon par rtogs pa|abhisamaya
-#mngon shes, mngon par shes pa|{LCh,MSA}abhijñā
+mngon rtogs; mngon par rtogs pa|abhisamaya
+mngon shes, mngon par shes pa|{LCh,MSA}abhijñā
 mngon spyod|{Das} abhicāra
 mngon sum|{LCh,C,L,MSA}pratyakṣa; {C}saṃmukham; {MSA}aparokṣa; {MSA,C}saṃmukha
 mngon sum bcad shes|pratyakṣa-paricchinna-jñāna
@@ -7393,10 +7393,10 @@ mngon sum gyi tshad ma|pratyakṣa-pramāṇa
 mngon sum gyis rtogs pa|pratyakṣādhigata
 mngon sum ltar snang|pratyakṣa-ābhāsa
 mngon sum ma yin pa|{MSA}anāmukha; {MSA}apratyakṣa; {MSA}asamakṣa
-#mngon sum mdzad, mngon sum du mdzad|{C}akṣa-ga
+mngon sum mdzad, mngon sum du mdzad|{C}akṣa-ga
 mngon sum mi byed|{C}asākṣātkriyā
 mngon sum rtogs pa can|vikalpaka-pratyakṣa
-#mngon zhen, mngon par zhen pa|{LCh,C}abhiniveśa; {MSA}abhiniviṣṭa; {C}abhiniveśita; {LCh}adhyavasāya
+mngon zhen, mngon par zhen pa|{LCh,C}abhiniveśa; {MSA}abhiniviṣṭa; {C}abhiniveśita; {LCh}adhyavasāya
 mnyam|{C,MV}sama; {C}samāna; {C,MSA}tulya
 mnyam bzhag|{L}samāhita
 mnyam bzhag ye shes|samāhita-jñāna
@@ -7472,7 +7472,7 @@ mos pa rgya che ba|{C}udūra-adhimuktika
 mos pa rgya chen po|{MSA}adhimukti ... vipulā
 mos pa rgyas pa|{MSA}adhimukti-puṣṭi
 mos pa rnam par 'phel byed pa|{MSA}adhimuktiṃ vivardhayan
-#mos pa sgom lam / mos pa'i sgom lam|adhimuktalakṣaṇo bhāvanāmārgaḥ
+mos pa sgom lam / mos pa'i sgom lam|adhimuktalakṣaṇo bhāvanāmārgaḥ
 mos pa yid byed|adhimukti-manaskāra
 mos pa yid la byed pa|{MSA}adhimukti-manaskāra
 mos pa'i 'bras bu yongs su bsdu ba|{MSA}adhimukti-phala-parigraha
@@ -7637,7 +7637,7 @@ mthun par 'dong ngo|{C}anugacchati
 mthun par 'dzin pa|{C}anulomatva
 mthun par 'gro zhing|{C}anugacchati
 mthun par 'khor ro|{C}anuparivartate
-#mthun par byas pa yin; dang mthun par byas pa yin|{MV}anulomito bhavati
+mthun par byas pa yin; dang mthun par byas pa yin|{MV}anulomito bhavati
 mthun par smrag yur|{C}apratikūla-bhāṇī
 mthun par zhugs na|{C}anupraviṣṭa
 mthun phyogs|{LCh}sapakṣa
@@ -7694,7 +7694,7 @@ mtshan mar byas nas|{MV}nimittaṃ kṛtvā
 mtshan mar byed de|{C}nimittī-karoti
 mtshan med 'du byed dang bcas par gnas pa|{MSA}animitta-sasaṃskāro vihāraḥ
 mtshan med gnas pa|{MSA}animitta ... vihāra
-#mtshan med; mtshan ma med pa|{L,MSA}animitta
+mtshan med; mtshan ma med pa|{L,MSA}animitta
 mtshan mo|{LCh,MSA}rātri; {MSA}tamas
 mtshan nyid|{LCh,C,MSA,MV}lakṣaṇa; {MV}lakṣmākhya(?); {MSA}svabhāva
 mtshan nyid 'dzin pa|{MSA}lakṣaṇa-grahaṇa
@@ -7771,7 +7771,7 @@ mu stegs can gyi thar pa|{MSA}tīrthika-mokṣa
 mu stegs can gzhan|{C}tīrthyā
 mu stegs can rnams kyi bstan bcos|{MSA}tīrthika-śāstra
 mu stegs can thar pa la kun tu zhugs pa|{MSA}tīrthya-mokṣa-saṃprasthita
-#mu stegs can; mu stegs pa|{L,MSA}tīrthika; {MSA}tīrthya
+mu stegs can; mu stegs pa|{L,MSA}tīrthika; {MSA}tīrthya
 mu stegs gcer bu pa|{N}tīrthika nirgrantha
 mu stegs pa|{N}tīrthika
 mu tig|{LCh}muktā
@@ -7979,7 +7979,7 @@ ngas yongs su gtod|{C}anuparīndāmi
 nges|{L}niyata; {L}ekāntika; {MSA}aikāntya; {MSA}nītatva; {MSA}vyavasiti
 nges 'byed cha mthun|{LCh,C,MV}nirvedha-bhāgīya
 nges 'byed yan lag|{C)nirvedha-aṅga
-#nges 'byin, nges par 'byin pa|{LCh}nairyāṇika
+nges 'byin, nges par 'byin pa|{LCh}nairyāṇika
 nges 'byung|{LCh}niḥsaraṇa; {C}niryāyatī; {MSA}niryāṇa; {MSA}niryāta; {N}nairyāṇika; {C}naiṣkramya
 nges 'byung med|{C}aniryāṇa
 nges 'byung sgrub pa|niryāṇapratipatti; saṃbhārapratipattiḥ
@@ -7987,9 +7987,9 @@ nges 'byung yan lag|{MV}niryāṇāṅga
 nges 'dzin|{C}avadhāraṇa
 nges bcom ste|{C}nihanitvana; {MSA}(ni √han): nihatya
 nges don gyi mdo|nītārtha-sūtra
-#nges don, nges pa'i don|{LCh,MSA}nītārtha
+nges don, nges pa'i don|{LCh,MSA}nītārtha
 nges gzung ba|{C}avadhāraṇa
-#nges legs, nges par legs pa|niḥśreyasa
+nges legs, nges par legs pa|niḥśreyasa
 nges pa|{LCh,L,MSA}niyata; {LCh}niyama; {C}niyatim; {C}ekānta; {C,L}ekāntika; {MSA}aikāntika; {C}avaśyam; niś √ci: {MSA}niścaya; {MSA}niścita; {MSA}viniścita; {GD:618} adhyavasaya
 nges pa med|a-niyama
 nges pa nyid|{C}niścitatva
@@ -7998,7 +7998,7 @@ nges pa'i|{C}niyatam (=avaśya)
 nges pa'i don|{L}nītārtha
 nges pa'i don gyi mdo sde ma thos pa|{MSA}nītārtha-sūtrāntāśravaṇa
 nges pa'i tshig la gdon mi za bar|{L}nirukti-nirdeśa
-#nges pa'i tshig, nges tshig|{L,MSA}nirukti; {C}nirukti-pratisaṃvid; {C}sunirukta; {MSA}nirukta; {MSA}nirvacana
+nges pa'i tshig, nges tshig|{L,MSA}nirukti; {C}nirukti-pratisaṃvid; {C}sunirukta; {MSA}nirukta; {MSA}nirvacana
 nges par|{C,MV}niyatam (={C}avaśyam)
 nges par 'byed pa|nirvedya; {C}nirvedha (=dharmadhātu-rūpeṇa-adhigamāt)
 nges par 'byed pa 'gro ba|{C}nirvedha-gāminī
@@ -8008,7 +8008,7 @@ nges par 'byung|{C,MV}niryāṇa; (nir √yā): {C,MSA,MV}niryāti; {C}niryāyan
 nges par 'byung ba|{C,L,MSA}niḥsaraṇa; {C}pratisaraṇa; {C,MV}niryāti; {C}niryāta; {MSA,MV}niryāṇa; {MSA}nairyāṇikatva; {MSA}nairyāṇya
 nges par 'byung ba dang bcas pa|{C}saniḥsaraṇa
 nges par 'byung ba med pa|{C}apratisaraṇa
-#nges par 'byung ba; nges 'byung|{L,C}niḥsaraṇa
+nges par 'byung ba; nges 'byung|{L,C}niḥsaraṇa
 nges par 'byung bar 'gyur te|{C}niryāsyanti
 nges par 'dzin|{MV}avadhāra; avadhāraṇa
 nges par 'dzin pa|{C,MV,MSA}avadhāraṇa; {MSA}nirdhāraṇa; {MV}avadhāra
@@ -8036,7 +8036,7 @@ nges par thob par byed pa|{C}nirvāhika (=niṣkarṣika)
 nges rtogs|{C}nidhyāna; {L}nidhāna
 nges sdom|{A4C} niyama
 nges shes|niścaya-jñāna; {GD:494} adhyavasaya
-#nges tshig, nges pa'i tshig|{LCh}nirukti
+nges tshig, nges pa'i tshig|{LCh}nirukti
 ngo|{LCh}mukha
 ngo bo|{LCh,MSA}bhāva; {LCh,L}svabhāva; {C}svābhāvya; {LCh}vastu; {C}bhāva; {C,MSA}rūpa (e.g.: abhūta-rūpa); rūpam
 ngo bo gcig|ekarūpatā; ekavastu
@@ -8066,7 +8066,7 @@ ngo mtshar|{LCh,C,MSA}āścarya; {C}duṣkara; {L} āścarya
 ngo mtshar che|{MSA}āścarya
 ngo mtshar che ba|{MSA}āścarya; {MSA}āścaryatara
 ngo tsha|{C,MSA}hrī; {MSA}lajja; {MSA}lajjanā
-#ngo tsha ba, ngo tsha|{MSA}lajjā
+ngo tsha ba, ngo tsha|{MSA}lajjā
 ngo tsha med pa|{LCh}āhrīkya
 ngo tsha shes pa|{LCh,MSA}hrī
 ngogs|{LCh,C}tīra
@@ -8126,7 +8126,7 @@ nyam chung|{C}alpa-sthāma; {MSA}durbala
 nyam chung ba|{MSA}daurbalya
 nyam chung phyir|{C}durlabhatvāt
 nyam nga ba|{C}ādhi; {MSA}aniṣṭa; {MSA}kaṣṭa; {MSA}vyasana
-#nyam nga ba med pa; sgra nyam nga ba med pa|{MSA}akaṣṭa-śabdatā
+nyam nga ba med pa; sgra nyam nga ba med pa|{MSA}akaṣṭa-śabdatā
 nyam nga bar|(adisaṃ-√kamp): {Śāntideva} adisaṅka
 nyam rangs su mi 'dor 'dod ba|{C}adhivāsana
 nyam rangs su mi 'dor 'dod ba|{C}anādhivāsayitavya (=adhivāsanā parivarjayitavyā); {C}adhivāsana
@@ -8147,7 +8147,7 @@ nyams pa'i rgyu|{MSA}hāni-hetu
 nyams par 'gyur|{C}bhañjati; {MSA}praṇāśa
 nyams par 'gyur ba|{C}sampramoṣayati (=pramuhyate)
 nyams par rnam par spangs pa|{C}upaghāta-vivarjita
-#nyams rangs su mi 'dor ba; nyams rangs su mi 'dod ba|{C}adhivāsana
+nyams rangs su mi 'dor ba; nyams rangs su mi 'dod ba|{C}adhivāsana
 nyams su bde ba|{C}praṇīta; {C}madhura
 nyams su blang|vaiyāvṛtti
 nyams su blang ba|{C}vaiyāvṛtti (=vaiyāvṛtya)
@@ -8279,7 +8279,7 @@ nyes pa rnyams gdul bar bya ba|{MSA}doṣāṇāṃ vinayaḥ
 nyes pa spyad pa|{C}duścarita
 nyes pa spyad pa spyod pa|{C}duścarita-cārin
 nyes pa yongs su spang ba|{MSA}doṣa-parivarjana
-#nyes pa; nyes dmigs|ādīnava, apakṣāla
+nyes pa; nyes dmigs|ādīnava, apakṣāla
 nyes par brtsi bar 'gyur|{C}aparāddhaḥ
 nyes par bsams pa med pa|{C}anavasādayamāna
 nyes tshogs|{MSA}doṣa-saṃcaya
@@ -8380,7 +8380,7 @@ nyon mongs tshogs|{MSA}kleśa-gaṇa
 nyon mongs zad pa|{MSA}kleśa-kṣaya
 nyon sgrib|{LCh}kleśāvaraṇa
 nyon sgrib kun btags|parikalpitakleśāva-raṇa
-#nyon sgrib; nyon mongs pa'i sgrib pa|kleśāvaraṇa
+nyon sgrib; nyon mongs pa'i sgrib pa|kleśāvaraṇa
 nyon yid|kliṣṭa-manas
 nyug byed la|{C}abhyokireya
 nyung|{MSA}alpa; {C}alpaka; {MSA}parītta
@@ -8397,7 +8397,7 @@ pad ma'i ra ga|padma-rakta
 padma|{C}padma
 padma|padma
 padma ral|{L}padmarāga
-#pags pa; lus|sparśana
+pags pa; lus|sparśana
 par 'gya'|prajñā
 pha|{MSA}pitṛ; {C,MSA}paitṛka
 pha dang 'dra ba|{MSA}pitṛ-kalpa
@@ -8460,8 +8460,8 @@ pha rol tu phyin pa yang dag par spyod pa|{MSA}pāramitā-samudācāra
 pha rol tu phyin pa yongs su rdzogs pa|{MSA}pāramitā-paripūri
 pha rol tu phyin pa yongs su rdzogs par bya ba|{MSA}pāramitā-paripūraṇa
 pha rol tu phyin pa yongs su sgrub pa|{MSA}pāramitā-pariniṣpādana
-#pha rol tu phyin pa; phar phyin|{C,L,MSA,MV}pāramitā; {C}pāra(m); {MSA}pāra-gamana
-#pha rol tu phyin pa; phar phyin|pāramitā
+pha rol tu phyin pa; phar phyin|{C,L,MSA,MV}pāramitā; {C}pāra(m); {MSA}pāra-gamana
+pha rol tu phyin pa; phar phyin|pāramitā
 pha rol tu phyin pa'i bslab pa thams cad kyi pha rol tu phyin pa|{C}sarva-śikṣā-pāramitā
 pha rol tu phyin pa'i ngo bo nyid|{MSA}pāramitā-svabhāva
 pha rol tu phyin pa'i rang bzhing gyi dge ba|{MSA}pāramitā-maya ... kuśala
@@ -8955,7 +8955,7 @@ rab tu nyams pa 'gyur ba|{C}sampramoṣayati; {MSA}pracyāvana
 rab tu nyen|{C}pratipīḍanā
 rab tu phye|{L}prabhāva
 rab tu phye ba yin no|{C}prabhāvyate
-#rab tu phye ba; rab tu bzhag pa|{C}prabhāvita; {C}prabhāvitatā; {MSA,MV}prabhāvitatva
+rab tu phye ba; rab tu bzhag pa|{C}prabhāvita; {C}prabhāvitatā; {MSA,MV}prabhāvitatva
 rab tu rgyas pa'i dmigs pa|{MV}pratānatālambana
 rab tu rig pa|{MSA}pravedanā
 rab tu rig par byed pa|{L}prajñāpana
@@ -9077,8 +9077,8 @@ rang bzhin yan lag|{MV}svabhāvāṅga
 rang bzhin ye med|sarvathā niḥsvabhāvāḥ
 rang bzhin yin pa|{C}ātmatā
 rang bzhin yon tan ldan|{MSA}prakṛti-guṇavat
-#rang bzhin; ngo bo nyid|{LCh,C,MSA}svabhāva; {C}svabhāvaka; {C}svabhāvatva; {C}svābhāvya; {MSA}svābhāvika; {C}jāta; {LCh,L,MSA,MV}prakṛti; {N}svarūpa; {MSA}-maya (e.g.: pāramitā-maya); {C}-mayin; ātmaka
-#rang bzhin/ ngo bo nyid|svabhāva
+rang bzhin; ngo bo nyid|{LCh,C,MSA}svabhāva; {C}svabhāvaka; {C}svabhāvatva; {C}svābhāvya; {MSA}svābhāvika; {C}jāta; {LCh,L,MSA,MV}prakṛti; {N}svarūpa; {MSA}-maya (e.g.: pāramitā-maya); {C}-mayin; ātmaka
+rang bzhin/ ngo bo nyid|svabhāva
 rang dang gzhan|{MSA}sva-para
 rang dang gzhan gyi don|{MSA}sva-parārtha
 rang dang gzhan gyi don du rab tu sgrub par byed pa|{MSA}sva-parārtha-prasādhana
@@ -9131,7 +9131,7 @@ rang gi mtshan nyid kyis ni yod|{MSA}svena lakṣaṇena bhāvaḥ
 rang gi mtshan nyid kyis rnam par gnas pa ni ma yin pa|svalakṣaṇena avyavasthitaṃ
 rang gi mtshan nyid kyis stong pa|{C}svalakṣaṇa-śūnya
 rang gi mtshan nyid kyis yod pa|{N}svalakṣaṇa-siddhi; svalakṣaṇasat
-#rang gi mtshan nyid/ rang mtshan|{L,MSA,MV}sva-lakṣaṇa; {MV}prakṛti
+rang gi mtshan nyid/ rang mtshan|{L,MSA,MV}sva-lakṣaṇa; {MV}prakṛti
 rang gi ngang|sva-rasa
 rang gi ngo bo|{MSA,N}svabhāva; {N}svarūpa; svaḥ bhavaḥ; svarūpam
 rang gi ngo bo 'dzin pa|svarūpa-dhāraṇa [cf. Abhidharma-kośa-bhāṣya I.2b]
@@ -9237,7 +9237,7 @@ rdo rje nyid pa|{C}vajratā
 rdo rje sems can|vajrasattva
 rdo rje sems dpa'|vajrasattva
 rdo rje skhyil krung|vajrāsana
-#rdo rje skhyil krung; rdo rje skhyil mo krung; rdor skhyil|vajrāsana
+rdo rje skhyil krung; rdo rje skhyil mo krung; rdor skhyil|vajrāsana
 rdo rje sra ba nyid|{C}vajra-dṛḍhatā
 rdo rje theg pa|vajra-yāna
 rdo rje theg pa'i lam|vajra-yāna-mārga
@@ -9452,11 +9452,11 @@ rgyu'i kun nas nyon mongs pa|{MV}hetu-saṃkleśa
 rgyu'i theg pa|hetuyāna
 rgyud|{L,MSA,MV}saṃtāna; {MSA}saṃtati; tantra; prabandha; {C}jāti; {C}vaṃśa; {MSA}anvaya
 rgyud 'gal|pāraṃparyavirodha
-#rgyud bla ma; rgyud bla; theg pa chen po rgyud bla ma'i bstan bcos|mahāyānottaratantraśāstra; uttaratantra
-#rgyud bla; rgyud bla ma; theg pa chen po rgyud bla ma'i bstan bcos|uttaratantra; mahāyānottaratantraśāstra
+rgyud bla ma; rgyud bla; theg pa chen po rgyud bla ma'i bstan bcos|mahāyānottaratantraśāstra; uttaratantra
+rgyud bla; rgyud bla ma; theg pa chen po rgyud bla ma'i bstan bcos|uttaratantra; mahāyānottaratantraśāstra
 rgyud bla'i 'grel pa|mahāynottaratantraśāstravyākhya
-#rgyud gzhan grub pa zhes bya ba'i rab tu byed pa; rgyud gzhan grub pa|saṃtānāntara-siddhi-nāma-prakaraṇa
-#rgyud gzhan grub pa; rgyud gzhan grub pa zhes bya ba'i rab tu byed pa|saṃtānāntarasiddhināmaprakaraṇa
+rgyud gzhan grub pa zhes bya ba'i rab tu byed pa; rgyud gzhan grub pa|saṃtānāntara-siddhi-nāma-prakaraṇa
+rgyud gzhan grub pa; rgyud gzhan grub pa zhes bya ba'i rab tu byed pa|saṃtānāntarasiddhināmaprakaraṇa
 rgyud legs par 'brel|{C}suśliṣṭha
 rgyud pa|paraṃparā; {L}vyasana
 rgyud par rgol|{C}jalpā-jalpi
@@ -9601,7 +9601,7 @@ rigs spyi|jāti-sāmānya
 rigs tha dad pa|{MSA}gotra-bheda
 rigs thig|nyāya-bindu-prakaraṇa
 rigs thig dar|nyāya-bindu-prakaraṇa
-rigs thigs|nyāya-bindu-prakaraṇa 
+rigs thigs|nyāya-bindu-prakaraṇa
 rigs yang dag par 'grub pa|{MV}gotra-samudāgama
 rigs yin 'gro ba'i|{C}gotra-jananam
 ril por 'dzin pa|{C}piṇḍa-grāha
@@ -9679,7 +9679,7 @@ ring por mi thogs|{C}cireṇa
 ring tu song ba|dūraṃgama
 ring zhig tu|{MSA}ciram; {MSA}cira-kālam
 ris|{L,MSA}gotra; {MSA}nikāya
-#ris chad; ris su chad pa|vicchinna
+ris chad; ris su chad pa|vicchinna
 ris su bcad cing|{C}bhāga-ccheda
 ris su nges pa|{MSA}gotra-niyata
 rje|{LCh}svāmi
@@ -9688,7 +9688,7 @@ rje btsun|{LCh}bhaḍḍāraka
 rje'u rigs|vaiśya
 rjed|{C}vismarati
 rjes|{C}pada
-#rjes 'gro; chos sgo rjes 'gro|{MSA}dharma-mukhānuyāna
+rjes 'gro; chos sgo rjes 'gro|{MSA}dharma-mukhānuyāna
 rjes 'thob|{MSA}anulābha
 rjes dpag|{LCh}anumāna
 rjes dpag bcad shes|anumāna-paricchinna-jñāna
@@ -9770,7 +9770,7 @@ rjes su sgrub pa|{MSA}anuṣṭhāna
 rjes su shes pa|{C}anvaya-jñāna
 rjes su slob pa'i tshul|{C}anuśikṣamāṇa-rūpa
 rjes su song ba|{L}anugata; {C}anugacchati; {C}anugamiṣyanti
-#rjes su spyad pa; rjes su dpyad pa|{C}anuvicārita
+rjes su spyad pa; rjes su dpyad pa|{C}anuvicārita
 rjes su srung ba|{L}anurakṣaṇā
 rjes su ston|{C}anuśāsayati
 rjes su ston byed|{C}anuśāsaka
@@ -9947,15 +9947,15 @@ rnam grangs pa'i|{N}paryāya
 rnam grol|{LCh}vimukti; {C}vimukta; {L}vimuc-
 rnam grol lam|vimukti-mārga
 rnam gzigs|{MSA}vipaśyin
-#rnam kun mngon par rdzogs par rtogs pa; rnam rdzogs sbyor ba|sarvākārābhisaṃbo¬dha
+rnam kun mngon par rdzogs par rtogs pa; rnam rdzogs sbyor ba|sarvākārābhisaṃbo¬dha
 rnam kun mngon rdzogs rtogs pa|{C}sarvākārābhisambodha
 rnam log|{C}vinivṛtti
 rnam mang gzugs dag|{C}aneka-rūpa
 rnam mang po|{C}bahudhā
 rnam mi rtog pa|{C}avikalpa; {C}avikalpanatā; {C}avikalpaka
 rnam mkhyen gyi gzhal bya|sarvākāra-jñāna-prameya; sarvākārā-jñāna-prameya
-rnam mkhyen sbyor ba|sarvākārajñatāprayogaḥ 
-#rnam mkhyen; rnam pa thams cad mkhyen pa nyid|sarvākāra-jñāna; sarvākārajñatā
+rnam mkhyen sbyor ba|sarvākārajñatāprayogaḥ
+rnam mkhyen; rnam pa thams cad mkhyen pa nyid|sarvākāra-jñāna; sarvākārajñatā
 rnam nges|pramāṇa-viniścaya
 rnam pa|{LCh,MV,MSA}ākāra; {C,MV}prakāra; {C}ākāratā; {C}ākṛti; bheda (=dharma-bheda); {MSA}gati; {MSA}vidhi; {MV}kāraṇa (?)
 rnam pa bcu|{MV}daśavidha
@@ -10192,14 +10192,14 @@ rnam par rig pa byed pa|{MSA}vijñāpanīyā
 rnam par rig pa dang tha snyad|{PW8} prajñaptirvyavahāraḥ
 rnam par rig pa med pa|{C}avijñapti
 rnam par rig pa tsam|{L,MSA,MV}vijñapti-mātra; {MSA}vijñapti-mātratā
-#rnam par rig pa; rnam rig|vijñapti
+rnam par rig pa; rnam rig|vijñapti
 rnam par rig pa'i de bzhin nyid|{MSA}vijñapti-tathatā
 rnam par rig pa'i de kho na|{MV}vijñapti-tattva
 rnam par rig par bya ba|{MSA}vijñeyā
 rnam par rig par bya ba ma yin|{C}avijñapanīya
 rnam par rig par byed pa|{MSA}vijñeya
 rnam par rig par byed pa'i gzugs|vijñaptirūpa
-#rnam par rig par byed pa'i gzugs; rnam par rig byed kyi gzugs|vijñaptirūpa
+rnam par rig par byed pa'i gzugs; rnam par rig byed kyi gzugs|vijñaptirūpa
 rnam par rjes su blta'o|{C}paśyati
 rnam par rmongs pa|{L}vimoha
 rnam par rnags pa|{C}vipūtika (=vipūyaka); {L}vipūyaka (=vidūṭika)
@@ -10239,8 +10239,8 @@ rnam par shes pa 'dra ba med pa|{C}sadṛśa-vijñānatva
 rnam par shes pa gnas pa|{C}vijñāna-sthiti
 rnam par shes pa phan tshun dang ldan pa|{C} anyonya-vijñāna-samaṅgin
 rnam par shes pa po|{MSA}vijñātṛ
-#rnam par shes pa; rnam shes|vijñāna
-#rnam par shes pa; rnam shes; shes pa|{MSA,MV}vijñāna; {C}vijñata
+rnam par shes pa; rnam shes|vijñāna
+rnam par shes pa; rnam shes; shes pa|{MSA,MV}vijñāna; {C}vijñata
 rnam par shes pa'i khams|{C}vijñāna-dhātu
 rnam par shes pa'i rkyen gyis ming dang gzugs|{MSA}vijñāna-pratyayaṃ nāmarūpam
 rnam par shes par bgyid pa|{C}vijñāpanatā
@@ -10274,17 +10274,17 @@ rnam par thar pa|{C,MSA}vimokṣa
 rnam par tho 'tsham pa bsam pa|{L}viheṭhanā
 rnam par tshig pa|{C}vidagdhaka
 rnam par zos pa|{C}vikhādika; {C}vikāditaka (=vikhādita)
-rnam rdzogs sbyor ba|sarvākārābhisaṃbhodha 
-#rnam rdzogs sbyor ba; rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbo¬dha
-#rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbhodha
-#rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbodha
+rnam rdzogs sbyor ba|sarvākārābhisaṃbhodha
+rnam rdzogs sbyor ba; rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbo¬dha
+rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbhodha
+rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|sarvākārābhisaṃbodha
 rnam rig|vijñapti
 rnam rig pa|vijñaptika; vijñaptivādin
 rnam rig pa'i lugs|vijñāptika
 rnam rig tsam|vijñaptimātra
 rnam rol|līla; {LCh}vikrīḍita
 rnam rtog|{LCh,MV,MSA}vitarka; vikalpa; kalpanā
-#rnam rtog; rtog pa|vikalpa/kalpanā
+rnam rtog; rtog pa|vikalpa/kalpanā
 rnam sbyong|viśodana
 rnam shes|vijñāna
 rnam shes kyi zas|vijñānāhāra
@@ -10365,7 +10365,7 @@ ro tsa bar bya ba|vājīkaraṇa
 ro'i skye mched|rasāyatana
 rol mo|{Negi} gāndharva
 rol mo|{Negi} tūrya
-rol mo|{PU} nāṭaka 
+rol mo|{PU} nāṭaka
 rol pa|{LCh}līlā; lalita; līla
 rta|{C,MSA}aśva
 rta can shes ltar|{C}aśva-ājāneya-vat
@@ -10413,8 +10413,8 @@ rten|{LCH,C,MSA}āśraya; {C,MSA}niśrita; {L}niśritya; {MSA}niśraya; {MSA}sa�
 rten 'brel|pratītya-samutpāda
 rten 'brel yan lag bcu gnyis|pratītyasamutpāda
 rten 'byung chos|{MSA}pratītya-dharmodaya
-#rten 'byung; rten cing 'brel bar 'byung ba|pratītya-samutpāda
-#rten 'byung; rten cing 'brel bar 'byung ba|pratītyasamutpāda
+rten 'byung; rten cing 'brel bar 'byung ba|pratītya-samutpāda
+rten 'byung; rten cing 'brel bar 'byung ba|pratītyasamutpāda
 rten can|{MSA}adhiṣṭhāna; {MSA}āśraya; {C}ādhāra
 rten cing|{L}saṃniśritya
 rten cing 'brel 'byung|{C}pratītya-samutpāda; {C}pratītyotpāda
@@ -10556,7 +10556,7 @@ rtsa ba'i sems|{MSA}mūla-citta
 rtsa ba'i stobs|{MSA}mūla-bala
 rtsa dbu ma|avadhūtī
 rtsa lag|{MSA}bandhu
-#rtsa nyon; rtsa ba'i nyon mongs|mūla-kleśa
+rtsa nyon; rtsa ba'i nyon mongs|mūla-kleśa
 rtsa ro ma|rasanā
 rtsa shes|prajñā-nāma-mūla-madhyamaka-śāstra
 rtsab mo|soma; {Das} kāñjika; ?????
@@ -10705,7 +10705,7 @@ sa thob pa|{MSA}bhūmi-lābha
 sa yi 'og|{MSA}pātāla
 sa yongs su grub pa|{MSA}bhūmi-pariniṣpatti
 sa zhag|{C}parpaṭa
-#sa'i dngos gzhi; rnal 'byor spyod pa'i sa|bhūmivastu / yogācāryābhūmi
+sa'i dngos gzhi; rnal 'byor spyod pa'i sa|bhūmivastu / yogācāryābhūmi
 sa'i khams|{C}pṛthivī-dhātu
 sa'i rdul|{L}pṛthivī-rajas
 sa'i rnam pa|{MSA}bhūmi-prakāra
@@ -10837,7 +10837,7 @@ sbyangs pa'i yon tan gyi sdom pa mi btang ba|{C}dhūta-guṇa-saṃlekha-anuvarj
 sbyangs pa'i yon tan yongs su brjod pa|{C}dhūta-guṇa-parikīrtana
 sbyangs sdom|{C}dhuta-vṛtta
 sbyar ba|{MSA}anuga; {MSA}anusāra (e.g.: akṣa-gata-anusāra}; {MSA}bandha (e.g.: śloka-bandha)
-#sbyar ba; ldan pa|yoga
+sbyar ba; ldan pa|yoga
 sbyar bar bgyi|{L}yojanīya
 sbyar bar bya ba|{MSA}prayojya; {MV}yojayitavya; {MV 3.16cd}yojya
 sbyar bar smon lam 'debs pa|{MSA}prayojayituṃ praṇidadhāti
@@ -10906,8 +10906,8 @@ sbyor ba dang ldan pa|{MSA}prayoga-sahagata
 sbyor ba dang mthong ba dang sgom pa dang mthar thug pa'i lam|{MSA}prayoga-darśana-bhāvanā-niṣṭhā-mārga
 sbyor ba de'i 'dzin stangs mnyam nyid|prayogasya samatā
 sbyor ba la brten par 'gyur te|{C}ālīno bhavati
-#sbyor ba la ldem por dgongs pa; bsgyur ba la ldem por dgongs pa|pariṇāmābhisaṃdhi
-#sbyor ba la ldem por dgongs pa/ bsgyur ba la ldem por dgongs pa|pariṇāmābhisaṃdhi
+sbyor ba la ldem por dgongs pa; bsgyur ba la ldem por dgongs pa|pariṇāmābhisaṃdhi
+sbyor ba la ldem por dgongs pa/ bsgyur ba la ldem por dgongs pa|pariṇāmābhisaṃdhi
 sbyor ba las mi ldog pa nyid|{MSA}prayogānirvartita
 sbyor ba ma yin pa|{C}ayoga
 sbyor ba med pa|{MV}aprayoga
@@ -11197,7 +11197,7 @@ sems drug|{MSA}ṣaṭ cittāni
 sems dul ba|{C}dānta-cittatā
 sems g.yeng|{C}vikṣipta-cittatā; {MSA}vikṣipta-citta
 sems gnas|cittasthiti
-#sems gnas dgu; sems gnas pa rnam pa dgu|navākārā cittasthiti; navākārācittasthiti
+sems gnas dgu; sems gnas pa rnam pa dgu|navākārā cittasthiti; navākārācittasthiti
 sems gnas pa|{C,MSA,MV}citta-sthiti; {MSA}sthita-citta
 sems gnas pa rnam pa dgu|navākārā cittasthiti
 sems gnas skabs|{MSA}cittāvasthā
@@ -11329,9 +11329,9 @@ ser sna nyid|{MSA}matsaritva
 ser sna'i kun sbyor|mātsarya-saṃyojana
 ser sna'i kun tu sbyor ba|{MV}mātsarya-saṃyojana
 ser sna'i sems|{C}mātsarya-citta
-#sgeg mo ma, sgeg mo|lāsyā
-#sgeg pa'i rdo rje, sgeg rdor|Vilāsavajra/ Līlāvajra
-#sgeg rdor, sgeg pa'i rdo rje|Vilāsavajra/ Līlāvajra
+sgeg mo ma, sgeg mo|lāsyā
+sgeg pa'i rdo rje, sgeg rdor|Vilāsavajra/ Līlāvajra
+sgeg rdor, sgeg pa'i rdo rje|Vilāsavajra/ Līlāvajra
 sgo|{C,L,MSA}mukha; {L,C,MV}dvāra; {C}nirhāra; {MSA}puṭa
 sgo ba|pari-bhu
 sgo nas|{LCh}dvāreṇa
@@ -11399,8 +11399,8 @@ sgrogs par byed|{C}niśāmayātī
 sgrol|{LCh}tṛ
 sgrol ba|{C}nistārayitṛ; {MSA}uttāraṇa
 sgrol ma|tārā
-#sgron ma, sgron me|{C}pradīpa; {MSA}dīpa; {C}ulka
-#sgron me, sgron ma|pradīpa; dīpa
+sgron ma, sgron me|{C}pradīpa; {MSA}dīpa; {C}ulka
+sgron me, sgron ma|pradīpa; dīpa
 sgrub|niṣ-pad; {C}niṣpādayati (=pariniṣpadayati); prati-pad; {MSA}pratipatti; {C}pratipadyate; sidh; {MSA}siddhi; {C}nirhāra; {C}samudānaya; {MSA}(√sādh): sādhayati
 sgrub 'jug|vidhipravṛtti
 sgrub bya'i chos|sādhyadharma
@@ -11520,8 +11520,8 @@ shes pa po|{MSA}jñātṛ; {C}jānaka; {C}jñātā; {C}ajānaka
 shes pa po ma mchis pa|{C}ajānaka
 shes pa rnam par gzhag pa|{MV}jñāna-vyavasthāna
 shes pa yis dmigs|{C}jñānopalambhu (=jñānena-upalambham?)
-#shes pa; blo|jñāna, buddhi
-#shes pa; rnam shes|jñāna/vijñāna
+shes pa; blo|jñāna, buddhi
+shes pa; rnam shes|jñāna/vijñāna
 shes pa'i kun rdzob|{MV}pratipatti-saṃvṛti
 shes pa'i rnam pa bsgom pa|{MSA}jñānākāra-bhāvana
 shes pa'i rnam pa shes pa nyid|{C}jñāna-ākāratā
@@ -11552,13 +11552,13 @@ shes rab dang ldan pa|{C}prajñāvat; {MSA}prajñā-yoga
 shes rab gyi tshogs|prajñāsaṃbhāra; jñānasaṃbhara
 shes rab kyi dbang po|{MSA}prajñendriya
 shes rab kyi pha rol tu phyin pa brgyad stong pa'i bshad pa mngon par rtogs pa'i rgyan gyi snang ba|aṣṭa-sāhasrikā-prajñā-pāramitā-vyākhyāna-abhisamayālaṃkāra-āloka
-#shes rab kyi pha rol tu phyin pa gnyis stong lnga brgya pa/ rab kyi tshal gyis rnam par gnon pas zhus pa/|sārdha-dvisāhasrikā-prajñā-pāramitā / suvikranta-vikrami-paripṛccha
+shes rab kyi pha rol tu phyin pa gnyis stong lnga brgya pa/ rab kyi tshal gyis rnam par gnon pas zhus pa/|sārdha-dvisāhasrikā-prajñā-pāramitā / suvikranta-vikrami-paripṛccha
 shes rab kyi pha rol tu phyin pa sdud pa tshigs su bcad pa|sañcaya-gāthā-prajñā-pāramitā
 shes rab kyi pha rol tu phyin pa stong phrag brgya pa|śata-sāhasrikā-prajñā-pāramitā
 shes rab kyi pha rol tu phyin pa stong phrag nyi shu lnga pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan gyi 'grel pa|pañca-viṃśati-sāhasrikā-prajñā-pāramitopadeśa-śāstrābhisamayālaṃkāra-vṛtti
-#shes rab kyi pha rol tu phyin pa; sher phyin|{C,MSA}prajñā-pāramitā
-#shes rab kyi pha rol tu phyin pa; sher phyin|prajñāpāramitā
-#shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan ces bya'i 'grel pa; 'grel pa don gsal|abhisamayālaṃkāra-nāma-prajñā-pāramitopadeśa-śāstra-vṛtti / spuṭhārtha
+shes rab kyi pha rol tu phyin pa; sher phyin|{C,MSA}prajñā-pāramitā
+shes rab kyi pha rol tu phyin pa; sher phyin|prajñāpāramitā
+shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan ces bya'i 'grel pa; 'grel pa don gsal|abhisamayālaṃkāra-nāma-prajñā-pāramitopadeśa-śāstra-vṛtti / spuṭhārtha
 shes rab kyi pha rol tu phyin pa'i mdo|prajñā-pāramitā-sūtra
 shes rab kyi pha rol tu phyin pa'i snying po|{C}prajñā-pāramitā-hṛdaya
 shes rab kyi phar rol tu phyin pa|prajñāpāramitā
@@ -11591,7 +11591,7 @@ shes rab ye shes kyi dbang|prajñājñānābhiśeka
 shes rab yongs su dag pa|{MSA}prajñā-pariśuddhi
 shes rab zab pa|gambhīra-prajñā
 shes sgrib kun btags|parikalpitajñeyāva-raṇa
-#shes sgrib/ shes bya'i sgrib pa|{LCh}jñeyāvaraṇa
+shes sgrib/ shes bya'i sgrib pa|{LCh}jñeyāvaraṇa
 shes te|{C}budhyati
 shi|{MV}maraṇa
 shi 'phos pa|{C}cyuta
@@ -11601,7 +11601,7 @@ shig med par 'gyur|{C}na yūkila
 shig pa rjes la|{C}bhinditva
 shigs pa|{MV}bhedyatva; {MSA}bhedya (e.g.: abhedya)
 shin lkog|atyanta-parokṣa
-#shin sbyangs; shin tu sbyangs pa|prasrabdhi; praśrabdhi
+shin sbyangs; shin tu sbyangs pa|prasrabdhi; praśrabdhi
 shin tu|{C,TN,MSA}atyanta; {C}ātyantikī; {MSA}su- (e.g.: su-duḥkhita); {MSA}-tara (e.g.: bahu-tara); {C}para; {MSA}parama; {MV}atyarthaṃ; {MSA}kāmaṃ; {MSA}nikāmaṃ; {MSA}gāḍhaṃ; {MSA}bhṛśaṃ
 shin tu 'da' bar bya ste|{C}atikrāmati
 shin tu 'das byas nas|{C}atikramya
@@ -11701,7 +11701,7 @@ shing mkhan gyi slob ma|{C}palagaṇḍa-antevāsin
 shing pa na sha'i 'bras bu|{C}panasa-phala
 shing rta|{LCh,MSA}ratha
 shing rta chen po|mahāratha
-#shing sal gyi sgon; shing sal bal gyi sgon|{C}tūla-picu
+shing sal gyi sgon; shing sal bal gyi sgon|{C}tūla-picu
 shlo ka|śloka
 shos|#NAME?
 shrI|śrī
@@ -11717,15 +11717,15 @@ skabs mchis pa|{L} sa-avakāśa
 skabs mi 'byed|{MSA}avakāśasyākṛtiḥ
 skabs phyin|{C}mṛṣṭa
 skabs shes pa|{C}avasara-jñatā
-#skabs su bab pa; skabs su babs pa|{MSA}iti prakṛtaṃ (pra √kṛ)
-#skabs su babs pa; skabs su bab pa|{MSA}iti prakṛtaṃ (pra √kṛ)
+skabs su bab pa; skabs su babs pa|{MSA}iti prakṛtaṃ (pra √kṛ)
+skabs su babs pa; skabs su bab pa|{MSA}iti prakṛtaṃ (pra √kṛ)
 skad|{L}kṣaṇa; {MSA}bhāṣā; {MSA}vacana; {C}ruta
 skad cig|{C,MSA}kṣaṇa; {C}kṣaṇika; {C}tat-kṣaṇu
 skad cig gcig|{C}eka-kṣaṇa
 skad cig gcig dang ldan pa|{C}eka-kṣaṇa-samāyukta
 skad cig gcig gi rtogs pa|{C}eka-kṣaṇa-avabodha
 skad cig gcig gis|{BCA} kṣaṇena
-#skad cig gcig mngon rdzogs byang chub; skad cig ma gcig gis mngon par rdzogs par byang chub pa|{C}eka-kṣaṇa-abhisaṃbodha
+skad cig gcig mngon rdzogs byang chub; skad cig ma gcig gis mngon par rdzogs par byang chub pa|{C}eka-kṣaṇa-abhisaṃbodha
 skad cig la 'jig pa'i don|{MSA}kṣaṇa-bhaṅgārtha
 skad cig ma|{MSA}kṣaṇika
 skad cig ma dang po dang khyad par med pa|{MSA}ādi-kṣaṇa-nirviśiṣṭatva
@@ -12161,7 +12161,7 @@ sngar lung ma bstan|{MSA}ādāv avyākaraṇāt
 sngar rgol|pūrvapakṣa
 sngo|nāmayi; nati
 sngon|{L,C,MSA,MV}pūrva; {C}purvaṃkara; {C}pūrvam (=pūrvaka); {C}paurvaka
-#sngon 'gro, sngon du 'gro ba|{LCh}pūrvaka; {LCh}pūrvagama; pūrvaṃgama
+sngon 'gro, sngon du 'gro ba|{LCh}pūrvaka; {LCh}pūrvagama; pūrvaṃgama
 sngon chad|{C}alabdha-pūrva; {MSA}pūrva
 sngon chad ma|{C}apūrva-labha
 sngon chad par|paricārikā(ya)
@@ -12413,7 +12413,7 @@ spel ba|{MSA}vardhana; {MSA}saṃvardhana
 spobs pa|{LCh,C,MSA,L}pratibhāna {C}(=pratibhāsa); {C}pratibhāti; {C}pratibhānatā; {C}pratibhānam utpadyate
 spobs pa dang ldan pa|{C}pratibhānavat
 spobs pa med pa|{C}apratibhāna
-#spobs pa mi chod pa; spobs pa ma tshod pa|{C}anācchedya-pratibhāna
+spobs pa mi chod pa; spobs pa ma tshod pa|{C}anācchedya-pratibhāna
 spobs pa mi tshod pa|{C}anācchedya-pratibhāna
 spobs pa nges pa|{C}pratibhāna
 spobs pa skye ba|{C}pratibhānam utpadyate (=te pratibhānam utpannam)
@@ -12562,7 +12562,7 @@ spyod yul yongs su dag pa|{MSA}gocara-pariśuddhi (e.g.: Gocara-pariśuddhi-sūt
 spyos|{C}paribhāṣate
 sra ba|{LCh,MSA}dṛḍha
 sra bar byed pa|{C}gāḍhī-karoti
-#sra; sra ba|dṛḍha
+sra; sra ba|dṛḍha
 srab|tanu
 srab mo|tanu
 srab pa|{C}pratanu; {C}tanu; {MV}saṃlekha
@@ -12698,7 +12698,7 @@ stong pa|{LCh,MSA,MV,C}śūnya; {C}(=utpāda-hetu-vakalyena = tattvena-utpāda-a
 stong pa ma yin mi stong min|{MV}na śūnyaṃ nāpi cāśūnyaṃ
 stong pa nyid|{C}śūnyatā; {C}śūnyatva
 stong pa nyid gzugs so|{MSA}śūnyataiva rūpam
-#stong pa nyid las kyang gzugs gzhan ma yin te/ gzugs nyid stong pa nyid stong pa nyid gzugs so/|{MSA}na cānyatra śūnyatāyā rūpaṃ rūpam eva śūnyatā śūnyataiva rūpaṃ
+stong pa nyid las kyang gzugs gzhan ma yin te/ gzugs nyid stong pa nyid stong pa nyid gzugs so/|{MSA}na cānyatra śūnyatāyā rūpaṃ rūpam eva śūnyatā śūnyataiva rūpaṃ
 stong pa nyid mchog mngon par rtogs pa|{MSA}parama-śūnyatābhisamaya
 stong pa nyid rnam pa gsum|{MSA}trividha-śūnyatā
 stong pa nyid smos pa'i rnam pas|śūnyatāvādākāreṇa
@@ -12820,7 +12820,7 @@ thabs min|{MSA}anupāya(tva)
 thabs mkhas pa|{C}upāya-kauśalya
 thabs mkhas pa'i ye shes kyi bye brag|{C}upāya-kauśalya-jñāna-viśeṣa
 thabs mkhas sbyor ba|upāyakauśalaprayogaḥ
-#thabs mkhas; thabs la mkhas pa|{C}upāya-kuśala; {C}abhyupāyikī; upāyakauśalya
+thabs mkhas; thabs la mkhas pa|{C}upāya-kuśala; {C}abhyupāyikī; upāyakauśalya
 thabs mkhyen pa|{MSA}upāya-jñāna
 thabs nyid|{MSA}upāyatva
 thabs nyid du rung ba|{MSA}upāyatva-yoga
@@ -12942,8 +12942,8 @@ theg chen sems bskyed|mahāyānacittotpāda; bodhicittotpādaḥ
 theg chen sgrub pa|mahāyānapratipattiḥ
 theg chen sgrub pa'i ched du bya ba|pratipatterūddeśaḥ
 theg chen sgrub pa'i dmigs pa|pratipatterālambanam
-theg chen sgrub pa'i rten rang bzhin gnas rigs|pratipatterādhāraḥ prakṛtisthaṃ gotram 
-#theg chen/ theg pa chen po|mahāyāna
+theg chen sgrub pa'i rten rang bzhin gnas rigs|pratipatterādhāraḥ prakṛtisthaṃ gotram
+theg chen/ theg pa chen po|mahāyāna
 theg dman|hīnayāna
 theg dman pa|hīnayāna
 theg pa|{LCh,C,L,MSA,MV}yāna
@@ -13565,7 +13565,7 @@ yang dag pa ma yin pa las yongs su brtags pa|{C}abhūta-parikalpita
 yang dag pa ma yin pa mtshan ma|{MSA}atattva ... nimitta
 yang dag pa ma yin pa yongs su 'dzin par byed|{C}abhūta-parigrāha
 yang dag pa ma yin pa'i chos yongs su mi 'dzin pa|{C}abhūta-dharma-aparigrahāka
-#yang dag pa ma yin pa'i kun rtog; yang dag pa ma yin pa'i kun tu rtog pa ; yang dag min kun rtog|abhūtaparikalpa
+yang dag pa ma yin pa'i kun rtog; yang dag pa ma yin pa'i kun tu rtog pa ; yang dag min kun rtog|abhūtaparikalpa
 yang dag pa ma yin pa'i kun tu rtog pa|{MSA}abhūta-parikalpa
 yang dag pa nyid|{MV}samyaktva; {L}bhūtatā
 yang dag pa nyid du nges pa|{C}samyaktva-niyata
@@ -13861,7 +13861,7 @@ yid kyi mngon sum|mānasapratyakṣa
 yid kyi nyes pa|{MSA}manaḥ-pradoṣa
 yid kyi nyon mongs|{MSA}manaḥ-kleśa
 yid kyi rnam par shes pa|{MSA,MV}mano-vijñāna
-#yid kyi rnam shes; yid kyi rnam par shes pa|mano-vijñāna
+yid kyi rnam shes; yid kyi rnam par shes pa|mano-vijñāna
 yid kyi shing rta la dga' ba|manorathanandin
 yid kyi skyon yang dag par sel ba|{C}vāk-kali-vidhvaṃsano
 yid kyis bsgom par bya ba|{C}mano-bhāvanīya
@@ -14142,7 +14142,7 @@ yongs su grol bar byed de|{C}parimocayati
 yongs su grub|{C}pariniṣpatti
 yongs su grub pa|{C,MSA,MV}pariniṣpanna; {MV,MSA}pariniṣpatti; {MSA}niṣpanna; {C}pariharati; {C}anuṣṭhāna; {MSA}siddhi
 yongs su grub pa'i mtshan nyid|{MSA,MV}pariniṣpanna-lakṣaṇa
-#yongs su grub pa'i ngo bo nyid/ yongs su grub pa'i rang bzhin|{MSA,MV}pariniṣpanna-svabhāva
+yongs su grub pa'i ngo bo nyid/ yongs su grub pa'i rang bzhin|{MSA,MV}pariniṣpanna-svabhāva
 yongs su grub pa'i rang bzhin|pariniḥpannasvabhāva
 yongs su gsal bar byas|{C}paridīpita
 yongs su gtad pa|{C}parīndanā; {C}parīndita; {C}parindanā
@@ -14306,7 +14306,7 @@ yul shes pa|{C}deśa-jña
 yul so so nges pa|viṣaya-pratiniyama
 yul thob par bya ba'i phyir|{MSA}viṣaya-prāptaye
 yul yon tan ldan|{MSA}guṇa-vat ... deśa
-#yul; don|viṣaya; artha
+yul; don|viṣaya; artha
 yum|{C}mātā; {LCh,C,MSA}mātṛ
 yum 'gyur|{C}mātā
 yum gyi lhums|{MSA}mātuḥ kukṣim

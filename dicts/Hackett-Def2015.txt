@@ -192,7 +192,7 @@ baidUrya|(PH) lapis lazuli; vaiḍūrya
 bal po'i mthil|(PH) central Nepal
 ban log|(PH) defrocked monk
 bar|(PH) upto
-bar 'da' ba|(PH) beings who have transcended the intermediate-state 
+bar 'da' ba|(PH) beings who have transcended the intermediate-state
 bar 'ga'|(PH) sometimes
 bar bar du|(PH) interspersed
 bar chad bcu drug|(PH) sixteen obstacles
@@ -210,7 +210,7 @@ bcom ldan 'das dpal brtsegs rgyal po|(PH) the Transcendent Victor Śrīkūṭa-r
 bcom ldan 'das dpal brtsegs rgyal po de bzhin gshegs pa|(PH) the Tathāgata; the Transcendent Victor Śrīkūṭa-rāja
 bcom ldan 'das sA la'i dbang po'i rgyal po 'byung ba|(PH) the Transcendent Victor Sālendra-rājācāra
 bcom ldan bde gshegs|(PH) the Transcendent Victor; the One-Gone-to-Bliss
-bcos min gyi myong ba|(PH) non-artificial experience 
+bcos min gyi myong ba|(PH) non-artificial experience
 bcu|(PH) ten
 bcu bcu|(PH) ten each
 bcu drug cha|(PH) full-moon-like (lit. having all 16 parts ("lunar digits") [of the full moon])
@@ -472,8 +472,8 @@ cha|(PH) even number; part; factor; [all] parts; all together; whole [as suffix]
 cha brgyad sku gdung|(PH) eight sets of relics
 cha lang|(PH) cymbals
 cha ma tshang|(PH) incomplete
-cha tshang|(PH) complete; entire 
-cha tshang ba|(PH) complete; entire 
+cha tshang|(PH) complete; entire
+cha tshang ba|(PH) complete; entire
 cha tshang khyer bde|(PH) simple and complete
 chab|(PH) [honorific prefix particle]
 chab shog|(PH) official letter
@@ -1011,7 +1011,7 @@ gsal byed|(PH) consonant
 gsal mdangs|(PH) radiant
 gsal myong|(PH) clear experience
 gsal rdzogs mtshan dpe|(PH) vivid and complete major and minor marks [of a Buddha or Cakravartin]
-gsal snang gi ting nge 'dzin|(PH) meditative stabilization of clear appearance 
+gsal snang gi ting nge 'dzin|(PH) meditative stabilization of clear appearance
 gsang ba dbang bskur|(PH) secret initiation
 gsang ba shes rab dbang bskur|(PH) the secret and wisdom initiations
 gsang ba'i dur khrod brgyad|(PH) eight secret charnel grounds
@@ -1265,7 +1265,7 @@ klad nad|(PH) headache
 klog|(PH) reading
 klog thabs|(PH) pronunciation manual
 klu'i rtsa she rab|(PH) Nāgārjuna’s Fundamental Treatise on the Middle Way; Called "Wisdom"
-klu'i rtsa she rab byed|(PH) Nāgārjuna’s Fundamental Treatise on the Middle Way; Called "Wisdom" Chapter #
+klu'i rtsa she rab byed|(PH) Nāgārjuna’s Fundamental Treatise on the Middle Way; Called "Wisdom" Chapter
 ko|(PH) [emphatic particle]
 ko'u sham bi|(PH) Kauśambi
 kong chu|(PH) Kong-po river
@@ -1641,7 +1641,7 @@ mthong grol sku|(PH) body [which] liberates [merely through] being seen
 mthong lam bar chad med lam|(PH) uninterrupted path of a path of seeing
 mthong lam bzod pa brgyad|(PH) the eight forbearances of a path of seeing
 mthong lam mnyam bzhag ye shes|(PH) exalted wisdom of meditative equipoise of the path of seeing
-mthong lam rjes thob ye shes|(PH) exalted wisdom of subsequent attainment of a path of seeing 
+mthong lam rjes thob ye shes|(PH) exalted wisdom of subsequent attainment of a path of seeing
 mthong lam rnam grol lam|(PH) path of release of a path of seeing
 mthong lam rnam par mi rtog pa'i ye shes|(PH) non-conceptual exalted wisdom of the path of seeing
 mthong lam shes bzod skad cig ma bcu drug po|(PH) the sixteen moments of forbearance and knowledge of the path of seeing
@@ -1765,7 +1765,7 @@ ngos|(PH) side; surface; myself
 ngos nas|(PH) from the side (of); from the point-of-view (of); by way (of)
 ngos nas grub pa|(PH) establishment from the side [of the basis of designation]
 ngos nas gyi|(PH) because of
-ngos skal gyi spang bya|(PH) respective objects of abandonment 
+ngos skal gyi spang bya|(PH) respective objects of abandonment
 ngur pa|(PH) duck
 ngur smig 'dzin pa|(PH) saffron-clothed; monk
 ngur smrig|(PH) saffron
@@ -1786,7 +1786,7 @@ nus pa|(PH) indication
 nus pa khyad par can|(PH) special capacity
 nus pa thogs med|(PH) an unimpeded capacity
 nus pa'i sgo nas|(PH) by way of their capacity
-nya dbon kun dga' dpal|(PH) Nya-won Kun-ga-pel (1300-1380 ce.) 
+nya dbon kun dga' dpal|(PH) Nya-won Kun-ga-pel (1300-1380 ce.)
 nyag gcig|(PH) sole unique
 nyam chung nyid|(PH) weak
 nyam cung ba|(PH) weak
@@ -2246,7 +2246,7 @@ rnam par dkar ba|(PH) wholesome [things]
 rnam par dpyad pa po|(PH) one who analyzes
 rnam par rig pa dang tha snyad|(PH) what is conventionally known
 rnam par sbyang bar bya ba|(PH) object purified
-rnam par thar pa gsum|(PH) the three types of complete liberation [signlessness; wishlessness; 
+rnam par thar pa gsum|(PH) the three types of complete liberation [signlessness; wishlessness;
 rnam par thar pa zhal gsungs ma|(PH) autobiography
 rnam rdzun pa|(PH) False Aspectarian
 rnam rig pa|(PH) Proponent of the Ideation-Only (vijñapti-matra) School
@@ -2731,7 +2731,7 @@ sor tshigs|(PH) finger digit; finger joint; knuckle
 spa gro mon|(PH) Pa-tro [in the district of] Mön [near Bhutan]
 spang blang gi 'jug ldog|(PH) turning away from that which is to be abandoned and engaging in that which is to be adopted
 spang bya gcig char ba|(PH) simultaneous objects of abandonment
-spang bya sgom spang rtog pa|(PH) the conceptions which are objects of abandonment to be abandoned by the path of meditation 
+spang bya sgom spang rtog pa|(PH) the conceptions which are objects of abandonment to be abandoned by the path of meditation
 spang bya spong tshul|(PH) the mode of abandoning the objects of abandonment
 spang bya'i gtso bo|(PH) main object of abandonment
 spang gnyen gyi 'dod tshul|(PH) mode of assertion of [objects of] abandonment and antidotes

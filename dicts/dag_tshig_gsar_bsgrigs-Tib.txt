@@ -1,8 +1,3 @@
-##version|2.4.2
-##wordcount|6962
-##idxfilesize|162447
-##bookname|dag tshig gsar bsgrigs/
-##sametypesequence|m
 ka|1. bod yig gsal byed sum cu'i dang po/ (ka g.yel) ka 'di'i ming / (ka pa) ka kha'i rim pa ltar bsgrigs pa'i dang po mtshon byed de/ deb ka pa zhes pa lta bu/ (ka sde) ka kha ga nga bzhi'i spyi ming / (ka tho) ka kha'i rim pa ltar bsgrigs pa'i tho yig gi ming / (kA li) bod yig gsal byed sum cu'i spyi ming yin te/ kA li sum cu tham pa'o zhes pa lta bu/ (ka kha) (1) bod yig gsal byed sum cu'i ming / (2) yon tan gyi thog ma'i don te/ ka kha tsam shes zhes pa lta bu/ (ka kha pa) bod yig thog mar slob sbyong byed mkhan/2.rtags mtha' la 'jug pa ni / thab ka dpyid ka dpyid ka'i me tog nged gnyis kas slob sbyong byed lta bu/3.ka ba yi ming bsdus pa/4.gzhi dang gdod ma'i don te gzhi nas dag pa ka nas dag pa zer pa lta bu/
 ka ko la|rtsi shing zhig gi 'bras bu'i ming yin/ che ba star kha tsam ste dbyibs 'jong zlum dang shun par gnyer ma mang zhing nang la sa bon gyis bkang yod/ zas kyi bro ba 'byin byed dang sman byed chog
 ka khol ma|srong btsan sgam pos rang gi bka' chems le'u ka pa nas khol bton gyis lha ldan gtsug lag khang gi ka ba shing lo can gyi logs su gter du sbas pa phyis jo bo rje a ti shas gter nas bton pa'i chos 'byung zhig yin zhing / ming gzhan lha sa'i dkar chag kyang zer/
@@ -6909,7 +6904,7 @@ a lags|1. sprul pa'i sku/2.gzhan la gus pa zhu ba'i tshig spyang ki lag pa chag 
 a lung|a long gi 'bri tshul gzhan/
 a le|yi rang zhing ngo mtshar ba mtshon pa'i sgra ste/ a le/ zla ba'i thog la mi'i rigs 'gro thub pa de tshan rig gi grub 'bras chen bo zhig red lta bu/
 a long|mu khyud zlum po'i ming ste/ lcags kyi a long / shing gi a long zhes pa lta bu/ (a long me long) bde zhing snyom la mtha' yangs pa'i don de/ thang a long me long zhes pa lta bu/ (a long yang long) 1 a long du slar yang a long brgyus pa'i dbyibs dang rnam pa'i ming ste/ thag pas a long yang long du bsdams lta bu/2.bskyar zlos byas pa'i dpe ste/ tshig gcig a long yang long byas lta bu/
-a shad|bod yig gi tshig mgo mtshon pa'i rtags@#//'di'i ming ste/ dbu khyud kyang zer/
+a shad|bod yig gi tshig mgo mtshon pa'i rtags//'di'i ming ste/ dbu khyud kyang zer/
 a shing|sgo gtan byed kyi yo byad kyi ming /
 a shu|me tog ser bo bzhad pa'i shing se ba'i rigs shig
 a she|kha ba tags rigs shig
