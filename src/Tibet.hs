@@ -17,7 +17,7 @@ import Control.Concurrent.MVar
 import Handlers (DictionaryMeta, mergeWithNum, searchInMap, selectDict, separator,
                  zipWithMap)
 import Labels (labels)
-import Parse (WylieTibet, toTibet, makeWylieTibet)
+import Parse (ParseError, Tibet, makeTibet, makeWylieTibet, parseWylieInput)
 import Prettify (blue, cyan, green, putTextFlush, red)
 
 import qualified Data.ByteString.Char8 as BC
@@ -37,12 +37,12 @@ start mSelectedId = do
     mappedFull <- zipWithMap texts files <$> labels
     let mapped = selectDict mSelectedId mappedFull
     history <- newMVar []
-    let wt = makeWylieTibet syls
-    mapped `deepseq` translator mapped wt syls history
+    let toTibetan = makeTibet (makeWylieTibet syls) . parseWylieInput syls
+    mapped `deepseq` translator mapped toTibetan history
 
 -- | A loop handler of user commands.
-translator :: [DictionaryMeta] -> WylieTibet -> Text -> MVar [Text] -> IO ()
-translator mapped wt syls history = forever $ do
+translator :: [DictionaryMeta] -> (Text -> Either ParseError [Tibet]) -> MVar [Text] -> IO ()
+translator mapped toTibetan history = forever $ do
     putTextFlush $ blue "Which a tibetan word to translate?"
     query <- fmap (T.strip . T.decodeUtf8) $ BC.hPutStr stdout "> " >> BC.getLine
     case query of
@@ -58,11 +58,11 @@ translator mapped wt syls history = forever $ do
         _    -> do
             let dscValues = searchInMap query mapped
             if null dscValues then nothingFound
-            else case traverse (separator [37] wt syls) dscValues of
+            else case traverse (separator [37] toTibetan) dscValues of
                 Left err -> putStrLn $ ME.errorBundlePretty err
                 Right list -> do
                     let translations = mergeWithNum list
-                    let tibQuery = cyan . fromRight query $ T.concat <$> toTibet wt syls query
+                    let tibQuery = cyan . fromRight query $ T.concat <$> toTibetan query
                     T.putStrLn tibQuery
                     T.putStrLn translations
                     modifyMVar_ history (pure . (query :))

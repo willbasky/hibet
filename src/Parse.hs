@@ -1,6 +1,7 @@
 module Parse
-       ( toTibet
+       ( makeTibet
        , makeWylieTibet
+       , parseWylieInput
        , Tibet
        , ParseError
        , Wylie
@@ -35,8 +36,11 @@ parseT = M.runParser . unParsecT
 -- parseTest :: Show a => Parser a -> Text -> IO ()
 -- parseTest = M.parseTest . unParsecT
 
-toTibet :: WylieTibet -> Text -> Wylie -> Either ParseError [Tibet]
-toTibet wt syls = makeTibet wt . parseWylieInput syls
+-- toTibet :: WylieTibet
+--     -> (Text -> Either ParseError [([Wylie], [[Wylie]])])
+--     -> Text
+--     -> Either ParseError [Tibet]
+-- toTibet syls wylie = makeTibet (makeWylieTibet syls) . radex
 
 makeTibet
     :: WylieTibet
