@@ -3,13 +3,14 @@
 module Handlers
        ( Title
        , Dictionary
-       , DictionaryMeta
+       , DictionaryMeta (..)
        , makeTextMap
        , mergeWithNum
-       , searchInMap
+       , searchTranslation
        , selectDict
        , separator
-       , zipWithMap
+       , sortOutput
+       , toDictionaryMeta
        ) where
 
 import Control.DeepSeq
@@ -17,10 +18,9 @@ import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
-import Data.Maybe (mapMaybe, maybe)
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import Path (Abs, File, Path, filename, fromRelFile)
+import System.FilePath.Posix (takeBaseName)
 
 import Labels (LabelFull (..))
 import Parse (ParseError, Tibet, Wylie)
@@ -31,8 +31,10 @@ import qualified Data.Text as T
 
 
 type Title = Text
+type Source = Text
+type Target = Text
 
-type Dictionary = HashMap Text Text -- | key and value
+type Dictionary = HashMap Source Target -- | key and value
 
 data DictionaryMeta = DictionaryMeta
   { dmDictionary :: Dictionary
@@ -54,40 +56,26 @@ selectDict mSelected dicts = case mSelected of
     Nothing         -> dicts
     Just selectedId -> filter (\DictionaryMeta{..} -> dmNumber `elem` selectedId) dicts
 
--- | Combine dictionary titles with mapped dictionaries.
-zipWithMap :: [Text] -> [Path Abs File] -> [LabelFull] -> [DictionaryMeta]
-zipWithMap texts files labels = zipWith (\d (t, i) -> DictionaryMeta d t i) mapped (titles labels)
+-- Add lables to dictionaries
+toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
+toDictionaryMeta labels path dict = DictionaryMeta dict title number
   where
-    mapped :: [Dictionary]
-    mapped = map makeTextMap texts
+    (title, number) = findTitle $ takeBaseName path
+    -- Match filpath with labels
+    findTitle :: String -> (Title, Int)
+    findTitle f = maybe ("Invalid title",0) (\LabelFull{..} -> (lfLabel, lfId))
+      $ find (\LabelFull{..} -> T.pack f == lfPath) labels
 
-    titles :: [LabelFull] -> [(Title, Int)]
-    titles labels' = map findTitle filepathes
-      where
-        -- Trim filepath
-        filepathes :: [Text]
-        filepathes = map (T.dropEnd 4 . T.pack . fromRelFile . filename) files
-        -- Match filpath with labels
-        findTitle :: Text -> (Title, Int)
-        findTitle f = maybe ("Invalid title",0) (\LabelFull{..} -> (lfLabel, lfId)) $
-            find (\LabelFull{..} -> f == lfPath) labels'
-
--- Search in mapped dictionary.
-searchInMap :: Text -> [DictionaryMeta] -> [([Text], (Title, Int))]
-searchInMap query mapped =
-    sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b) (searched mapped)
+-- Search query in dictionary.
+searchTranslation :: Text -> DictionaryMeta -> Maybe ([Target], (Title, Int))
+searchTranslation query DictionaryMeta{..} = if null ts then Nothing else Just (ts, (dmTitle, dmNumber))
   where
-    searched :: [DictionaryMeta] -> [([Text], (Title, Int))]
-    searched = mapMaybe (\DictionaryMeta{..} -> notNull (values dmDictionary, (dmTitle, dmNumber)))
-
+    ts = HMS.foldrWithKey search [] dmDictionary
+    search :: Source -> Target -> [Target] -> [Target]
     search k v acc = if k == query then v : acc else acc
 
-    values = HMS.foldrWithKey search []
-
-    notNull (dict, meta) = case dict of
-      [] -> Nothing
-      _  -> Just (dict, meta)
-
+sortOutput :: [([Text], (Title, Int))] -> [([Text], (Title, Int))]
+sortOutput = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
 
 -- | Add numbers and flatten.
 mergeWithNum :: [([Text], (Title, Int))] -> Text
@@ -105,7 +93,7 @@ mergeWithNum = T.intercalate "\n" . map flatten
     prettyT title = blue $ bold title
     -- Decode value and add mark.
     valueMarked :: [Text] -> Text
-    valueMarked value = T.unlines $ map (\v -> cyan "► " <> insideNewLine v) value
+    valueMarked = T.unlines . map (\v -> cyan "► " <> insideNewLine v)
     -- Fix new lines inside value.
     insideNewLine :: Text -> Text
     insideNewLine = T.replace "\\n" "\n  "

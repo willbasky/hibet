@@ -48,12 +48,15 @@ library
   build-depends:       base ^>= 4.12
                      , aeson
                      , ansi-terminal
+                     , async
                      , bifunctors
                      , bytestring
+                     , conduit
                      , deepseq
                      , directory
                      , gitrev
                      , file-embed
+                     , filepath
                      , megaparsec
                      , neat-interpolation ^>= 0.3.2.2
                      , optparse-applicative

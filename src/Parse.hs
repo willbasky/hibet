@@ -2,6 +2,7 @@ module Parse
        ( makeTibet
        , makeWylieTibet
        , parseWylieInput
+       , radixTreeMaker
        , splitter
        , Tibet
        , ParseError
@@ -34,8 +35,8 @@ type ParseError = ME.ParseErrorBundle Text Void
 parseT :: Parser a -> String -> Text -> Either ParseError a
 parseT = M.runParser . unParsecT
 
-parseTest :: Show a => Parser a -> Text -> IO ()
-parseTest = M.parseTest . unParsecT
+-- parseTest :: Show a => Parser a -> Text -> IO ()
+-- parseTest = M.parseTest . unParsecT
 
 makeTibet
     :: WylieTibet
@@ -49,24 +50,23 @@ makeTibet wt ts = do
         fromLook = F.foldMap look
     pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
 
-parseWylieInput :: Text -> Text -> Either ParseError [([Wylie], [[Wylie]])]
-parseWylieInput syls txt  = do
+parseWylieInput :: RadixTree -> Text -> Either ParseError [([Wylie], [[Wylie]])]
+parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
     list <- tibList ls
-    let radex = radexTreeMaker syls
-    traverse (bitraverse radex (applyRadex radex . parseT tibSentEndList "")) list
+    let radixSearch = parseT (search radix) ""
+    traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
 
 applyRadex :: (Text -> Either ParseError [Text]) -> Either ParseError [Text] -> Either ParseError [[Text]]
 applyRadex radex eitherList = do
     list <- eitherList
     traverse radex list
 
-radexTreeMaker :: Text -> (Text -> Either ParseError [Text])
-radexTreeMaker syls =
+radixTreeMaker :: Text -> RadixTree
+radixTreeMaker syls =
     let linedSyls = T.lines syls
         firstPart = map (T.takeWhile (/= '|')) linedSyls
-        radex = fromFoldable firstPart
-    in  parseT (search radex) ""
+    in  fromFoldable firstPart
 
 spaceBetween :: Text -> Text -> Text
 spaceBetween a b = a <> " " <> b

@@ -13,6 +13,7 @@ module Prettify
        , greenCode
        , magenta
        , magentaCode
+       , nothingFound
        , putTextFlush
        , redCode
        , red
@@ -121,3 +122,8 @@ bold t = boldCode <> t <> resetCode
 
 endLine :: Text
 endLine = "\n"
+
+nothingFound :: IO ()
+nothingFound = do
+    putTextFlush $ red "Nothing found."
+    putTextFlush ""
