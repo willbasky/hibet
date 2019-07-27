@@ -21,6 +21,7 @@ cabal.config
 cabal.project.local
 .ghc.environment.*
 .HTF/
+
 # Stack
 .stack-work/
 
@@ -52,4 +53,3 @@ TAGS
 # other
 .DS_Store
 .gitignore
-

@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
+## [0.6] - 2019-07-27
+
+### Added
+
+* Benchmarked most heivy functions comparing with conduit way of them. Conduit and concurrent didn't speed up them.
+
+### Fixed
+
+* Dictionaries to be parsed correctly
+* Data makers to load faster
+
 ## [0.5] - 2019-07-07
 
 ### Added
@@ -26,7 +37,7 @@ and this project adheres to
 
 ### Changed
 
-* Moved from attoparsec library ro megaparsec
+* Swap attoparsec with megaparsec library
 
 ## [0.4] - 2018-11-20
 

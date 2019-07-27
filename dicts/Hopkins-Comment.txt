@@ -1,7 +1,7 @@
 'bad pa|compare: {rtsol ba}, exertion; {brtson 'grus}, effort
 'bras bu|for synonyms and examples see: {byas pa}
 'bras chan|get ex from Ship 62a SW added this record
-'bras spungs|The two principle colleges are Go-mang (sgo mang) and Lo-sel-ling (blo gsal gling) ?(PH) Comment: "Rice Mound," said to be called this because its founder Jam-y#ang-chö-jay announced, "I will build a monastic university like a mound of rice and retreat hermitage above it for myself shaped like a mouse ready to eat the rice, the latter being called Mouse Hermitage." (PH) add meaning / note about locale of Kalacakra teachings .... DhAnyakaTaka = 'bras spungs?
+'bras spungs|The two principle colleges are Go-mang (sgo mang) and Lo-sel-ling (blo gsal gling) ?(PH) Comment: "Rice Mound," said to be called this because its founder Jam-yang-chö-jay announced, "I will build a monastic university like a mound of rice and retreat hermitage above it for myself shaped like a mouse ready to eat the rice, the latter being called Mouse Hermitage." (PH) add meaning / note about locale of Kalacakra teachings .... DhAnyakaTaka = 'bras spungs?
 'bras bu lnga|see: {'bras bu}
 'bras bu'i theg pa|this is another name for tantra, because a tantric practitioner takes the effect state, Buddhahood, as the basis of her or his practice (T)
 'bre pa|Thumi, p. 180, has: bre / 'bre / bres / 'bres
@@ -34,7 +34,7 @@
 'du byed kyi las|the second of the twelve links of dependent-arising
 'dug stangs|add "gz" as abbreviaton for Ship at beginningSW added this entry; needs Tib sort code
 'dul ba|one of the five main divisions of study in Tibetan Ge-luk-ba monasteries; the others are: valid cognition (tshad ma, pramANa); perfection of wisdom (phar phyin, prajJA-pAramitA); the middle way school (dbu ma, mAdhyamaka); and the Compendium of Knowledge (chos mngon mdzod, abhidharma-koza)
-'dul ba'i dbang gis|through the force of taming; Comment: Jik-may-dam-chö-gya-tso reports that D#ra-d#i Ge-s#hay Rin-chen-dön-drup (pra sti dge bshes rin chen don grub) interprets "through the force of taming" as "through the force of taming trainees having the lineage of the Middle Way School by means of the literal reading" (gdul bya dbu ma pa'i rigs can sgras zin des 'dul ba'i dbang gis). However, Jik-may-dam-chö-gya-tso points out that D#zong-ka-b#a himself in the section on the Consequence School of the Essence of Eloquence glosses "through the force of taming" with "through the force of trainees' thought" (gdul bya'i bsam pa'i dbang gis). It seems to me that both interpretations are suitable.
+'dul ba'i dbang gis|through the force of taming; Comment: Jik-may-dam-chö-gya-tso reports that Dra-di Ge-shay Rin-chen-dön-drup (pra sti dge bshes rin chen don grub) interprets "through the force of taming" as "through the force of taming trainees having the lineage of the Middle Way School by means of the literal reading" (gdul bya dbu ma pa'i rigs can sgras zin des 'dul ba'i dbang gis). However, Jik-may-dam-chö-gya-tso points out that Dzong-ka-ba himself in the section on the Consequence School of the Essence of Eloquence glosses "through the force of taming" with "through the force of trainees' thought" (gdul bya'i bsam pa'i dbang gis). It seems to me that both interpretations are suitable.
 'dun|see: {'dun pa}
 'dun pa|one of the five determining factors (yul nges lnga, paJca-viSaya-pratiniyama); for others see: {yul nges}
 'dus byas|refers to a phenomenon which is produced in dependence upon an aggregation of causes
@@ -43,7 +43,7 @@
 'dus ma byas|Comment: See 'dus ma byas kyi chos.
 'dzag pa|Tenses from Thumi, p.224 (T)
 'dzam bu gling|'dzam bu gling; Comment: In Buddhist cosmology there are four large continents, each of which has two smaller continents (gling phran brgyad) next to it: In the center, is the monarch of mountains, ri rab (meru). The four continents and eight smaller continents are (1) shar lus 'phags po (videha), the eastern continent "land of [those with] superior/large bodies" with lus (deha) and lus 'phags (videha); (2) lho 'dzam bu gling (jambudvIpa), the southern continent "Jambu-tree land" with rnga yab (cAmara) and rnga yab gzhan (aparacAmara); (3) nub ba blang spyod (godanIya) the western continent "land of using cattle" with g.yo ldan (sAthA) and lam mchog 'gro (uttaramantriNa); (4) byang sgra mi snyan (kuru), the northern continent "land of unpleasant sound" with sgra mi snyan (kurava) and sgra mi snyan kyi zla (kaurava). Surrounding all of these is an outer rim of iron mountains.
-'dzin|another example is d;$r-zjZh]-s#n-p-[[-f*[! (bzung 'dzin rdzas tha dad med/) "subject and object do not exist as different substantial entities" (T)
+'dzin|another example is dr-zjZh]-sn-p-[[-f*[! (bzung 'dzin rdzas tha dad med/) "subject and object do not exist as different substantial entities" (T)
 'dzin rnam|definition of self-knower (rang rig)
 'dzom|get ex. from Ship; Tshig SW added this record
 'dzoms pa|get ex. from Ship; Tshig SW added this record
@@ -300,7 +300,7 @@ byang sgra mi snyan|Comment: In Buddhist cosmology there are four large continen
 byang sems kyi mkhyen pa|(PH) no entry for (... sbyor lam) but there is for (...sbyor ba) ? [see also: go sgrub]
 byang chub sems dpa'i sa|see: {byang sems 'phags pa'i sa}
 byang chub kyi phyogs|Do we want to list the sde tshan in Tibetan divisions? (T)
-#byang chub kyi sems|Still don't know who (N) is. Napper, maybe. Should I add definition from don bdun bcu? (T)
+byang chub kyi sems|Still don't know who (N) is. Napper, maybe. Should I add definition from don bdun bcu? (T)
 byang chub kyi shing|this refers to the tree under which ShAkyamuni Buddha attained enlightenment
 byang chub kyi yan lag bdun|see: {byang chub kyi yan lag}
 byang chub kyi yan lag rnam par bzhag pa|see: {byang chub kyi yan lag}

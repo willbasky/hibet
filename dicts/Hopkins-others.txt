@@ -256,7 +256,7 @@
 'gal ba'i gtan tshigs|{GD:276} contradictory evidence, a form of faulty reasoning
 'gal bar byed|{C}opposes; to obstruct; contradict; bring into conflict with
 'gal bar byed pa bya ba|{C}opposes; to obstruct; contradict; bring into conflict with
-#'gal bar byed/ 'gal bar mi byed|{C}opposes; to obstruct; contradict; bring into conflict with
+'gal bar byed/ 'gal bar mi byed|{C}opposes; to obstruct; contradict; bring into conflict with
 'go ba'i nad|{C}misfortune; troublesome
 'god|{C}passing away; fall; establishment
 'god pa|{C}enjoining; set going
@@ -510,7 +510,8 @@
 'tshubs te 'chi ba|{C}dies [lit.: is not drowned]
 'u yug pa rigs pa'i seng ge|{GD:x,xii} U-yuk-ba-rig-bay-seng-gay (?-1253), a Sa-kya author on epistemology
 a ka ru nag po|{S}black agaru tree
-#an da rnyil; an dha rnyil|{S}sapphire
+an da rnyil; an dha rnyil|{S}sapphire
+an da rnyil; an dha rnyil|{S}sapphire
 ba lang gi phur ba dag pa|{C}cow's tethering post
 ba lang gi rmig rjes kyi nang du|{C}puddle in a cow's footprint
 ba lang rdzi|{C}cowherd
@@ -564,9 +565,9 @@ bcad pa|{C}take away; cuts (through) annihilation; extermination; completely cut
 bcad pa'i yul can|{GD:649} cognitions which follow a valid cognition and cognize the same object as that valid cognition
 bcad par bya ba yin|{C}drives away
 bcag 'phro|{C}a fragment of
-#bcas pa, bcas|possessing; with; connected with
+bcas pa, bcas|possessing; with; connected with
 bcas pa'i skye ba|{C}production; sprung up
-#bcas, bcas pa|possessing; with; connected with
+bcas, bcas pa|possessing; with; connected with
 bcing|{C}imprisonment; bond(age); joined together by
 bcings|{C}bound
 bcings pa|{C}murder; prisoner condemned to death
@@ -684,7 +685,7 @@ bkur bsti|{C}respect; dignity; a title to be respected
 bkur stir bgyis par 'gyur|{C}treat with respect; revere; honor
 bkur stir bya ba|{C}to honor
 bkur stir byed|{C}treat with respect; honor; revere
-#bkur; bkur sti|{C}eulogy
+bkur; bkur sti|{C}eulogy
 bla gab med pa|{C}one who lives in an open, unsheltered place
 bla ma|{C}weighty; serious; deep; good friend
 bla ma bsnyen bkur|{C}reverence for the guru
@@ -843,7 +844,7 @@ brten par bya'o|{C}flees back to; returns to; runs back to
 brten par byed|{C}confirms; sustains
 brten par byed pa|{C}a place to settle down in
 brten par mi bya|{C}should rely on; fly down to; return to; rest in; stand firmly in; base oneself on
-#brtogs nas; brtags nas|{C}meditate (on); touch and examine
+brtogs nas; brtags nas|{C}meditate (on); touch and examine
 brtsad pa|commence; undertake
 brtsal ba|{C}search
 brtsams nas|{C}when one has undertaken
@@ -943,7 +944,7 @@ bsgrub|{C}accomplishes; creates; perfects; achieves
 bsgrub bya'i chos|{GD:783} property of the probandum
 bsgrub cing|{C}when he progresses
 bsgrub nas|{C}progress; hasten towards; promise; behave
-bsgrub pa|{C}progress; progressive path; as productive of; brings about; lead to; path; practices; (bound to) progress towards; fabricated appearance · 
+bsgrub pa|{C}progress; progressive path; as productive of; brings about; lead to; path; practices; (bound to) progress towards; fabricated appearance ·
 bsgrub pa'i sa|{C}progressive stages
 bsgrub par 'gyur|{C}arrive at; result in; gain; full knowledge; attain enlightenment; rise up together; reach the fullness of perfection
 bsgrub par bya'o|{C}brings; brings about
@@ -1076,7 +1077,7 @@ btabs na|{C}be invited to choose; have to choose between
 btags nas|{C}hurl, throw; reject; cast away; shoot; move into
 btags pa ba|{GD:515} metaphorical (as opposed to true, dngos);{N} imputed
 btags pa tsam du|{C}merely conceptual
-#btags pa; rnam brtags|{C}concept; conception; nominal concept/existence; conceptual entity; nominal entity; intimation; conceptual existence; spread; conceived; arranged; placed into; added on; put/thrown into; plunged into
+btags pa; rnam brtags|{C}concept; conception; nominal concept/existence; conceptual entity; nominal entity; intimation; conceptual existence; spread; conceived; arranged; placed into; added on; put/thrown into; plunged into
 btang|{C}freed; rejects; emits; cast off/out; come up; let go; abandon; (would) discard; excel, curtain; through; across; having spurned; renounces
 btang ba|renounced; part from; spurns{C}
 btang bar bgyi ba|{C}not abandoned
@@ -1622,7 +1623,7 @@ de med par|{C}without it
 de nang du|{C}inward; inwardly
 de nas|{C}further (on); except therefore-going; thereupon; because of that; (from) there; thereby; in front of it
 de ni gnas nas g.yo ba|{C}move away from that position
-#de nyid; de kho na nyid|{C}just that; Thatness; truly real; 'thatness'; reality itself
+de nyid; de kho na nyid|{C}just that; Thatness; truly real; 'thatness'; reality itself
 de phyir|wealth; aim; fortune; benefits; entity; meaning; something of value; for the welfare of beings
 de snyed|{C}snare
 de tsam gyi tshod kyis ni|{C}by that much; then
@@ -1700,7 +1701,7 @@ dgongs par|{C}his mind is impressed by; consider; bring out; bear in mind; bring
 dgongs par 'gyur|{C}his mind is impressed by; consider; bring out; bear in mind; bring to mind;  behave towards(?); thinks to himself
 dgongs par mdzad|{C}his mind is impressed by; consider; bring out; bear in mind; bring to mind;  behave towards(?); thinks to himself
 dgongs te|{C}hidden intent; with hidden meaning
-#dgongs; dgongs pa|{C}hidden intent; with hidden meaning
+dgongs; dgongs pa|{C}hidden intent; with hidden meaning
 dgos|{C}work; business; function; task
 dgos pa|{C}duty; necessary
 dgos pa byed do|{C}does its work
@@ -1721,17 +1722,17 @@ dka'|{C}hard to understand; hard to express; to do what is hard
 dka' ba|{C}hard to understand; hard to express; to do what is hard; stupid
 dka' ba bgyid pa|{C}doer of what is hard
 dka' ba byed pa yin pa|{C}doer of what is hard
-#dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|{C}austerities
+dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|{C}austerities
 dka' ba yin|{C}extremely hard; difficult; (to do what is) hard
 dkar po|pure; bright; very white; {C}pure; {C,D1}bright
 dkar po rnam par mthong ba'i sa|{C}stage of bright insight
-#dkar; dkar po|{C}pure; bright
+dkar; dkar po|{C}pure; bright
 dkhyil 'khor|{C}(circle of the) assembly
 dkhyil 'khor gyi khyams na|{C}circular hall with peaked roof
 dkon mchog|{C}precious jewel; precious substance; treasure
 dkon pa|hard to get; hard to find; hard to reach
 dkon po|hard to get; hard to find; hard to reach
-#dkon; dkon po|hard to get; hard to find; hard to reach
+dkon; dkon po|hard to get; hard to find; hard to reach
 dkri|{C}overcome; wrap
 dkris|{C}overcome; wrap
 dkris sam bcings te|{C}bound
@@ -2143,7 +2144,7 @@ go cha bgo dgos so|{C}must put on the armor
 go cha bgos shing|{C}armor
 go cha chen po bgos so|{C}armed with the great armor
 go gyon te|{C}put on the armor
-#go rim bzhin; go rim bzhin du|{C}in due order; respectively
+go rim bzhin; go rim bzhin du|{C}in due order; respectively
 go rim pa|{C}gradual action
 go skabs 'byed par mi 'gyur ba|{C}they are given no opportunity
 go skabs ma mchis pa|{C}it cannot be; impossible; no room
@@ -2151,7 +2152,7 @@ gom snyoms pa|{C}walks at an even pace
 goms pa can|{GD:734} trained perceptions
 goms pa'i lam|{C}path of repeated meditational practice
 goms par byas pas|{C}cultivation; tending; cultivation
-#gong bar 'gyur; 'gong bar mi 'gyur|{C}becomes cowed; be cast down; hide despondently in; does (not) despond; (not) cow
+gong bar 'gyur; 'gong bar mi 'gyur|{C}becomes cowed; be cast down; hide despondently in; does (not) despond; (not) cow
 gong ma|{C}superior; {GD:177} vertical
 gong na ma mchis pa|{C}unsurpassed; highest; most excellent; the utmost
 gong na med pa|{C}unsurpassed; highest; most excellent; the utmost
@@ -2187,7 +2188,7 @@ grong rdal|{C}market town; market place
 gru|{C}ship
 gru zhig|{C}who suffers shipwreck
 grub bde rdzas gcig|{GD:241} simultaneous substantial identity; {572} one simlutaneous substance
-#grub mtha'|in the ety I changed grub pa'i to grub pa'am; check
+grub mtha'|in the ety I changed grub pa'i to grub pa'am; check
 grub pa|{C}power; succeed; accomplish; stored up
 grub pa dang bde ba med pa|{C}surrounded by troubles
 grub par 'gyur ba|{C}will succeed; become; arise; come to be; perfect
@@ -2441,7 +2442,7 @@ khong du chud par byed pa|{C}penetrates
 khong du chud par dka' ba|{C}hard to understand
 khong du ma chud pa|{C}without understanding; not understanding
 khong du song ba|{C}(got into the) stomach
-khong khro|{C}sharp; bitter · 
+khong khro|{C}sharp; bitter ·
 khong khro ba|{C}resisting; impact; aversion
 khong khro ba med pa|{C}unobstructed; free from aversion; non-obstruction; not hostile
 khong khro bar 'gyur|{C}is obstructed; is frustrated; beat back; be upset
@@ -2493,7 +2494,7 @@ klu|{C}snake; serpent
 klu bdag|{C}lord of nāgas
 klu dbang|{C}Lord of the Serpents
 klu yi bdag po|{C}Chief of Serpents
-#kun 'byung ba; kun 'byung|{C}befall; use; credit with; ideas; habits; origin; origination; source
+kun 'byung ba; kun 'byung|{C}befall; use; credit with; ideas; habits; origin; origination; source
 kun 'dri|{C}questioning
 kun brjod pa'i cho 'phrul|{C}miraculous reading of thoughts
 kun brtags|{C}represent what is not really there
@@ -2503,8 +2504,8 @@ kun chub par byed|{C}study; masters
 kun dga' ra ba phun sum tshogs pa|{C}gardens
 kun gtong|{C}complete renunciation
 kun gzhi|storehouse; hang on to; settling place
-#kun gzhi rnam par shes pa; kun gzhi rnam shes|storehouse-consciousness; foundation-consciousness
-#kun gzhi rnam shes; kun gzhi rnam par shes pa|storehouse-consciousness; foundation-consciousness
+kun gzhi rnam par shes pa; kun gzhi rnam shes|storehouse-consciousness; foundation-consciousness
+kun gzhi rnam shes; kun gzhi rnam par shes pa|storehouse-consciousness; foundation-consciousness
 kun la|{C}always; everywhere; at all times; in every way
 kun ma stud pa|{C}non-attachment
 kun mkhyen|{C}(state of) all-knowledge
@@ -2516,14 +2517,14 @@ kun nas ldang ba|{C}obsession
 kun nas mdzes pa|{C}fair in every way
 kun nas mi ldang ba|{C}no arising; non-arising
 kun nas mnar sems byed de|{C}cherish malice for; feel anger
-#kun nas nyon mongs pa can; kun nas nyon mongs can|{C}afflicted; polluted
+kun nas nyon mongs pa can; kun nas nyon mongs can|{C}afflicted; polluted
 kun nas nyon mongs pa ma yin pa|{C}without affliction; non-affliction
-#kun nas nyon mongs pa; kun nas nyon mongs|{C}afflicted; made miserable
+kun nas nyon mongs pa; kun nas nyon mongs|{C}afflicted; made miserable
 kun nas slong|{C}raises
 kun nas slong ba dang mi ldan pa|{C}not joined up with the world of appearance
 kun nas slong ba med pa gtogs pa|{C}not included in the world of appearance
 kun nas slong ba po|{C}raiser
-#kun nas slong ba; kun slong|{C}manifestation; arising
+kun nas slong ba; kun slong|{C}manifestation; arising
 kun nas slong bar mi bgyid pa|{C}which raises nothing
 kun nas snang ba|{C}appears; is beheld; appears bright; be equal to(?)
 kun rdzob tu|{C}in a conventional sense
@@ -2531,7 +2532,7 @@ kun rdzob tu yod pa|{GD:115} relatively existent
 kun rtogs pa|{C}is pierced(?)
 kun sbyong ba|{C}thorough purification
 kun shes pa rig pa'i dbang po|{C}the dominant faculty of one who has fully understood
-#kun shes pa; kun shes|(C)denomination; appellation
+kun shes pa; kun shes|(C)denomination; appellation
 kun shes pa'i dbang po|{C}the dominant (faculty) of 'understanding'
 kun shes par bya'o zhes|{C}I shall fully understand
 kun shes shing|{C}is noticed
@@ -2560,7 +2561,7 @@ kun tu snang ba|{C}All-round Illumination; Illumination All-round
 kun tu snang bar byas nas|{C}illuminate with their lustre
 kun tu spyod|{C}enjoys the (5) sense-pleasures
 kun tu spyod pa med pa|{C}habitual absence
-#kun tu spyod pa; kun spyod|{C}ideas; habits; befall; nurse; credit with; commit to
+kun tu spyod pa; kun spyod|{C}ideas; habits; befall; nurse; credit with; commit to
 kun tu ston pa|{C}perceive; show up [in a mirror]; advise; tale; communication
 kun tu tshim pa skye|{C}thrilled
 kun tu zhum|{C}become cowed; be cast down; hide despondently (in)
@@ -2628,7 +2629,7 @@ ldan pa|{C}conjoined with; intent on; associated with; with; conjuction; exercis
 ldan par 'gyur te|{C}be joined; will win; win
 ldang ba|{C}emergence
 ldang ba ma mchis pa|{C}non-arising; no arising; does not rise up
-#ldem por dgongs pa/ ldem dgongs|speaking deliberately; purpose; deceive
+ldem por dgongs pa/ ldem dgongs|speaking deliberately; purpose; deceive
 ldog|{C}turned away; desist; turn away from; turn back on; is diverted
 ldog chos|{GD:104} phenomena that exist as differentials, i.e., conceptually constructed universals
 ldog khyab|{GD:519} negative pervasion
@@ -2714,7 +2715,7 @@ lhar bcas|together with the gods; heaven
 lhod pa|{C}laxness
 lhun|{C}mass; heap; trunk; shoulder; group
 lhun grub pa|{C}there is nothing they can be directed to; does not turn towards; not turning towards an (external) object; impassive; miraculously produced; self-produced; produced; existing
-#lhun grub; lhun gyis grub pa|{C}there is nothing they can be directed to; does not turn towards; not turning towards an (external) object; impassive; miraculously produced; self-produced; produced; existing
+lhun grub; lhun gyis grub pa|{C}there is nothing they can be directed to; does not turn towards; not turning towards an (external) object; impassive; miraculously produced; self-produced; produced; existing
 lhun gyis grub pa|{C}there is nothing they can be directed to; does not turn towards; not turning towards an (external) object; impassive; miraculously produced; self-produced; produced; existing
 lhung bzed|{C}bowl; person worthy of
 ling po|{GD:150} one block
@@ -3001,7 +3002,7 @@ mes shor ba|{C}(huge) conflagration
 mes tshig pa|{C}(huge) conflagration
 mgo dang rkang lag|{C}head, hands, and feet
 mgo gcod pa|{C}decapitation; his head is about to be cut off
-#mgo smos pas go ba/  mgo smos pas go ba ma yin pa|{C}(un)acquainted with the main points; understands as soon as the main points are mentioned
+mgo smos pas go ba/  mgo smos pas go ba ma yin pa|{C}(un)acquainted with the main points; understands as soon as the main points are mentioned
 mgon|{C}benefactor; savior
 mgon bcas pa|{C}they have to help them
 mgon bgyid pa|{C}one who protects; protector
@@ -3274,7 +3275,7 @@ mngon par bshad pa|{C}the words addressed to one
 mngon par bstod|{C}great praise
 mngon par bstod pa|{C}great praise
 mngon par chags pa|{C}settling down in; settle down in; be inclined
-#mngon par dga' ba, mngon dga'|{C}fully delighted; pleasure; welcome; recommend
+mngon par dga' ba, mngon dga'|{C}fully delighted; pleasure; welcome; recommend
 mngon par dga' bar 'gyur|{C}delight in
 mngon par dmigs pa med pa|{C}undistinguished
 mngon par gtor|{C}strew; scatter; scatter over
@@ -3319,11 +3320,11 @@ mngon sum du ma mdzad pa|{C}not realized
 mngon sum goms pa can|{GD:731} trained perceptions
 mngon sum gyis 'dren pa'i nges shes|{GD:476} an ascertaining consciousness induced by perception
 mngon sum ltar snang|{GD:480} pseudo-perceptions
-#mngon sum mdzad, mngon sum du mdzad|{C}show up
+mngon sum mdzad, mngon sum du mdzad|{C}show up
 mngon sum mi byed|{C}cannot be realized
 mngon sum rtogs pa can|{GD:126} conceptual perception
 mngon sum yid ma gtad|{GD:506} inattentive perception
-#mngon zhen, mngon par zhen pa|{C}settling down in
+mngon zhen, mngon par zhen pa|{C}settling down in
 mnyam|{C}same as; self identical; identical; even; smooth; something like; likewise; equally; being truly; comparable; as if it were just
 mnyam bzhag yin pa|{C}collected; concentrated (on)
 mnyam du|{C}impartially
@@ -3488,7 +3489,7 @@ mu khyud can|{C}with rims
 mu steg can|heretic; heretical
 mu stegs|heretic; heretical
 mu stegs can gzhan|{C}of other sects
-#mu stegs can; mu stegs pa|heretic; heretical
+mu stegs can; mu stegs pa|heretic; heretical
 mu stegs pa|heretic; heretical
 mun nag 'thibs pa'i mun pa|{C}blinding and confusing darkness
 mun pa|{C}blind; region of darkness; {GD:594}mass
@@ -3614,7 +3615,7 @@ nges pa nyid|{C}certainty
 nges pa zhugs pa|{C}set out; well set out
 nges pa'i|{C}certainly; to be sure to; definitely
 nges pa'i tshig la gdon mi za bar|{C}exposition of language
-#nges pa'i tshig, nges tshig|{C}grammatical analysis; analytical knowledge of a language; well-analyzed (grammatically)
+nges pa'i tshig, nges tshig|{C}grammatical analysis; analytical knowledge of a language; well-analyzed (grammatically)
 nges par|{C}to be sure to
 nges par 'byed pa|{C}penetration
 nges par 'byed pa 'gro ba|{C}which leads to piercing
@@ -3623,7 +3624,7 @@ nges par 'byung|{C}going forth; goes forth; go forth
 nges par 'byung ba|{C}goes forth; come into being; issued from; gone forth; removal; support
 nges par 'byung ba dang bcas pa|{C}with escape; which includes the possibility of escape
 nges par 'byung ba med pa|{C}without support
-#nges par 'byung ba; nges 'byung|{C}escape; going forth; freedom from faults
+nges par 'byung ba; nges 'byung|{C}escape; going forth; freedom from faults
 nges par 'byung bar 'gyur te|{C}will come forth
 nges par 'dzin pa|{C}accurate determination
 nges par 'grel pa|free; liberate; deliverance; deliver; escape; going forthfree; liberate; deliverance; deliver; escape; going forth
@@ -3646,7 +3647,7 @@ nges rtogs|{C}meditation
 nges shes|{GD:494} perceptual judgement
 ngo bo|{C}existence; positivity; positive existent (=the five skandhas); concerns; state of own-being; inherent existence; entityness; own-nature
 ngo bo gcig|{GD:284} identity in entity
-#ngo bo gcig ldog pa tha dad; ngo bo gcig la ldog pa tha dad|{GD:154} distinct differentials within having the same entity; {GD:282} distinct differentials within the same substance
+ngo bo gcig ldog pa tha dad; ngo bo gcig la ldog pa tha dad|{GD:154} distinct differentials within having the same entity; {GD:282} distinct differentials within the same substance
 ngo bo ma 'dres pa|{GD:124} determinate with respect to its nature
 ngo bo nges pa|{GD:124} determinate with respect to its nature
 ngo bo nyid|{C}own-being; own-nature; substantial
@@ -3709,7 +3710,7 @@ nyams pa med pa|{C}unimpaired
 nyams par 'gyur|{C}breaks down
 nyams par 'gyur ba|{C}impair
 nyams par rnam par spangs pa|{C}not impaired in any way
-#nyams rangs su mi 'dor ba; nyams rangs su mi 'dod ba|{C}toleration of
+nyams rangs su mi 'dor ba; nyams rangs su mi 'dod ba|{C}toleration of
 nyams su bde ba|{C}(most) sublime; good to eat; fine; superior; exalted; sweet
 nyams su blang ba|{C}Service
 nyams su mi bde ba med la|{C}fails
@@ -3825,7 +3826,7 @@ pha rol rgol ba|{C}counter-arguments; false teacher
 pha rol song la|{C}perfection
 pha rol tu 'gro bar 'dod pa|{C}who wants to go to the beyond
 pha rol tu 'gro'o|{C}go to the Beyond; to go beyond
-#pha rol tu phyin pa; phar phyin|{C}transcendent action
+pha rol tu phyin pa; phar phyin|{C}transcendent action
 pha rol tu phyin pa'i bslab pa thams cad kyi pha rol tu phyin pa|{C}perfection of all training
 pha rol tu phyin par|{C}go to the Beyond; to go beyond
 pha rol tu song bas na|{C}gone beyond
@@ -4026,7 +4027,7 @@ rab tu nyams pa|lose; forget; disappear; {C}deficient; failed in
 rab tu nyams pa 'gyur ba|{C}impair
 rab tu nyen|{C}oppression
 rab tu phye ba yin no|{C}drew their strength from; brought about (from); brought forth; derives its dignity; one discerns; discerned; exalted; derived from; come forth; recognition
-#rab tu phye ba; rab tu bzhag pa|{C}drew their strength from; brought about (from); brought forth; derives its dignity; one discerns; discerned; exalted; derived from; come forth; recognition
+rab tu phye ba; rab tu bzhag pa|{C}drew their strength from; brought about (from); brought forth; derives its dignity; one discerns; discerned; exalted; derived from; come forth; recognition
 rab tu rnam par 'byed pa|{C}investigation; discernment; encompassed by; being made to appear
 rab tu rnam par 'byed par byed|investigation; discernment
 rab tu rnam par 'jig pa|{C}collapse
@@ -4069,7 +4070,7 @@ rang bzhin gyis|{GD:228} naturally existing similarities
 rang bzhin gyis stong|{C}empty in (their) own-being
 rang bzhin med|{C}to be without own-being; absence of own-being
 rang bzhin yin pa|{C}to have the self-nature of
-#rang bzhin; ngo bo nyid|{C}final nature [e.g.: evaṃ svabhāva, of such an own-being; abhāva-svabhāva, non-existent own-nature]; natural; essential; essence; in its own-being; state of own-being; made; consists of; grows; has become; (there has been) born
+rang bzhin; ngo bo nyid|{C}final nature [e.g.: evaṃ svabhāva, of such an own-being; abhāva-svabhāva, non-existent own-nature]; natural; essential; essence; in its own-being; state of own-being; made; consists of; grows; has become; (there has been) born
 rang dbang|{C}as an independent entity
 rang dbang du 'byung ba'i phyir|{C}it occurs as an independent reality
 rang dbang du gyur pa lags kyang|{C}a private (nirvāṇa) of his own
@@ -4079,7 +4080,7 @@ rang gi don sbyar ba la rjes su brtson par bya|{C}devotes himself to his own wel
 rang gi mngon par shes pa|{C}his own higher knowledge
 rang gi mngon par shes pas rtul ba|{C}the courageous advance towards their own higher knowledge
 rang gi mtshan nyid kyis stong pa|{C}empty of own-marks
-#rang gi mtshan nyid/ rang mtshan|specifically characterized phenonenon; own-characteristic
+rang gi mtshan nyid/ rang mtshan|specifically characterized phenonenon; own-characteristic
 rang gi ngo bo la gnas pa|{GD:122} abiding within their own nature
 rang gi ngo bo la rang rig|{GD:598} self-cognition with respect to its own nature
 rang gi pha tha|{C}ancestral
@@ -4160,7 +4161,7 @@ rgol ba|{C}question; censure; rejection; adversary; contradiction; refusal; answ
 rgya che|{C}Expanded Text(s); abundance; vast
 rgya che ba|{C}wide; abundant; expand; expanded; in detail; to explain in detail
 rgya chen|{C}many; all; large; long; very much; sublime; exalted; an uncommon degree of
-rgya chen po|{C}sublime; exalted; an uncommon degree of · 
+rgya chen po|{C}sublime; exalted; an uncommon degree of ·
 rgya chen po rgya chen po|{C}very sublime
 rgya cher|{C}in detail; expanded; in full; for the most part; more and more; again and again; still more; wide; large; abundant
 rgya cher ba|expanded; in detail
@@ -4315,7 +4316,7 @@ ring por mi thogs|{C}slowly; an excessively long time [e.g.: na cireṇa, before
 ris su bcad cing|{C}the cutting off of his share
 rjed|{C}forget
 rjes|{C}word; verse; foot; tracs; tracks; verbal expression
-#rjes 'gro; chos sgo rjes 'gro|{GD:260}concomitance; {GD:275} positive concomitance
+rjes 'gro; chos sgo rjes 'gro|{GD:260}concomitance; {GD:275} positive concomitance
 rjes dpag|{GD:96} inference
 rjes khyab|{GD:519} positive pervasion
 rjes mthun par|{C}with reference to
@@ -4366,7 +4367,7 @@ rjes su rtogs pa|{C}understanding; recognition
 rjes su sbyor ba|{C}preoccupation
 rjes su slob pa'i tshul|{C}engaged in learning; engaged in regular training
 rjes su song ba|{C}approach; conform to; follow (after); regain; emulate; arrive (at); pursue; follow up; be pursued
-#rjes su spyad pa; rjes su dpyad pa|{C}pondered over; reflects
+rjes su spyad pa; rjes su dpyad pa|{C}pondered over; reflects
 rjes su ston|{C}instruct
 rjes su ston byed|{C}one who instructs
 rjes su ston pa|{C}admonish; instruct
@@ -4576,7 +4577,7 @@ rnam par sgom pa|{C}annihilation; undone; clear understanding; undevelopment
 rnam par shes pa 'dra ba med pa|{C}his consciousness conforms to
 rnam par shes pa gnas pa|{C}foundation of conscious life
 rnam par shes pa phan tshun dang ldan pa|{C}mind on other things; his mind on other kinds of talk
-#rnam par shes pa; rnam shes; shes pa|{C}be aware of; cognized; known; discerned
+rnam par shes pa; rnam shes; shes pa|{C}be aware of; cognized; known; discerned
 rnam par shes par bgyid pa|{C}is informed about
 rnam par shes par gyur pa|{C}discernible; distinct; should be known; one should understand/discern; belonging to consciousness
 rnam par skye|{C}grows
@@ -4988,7 +4989,7 @@ sgrib pa nyon mongs|{C}obscurations of the afflictions
 sgrogs pa|{C}roars; roaring; resounding declaration
 sgrogs par byed|{C}preach
 sgrol ba|{C}one who has finished with
-#sgron ma, sgron me|{C}torch; meteor
+sgron ma, sgron me|{C}torch; meteor
 sgrub|{C}calling forth; emission; consummation; door; progress; hasten towards; promise; behave; full attainment; accomplishes; creates; perfects; achieves
 sgrub bya'i chos|{GD:275}property of the probandum, one of the four terms of an argument (sbyor ba)
 sgrub byed|that which accomplishes/succeeds/proves; proof;
@@ -5052,7 +5053,7 @@ shes rab 'chal ba|{C}weak in wisdom; stupid(ity)
 shes rab 'chal ba'i rang bzhin can|{C}weak in wisdom; essentially stupid
 shes rab 'chal bar 'gyur ba dang mthun pa|{C}conducive to weakness in wisdom
 shes rab dang ldan pa|{C}gifted with wisdom
-#shes rab kyi pha rol tu phyin pa; sher phyin|{C}perfect wisdom
+shes rab kyi pha rol tu phyin pa; sher phyin|{C}perfect wisdom
 shes rab ldan de mnyam nyid|{C}skilled in wisdom(?)
 shes rab mgyogs pa|rapid wisdom; {C}swift wisdom
 shes rab mnyam pa med pa|{C}unequalled in wisdom
@@ -5117,7 +5118,7 @@ shing mkhan|{C}mason
 shing mkhan bzo bo|{C}mason
 shing mkhan gyi slob ma|{C}mason's apprentice
 shing pa na sha'i 'bras bu|{C}breadfruit
-#shing sal gyi sgon; shing sal bal gyi sgon|{C}(a ball of) cotton wool
+shing sal gyi sgon; shing sal bal gyi sgon|{C}(a ball of) cotton wool
 shugs|impact; momentum; agitation
 shugs yul|{GD:389} implicit object
 sil snyan|{C}music
@@ -5129,7 +5130,7 @@ skad cig|{C}that very instant
 skad cig gcig|{C}one single moment
 skad cig gcig dang ldan pa|{C}associated with one single moment
 skad cig gcig gi rtogs pa|{C}single-instantaneous understanding
-#skad cig gcig mngon rdzogs byang chub; skad cig ma gcig gis mngon par rdzogs par byang chub pa|{C}the single instantaneous full understanding
+skad cig gcig mngon rdzogs byang chub; skad cig ma gcig gis mngon par rdzogs par byang chub pa|{C}the single instantaneous full understanding
 skad cig la 'jig pa'i don|meaning disintegration in a moment
 skad cig skad cig|{C}in every moment; moment by moment
 skad cig tsam|{C}a mere moment
@@ -5445,7 +5446,7 @@ spangs par gyur|{C}cast away; reject; cast off; cast out; come up; let go; (woul
 spel|{C}growth
 spobs pa|{C}inspired speech; revealing; inspiration; readiness of speech; understanding; (flash of) insight; flash of ideas; ready speech; intelligibility; intelligible speech; flashes into my mind; inspire; it is clear; is intelligible; may you make clear; it bec
 spobs pa med pa|{C}intractable by speech
-#spobs pa mi chod pa; spobs pa ma tshod pa|{C}with his inspired speech never interrupted
+spobs pa mi chod pa; spobs pa ma tshod pa|{C}with his inspired speech never interrupted
 spobs pa mi tshod pa|{C}with his inspired speech never interrupted
 spobs pa skye ba|{C}understand; you have been inspired by
 spong|{C}reviles; reject; rejects; quits; forsaking; loss
@@ -5647,7 +5648,7 @@ thabs|{C}expedient (means); expediency; skill in means
 thabs dang rtsa pa|{C}root of skillful devices
 thabs gcig tu|{C}together with; with
 thabs mkhas pa'i ye shes kyi bye brag|{C}distinction of the cognition of skill in means
-#thabs mkhas; thabs la mkhas pa|{C}circumspect
+thabs mkhas; thabs la mkhas pa|{C}circumspect
 thabs thob|{C}resourceful
 thad kar|{GD:265} horizontal
 thad nas bslang ba las|{C}in the presence of; or; from; compared with; given by
@@ -5786,7 +5787,7 @@ tshad ma med|{C}unlimitedness
 tshad ma rang nyid kyis grub pa|{GD:722} internal validity; self-validity
 tshad ma rigs thigs kyi 'grel pa legs bshad snying po'i gter|{GD:843} Gyel-tsap's (rgyal tshab dar ma rin chen) Treasure of the Essence of Good Sayings, a Commentary on [Dharmakīrti's Treatise on] Valid Cognition, the Drop of Reasoning [Collected Works vol. 8 (Delhi: Guru Deva)]
 tshad ma rnam 'grel gyi bsdus gzhung zhes bya'i sgo 'byed rgol ngan glang po 'joms pa gdong nga'i gad rgyangs rgyu rig lde mig|{GD:844} Jam-y#ang-chok-hla-ö-s#er's ('jam dbyangs phyogs lha od zer) The Key to Knowledge, Cause of the Roar of the Five-Faced Lion that Destroys the Elephant of Faulty Adversaries, [and] Opens the Door to the Knowledge of the Collected Texts of the Comm
-#tshad ma rnam 'grel gyi mtha' gcod thar lam rab gsal tshad ma'i 'od brgya 'bar ba; tshad ma rnam 'grel gyi mtha' dpyod|{GD:844} Jam-y#ang-shay-b#a's ('jam dbyangs bzhad pa) The Blaze of Hundred Lights on Valid Cognition Clarifying the Path to Liberation, a Final Analysis of [Dharmakīrti's] Commentary on [Dignāga's] Valid Cognition [Collected Works XIII. Delhi: Ngawang Gel
+tshad ma rnam 'grel gyi mtha' gcod thar lam rab gsal tshad ma'i 'od brgya 'bar ba; tshad ma rnam 'grel gyi mtha' dpyod|{GD:844} Jam-y#ang-shay-b#a's ('jam dbyangs bzhad pa) The Blaze of Hundred Lights on Valid Cognition Clarifying the Path to Liberation, a Final Analysis of [Dharmakīrti's] Commentary on [Dignāga's] Valid Cognition [Collected Works XIII. Delhi: Ngawang Gel
 tshad ma rnam 'grel gyi tshig le'ur byas pa'i rnam bshad thar lam phyin ci ma log par gsal bar byed pa|{GD:843} Gyel-tsap's (rgyal tshab dar ma rin chen) Complete Explanation of the Stanzas of the Commentary on Prime Cognition, the Faultless Revealer of the Path to Liberation [Varanasi: Ge-luk-ba Press. 1975]
 tshad ma rnam 'grel legs par bshad pa|{GD:842} Ge-dun-drup's (dge 'dun grub, 1st Dalai Lama) Good Sayings on [Dharmakīrti's] Commentary on Valid Cognition [Collected Works vol. 5 (Gangtok: Dodrup Lama, 1978-1981)]
 tshad ma sde bdun gyi rgyan yid kyi mun sel|{GD:844} Kay-drup's (mkhas grub rje) Ornament of the Seven Treatises Clearing Mental Obscurity. Collected Works X. Lha-sa: Zhol blocks, 1897. New Delhi: Guru Deva, 1982.
@@ -6460,7 +6461,6 @@ zong zad slar log lta bur gyur na mi rung ngo|{C}having lost his goods he would 
 zos pa|{C}when eating
 zug ring ldan pa|{C}thorny; one who has a thorn in his flesh
 zug rngu|{C}dart; thorn
-
 'gal bar byed|{C}opposes; to obstruct; contradict; bring into conflict with
 an da rnyil|{S}sapphire
 bcas pa|possessing; with; connected with
@@ -6558,4 +6558,3 @@ dka' ba spyod pa|{C}austerities
 rnam par shes pa|{C}be aware of; cognized; known; discerned
 rnam shes|{C}be aware of; cognized; known; discerned
 shes pa|{C}be aware of; cognized; known; discerned
-

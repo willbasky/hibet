@@ -66,3 +66,11 @@ searchInRaw query = foldl (\ acc (x,y) -> if search x == "" then acc else (searc
         . map (T.append (cyan "༔ ") . T.drop 1 . T.dropWhile (/= '|'))
         . filter (T.isPrefixOf (T.append query "|"))
         . T.lines
+
+--
+-- result <- runConduitRes
+--     $ sourceDirectoryDeep False dir  -- [FilePath]
+--     .| mapMC (\fp -> (fp,) <$> runConduit (sourceFileBS fp .| decodeUtf8C .| foldC )) -- [(FilePath,Text)]
+--     .| mapC (\(f,t) -> (f, makeTextMap t)) -- [Dictionary]
+--     .| mapC (\dict -> toDictionaryMeta labels' dict)
+--     .| sinkList

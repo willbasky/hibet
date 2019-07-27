@@ -499,7 +499,7 @@
 'dzam bu gling|the world; the Indian subcontinent; Jambudvīpa; Land of Jambu
 'dzam bu'i gling|the world; the Indian subcontinent
 'dzam gling|Jambudvīpa
-#'dzam gling/ 'dzam bu gling|Jambudvīpa; the Indian subcontinent; the world
+'dzam gling/ 'dzam bu gling|Jambudvīpa; the Indian subcontinent; the world
 'dzangs pa|wise; the wise
 'dzegs pa|ascend
 'dzigs|shaggy
@@ -685,7 +685,7 @@
 'gyur ba'i bye brag|type/instance of transformation
 'gyur ba'i chos can|having the attribute/qualilty of change
 'gyur ba'i sdug bsngal|suffering of change/vicissitude
-#'gyur gyi phyag / 'gyur phyag|translator's homage
+'gyur gyi phyag / 'gyur phyag|translator's homage
 'gyur khyad|different translation; difference in translation
 'gyur pa'i sdug bsngal|[change-of-suffering]; suffering of change; suffering of vicissitude
 'gyur phyag byed pa|make translator's homage
@@ -711,7 +711,7 @@
 'jam po|smooth
 'jig|to disintegrate; disintegrate; destroy
 'jig bskal|aeon of destruction
-#'jig lta; 'jig tshogs la lta ba|view of the transitory; view of the transitory collection [as a real I and mine]
+'jig lta; 'jig tshogs la lta ba|view of the transitory; view of the transitory collection [as a real I and mine]
 'jig med|nondisintegrative; non-disintegrating
 'jig med gnas|Abhayagirika; Abhayagirivāsin
 'jig pa|disintegrating; disintegration
@@ -845,7 +845,7 @@
 'khon|resentment; malice
 'khon 'dzin|resentment
 'khor|sphere; retinue; companion; attendant; repaying
-#'khor 'das; 'khor ba dang mya ngan las 'das pa|cyclic existence and nirvāṇa
+'khor 'das; 'khor ba dang mya ngan las 'das pa|cyclic existence and nirvāṇa
 'khor 'gyur|circling
 'khor ba|cyclic existence; cycle [of powerless birth, aging, sickness, and death]
 'khor ba bsten pa|partaking of/adhere to cyclic existence
@@ -900,7 +900,7 @@
 'khor lo rin po che|precious wheel
 'khor lo rnam pa can gyi sems|mind possessing the aspect of a [divine] circle
 'khor lo rtsibs stong dang ldan pa|wheel having a thousand spokes
-#'khor lo sgyur ba; 'khor sgyur|universal monarch
+'khor lo sgyur ba; 'khor sgyur|universal monarch
 'khor los bsgyur ba'i rgyal po|universal emperor; universal monarch
 'khor los mtshan|marked by a wheel
 'khor los sgyur ba|universal monarch
@@ -908,7 +908,7 @@
 'khor nye ba dang ring bas mtshungs par thos|retinue near and far similarly hear
 'khor phun sum tshogs pa|marvelous/excellent/perfect retinue
 'khor sgyur|universal monarch
-#'khor zhi ro gcig pa; 'khor ba dang zhi ba ro gcig pa|one taste of cyclic existence and peace
+'khor zhi ro gcig pa; 'khor ba dang zhi ba ro gcig pa|one taste of cyclic existence and peace
 'khri shing|vine; creeping plant; creeper
 'khrid|lead; lead through; guide 7 as noun: leader; instruction
 'khrid mdzad|lead
@@ -1211,10 +1211,10 @@ a mdo|Am-do
 a nu|[transliteration of Sanskrit word, anu, short for anuyoga]
 a ru ra|myrobalan arjuna; universal medicine
 a ti|[transliteration of Sanskrit word, ati, short for atiyoga]
-#a wa; a lba|child; children
+a wa; a lba|child; children
 a yin|I doubt it; I don't think; is it so or not?
 a yod|I doubt it; I don't think; is it so or not?
-#an da rnyil; an dha rnyil|[transliteration of Sanskrit word, indranīla]
+an da rnyil; an dha rnyil|[transliteration of Sanskrit word, indranīla]
 ba glang|ox; cow
 ba glang gnas pa|Gokulika
 ba gling spyod|Using Oxen
@@ -1309,12 +1309,12 @@ bcad ldog|elimination-isolate [a conceptually isolatable factor that is a mere e
 bcad pa|decree; cut; decided; eliminated; judged; condemned
 bcad shes|subsequent cognizer; subsequent cognition; re-cognition
 bcad shes don mthun|factually concordant subsequent cognition
-#bcad shes; dpyad shes|subsequent cognition
+bcad shes; dpyad shes|subsequent cognition
 bcangs|to hold; keep; put off [past tense of 'chang, to hold; to keep]
 bcas|as well as; formulate; make; construct [e.g., a mudrā]; arrange [e.g., the legs in a meditation posture]
-#bcas pa, bcas|having; together with
+bcas pa, bcas|having; together with
 bcas shes|(lit.) cognition of the [already] determined (see: bcad pa'i yul can)
-#bcas, bcas pa|having; together [with]
+bcas, bcas pa|having; together [with]
 bcil ba|abandon; give up; subjugate
 bcing|bind
 bcings|bind
@@ -1335,7 +1335,7 @@ bcos ma ma yin pa|non-artificial; non-fabricated
 bcos ma ma yin pa'i myong ba|non-artificial experience
 bcos ma yin pa|fabricated
 bcos min gyi myong ba|uncontrived experience
-#bcos min, bcos ma min pa|non-artificial; non-fabricated; uncontrived
+bcos min, bcos ma min pa|non-artificial; non-fabricated; uncontrived
 bcos pa|fabricated; made up
 bcos pu|fabricated; made up
 bcu|ten
@@ -1518,7 +1518,7 @@ bde dang sdug bsngal zhi ba|pacify happiness and suffering
 bde dbyangs|Day-yang ("Blissful Melody") College of Dre-pung Monastic University
 bde gshegs|One Gone to Bliss; Well-Gone One; an epithet of Buddha; the One Gone to Bliss (an epithet of Buddha)
 bde gshegs bstan pa|teaching of the One Gone to Bliss
-#bde gshegs snying po; bde bar gshegs pa'i snying po|matrix-of-one-gone-to-bliss
+bde gshegs snying po; bde bar gshegs pa'i snying po|matrix-of-one-gone-to-bliss
 bde la bag yod|predisposed to happiness; predispositions to happiness
 bde legs su bgyid pa|make happy
 bde mchog|Cakrasaṃvara Tantra
@@ -1687,7 +1687,7 @@ bkug nas|having summoned; having drawn in
 bkur|extoll; services
 bkur bsti|respect; service
 bkur sti|respect; respectful; service
-#bkur; bkur sti|respect; respectful; service; honor
+bkur; bkur sti|respect; respectful; service; honor
 bla brgyud|lineage of lamas
 bla ma|[high-not or high-mother]; lama; lama [none higher]; heavy
 bla ma bsnyen bkur|guru devotion; respect for the guru; serve and venerate the guru
@@ -2262,7 +2262,7 @@ bsdus sgom|collectively cultivating; meditatively cultivating collectively; coll
 bse ru|rhinoceros
 bse ru lta bu|Rhinoceros-like
 bse ru lta bu rang sangs rgyas|Rhinoceros-like Solitary Realizer
-#bse ru lta bu; bse ru lta bu'i rang rgyal|Rhinoceros-like [Solitary Realizer]
+bse ru lta bu; bse ru lta bu'i rang rgyal|Rhinoceros-like [Solitary Realizer]
 bse ru lta bu'i rang rgyal|rhinoceros-like Solitary Realizers
 bse ru lta bu'i rtogs pa sngon du song ba'i rang rgyal gyi mi slob lam|path of no more learning of Solitary Realizers who previously had the realizations of rhinoceros-like [Solitary Realizers]
 bsgo|infuse; deposit; order
@@ -2473,7 +2473,7 @@ bsnun pa|focusing on (?)
 bsnyad|emphasize; explain
 bsnyad pa|emphasize; explain
 bsnyel ba|forgetfulness
-#bsnyel ba mi mnga' / bsnyel ba mi mnga' ba|not endowed with forgetfulness/ not having forgetfulness
+bsnyel ba mi mnga' / bsnyel ba mi mnga' ba|not endowed with forgetfulness/ not having forgetfulness
 bsnyems pa|haughty
 bsnyen bkur|respect; reverence; veneration; serve and venerate
 bsnyen bkur bgyis par 'gyur|pay respect to; revere; venerate
@@ -2612,7 +2612,7 @@ btags gzhi|basis of designation; basis of imputation
 btags nas|having imputed; having designated
 btags pa tsam du|merely imputed; merely designated
 btags pa tsam du yod pa|nominal existent
-#btags pa; rnam brtags|imputed; imputation; designated; designation; impute; designate; hang; imputed [phenomena]
+btags pa; rnam brtags|imputed; imputation; designated; designation; impute; designate; hang; imputed [phenomena]
 btags pa'i kun rdzob|imputational conventionality
 btags pa'i tshig|imputed word
 btags pa'i yod pa|imputed existent; imputedly existent
@@ -3163,7 +3163,7 @@ bzungs|apprehend; grasp; hold; conceive; taken from (here through to ...); subje
 ca lag|things; goods
 cag|plural marker
 can|possessing; having; subject to
-#cang, ci yang|at all; anything
+cang, ci yang|at all; anything
 ce na|if it is asked
 ces|particle indicating quotation; thus
 ces bya|indicates quotation; it is said
@@ -3335,7 +3335,7 @@ chos dang rjes su mthun pa'i chos la zhugs zhing|entering into doctrine/phenomen
 chos dang skad cig ma ma yin pa'i gzhi mthun pa|common locus of a phenomenon and non-momentary
 chos dbying|element of [superior] qualities; sphere of reality; nature of phenomena(Gön-chok)
 chos dbyings|element of [superior] qualities; sphere of reality; nature of phenomena; the element of [a Superior's] qualities; basic element of attributes; noumenal expanse; expanse of reality; basic element of [superior] qualities; basic element of phenomena; element
-#chos dbyings stod pa, chos kyi dbyings su bstod pa|Nāgārjuna's Praise of the Basic Element of [Superior] Qualities (dharmadhātustava)
+chos dbyings stod pa, chos kyi dbyings su bstod pa|Nāgārjuna's Praise of the Basic Element of [Superior] Qualities (dharmadhātustava)
 chos dbyings ye shes|exalted wisdom of the element of qualities; exalted wisdom of the sphere of reality; exalted wisdom of the nature of phenomena
 chos de dang rdzas tha dad pa'i sgo nas chos de'i 'bras bu'i rigs su gnas pa|abiding in the type which is an effect of that phenomenon from the side of being a different substantial entity from that phenomenon
 chos de la yon tan du blta ba|viewing qualities with respect to phenomena
@@ -3472,8 +3472,8 @@ chos mngon pa|Manifest Knowledge; Higher Knowledge; knowledge; higher doctrine; 
 chos mngon pa'i mdzod|Vasubandhu's Treasury of Knowledge (Abhidharmakoṣa), P 5590, vol.115; T 4809; Vasubandhu's Treasury of Manifest Knowledge
 chos mngon pa'i mdzod kyi bshad pa|Vasubandhu's Explanation of the Treasury of Knowledge (Abhidharmakoṣa-bhāṣya), P. 5591, vol. 115
 chos mngon pa'i mdzod kyi tshig le'ur byas pa|Vasubandhu's Stanzas of the Treasury of Knowledge (Abhidharmakoṣa-kārikā), P 5590, vol. 115; T4089; Varanasi: Ge-lug-pa Press, 1972.
-#chos mngon pa'i mdzod kyi tshig le'ur byas pa'i 'grel pa mngon pa'i rgyan; mchims mdzod|Chim-jam-pel-yang's (mchims 'jam dpal dbyangs) Commentary on [Vasubandhu's] "Stanzas of the Treasury of Manifest Knowledge": Ornament of Manifest Knowledge
-#chos mngon par rtogs pa; chos mngon rtogs|clear realizer of doctrine
+chos mngon pa'i mdzod kyi tshig le'ur byas pa'i 'grel pa mngon pa'i rgyan; mchims mdzod|Chim-jam-pel-yang's (mchims 'jam dpal dbyangs) Commentary on [Vasubandhu's] "Stanzas of the Treasury of Manifest Knowledge": Ornament of Manifest Knowledge
+chos mngon par rtogs pa; chos mngon rtogs|clear realizer of doctrine
 chos mngon rtogs|clear realizer of doctrine; clear realization of the doctrine
 chos mnyam nyid|sameness of phenomena
 chos mnyam pa nyid|sameness of phenomena
@@ -3622,7 +3622,7 @@ ci la gnas|having what basis
 ci ma rung|[what-not-fitting]; how nice it would be!; how would it not be fitting?
 ci nas kyang|[what-from-even]; in any case; by all means
 ci nus|[what-able]; whatever one can; as much as possible
-#ci phyir, ci'i phyir|why?; for what reason?
+ci phyir, ci'i phyir|why?; for what reason?
 ci rigs|any; or
 ci rigs pa|[what-type]; any; and either; either
 ci rigs sbyar|either is affixed
@@ -3630,10 +3630,10 @@ ci slad du|on account of what?
 ci thub|[what-able]; whatever one can; as much as possible
 ci yang med|nothingness
 ci yang med pa'i skye mched|sphere of nothingness
-#ci yang, cang|at all; anything
+ci yang, cang|at all; anything
 ci yod|[what-is]; what is?; whatever
 ci zhig|what
-#ci'i phyir, ci phyir|why?; for what reason? [lit.: because of what?]
+ci'i phyir, ci phyir|why?; for what reason? [lit.: because of what?]
 ci'i slad du|on account of what?; why?
 cig|particle indicating "a" or imperative (often untranslatable)
 cig car|simultaneously; simultaneous; at one time
@@ -3892,9 +3892,9 @@ dbu ma pa|Middle Way School; Mādhyamaka; Proponents of the Middle; Proponent of
 dbu ma pa dpa' bo rdo rje|the lama U-ma-pa Pa-wo-dor-jay (one of the teachers of Tzong-ka-pa)
 dbu ma rang rgyud pa|Middle Way Autonomy School
 dbu ma rgyan|Śāntarakṣita's Ornament for the Middle Way
-#dbu ma rtsa ba'i 'grel pa budd pA li ta; 'grel pa buddh pA li ta|Buddhapālita's (sangs rgyas bskyangs) Commentary on [Nāgārjuna's "Treatise on the Middle" [P5242, vol. 95]
+dbu ma rtsa ba'i 'grel pa budd pA li ta; 'grel pa buddh pA li ta|Buddhapālita's (sangs rgyas bskyangs) Commentary on [Nāgārjuna's "Treatise on the Middle" [P5242, vol. 95]
 dbu ma rtsa ba'i 'grel pa shes rab sgron ma|Commentary on (Nagarjuna's) "Fundamental Treatise on the Middle": Lamp for "Wisdom" [by Bhāvaviveka (legs ldan 'byed), P5253, vol. 95]
-#dbu ma rtsa ba'i 'grel pa tshig gsal ba; tshig gsal|Clear Words, Commentary on Nāgārjuna's) "Treatise on the Middle" [by Candrakīrti (zla ba grags pa); P5260, vol. 98]
+dbu ma rtsa ba'i 'grel pa tshig gsal ba; tshig gsal|Clear Words, Commentary on Nāgārjuna's) "Treatise on the Middle" [by Candrakīrti (zla ba grags pa); P5260, vol. 98]
 dbu ma rtsa ba'i tshig le'ur byas pa shes rab ces bya ba|Fundamental Treatise on the Middle Way, Called "Wisdom", by Nāgārjuna (klu sgrub), P. 5224, vol. 95
 dbu ma rtsa ba'i tshig le'ur byas pa shes rab ces bya ba'i rnam bshad rigs pa'i rgya mtsho|Ocean of Reasoning, Explanation of [Nāgārjuna's (klu sgrub)] "Treatise on the Middle Way," by Dzong-ka-ba (1357-1419), P. 6153, vol. 156. Varanasi: Ge-luk-pa Press, 1973.
 dbu ma snang ba|Kamalaśīla's Illumination of the Middle Way
@@ -3997,7 +3997,7 @@ de bzhin nyid ma yin pa|not suchness
 de bzhin nyid rnam par dag pa|completely pure suchness
 de bzhin nyid snang ba nyid|appearance as suchness
 de bzhin nyid tha dad pa'i rang bzhin ma yin pa|is not a nature that is different from suchness
-#de bzhin nyid; tathAtA|thusness
+de bzhin nyid; tathAtA|thusness
 de bzhin yod|exist like that; exist thus
 de ci'i phyir|why is this?(S)
 de ci'i phyir zhe na|why is this?(S)
@@ -4074,8 +4074,8 @@ de nyid gong ma|the previous "just those"
 de nyid gsum gyi bsam gtan|concentration of the three principles; concentrations of the three principles
 de nyid mchog|highest reality
 de nyid zab mo mthong|seeing the profound reality (T)
-#de nyid; de kho na nyid|suchness; reality; principle
-#de nyid; de kho na nyid|suchness
+de nyid; de kho na nyid|suchness; reality; principle
+de nyid; de kho na nyid|suchness
 de phyir|because of that; therefore
 de rang bdag gcig 'brel|related as its own essence (?)
 de ring|now; presently; today
@@ -4089,7 +4089,7 @@ de tsam gyis|by just that
 de tshe|at that time
 de yan chad|everything beyond that point
 de yang|[that-also]; furthermore; further; moreover
-#de yang de dang 'dra ba nyid du gyur; de yang de dang 'dra ba nyid du 'gyur ro|it is just like that, and will be just like that(S1)
+de yang de dang 'dra ba nyid du gyur; de yang de dang 'dra ba nyid du 'gyur ro|it is just like that, and will be just like that(S1)
 de yi 'du shes|conception of that
 de yi 'og tu|higher than that
 de yi ngo bo|essence of that
@@ -4177,7 +4177,7 @@ dgag bya bkag pa|negative of the object of negation; negation of the object of n
 dgag bya khyab ches pa|too extensive object of negation/refutation
 dgag bya ngos bzung ba|identifying the object of negation
 dgag bya'i chos|predicate to be negated; predicate of the negandum
-#dgag bzhag spong gsum; 'khrul ba dgag pa rang lugs bzhag pa de la rtsod pa spong ba|the three—refuting [other's mistakes], establishing [our own system], and dispelling [objections with respect to our own system]
+dgag bzhag spong gsum; 'khrul ba dgag pa rang lugs bzhag pa de la rtsod pa spong ba|the three—refuting [other's mistakes], establishing [our own system], and dispelling [objections with respect to our own system]
 dgag gzhi|basis of negation
 dgag gzhi can gyi chos|phenomenon which has a basis of negation
 dgag pa|negation; negative; negative phenomenon; refutation;  cessation
@@ -4273,7 +4273,7 @@ dge bar bya ba|acting virtuously
 dge bas 'phel bar byed pa|increase through virtue
 dge bcu'i las kyi lam|path of the ten virtuous actions
 dge bdun dkon mchog rjes su dran pa|recollection of the spiritual community jewel
-#dge bshes; dge ba'i bshes gnyen/|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
+dge bshes; dge ba'i bshes gnyen/|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
 dge bsnyen|approacher to virtue; layperson with vows; lay practitioner
 dge bsnyen dang dge bsnyen ma gnyis|the two—laymen (upāsaka) and laywomen (upāsikā) with vows
 dge bsnyen ma|female approacher to virtue; laywoman
@@ -4310,7 +4310,7 @@ dgon pa|monastery; forest; hermitage
 dgon pa la gnas pa|forest-dweller; dwelling in monastery
 dgon pa nags khrod chen po|great forest; hermitage in a great forest
 dgongs 'grel|commentary on the thought
-#dgongs 'grel; dgongs pa nges par 'grel pa'i mdo|[thought-unravel]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School]; commentary on the thought
+dgongs 'grel; dgongs pa nges par 'grel pa'i mdo|[thought-unravel]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School]; commentary on the thought
 dgongs gzhi|basis in [Buddha's] thought; [factual] basis in Buddha's thought
 dgongs gzhi dang dngos la gnod byed|the basis in [Buddha's] thought and the damage to what is explicitly taught
 dgongs nyams|experiential perspective
@@ -4321,7 +4321,7 @@ dgongs pa can|having another thought [behind it]; having a thought behind it
 dgongs pa can gyi don|meaning that has a thought behind it
 dgongs pa der 'bab pa|thought comes down to that
 dgongs pa mdzad de|consider; take under consideration
-#dgongs pa nges par 'grel pa'i mdo; mdo sde dgongs 'grel|[thought-unravel-sūtra]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School; P774, Vol. 29]
+dgongs pa nges par 'grel pa'i mdo; mdo sde dgongs 'grel|[thought-unravel-sūtra]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School; P774, Vol. 29]
 dgongs pa rab gsal|Illumination of the Thought [Dzong-ka-ba's commentary on Chandrakīrti's Madhyamakāvatāra, Illumination of the Thought, Extensive Explanation of (Chandrakīrti's) Supplement to (Nāgārjuna's) 'Treatise on the Middle'" (dbu ma la 'jug pa'i rgya cher bsha
 dgongs pa rtogs pa|realization of the thought; realization of the thought behind it
 dgongs pa shin tu zab|very profound thought
@@ -4329,7 +4329,7 @@ dgongs par snang ba|appears to be the thought
 dgongs su gsol|please pay heed
 dgongs te|thinking of; thinking; in consideration of; intending
 dgongs te bshad pa|set forth with a thought behind it
-#dgongs; dgongs pa|thought; thinking; thinking of; hidden meaning; intention; notion
+dgongs; dgongs pa|thought; thinking; thinking of; hidden meaning; intention; notion
 dgos|must; need; purpose; necessity; need to; necessary
 dgos ched kyi sgra|dative case [term of purpose or benefit]
 dgos pa|purpose; aim; necessity; need; must; should; intention
@@ -4373,14 +4373,14 @@ dhu ti|dhuti; "central channel"
 dka'|difficult; hard
 dka' 'grel|commentary on the difficult points; difficult points commentary
 dka' ba|difficult; hard; hardship
-#dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|asceticism; austerities; performing difficult deeds
-#dka' ba spyod pa; dka' spyod; dka' spyad; dka' ba spyad pa|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
+dka' ba spyad pa; dka' spyad; dka' spyod; dka' ba spyod pa|asceticism; austerities; performing difficult deeds
+dka' ba spyod pa; dka' spyod; dka' spyad; dka' ba spyad pa|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
 dka' ba yin|is difficult; is hard
 dka' ba yun ring pos mi skyo ba|not fatigued/discouraged by lengthy asceticism
 dka' gdams pa|Ka-dam-pa
 dka' sa|[difficult-place] difficult point
-#dka' spyad; dka' ba spyad; dka' ba spyad pa; dka' ba spyod pa|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
-#dka' spyod; dka' ba spyod pa; dka' spyad; dka' ba spyad pa|[difficult-deed] performing difficult deeds; asceticism; austerities; difficult deed; difficult act
+dka' spyad; dka' ba spyad; dka' ba spyad pa; dka' ba spyod pa|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
+dka' spyod; dka' ba spyod pa; dka' spyad; dka' ba spyad pa|[difficult-deed] performing difficult deeds; asceticism; austerities; difficult deed; difficult act
 dkar chag|table of contents; catalogue
 dkar khung|passage; window; chimney; a white/wholesome passage/window/opening
 dkar nag gi las|wholesome and unwholesome actions; white and black actions; light and dark actions
@@ -4391,22 +4391,22 @@ dkar po'i chos rnams kun tu bcom|completely destroy/overcome wholesome phenomena
 dkar po'i phyogs|wholesome quarter/faction/part
 dkar skya|whitish; light gray; grayish
 dkar yol|cup; chinaware
-#dkar; dkar po|white; wholesome
+dkar; dkar po|white; wholesome
 dkhyil|center; essence; middle
 dkhyil 'khor|mandala; maṇḍala; circle; sphere; disk
-#dkhyil 'khor gyi cho ga; dkhyil chog|maṇḍala rite
+dkhyil 'khor gyi cho ga; dkhyil chog|maṇḍala rite
 dkhyil 'khor rgyal mchog|supreme king of maṇḍalas
-#dkhyil chog; dkhyil 'khor gyi cho ga|maṇḍala rite
+dkhyil chog; dkhyil 'khor gyi cho ga|maṇḍala rite
 dkhyil smad|lower half
 dkon mchog|jewel; supreme rarity
 dkon mchog 'jigs med dbang po|Kön-chog-jig-may-wang-po (1728-1791)
 dkon mchog brtsegs pa|pile of jewels; name of a Mahāyāna sūtra and of a collection consisting of many sūtras of different styles and doctrines [including some of the earliest Mahāyāna sūtras]
-#dkon mchog bstan pa'i sgron me; gung thang dkon mchog bstan pa'i sgron me; gung thang 'jam dpal dbyangs|Kön-chog-ten-pay-drön-may (1762-1823) [aka. Gung-tang Kön-chog-ten-pay-drön-may and Gung-tang Jam-pel-yang]
+dkon mchog bstan pa'i sgron me; gung thang dkon mchog bstan pa'i sgron me; gung thang 'jam dpal dbyangs|Kön-chog-ten-pay-drön-may (1762-1823) [aka. Gung-tang Kön-chog-ten-pay-drön-may and Gung-tang Jam-pel-yang]
 dkon mchog gsum|[rarity-supreme-three]; Three Jewels
 dkon mchog sprin gyi mdo|Cloud of Jewels Sūtra [P897, vol. 35]
 dkon pa|rare; precious; scarce
 dkon po|rare; rarity; precious; scarce
-#dkon; dkon po|rare; rarity; precious; scarce
+dkon; dkon po|rare; rarity; precious; scarce
 dkri|roll up; wind; wrap up; entangle
 dkris|roll up; wind; wrap up; entangle
 dkris sam bcings te|wound up or bound
@@ -4429,7 +4429,7 @@ dman pa'i 'gro ba|inferior transmigration
 dman pa'i nga rgyal|pride of inferiority
 dman pa'i sa pa|person on a Hīnayāna ground
 dman pa'i sems|inferior mind
-#dman pa/ 'bring/ mchog|inferior, middling, and superior
+dman pa/ 'bring/ mchog|inferior, middling, and superior
 dman par mos|belief/faith/interest/inclination/zeal/keenness in/toward/for the inferior
 dmar|red
 dmar khrid|bare instruction; naked instruction; essential instruction
@@ -4602,7 +4602,7 @@ dngos shugs la rtogs pa|explicit and implicit realization
 dngos smra ba|Proponent of True/Inherent Existence
 dngos stobs|power of the thing; power of the fact
 dngos stobs kyi rtags|sign through the power of the fact
-#dngos stobs rjes dpag, dngos stobs kyi rjes dpag|inference through the power of the fact; inference by the power of the fact
+dngos stobs rjes dpag, dngos stobs kyi rjes dpag|inference through the power of the fact; inference by the power of the fact
 dngos su|directly; explicitly; actually
 dngos su brjod|directly express/verbalize
 dngos su bstan pa|explicitly taught
@@ -4629,8 +4629,8 @@ dogs|qualm; fear; doubt
 dogs dang bral ba|free from doubts
 dogs gcod|eliminate qualms(BJ 34.7)
 dogs pa|qualm; fear; doubt
-#dogs pa khong bslang; dogs pa khong slong|hypothetical qualm
-#dogs pa khong bslang/ dogs pa khong slong|hypothetical qualm
+dogs pa khong bslang; dogs pa khong slong|hypothetical qualm
+dogs pa khong bslang/ dogs pa khong slong|hypothetical qualm
 dogs pa skye|generate the qualm that ...(BJ 18.3)
 dom|bear
 don|meaning; meaningful; meaningfulness; topic; welfare; sake; object; fact; purpose; goal
@@ -4681,7 +4681,7 @@ don dam pa ngo bo med pa|ultimate non-entityness; (T) non-entityness in terms of
 don dam pa ngo bo nyid med pa|ultimate-non-nature; ultimate-naturelessness
 don dam pa ngo bo nyid med pa 'jog tshul gnyis|two modes of positing the ultimate-non-nature
 don dam pa ngo bo nyid med pa nyid|ultimate-non-nature; ultimate-naturelessness
-#don dam pa ngo bo nyid med pa nyid; don dam pa ngo bo nyid med pa|ultimate-naturelessness; ultimate-non-nature
+don dam pa ngo bo nyid med pa nyid; don dam pa ngo bo nyid med pa|ultimate-naturelessness; ultimate-non-nature
 don dam pa ngo bo nyid med tshul gnyis|two modes of ultimate-non-nature
 don dam pa stong pa nyid|ultimate emptiness; name of a sūtra, The Ultimate Emptiness(BJ 50.5)
 don dam pa'i bden pa|truth of the highest object; ultimate truth
@@ -5093,7 +5093,7 @@ dus su|from time to time; at [that] time
 dus tha mar|at the final time [i.e. when Buddha taught the sūtras of the third wheel of doctrine](BJ 27.7)
 dus thams cad|all times
 dus tshigs|year
-#dvang ba'i dad pa; dang ba'i dad pa|faith of clarity
+dvang ba'i dad pa; dang ba'i dad pa|faith of clarity
 dwa ba|a white tuber, like a potato, which has a long stalk with a yellow flower at the top
 dwang cha|factor of subjective clarity
 dwangs|clear; pure; sparkling
@@ -5115,9 +5115,9 @@ g.yang lba|lucky goiter
 g.yang sa|abyss; gulf
 g.yas|right hand; right side
 g.yas bskor du|clockwise; clockwise motion
-#g.yas bskor; g.yas nas bskor|circumambulate clockwise; circumambulate from the right
+g.yas bskor; g.yas nas bskor|circumambulate clockwise; circumambulate from the right
 g.yas g.yon|on either side [lit.: right-left]
-#g.yas nas bskor; g.yas bskor|circumambulate clockwise; circumambulate from the right
+g.yas nas bskor; g.yas bskor|circumambulate clockwise; circumambulate from the right
 g.yas pa|right hand; right side
 g.yas phyogs|right hand; right side; right direction
 g.yel ba|be idle; cease
@@ -5145,7 +5145,7 @@ g.yog po|servant(s)
 g.yogs pa|covering
 g.yon|left
 g.yon bskor|counter-clockwise; counter-clockwise motion
-#g.yon nas bskor; g.yon bskor|counter-clockwise; counter-clockwise motion
+g.yon nas bskor; g.yon bskor|counter-clockwise; counter-clockwise motion
 g.yos|move; fluctuate; stir; waver; remove; dissimulation
 g.yung drung|swastika; eternal
 ga|interrogative particle; all [of a certain number]
@@ -5193,7 +5193,7 @@ gang gi don du|for the sake of which
 gang gi phyir|because; for that reason; for the sake of; why?
 gang gi slad du|for what reason?; for the sake of what?; for the sake of which
 gang gi tshe|when; at what time
-#gang gi tshe/ de'i tshe|correlative construction: when
+gang gi tshe/ de'i tshe|correlative construction: when
 gang gi yang|any; of any
 gang gis|interrogative or correlative particle: by what; by whom; by which
 gang gis dang gang du sgrub pa|by whom and where achieved
@@ -5263,7 +5263,7 @@ gang zag yin par gyur pa'i ldan min 'du byed|non-associated compositional factor
 gang zag yod par khas blang bar mi bya|persons are not to be asserted as existing
 gang zag yod par smra ba|Proponent of a Person
 gang zag zla med pa|person without equal; matchless person
-#gang zag; skyes bu|person
+gang zag; skyes bu|person
 gang zhe na|if [someone asks], "What?"; if [someone asks], "Which?"
 gang zhig|for one [indicates the first part of a reason]; whoever; which
 gangs|snow
@@ -5651,7 +5651,7 @@ gnyis su snang ba med pa|non-appearance of duality
 gnyis su snang ba'i rgyu|cause of dualistic appearance
 gnyug ma|fundamental; uncontrived; genuine
 gnyug ma lhan cig skyes pa'i 'od gsal gyi sems|fundamental innate mind of clear light
-#gnyug ma'i sems; gnyug sems|fundamental mind
+gnyug ma'i sems; gnyug sems|fundamental mind
 gnyug ma'i yid|fundamental cognition
 gnyug rlung|fundamental wind
 gnyug sems|fundamental mind; primordial mind
@@ -5678,11 +5678,11 @@ go mi chod|does not fulfill the role; does not fulfill the meaning of; does not 
 go rams pa bsod nams seng ge|Go-ram-pa Sö-nam-seng-ge [1429-1489]
 go rim|order; series; arrangement
 go rim bzhin du|in order; in accordance with the order; respectively
-#go rim bzhin; go rim bzhin du|in order; in accordance with the order; respectively
+go rim bzhin; go rim bzhin du|in order; in accordance with the order; respectively
 go rim du|gradually
 go rim du byed pa|gradually effecting
 go rim pa|[place-series]; order; series; arrangement
-#go rims bzhin / go rims bzhin du|respectively
+go rims bzhin / go rims bzhin du|respectively
 go sa|place; area; rank; station
 go sa gnon nus pa|capacity to occupy/cover an area
 go sgrub|achieving through armor; achieving armor
@@ -5772,8 +5772,8 @@ grangs su bgrang bar gtogs pa|included in numerical calculation
 grangs su mchi'o|go in the count of; reckon as
 gre mo|ghost spirit
 gre po gnyan|mischievous ghost spirit
-#grel chung don gsal; 'grel pa don gsal|[Haribhadra's] Short Commentary: Clear Meaning (spuṭhārtha, 'grel pa don gsal), or Commentary on (Maitreya's) Ornament for Clear Realization, Treatise of Quintessential Instructions on the Perfection of Wisdom" (abhisamayālaṃkāranāmaprajñāpāramitopad
-#grel pa don gsal; 'grel chung don gsal|[Haribhadra's] Clear Meaning Commentary (spuṭhārtha, 'grel pa don gsal), or Commentary on (Maitreya's) Ornament for Clear Realization, Treatise of Quintessential Instructions on the Perfection of Wisdom" (abhisamayālaṃkāranāmaprajñāpāramitopadeśaśāst
+grel chung don gsal; 'grel pa don gsal|[Haribhadra's] Short Commentary: Clear Meaning (spuṭhārtha, 'grel pa don gsal), or Commentary on (Maitreya's) Ornament for Clear Realization, Treatise of Quintessential Instructions on the Perfection of Wisdom" (abhisamayālaṃkāranāmaprajñāpāramitopad
+grel pa don gsal; 'grel chung don gsal|[Haribhadra's] Clear Meaning Commentary (spuṭhārtha, 'grel pa don gsal), or Commentary on (Maitreya's) Ornament for Clear Realization, Treatise of Quintessential Instructions on the Perfection of Wisdom" (abhisamayālaṃkāranāmaprajñāpāramitopadeśaśāst
 grib|defilement; filth; stain; contamination; stroke
 grib ma|shadow
 grib pa|shade
@@ -5835,7 +5835,7 @@ grub pa|established; perfected; accomplished; completed
 grub pa|be established; be accomplished; establish; exist; achieve; existent; establishment
 grub pa ... kyi sngon du 'gro ba'i bkra shis yin pa|auspiciousness preceding a feat/yogic achievement
 grub pa dang bde ba|establishment and abiding
-#grub pa dus mnyam/ gnas pa dus mnyam/ 'jig pa dus mnyam/|established simultaneously, abide simultaneously, and disintegrate simultaneously
+grub pa dus mnyam/ gnas pa dus mnyam/ 'jig pa dus mnyam/|established simultaneously, abide simultaneously, and disintegrate simultaneously
 grub pa kun thob par 'gyur|will attain all feats/yogic achievements
 grub pa'i mtha'|tenet; established conclusion; tenet system; system; outlook
 grub par 'gyur ba|establish; accomplish; achieve
@@ -5877,9 +5877,9 @@ gsal zhing rig pa|clear and knowing
 gsan|listen; hear
 gsan pa|hear
 gsang|secret
-#gsang 'dus; gsang ba 'dus pa na|Guhyasamāja; Guhyasamāja [Tantra]
+gsang 'dus; gsang ba 'dus pa na|Guhyasamāja; Guhyasamāja [Tantra]
 gsang ba|secret
-#gsang ba 'dus pa; gsang 'dus|Guhyasamāja; Guhyasamāja [Tantra]
+gsang ba 'dus pa; gsang 'dus|Guhyasamāja; Guhyasamāja [Tantra]
 gsang ba la mkhas pa|wise in secrets; wise with respect to what is secret
 gsang ba snying po'i rgyud|Guhyagarbha Tantra
 gsang ba'i tshig|secret word; secret mantra
@@ -5895,7 +5895,7 @@ gsar shog|newspaper
 gseb|among; within
 gser|gold; golden
 gser 'khor|gold wheel
-gser 'phreng|Tsong-kha-pa's Golden Garland of Eloquence (legs bshad gser gyi ’phreng ba) / Extensive Explanation of (Maitreya’s) “Treatise of Quintessential Instructions on the Perfection of Wisdom: Ornament for the Clear Realizations” as Well as Its Commentaries: Golden Garland of Eloquence 
+gser 'phreng|Tsong-kha-pa's Golden Garland of Eloquence (legs bshad gser gyi ’phreng ba) / Extensive Explanation of (Maitreya’s) “Treatise of Quintessential Instructions on the Perfection of Wisdom: Ornament for the Clear Realizations” as Well as Its Commentaries: Golden Garland of Eloquence
 gser bco ma|burnished gold(D1)
 gser btso ma|[gold-purified]; purifies gold; purified gold; refined gold
 gser bum|golden pot
@@ -5980,7 +5980,7 @@ gtan du 'dor ba|discard forever; get rid of
 gtan du ba|continual
 gtan gyi bde ba|final happiness
 gtan la 'bebs pa|settle; delineate; ascertain; revise [e.g., a translation]; finalize [e.g., a translation]
-#gtan la 'bebs pa; gtan la 'babs pa|delineate; settle; ascertain; revise/finalize [e.g., a translation]
+gtan la 'bebs pa; gtan la 'babs pa|delineate; settle; ascertain; revise/finalize [e.g., a translation]
 gtan la 'phebs|settle; delineate; ascertain; revise [e.g., a translation]; finalize [e.g., a translation]
 gtan la bab par bstan pa'i sde|discourses which delineate
 gtan la dbab|settle; delineate; ascertain; revise [e.g., a translation]; finalize [e.g., a translation]
@@ -6040,7 +6040,7 @@ gtsang pa|pure; clean; clear
 gtse ba|to harm  (T)
 gtso|main; chief; principal
 gtso bo|main; chief; principal
-#gtso bor / gtso bor gyur pa|mainly; chiefly; principally
+gtso bor / gtso bor gyur pa|mainly; chiefly; principally
 gtso che|main
 gtso sems|main mind
 gtsug|crown of the head; top of the head
@@ -6061,8 +6061,8 @@ gud na med|[separate-in-not exist]; inseparable; not exist separately
 gung bran|communist
 gung bsgrigs|arrange; put in order
 gung mo|middle finger
-#gung thang 'jam dpal dbyangs; gung thang dkon mchog bstan pa'i sgron me|Gung-thang Jam-pal-yang [1762-1823; also known as Gung-thang Kön-chog-tan-pay-drön-may]
-#gung thang dkon mchog bstan pa'i sgron me; dkon mchog bstan pa'i sgron me; gung thang 'jam dpal dbyangs|Gung-thang Kön-chog-tan-pay-drön-may [1762-1823; aka Gung-thang Jam-pal-yang]
+gung thang 'jam dpal dbyangs; gung thang dkon mchog bstan pa'i sgron me|Gung-thang Jam-pal-yang [1762-1823; also known as Gung-thang Kön-chog-tan-pay-drön-may]
+gung thang dkon mchog bstan pa'i sgron me; dkon mchog bstan pa'i sgron me; gung thang 'jam dpal dbyangs|Gung-thang Kön-chog-tan-pay-drön-may [1762-1823; aka Gung-thang Jam-pal-yang]
 gur gum|saffron
 gur khyim|[tent-home]; abode
 gus|respectfully; respect
@@ -6114,7 +6114,7 @@ gzhan 'phrul dbang byed|Those Who Make Use of Others' Emanations; Land of Contro
 gzhan bdang|other-powered phenomenon
 gzhan bde bas bde ba nyams su myong ba|experience happiness due to the happiness of others
 gzhan dag|others(LG)
-#gzhan dag gis gzhig par bya ba; gzhan gyis gzhig nus pa|susceptible to destruction by others
+gzhan dag gis gzhig par bya ba; gzhan gyis gzhig nus pa|susceptible to destruction by others
 gzhan dag la ni zas byin pa|give nourishment to others (T)
 gzhan dag la sbyin pa|giving to others (T)
 gzhan dag na re|if others say: (BJ 36.2)
@@ -6124,7 +6124,7 @@ gzhan dbang du 'du ba|gathering others into your own power
 gzhan dbang du gyur pa'i sgo nas|by way of coming under the influence ...
 gzhan dbang gi chos nyid|real nature of other-powered natures; noumenon of other-powered natures
 gzhan dbang gi mtshan nyid|other-powered character
-#gzhan dbang gi ngo bo nyid; gzhan dbang gi rang bzhin|other-powered nature
+gzhan dbang gi ngo bo nyid; gzhan dbang gi rang bzhin|other-powered nature
 gzhan dbang gi rang bzhin|other-powered natures
 gzhan dbang gi steng gi chos nyid|real nature that is with its other-powered nature; noumenon that is with its other-powered nature
 gzhan dbang la chos bdag sgro btags pa'i sgro 'dogs tshul|mode of superimposition of the self of phenomena on other-powered natures
@@ -6384,7 +6384,7 @@ gzung bar dka' ba|difficult to apprehend; difficult to grasp
 gzung bar gyur pa|is apprehended; which is apprehended; which is an apprehended object
 gzung bar snang ba|appearance as an apprehended object; appear as an apprehended object
 gzung bya|object of apprehension
-#gzung bya; bzung bya|object of apprehension
+gzung bya; bzung bya|object of apprehension
 gzung dang 'dzin|apprehended object and apprehending subject
 gzung don|apprehended-object; apprehended object
 gzung du ma mchis|non-apprehension; non-grasping; non-identification
@@ -6473,10 +6473,10 @@ jo nang pa|Jo-nang-pa
 ka 'khor ba|[beginning of alphabet-cycle]; beginningless cyclic existence; cycling from the beginning; cycling from the first letter of the alphabet, ka
 ka ba|pillar; column; pole; post
 ka bum gnyis|the two—pillar and pot
-#ka bum; ka ba dang bum pa|pillar and pot, pillar-and-pot
+ka bum; ka ba dang bum pa|pillar and pot, pillar-and-pot
 kA la tsa kra|Kālacakra [transliteration of the Sanskrit]; Wheel of Time
 ka ma la shI la|Kamalaśīla
-#ka nas dag pa; ka dag|[beginning-pure]; essential purity; pure from the beginning; pure from ka, the first letter of the alphabet
+ka nas dag pa; ka dag|[beginning-pure]; essential purity; pure from the beginning; pure from ka, the first letter of the alphabet
 kA ya|body [transliteration of the Sanskrit kāya]
 ka'i nye ba'i nyon mongs pa|secondary afflictive emotions
 kar sa pa na|kārṣapaṇa coin
@@ -6642,7 +6642,7 @@ khong na 'dzin par byed|hold within
 khong nas|from within
 khongs su|in middle; within
 khongs su gtogs|included within
-#khor ba las nges par 'byung ba; nges 'byung|definite emergence/deliverance/leaving from cyclic existence
+khor ba las nges par 'byung ba; nges 'byung|definite emergence/deliverance/leaving from cyclic existence
 khor yug|surrounding area
 khor yug tu|in the surrounding area
 khra|sparrow hawk
@@ -6809,7 +6809,7 @@ khyod kyi yin pa yod pa|being it exists; its occurrence exists
 khyod kyi yin pa yod pa yang yin blo'i yul du bya rung ba yang yin pa'i gzhi mthun par dmigs pa|that observed as a common locus which is (1) something of which being it exists and (2) also is suitable as an object of an awareness
 khyod kyis|by you; you
 khyod ming dang brdas bzhag pa tsam yin gyi rang gi mtshan nyid kyis ma grub pa|they [i.e., imputational natures] are only posited by names and terminology and are not established by way of their own character
-#khyod tha dad kyang yin/ gzhi mthun mi srid pa'i chos|phenomena (1) that are different and (2) a common locus is impossible
+khyod tha dad kyang yin/ gzhi mthun mi srid pa'i chos|phenomena (1) that are different and (2) a common locus is impossible
 khyod tha snyad kyi dbang gis bzhag pa ma yin par rang gi mtshan nyid kyis grub pa'i dngos po|they are things established by way of their own character without being posited through the force of verbal conventions
 khyu mchog|supreme bull; king bull [used also to refer to a leader of humans]
 khyu mchog tu 'gyur ba|supreme bull; king bull [used also to refer to a leader of humans]
@@ -6827,7 +6827,7 @@ klog pa|read; read out
 klog tu gzhug par|cause to read out
 klong|expanse; sphere
 klong chen|great expanse; great sphere
-#klong chen pa; klong chen pa dri med 'od zer|Long-chen-pa (1308-1363, a central Nying-ma [rnying ma] scholar-yogi)
+klong chen pa; klong chen pa dri med 'od zer|Long-chen-pa (1308-1363, a central Nying-ma [rnying ma] scholar-yogi)
 klu|nāga; dragon; snake
 klu bdud|nāga demon; nāga spirit
 klu btsan|nāga emperior; violent nāga spirit; king spirit
@@ -6843,18 +6843,18 @@ klung la rnag|pus-river
 ko|still again; still
 ko gru|leather boat
 kong sprul bol gros mtha' yas|Kong-trül Lo-drö-ta-yay [author of "the Encyclopedia" (theg pa'i sgo kun...)] complete
-#kri ya; kri yA|transliteration of Sanskrit kriyā [action; Action Tantra]
-#kri yA; kri ya|transliteration of Sanskrit kriyā [action; Action Tantra]
+kri ya; kri yA|transliteration of Sanskrit kriyā [action; Action Tantra]
+kri yA; kri ya|transliteration of Sanskrit kriyā [action; Action Tantra]
 kun|all; complete; entire; whole; total; entirety; thorough
 kun 'byung|source; origination
-#kun 'byung ba; kun 'byung|source; origin; origination
-#kun 'byung ba'i bden pa; kun 'byung bden pa; kun 'byung gi bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
+kun 'byung ba; kun 'byung|source; origin; origination
+kun 'byung ba'i bden pa; kun 'byung bden pa; kun 'byung gi bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
 kun 'byung ba'i don rnam pa gsum|three aspects of the meaning of soure/origin/origination
 kun 'byung bden pa|true origins; true origin
-#kun 'byung bden pa; kun 'byung gi bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
+kun 'byung bden pa; kun 'byung gi bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
 kun 'byung chos bzod|doctrinal forbearance with respect to origins of sufferings
 kun 'byung chos shes|doctrinal knowledge with respect to origins of sufferings
-#kun 'byung gi bden pa; kun 'byung bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
+kun 'byung gi bden pa; kun 'byung bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
 kun 'byung rjes bzod|subsequent forbearance with respect to origins of sufferings
 kun 'byung rjes shes|subsequent knowledge with respect to origins of sufferings
 kun 'dri|question
@@ -6863,7 +6863,7 @@ kun 'dzin|thoroughly holding onto; miserliness
 kun 'dzin pa'i rgyu|cause of thoroughly holding onto; cause of miserliness
 kun 'gro bdag nyid|that which has an omnipresent nature
 kun 'gro lnga|the 5 omnipresent [mental factors]; the 5 omnipresent [mental] factors
-#kun 'gro; kun tu 'gro ba|omnipresent; all-pervading; omnipresent factor; omnipresent mental factor
+kun 'gro; kun tu 'gro ba|omnipresent; all-pervading; omnipresent factor; omnipresent mental factor
 kun 'gro'i rgyu|omnipresent cause
 kun brtags|imputational [nature]; imputation; artificial; acquired; imputational factor; thoroughly [mentally] constructed; imagined; imaginary; imputed; thoroughly imputed; imputational
 kun brtags kyi mig ngos 'dzin skabs|occasion of identifying the imputational eye
@@ -6883,14 +6883,14 @@ kun btags|artificial; imputational factor; imputational; imaginary; thoroughly i
 kun btags bden med yin pas de 'dra'i dogs pa skye don med|no sensible way for such a qualm to occur with respect to imputational natures since they are not truly established
 kun btags kyi mtshan nyid|imputational character; imaginary character
 kun btags kyi ngo bo nyid|imputational nature; imaginary nature
-#kun btags kyi rang bzhin; kun btags kyi ngo bo nyid|imputational nature; imaginary nature
+kun btags kyi rang bzhin; kun btags kyi ngo bo nyid|imputational nature; imaginary nature
 kun btags pa'i chos|imputed phenomenon; imaginary phenomenon
 kun btags pa'i ma rig pa|artificial ignorance; acquired ignorance; imputed ignorance
 kun btags pa'i mtshan nyid|imputational character; imaginary character
 kun btags pa'i rang bzhin|imputational nature; imaginary nature
 kun btags spang bya|artificial object of abandonment
 kun btus|group; collect; summary; compendium; [Asaṅga's] Summary [of Manifest Knowledge]
-#kun bzang; kun tu bzang po|thoroughly good; Samantabhadra [name of Bodhisattva; in Nying-ma, name of primordial being]
+kun bzang; kun tu bzang po|thoroughly good; Samantabhadra [name of Bodhisattva; in Nying-ma, name of primordial being]
 kun chub par bya ba|understand all; realize all
 kun chub par byed|understand all; realize all
 kun da|kunda [transliteration of Sanskrit word for jasmine]; jasmine
@@ -6899,14 +6899,14 @@ kun dga' ra ba phun sum tshogs pa|excellent garden; marvelous garden; perfect ga
 kun dga' snying po|Ānandagarbha
 kun dga'i sgra|sound of joy
 kun dkris|thorough entanglement
-#kun dkris; dkun nas dkris pa na|thorough entanglement; entanglement
+kun dkris; dkun nas dkris pa na|thorough entanglement; entanglement
 kun du|in all ways; [with negative] in any way
 kun gtong|give away all
 kun gtong ba|giving away all
 kun gyi don 'grub byed|accomplishing/achieving/establishing the welfare of all
 kun gzhi|basis-of-all
-#kun gzhi rnam par shes pa; kun gzhi rnam shes|mind-basis-of-all
-#kun gzhi rnam shes; kun gzhi rnam par shes pa|mind-basis-of-all
+kun gzhi rnam par shes pa; kun gzhi rnam shes|mind-basis-of-all
+kun gzhi rnam shes; kun gzhi rnam par shes pa|mind-basis-of-all
 kun la|to all; in all places; in every way; at all times
 kun las|from all; in all ways
 kun las 'das|passed beyond all; completely transcended; passed beyond; is beyond all
@@ -6917,14 +6917,14 @@ kun mkhyen nyid|omniscience; all-knowingness
 kun nas|[all-from]; completely; thoroughly; complete; in every way
 kun nas bslang ba|motivate; ask; beg; collect; gather; raise; cause to rise; inspire; excite; arouse; urge on
 kun nas byung ba ma mchis pa|no arising; non-arising
-#kun nas dkris pa; kun dkris|entanglement; thorough entanglement
+kun nas dkris pa; kun dkris|entanglement; thorough entanglement
 kun nas ldang ba|rise up; get up; flow; suffice
 kun nas mdzes pa|beautiful in every way
 kun nas mi ldang ba|rise up; get up; flow; suffice
 kun nas mnar|thoroughly harm/torture/torment
 kun nas mnar sems byed de|have harmful intent
 kun nas mnar sems kyi sems|attitude of harmful intent
-#kun nas nyon mongs can; kun nas nyon mongs pa can|that which has thoroughly affliction; that which is thoroughly afflicted
+kun nas nyon mongs can; kun nas nyon mongs pa can|that which has thoroughly affliction; that which is thoroughly afflicted
 kun nas nyon mongs gnyen po|antidote to thorough afflictions
 kun nas nyon mongs gzung rtog|conception of thoroughly afflicted objects
 kun nas nyon mongs kyi chos|thoroughly afflicted phenomena
@@ -6932,7 +6932,7 @@ kun nas nyon mongs kyi dmigs pa|object of observation of a thorough affliction
 kun nas nyon mongs med rnam dag|unafflicted purity
 kun nas nyon mongs pa bsal|eradicate/remove/clear away/eliminate/avoid/exclude affliction
 kun nas nyon mongs pa bstan pa|indicating thorough affliction
-#kun nas nyon mongs pa can; kun nas nyon mongs can|that which has thoroughly affliction; that which is thoroughly afflicted
+kun nas nyon mongs pa can; kun nas nyon mongs can|that which has thoroughly affliction; that which is thoroughly afflicted
 kun nas nyon mongs pa dang rnam par byang ba|the afflicted and the pure; afflictions and purifications
 kun nas nyon mongs pa dang rnam par byang ba dag|spheres of the afflicted and the purified; the afflicted and the purified
 kun nas nyon mongs pa dang rnam par byang ba mi lta ba|not viewing the afflicted and the purified
@@ -6952,7 +6952,7 @@ kun nas nyon mongs pa rjes su bsrung ba|protect/guard/keep/maintain/preserve/saf
 kun nas nyon mongs pa spang bar bya ba|afflicted objects to be abandoned
 kun nas nyon mongs pa spangs pa|state of having abandoned afflictions
 kun nas nyon mongs pa yang med|without affliction
-#kun nas nyon mongs pa; kun nas nyon mongs|thoroughly afflicted
+kun nas nyon mongs pa; kun nas nyon mongs|thoroughly afflicted
 kun nas nyon mongs pa'i chos|thoroughly afflicted phenomenon
 kun nas nyon mongs pa'i mtshan nyid|character of the afflicted
 kun nas nyon mongs pa'i nad kyi gnyen po|antidote to the disease of the afflictions
@@ -6961,18 +6961,18 @@ kun nas nyon mongs pa'i phyogs 'gag pa|ceasing the sphere of the afflicted; ceas
 kun nas nyon mongs pa'i rgyu|cause of thorough affliction
 kun nas nyon mongs par 'gyur pa|will be afflicted
 kun nas nyon mongs shin tu grol|complete freedom from afflictions; complete release from the afflictions
-#kun nas nyon mongs; kun nas nyon mongs pa|thoroughly afflicted; thorough affliction
+kun nas nyon mongs; kun nas nyon mongs pa|thoroughly afflicted; thorough affliction
 kun nas slong|motivate; ask; beg; collect; gather; raise; cause to rise; inspire; excite; arouse; urge on
 kun nas slong ba po|one who asks/begs/collects/gathers/raises/inspires/excites/arouses/causes to rise/urges on
-#kun nas slong ba; kun slong|motivation; ask; beg; collect; gather; raise; cause to rise; inspire; excite; arouse; urge on
+kun nas slong ba; kun slong|motivation; ask; beg; collect; gather; raise; cause to rise; inspire; excite; arouse; urge on
 kun nas slong ba'i thabs|means of raising up/motivating/urging on
 kun nas slong bar mi bgyid pa|does not ask/beg/collect/gather/raise/inspire/excite/arouse/cause to rise/urge on
 kun nas snang ba|thoroughly illuminate/appear/shine
 kun nas zhi|thoroughly pacify
 kun nyon mongs rnam par byang|purify thorough afflictions
-#kun nyon mongs; kun nas nyon mongs pa|thoroughly afflicted; afflictive emotion; thorough affliction; affliction
+kun nyon mongs; kun nas nyon mongs pa|thoroughly afflicted; afflictive emotion; thorough affliction; affliction
 kun rdzob|concealer; conventionality; fraudulence; relative [truth]; conventional; concealing [consciousness]; convention
-#kun rdzob bden pa; kun rdzob kyi bden pa|conventional truth; obscurational truth; truth-for-a-concealer; concealer-truth; relative truth; truth-for-an-obscured-mind; obscured truth; truth-for-an-obscured-awareness; truth for a conventional [mind]
+kun rdzob bden pa; kun rdzob kyi bden pa|conventional truth; obscurational truth; truth-for-a-concealer; concealer-truth; relative truth; truth-for-an-obscured-mind; obscured truth; truth-for-an-obscured-awareness; truth for a conventional [mind]
 kun rdzob byang chub kyi sems|conventional mind of enlightenment; conventional mind [directed] toward enlightenment
 kun rdzob dang don dam pa|conventional and ultimate
 kun rdzob kyi bden pa nyid|conventional truth itself; concealer-truth itself
@@ -6986,26 +6986,26 @@ kun rdzob tsam|mere conventionalities
 kun rdzob tu|conventionally
 kun rdzob tu brjod|expressed as conventionalities; conventionally express/verbalize
 kun rdzob tu yod pa|conventionally exist/existence/existent
-#kun rdzob; tha snyad|convention
-#kun rdzob/ tha snyad|convention
+kun rdzob; tha snyad|convention
+kun rdzob/ tha snyad|convention
 kun rdzogs|thorough fulfillment/completion/finishing
-#kun rtog; kun tu rtog pa|ideation; comprehensive imagination; comprehensive construction
+kun rtog; kun tu rtog pa|ideation; comprehensive imagination; comprehensive construction
 kun rtogs pa|thoroughly realize; realize all
 kun sbyong ba|thorough purification/cleansing/washing/practicing/training/cleaning
-#kun sbyor; kun tu sbyor ba|thorough enwrapment
+kun sbyor; kun tu sbyor ba|thorough enwrapment
 kun shes|knower of all
 kun shes nyid|knowledge of all
 kun shes pa dang ldan pa|endowed with all-knowingness
-#kun shes pa; kun shes|all-knowingness
-#kun shes; kun shes pa|all-knowingness
+kun shes pa; kun shes|all-knowingness
+kun shes; kun shes pa|all-knowingness
 kun slong|motivation
 kun slong ba dang bcas pa'i ngag gis|through speech together with motivation
-#kun song; kun tu song; kun tu song ba|gone everywhere; omnipresent; all-pervasive
+kun song; kun tu song; kun tu song ba|gone everywhere; omnipresent; all-pervasive
 kun spyod|behavior; habit; life-style
 kun tshol ba|thorough investigation/examination/search
 kun tu|in all ways; everywhere; always; at all times; in every way; entirely; thoroughly; completely; wholly; totally
 kun tu 'byin|issue forth
-#kun tu 'byung ba; kun 'byung|origination; origin; arising; source
+kun tu 'byung ba; kun 'byung|origination; origin; arising; source
 kun tu 'dren pa|thoroughly lead
 kun tu 'dres pa|thoroughly mixed/conflated/blended
 kun tu 'dzin pa|thorough grasping; thorough apprehension
@@ -7022,7 +7022,7 @@ kun tu bskyod|thoroughly move; completely cause to go
 kun tu bsrung bar byed pa|thoroughly protect/guard/keep/safeguard/maintain/preserve [e.g., vows and pledges]
 kun tu bstan pa|thoroughly teach; thoroughly show; thoroughly demonstrate; thoroughly reveal; thoroughly disclose
 kun tu btsal|thoroughly seek/ search/ examine/ analyze/ investigate
-#kun tu bzang po; kun bzang|Samantabhadra [p.n. of a Bodhisattva]; thoroughly good; the thoroughly good [basic reality]
+kun tu bzang po; kun bzang|Samantabhadra [p.n. of a Bodhisattva]; thoroughly good; the thoroughly good [basic reality]
 kun tu bzod|patience/forbearance/tolerance/endurance in all [situations]; thoroughly patient, etc.
 kun tu chad pa dge ba'i rtsa ba|roots of virtue completely severed/annihilated
 kun tu dngang bar 'gyur ba|become thoroughly terrified/fearful/panicked; is terrified/fearful/panicked
@@ -7031,7 +7031,7 @@ kun tu gsogs|thoroughly accumulate/collect
 kun tu khebs par mdzad nas|having completely covered
 kun tu rgyu ba|wanderer; moving; wandering
 kun tu rgyu ste|move; wander; go
-#kun tu rmongs pa; kun rmongs; kun rmongs pa|thorough obscuration; ignorance; delusion
+kun tu rmongs pa; kun rmongs; kun rmongs pa|thorough obscuration; ignorance; delusion
 kun tu rmongs pa'i sa bon|seeds of obscuration
 kun tu rtog pa|conceptuality; thorough conceptualization; imputed; imputational; imaginary; thoroughly [mentally] constructed; imagined
 kun tu rtog pa las byung|arisen from conceptuality; arisen from conceptualization; arisen from imputation
@@ -7052,9 +7052,9 @@ kun tu skyo ba|thoroughly despondent; thoroughly sad; thoroughly depressed; path
 kun tu snang|appears; is beheld; appear bright; thoroughly illuminate
 kun tu snang ba|thorough illumination
 kun tu snang bar byas nas|having appeared everywhere; having illuminated everywhere
-#kun tu song; kun song; kun tu song ba|[all-to-go]; all-pervasive; omnipresent; go everywhere
+kun tu song; kun song; kun tu song ba|[all-to-go]; all-pervasive; omnipresent; go everywhere
 kun tu spyod|thoroughly enjoy; thoroughly make use of; thoroughly partake of
-#kun tu spyod pa; kun spyod|enjoyment; usage; behavior; life-style; partaking
+kun tu spyod pa; kun spyod|enjoyment; usage; behavior; life-style; partaking
 kun tu ston pa|thoroughly teach; thoroughly show; thoroughly demonstrate; thoroughly reveal; thoroughly disclose
 kun tu tshim pa skye|generate thorough satisfaction
 kun tu zhum|become thoroughly slack/weak/timid/cowardly
@@ -7277,7 +7277,7 @@ ldem dgongs|indirect intention
 ldem dgongs bzhi|four indirect intentions
 ldem po dag gis|by way of intentional speech
 ldem po ngag|parable; allegory; hidden intention; object; meaning; deceive
-#ldem por dgongs pa/ ldem dgongs|intention; hidden intention; indirect intention
+ldem por dgongs pa/ ldem dgongs|intention; hidden intention; indirect intention
 ldir|to bulge(D2)
 ldog|reverse; cease; turn around; isolate; eliminate; reversed
 ldog cha|isolate factor
@@ -7492,7 +7492,7 @@ lhang lhang|clear sound; distinct sound
 lhar bcas|theistic
 lhar bcas pa|theistic
 lhas sbyin|Devadatta
-#lho 'dzam bu gling; 'dzam gling|the southern continent of Jambudvīpa; the Indian subcontinent; the world
+lho 'dzam bu gling; 'dzam gling|the southern continent of Jambudvīpa; the Indian subcontinent; the world
 lhod|loosen
 lhod lhod|relaxed
 lhod pa|loosen; loose
@@ -7505,7 +7505,7 @@ lhun grub pa|spontaneity; spontaneously
 lhun grub par bzod pa 'thob|spontaneously attain forbearance
 lhun grub tu|spontaneously
 lhun grub tu 'jug pa|spontaneously engaging; spontaneous engagement
-#lhun grub; lhun gyis grub pa|spontaneity; spontaneously
+lhun grub; lhun gyis grub pa|spontaneity; spontaneously
 lhun gyis grub pa|spontaneity; spontaneously; spontaneously established
 lhun gyis grub pa glo bur rnam dag gi yon tan|spontaneously accomplished qualities of purity from adventitious [defilements]
 lhun gyis grub par bzod pa 'thob|spontaneously attain forbearance
@@ -7982,7 +7982,7 @@ ma yin|is not; not being
 ma yin dgag|affirming negative; affirming negative phenomenon; affirming negation; nominally bound negation (GD:371); exclusion (GD:371)
 ma yin dgag dang med dgag|affirming negative and non-affirming negative
 ma yin dgag gi gzhan sel|other-eliminator/other-elimination that is an affirming negative
-#ma yin dgag gi gzhan sel yang yin/ don dam par don byed nus pa yang yin pa'i gzhi mthun par dmigs pa|an observed common locus between being an affirming negative other-eliminator and being ultimately able to perform a function
+ma yin dgag gi gzhan sel yang yin/ don dam par don byed nus pa yang yin pa'i gzhi mthun par dmigs pa|an observed common locus between being an affirming negative other-eliminator and being ultimately able to perform a function
 ma yin kun rtog|unreal imputation
 ma yin no zhes zer na|if [someone] should say "it is not" ... (T)
 ma yin pa de|the not-being  (T)
@@ -8258,7 +8258,7 @@ mgo gcig tu|certain; for sure
 mgo gcod pa|cut off the head; decapitate
 mgo mjug|beginning and end
 mgo nag|[head-black] laity; lay person
-#mgo smos pas go ba/  mgo smos pas go ba ma yin pa|understands through mentioning the beginning and does not understand through mentioning the beginning; those who...
+mgo smos pas go ba/  mgo smos pas go ba ma yin pa|understands through mentioning the beginning and does not understand through mentioning the beginning; those who...
 mgo tshugs|begin; start
 mgon|protector; benefactor
 mgon bcas pa|having a protector
@@ -8612,7 +8612,7 @@ mig gi dbang po|eye sense power
 mig gi dbang po'i spyod yul du snang bar gyur to|appear within the range of the eye sense power
 mig gi khams|eye-constituent
 mig gi rnam par shes pa|eye (main) consciousness
-#mig gi rnam par shes pa; mig gi rnam shes|eye consciousness
+mig gi rnam par shes pa; mig gi rnam shes|eye consciousness
 mig gi rnam shes|eye (main) consciousness
 mig gi skye mched|eye-source
 mig la sogs pa|eye, etc.
@@ -8701,14 +8701,14 @@ mkhan po|preceptor; abbot; professor; scholar
 mkhan po 'dra ba|like a preceptor/abbot/professor
 mkhar gyi rgyal po|king of a fort; comander of a fort
 mkhas|wise; skilled; be skillful; scholar
-#mkhas grub; mkhas grub rje dge legs dpal bzang po|Khay-drub [1385-1438; one of Tsong-kha-pa's two main students and 3rd abbot of Gan-dan (dga' ldan) monastery]
+mkhas grub; mkhas grub rje dge legs dpal bzang po|Khay-drub [1385-1438; one of Tsong-kha-pa's two main students and 3rd abbot of Gan-dan (dga' ldan) monastery]
 mkhas pa|adjective: skillful; wise; skilled; proficient7 noun: scholar; the wise; wise person
 mkhas pa dang ldan pa|endowed with skilfulness; endowed with wisdom
 mkhas pa la 'byung ba'i dogs pa'i gnas|topic of qualm arising in scholars/the wise
 mkhas pa rnam pa bcu|ten aspects of skill/wisdom
 mkhas pa rnams kyi las rnam gsum po|three aspects of activites of the skilful
 mkhas pa rnams kyis tshul bzhin brtags na|if/when the wise analyze properly
-#mkhas pa'i dmigs pa; mkhas par byed pa'i dmigs pa|object of observation for [developing] skill
+mkhas pa'i dmigs pa; mkhas par byed pa'i dmigs pa|object of observation for [developing] skill
 mkhas pa'i rang bzhin can|having the nature of a wise person/scholar
 mkhas par|proficiently; skillfully
 mkhas par bya ba|object/topic of scholarship/skill
@@ -8720,7 +8720,7 @@ mkho ba|necessary; important
 mkhregs po|solid; hard
 mkhris lba|bile goiter
 mkhris pa|bile
-#mkhris; mkhris pa|bile
+mkhris; mkhris pa|bile
 mkhur tshos|cheeks
 mkhyen|exalted wisdom; know; wisdom (hon.); knowledge; cognize; cognition
 mkhyen bzhin du|while knowing
@@ -8755,9 +8755,9 @@ mngon 'dod kyi dad pa|faith of wishing [to attain]
 mngon 'dod kyi rtog pa|wishing conception
 mngon brjod kyi bag chags|predispositions of verbalization
 mngon byang lnga|the five clarifications; (T) the five manifest enlightenments ?
-#mngon byang; mngon par rdzogs par byang chub|clarification; full enlightenment
+mngon byang; mngon par rdzogs par byang chub|clarification; full enlightenment
 mngon dga' zhing|manifestly liking/delighting; being manifestly happy
-#mngon dga', mngon par dga' ba|great joy
+mngon dga', mngon par dga' ba|great joy
 mngon du|manifest; actual
 mngon du bgyid pa|actualize; manifest
 mngon du bsnyen pa byed pa|perform prior approximation
@@ -8771,7 +8771,7 @@ mngon du mdzad|(hon.) actualize; manifest
 mngon du phyogs pa|manifestly regard; approach; oriented; Approaching [the name of the sixth Bodhisattva ground]; directed toward
 mngon gyur|manifest; manifest phenonenon; manifest object; approaching
 mngon gyur du skye ba|manifest generation
-#mngon mtho, mngon par mtho ba|[manifestly-high]; high status; sublime state; high type
+mngon mtho, mngon par mtho ba|[manifestly-high]; high status; sublime state; high type
 mngon pa|collection of manifest knowledge; be evident; be; Manifest Knowledge
 mngon pa gong 'og gnyis|the two, the lower and upper Manifest Knowledges
 mngon pa kun btus|Summary of Manifest Knowledge [abhidharma-samuccaya, by Asaṅga (thogs med), P5550, vol. 112]
@@ -8821,7 +8821,7 @@ mngon par byed pa|manifest; actualize
 mngon par chags pa|manifest attachment
 mngon par dga' ba|manifestly rejoice
 mngon par dga' ba yid la byed pa|mental engagement of manifest joy
-#mngon par dga' ba, mngon dga'|manifest joy; great joy
+mngon par dga' ba, mngon dga'|manifest joy; great joy
 mngon par dga' ba'i bsam pa|thought of manifest joy
 mngon par dga' ba'i che ba'i bdag nyid|essence of great manifest joy
 mngon par dga' ba'i yid la byed pa|mental engagement of manifest joy
@@ -8871,14 +8871,14 @@ mngon par thob byed|manifestly attain/obtain
 mngon par yid ches par 'gyur ba 'byung la lta mchis lags sam|manifestly believe; strongly believe
 mngon par zhen pa|manifest conception; strong adherence(N)
 mngon par zhugs|enter; manifestly enter
-#mngon phyogs, mngon du phyogs pa|approach
+mngon phyogs, mngon du phyogs pa|approach
 mngon rdzogs|thoroughly complete; completely
 mngon rtogs|clear realization/clear realizer
 mngon rtogs rgyan|Maitreya's Ornament for Clear Realization [abhisamayālaṃkāra, P5148, vol. 88]
-#mngon rtogs; mngon par rtogs pa|clear realization; clear realizer
+mngon rtogs; mngon par rtogs pa|clear realization; clear realizer
 mngon shes|clairvoyance
 mngon shes drug|six clairvoyances
-#mngon shes, mngon par shes pa|clairvoyance
+mngon shes, mngon par shes pa|clairvoyance
 mngon spyod|violent activities; fierce activities
 mngon sum|direct perception; direct perceiver; obvious object
 mngon sum 'khrul rgyu can|direct perception serving as a cause of error
@@ -8912,10 +8912,10 @@ mngon sum la snang ba gang zhig so sor mi snang ba|(1) appearing to direct perce
 mngon sum ltar snang|pseudo/quasi/counterfeit direct perception/ perceiver
 mngon sum ma yin pa|non-manifest; not actual
 mngon sum ma yin pa'i chos|non-obvious phenomenon
-#mngon sum mdzad, mngon sum du mdzad|manifest
+mngon sum mdzad, mngon sum du mdzad|manifest
 mngon sum mi byed|nonmanifestation; non-manifest; not actual
 mngon sum yid ma gtad|not aiming the mind directly (?) (T)
-#mngon zhen, mngon par zhen pa|exaggerated adherence; manifest conception; strong adherence
+mngon zhen, mngon par zhen pa|exaggerated adherence; manifest conception; strong adherence
 mngor ba|sweet(D1)
 mnod pa|to cause to receive
 mnos|to cause to receive
@@ -9005,7 +9005,7 @@ mos pa rgya che ba|extensive belief/faith/interest/inclination towards/zeal
 mos pa rgya chen po|extensive belief/faith/interest/inclination towards/zeal
 mos pa rgyas pa|extensive/increased belief/faith/interest/inclination towards/zeal
 mos pa rnam par 'phel byed pa|cause belief to increase (T)
-#mos pa sgom lam / mos pa'i sgom lam|[Great Vehicle] path of meditation of belief
+mos pa sgom lam / mos pa'i sgom lam|[Great Vehicle] path of meditation of belief
 mos pa spyod pa'i sems bskyed|mind-generation of engagement through belief
 mos pa yid byed|mental contemplation of belief
 mos pa yid la byed pa|mental contemplation of belief(Lati)
@@ -9093,7 +9093,7 @@ mthil|palm
 mtho|high; elevated
 mtho ba|high
 mtho brtsegs|[high-pile]; piled on top of; pile on top of
-#mtho btsams; mtho mtshams|malevolence; evil intent
+mtho btsams; mtho mtshams|malevolence; evil intent
 mtho gling|To-ling Monastery (in the central Himalayas near Mount Kailash)
 mtho med pa|not high
 mtho po|high; tall
@@ -9171,7 +9171,7 @@ mthu'i khyad par dang ldan pa|having the distinction of power
 mthu'i skabs|occasion of power
 mthud|series
 mthud pa'i shes pa'i rgyun|continuum of consciousness which is a series
-mthun|concordance; favorable; concordant; agree; accord with; agreement; harmony (as in harmonies with enlightenment བྱང་ཆུབ་ཕྱོགས་མཐུན་) 
+mthun|concordance; favorable; concordant; agree; accord with; agreement; harmony (as in harmonies with enlightenment བྱང་ཆུབ་ཕྱོགས་མཐུན་)
 mthun bya|session
 mthun dpe|similar example
 mthun dpe yang dag|correct similar example
@@ -9187,7 +9187,7 @@ mthun pa'i yul du gnas pa|abide in a concordant object
 mthun pa'i yul na gnas|staying in an agreeable place
 mthun pa'i yul na gnas pa|staying in an agreeable place
 mthun par 'khor ro|concordant circling
-#mthun par byas pa yin; dang mthun par byas pa yin|is concordant; make concordant (with)
+mthun par byas pa yin; dang mthun par byas pa yin|is concordant; make concordant (with)
 mthun phyogs|similar class
 mthun phyogs la yod pa|existing in the similar class
 mthun rkyen|[concordant-cause]; favorable condition; concordant condition; concordant circumstances; conducive conditions
@@ -9245,7 +9245,7 @@ mtshan med 'du byed dang bcas par gnas pa|abide in signlessness with discriminat
 mtshan med gnas pa|signless abode
 mtshan med kyi rnal 'byor|yoga without signs; yoga of signlessness
 mtshan med rtsol bcas kyi 'du shes|signless discrimination having exertion
-#mtshan med; mtshan ma med pa|signless; signlessness
+mtshan med; mtshan ma med pa|signless; signlessness
 mtshan mo|night
 mtshan mtshon|definition and definiendum(D2)
 mtshan nyid|definition; characteristic; character; mark; attribute; sign; case; defining characteristics
@@ -9339,7 +9339,7 @@ mu stegs can gyi thar pa|liberation of a Forder
 mu stegs can gzhan|other Forders
 mu stegs can rnams kyi bstan bcos|Forder treatises
 mu stegs can thar pa la kun tu zhugs pa|enter into a Forder's liberation
-#mu stegs can; mu stegs pa|Forder [a non-Buddhist]; [non-Buddhist] Forders
+mu stegs can; mu stegs pa|Forder [a non-Buddhist]; [non-Buddhist] Forders
 mu stegs gcer bu pa|Tīrthika Nirgrantha(N)
 mu stegs pa|Forder(N)
 mu tig|pearl
@@ -9554,7 +9554,7 @@ nges 'byed|definite descrimination
 nges 'byed cha mthun|concordance with a portion of definite discrimination; concordant with definite differentiation; partial concordance with definite differentiation / discrimination
 nges 'byed yan lag|limb of definite discrimination; [four] limbs of definite differentiation/discrimination; branch of definite differentiation/discrimination
 nges 'byin|deliverance
-#nges 'byin, nges par 'byin pa|deliverance; salvation; rescue
+nges 'byin, nges par 'byin pa|deliverance; salvation; rescue
 nges 'byung|[definitely-emerge]; thought definitely to leave cyclic existence; definite emergence [from cyclic existence]; renunciation; thought definitely to leave [cyclic existence]
 nges 'byung blo|attitude of intending to leave [cyclic existence]
 nges 'byung med|non-emergence; non-renunciation
@@ -9566,9 +9566,9 @@ nges bzung ba|distinguish
 nges cha|ascertainment factor
 nges dbang gis 'jug|engage by the power of ascertainment
 nges don gyi mdo|sūtra of definitive meaning
-#nges don, nges pa'i don|definitive meaning; definitive; definitive object
+nges don, nges pa'i don|definitive meaning; definitive; definitive object
 nges gzung ba|definitely apprehend/grasp/conceive
-#nges legs, nges par legs pa|definite goodness [of liberation from cyclic existence and/or omniscience]; summum bonum; highest boon; the definitely good
+nges legs, nges par legs pa|definite goodness [of liberation from cyclic existence and/or omniscience]; summum bonum; highest boon; the definitely good
 nges ngo|[ascertainment-face]; ascertainment factor
 nges ngor|to/for the ascertainment factor
 nges pa|verb: ascertain; determine; restrictnoun: ascertainment; certaintyadj.: determined; ascertained; definite; definiteness; limited; certain
@@ -9577,7 +9577,7 @@ nges pa med|non-restriction; no ascertainment/certainty
 nges pa rnyed pa|gain/find ascertainment/certainty
 nges pa'i don|definitive; definitive meaning; definitive object
 nges pa'i don gyi mdo sde ma thos pa|not hearing sūtras of definitive meaning
-#nges pa'i tshig, nges tshig|creative etymology; contextual etymology
+nges pa'i tshig, nges tshig|creative etymology; contextual etymology
 nges par|definitely; definite; certainly
 nges par 'byed pa|definite differentiation
 nges par 'byed pa 'gro ba|go to definite differentiation
@@ -9587,7 +9587,7 @@ nges par 'byung|definitely emerge/arise
 nges par 'byung ba|definite emergence [from cyclic existence]; renunciation
 nges par 'byung ba dang bcas pa|together with renunciation; together with definite emergence [from cyclic existence]
 nges par 'byung ba med pa|non-renunciation; non-emergence
-#nges par 'byung ba; nges 'byung|definite emergence [from cyclic existence]; renunciation
+nges par 'byung ba; nges 'byung|definite emergence [from cyclic existence]; renunciation
 nges par 'byung bar 'gyur te|will definitely emerge; will renounce
 nges par 'dzin|definitely apprehend/grasp/conceive
 nges par 'dzin pa|definitely apprehend/grasp/conceive
@@ -9615,7 +9615,7 @@ nges par ston par byed pa|definitely teach/indicate
 nges par thob par byed pa|definitely obtain/gain/attain; definite means of attainment
 nges shes|ascertaining consciousness; determinative consciousness
 nges tshig|creative etymology; contextual etymology
-#nges tshig, nges pa'i tshig|contextual etymology; creative etymology
+nges tshig, nges pa'i tshig|contextual etymology; creative etymology
 ngo|face; perspective; (particle indicating the end of a statement)
 ngo bo|entity; nature
 ngo bo bden gnyis la 'doms pa|guidance concerning the entities, the two truths [ultimate truths and obscurational truths]
@@ -9626,8 +9626,8 @@ ngo bo dang khyad par la kun brtags pa'i kun brtags de rang gi mtshan nyid kyis 
 ngo bo dang khyad par la kun btags pa'i kun btags|imputational factors imputed in the manner of entity and attribute
 ngo bo dbyer med|undifferentiable entity
 ngo bo gcig|one entity; same entity
-#ngo bo gcig la ldog pa tha dad / ngo bo gcig la ldog pa tha dad pa|one entity but different isolates
-#ngo bo gcig ldog pa tha dad; ngo bo gcig la ldog pa tha dad|same entity and/but different isolates
+ngo bo gcig la ldog pa tha dad / ngo bo gcig la ldog pa tha dad pa|one entity but different isolates
+ngo bo gcig ldog pa tha dad; ngo bo gcig la ldog pa tha dad|same entity and/but different isolates
 ngo bo gcig pa|same entity
 ngo bo la kun btags pa'i kun btags su gyur pa'i bye brag la kun btags pa|imputation of a particular that is an imputation of entity
 ngo bo la kun btags pa'i kun btags su gyur pa'i ngo bo nyid la kun btags pa|imputation of just the entity that is an imputation of entity
@@ -9675,7 +9675,7 @@ ngo skal|corresponding
 ngo sprad|identify; introduce; point out
 ngo sprod|identify; introduce; point out
 ngo tsha|shame; modesty
-#ngo tsha ba, ngo tsha|shame
+ngo tsha ba, ngo tsha|shame
 ngo tsha med pa|non-shame
 ngo tsha shes pa|shame
 ngogs|port; entrance; ford; bank
@@ -9734,7 +9734,7 @@ nyal khri|bed
 nyal nyil|unclean
 nyam chung ba|little strength; weak
 nyam nga ba|fright; fear
-#nyam nga ba med pa; sgra nyam nga ba med pa|fearless sound
+nyam nga ba med pa; sgra nyam nga ba med pa|fearless sound
 nyam nga ba'i phyogs|direction of fear
 nyam thag|destitution; without resources; destitute; stricken; exhausted
 nyam thag pa|destitution; without resources; destitute; stricken; exhausted
@@ -9795,7 +9795,7 @@ nyan thos kyi lam shes pa'i lam shes|knowers of paths that know Hearer paths
 nyan thos kyi lam shes pa'i lam shes|knower of paths that knows Hearer paths
 nyan thos kyi mi slob lam|Hearer's path of no more learning
 nyan thos kyi mthar phyin pa'i lam|Hearer's path of completion
-#nyan thos kyi mthon lam bar chad med lam dang rnam grol lam gang rung ma yin pa'i nyan thos kyi mthong lam yang yin/ rang 'dren byed kyi rnam grol lam rdzogs rjes su byung ba'i cha nas bzhag pa'i nyan thos kyi bden pa mngon rtogs/|Hearer's clear realizer of truth which is posited from the viewpoint of: (1) being a Hearer's path of seeing which is neither an uninterrupted path nor a path of release of a Hearer's path of seeing; and (2) arises after the completion of the path of rele
+nyan thos kyi mthon lam bar chad med lam dang rnam grol lam gang rung ma yin pa'i nyan thos kyi mthong lam yang yin/ rang 'dren byed kyi rnam grol lam rdzogs rjes su byung ba'i cha nas bzhag pa'i nyan thos kyi bden pa mngon rtogs/|Hearer's clear realizer of truth which is posited from the viewpoint of: (1) being a Hearer's path of seeing which is neither an uninterrupted path nor a path of release of a Hearer's path of seeing; and (2) arises after the completion of the path of rele
 nyan thos kyi mthong lam|Hearer path of seeing; Hearer's path of seeing
 nyan thos kyi mthong lam bar chad med lam|uninterrupted path of a Hearer's path of seeing
 nyan thos kyi mthong lam mnyam bzhag ye shes|Hearer's exalted wisdom of meditative equipoise
@@ -9894,7 +9894,7 @@ nyes pa med pa nyid|faultlessness
 nyes pa mthong ba|viewing faults
 nyes pa rnyams gdul bar bya ba|discipline the faults
 nyes pa yongs su spang ba|thorough abandonment of faults
-#nyes pa; nyes dmigs|fault
+nyes pa; nyes dmigs|fault
 nyes skyon|faults and defects
 nyes tshogs|collection of faults
 nyi khri chig stong drug brgya|216
@@ -10015,7 +10015,7 @@ nyon sgrib kun btags dngos gnyen du gyur pa'i nyan thos kyi bden pa mngon rtogs|
 nyon sgrib kun btags spangs pa'i rnam grol lam du gyur pa'i nyan thos kyi bden pa mngon rtogs|a Hearer clear realizer of truth which is a path of release that abandons the artificial afflictive obstructions
 nyon sgrib spangs pa'i cha nas bzhag pa'i mkhyen pa|an exalted knower that is posited from the viewpoint of abandoning the afflictive obstructions
 nyon sgrib spangs pa'i ye shes|pristine wisdom that has abandonned the afflictive obstructions
-#nyon sgrib; nyon mongs pa'i sgrib pa|afflictive obstruction
+nyon sgrib; nyon mongs pa'i sgrib pa|afflictive obstruction
 nyon yid|afflicted mind
 nyos|to buy
 nyung|little; few
@@ -10043,7 +10043,7 @@ padma dkar po|Padma-kar-po (1527-1592), a Ka-gyu (bka' rgyud) scholar
 padma ral|ruby
 padma'i ngang tshul|[The one who is] the nature of the Lotus (Kamalashīla)
 pags pa|skin
-#pags pa; lus|skin; body
+pags pa; lus|skin; body
 paN|paṇḍita
 paN chen bsod nams brags pa|Paṇ-chen Sö-nam-drag-pa; [1478-1554]; textbook author for the Lo-sel-ling College of Dre-pung University
 paN zhe|[paṇḍita-hat]; scholar's hat
@@ -10112,8 +10112,8 @@ pha rol tu phyin pa yang dag par spyod pa|thorough practice of the perfections
 pha rol tu phyin pa yongs su rdzogs pa|thoroughly complete/fulfill the perfections
 pha rol tu phyin pa yongs su rdzogs par bya ba|thoroughly complete/fulfill the six perfections
 pha rol tu phyin pa yongs su sgrub pa|thorough establishment of the perfections
-#pha rol tu phyin pa; phar phyin|perfection
-#pha rol tu phyin pa; phar phyin|[other side-to-went]; perfection; that which has gone beyond
+pha rol tu phyin pa; phar phyin|perfection
+pha rol tu phyin pa; phar phyin|[other side-to-went]; perfection; that which has gone beyond
 pha rol tu phyin pa'i bslab pa thams cad kyi pha rol tu phyin pa|perfection of all learners; perfection of all learning
 pha rol tu phyin pa'i ngo bo nyid|entityness of the perfections
 pha rol tu phyin pa'i rang bzhing gyi dge ba|virtue of the nature of the perfections
@@ -10126,7 +10126,7 @@ phab par gyur pa|possession [by demons]
 phab po|fall
 phag pa|pig
 phag rgod|wild boar
-#phags pa dgongs pa zab mo nges par 'grel pa'i mdo rgya cher 'grel pa; rgya nag 'grel chen|Extensive Commentary on the "Superior Sūtra Unraveling the Profound Thought" [by the Korean scholar-monk Won-ch'uk (612/613-696; Tibetan: rdzogs gsal / wen tshig / wen tshegs / wanydzeg; Chinese: Yüan ts'e); P5517, vol. 116]
+phags pa dgongs pa zab mo nges par 'grel pa'i mdo rgya cher 'grel pa; rgya nag 'grel chen|Extensive Commentary on the "Superior Sūtra Unraveling the Profound Thought" [by the Korean scholar-monk Won-ch'uk (612/613-696; Tibetan: rdzogs gsal / wen tshig / wen tshegs / wanydzeg; Chinese: Yüan ts'e); P5517, vol. 116]
 phal chen pa|Mahāsāṃghika
 phal chen sde|Mahāsāṃghika
 phal chen sde pa|Majority School
@@ -10196,10 +10196,10 @@ phan tshul grogs su|mutually compatible
 phan tshun|mutual; mutually(D2)
 phan tshun 'gal ba|contradictories in the sense of mutual exclusion(N); mutually contradictory
 phan tshun brtan pa|interdependent
-#phan tshun dus mnyam rdzas tha dad kyang yin/ phan tshun skye ba la gegs mi byed pa yang yin pa'i gzhi mthun du dmigs pa/|observed as a common locus between different substantial entities [established at] the same time and does not serve as an obstacle to mutual production
+phan tshun dus mnyam rdzas tha dad kyang yin/ phan tshun skye ba la gegs mi byed pa yang yin pa'i gzhi mthun du dmigs pa/|observed as a common locus between different substantial entities [established at] the same time and does not serve as an obstacle to mutual production
 phan tshun mi 'khrul pa|mutually ineluctable(BJ 74.4)
 phan tshun mi mthun|mutually discordant
-#phan tshun mtshungs ldan rnam pa lnga mtshungs kyang yin/ phan tshun skye ba la gegs mi byed pa yang yin pa'i gzhi mthun du dmigs pa/|that which is observed as a common locus of being associated with the five types of mutual association and not acting as an obstacle to their mutual production
+phan tshun mtshungs ldan rnam pa lnga mtshungs kyang yin/ phan tshun skye ba la gegs mi byed pa yang yin pa'i gzhi mthun du dmigs pa/|that which is observed as a common locus of being associated with the five types of mutual association and not acting as an obstacle to their mutual production
 phan tshun rten brten|mutually support and supported(BJ 62.3)
 phan tshun rten pa|mutual dependence; interdependence
 phan tshun spang 'gal|mutual exclusion; contradictory in the sense of mutual exclusion; mutually exclusive
@@ -10368,7 +10368,7 @@ phyi dang bye brag|generality and particular
 phyi dang nang gi dngos po|external and internal thing
 phyi dar|later dissemination(N)
 phyi dar gyi mkhas pa|scholars of the later dissemination
-#phyi dbyangs; phyi dbyangs dbyings|external expanse of the sky
+phyi dbyangs; phyi dbyangs dbyings|external expanse of the sky
 phyi don|external object; external object(N)
 phyi don du med|do not exist as external objects(BJ 21.1)
 phyi logs|subsequent
@@ -10660,7 +10660,7 @@ rab tu nyams pa 'gyur ba|very degenerated; very spoiled; very defiled; very corr
 rab tu phyag 'tshal|pay thorough obeisance
 rab tu phye|thoroughly distinguish(ed); thoroughly differentiates
 rab tu phye ba yin no|thoroughly distinguish(ed); thoroughly differentiates
-#rab tu phye ba; rab tu bzhag pa|distinguished; posit; posited; thoroughly distinguish; thoroughly differentiates
+rab tu phye ba; rab tu bzhag pa|distinguished; posit; posited; thoroughly distinguish; thoroughly differentiates
 rab tu rang|very suitable(LG 30.5)
 rab tu rgyas pa'i dmigs pa|very extensive object of observation
 rab tu rig pa|(thoroughly) know; (thoroughly) aware
@@ -10784,7 +10784,7 @@ rang bzhin gyis 'od gsal la|naturally luminous
 rang bzhin gyis grub pa|inherently established; inherent establishment; established inherently; established by way of its own nature
 rang bzhin gyis grub par 'dzin pa|conception of inherent existence
 rang bzhin gyis grub par snang ba|appearance of inherent existence
-#rang bzhin gyis grub pas stong pa'i stong pa nyid; rang bzhin stong pa nyid|emptiness of inherent existence
+rang bzhin gyis grub pas stong pa'i stong pa nyid; rang bzhin stong pa nyid|emptiness of inherent existence
 rang bzhin gyis kun nas nyon mongs pa can ma yin pa|is not inherently afflicted
 rang bzhin gyis kun nas nyon mongs pa med|not inherently afflicted
 rang bzhin gyis ma skyes pa|non-production by way of its own nature; not produced by way of its own nature
@@ -10814,8 +10814,8 @@ rang bzhin yan lag|limbs of inherent existence
 rang bzhin ye med|utterly without an inherent nature
 rang bzhin yin pa|is inherently existent; is naturally; is inherently
 rang bzhin yon tan ldan|naturally possessing (good) qualities
-#rang bzhin; ngo bo nyid|nature; inherent existence; inherent nature; own-being; exist inherently; fundamental nature
-#rang bzhin/ ngo bo nyid|nature; inherent existence; inherent nature
+rang bzhin; ngo bo nyid|nature; inherent existence; inherent nature; own-being; exist inherently; fundamental nature
+rang bzhin/ ngo bo nyid|nature; inherent existence; inherent nature
 rang cag|[self-s]; we
 rang chas|integral; integrally(LG); intrinsically
 rang chas su|integrally; on their own part; intrinsically
@@ -10900,7 +10900,7 @@ rang gi mtshan nyid kyis rnam par gnas pa ni ma yin pa|not subsist by way of the
 rang gi mtshan nyid kyis stong pa|empty by way of its/their own character; (T) empty of own character
 rang gi mtshan nyid kyis yod pa|existence by way of its own character(N); exist by way of its own character(BJ 28.3); existent by way of its own character
 rang gi mtshan nyid yod pa ma yin|its own-character [that is, unique character] does not exist
-#rang gi mtshan nyid/ rang mtshan|specific character; specifically characterized phenomenon
+rang gi mtshan nyid/ rang mtshan|specific character; specifically characterized phenomenon
 rang gi ngang|own taste/character/nature
 rang gi ngo bo|intrinsic entity; own entity(N); its own entity; own-entity
 rang gi ngo bo 'dzin pa|bearing its own entity; that which holds its own entity
@@ -11065,7 +11065,7 @@ rdo rje mnyam pa nyid|sameness of the vajra (?)
 rdo rje sems can|Vajrasattva [p.n. of a Buddha]
 rdo rje sems dpa'|Vajrasattva
 rdo rje skhyil krung|vajra posture; adamantine posture
-#rdo rje skhyil krung; rdo rje skhyil mo krung; rdor skhyil|vajra-posture [i.e., the full-lotus posture]; adamantine posture; vajra posture
+rdo rje skhyil krung; rdo rje skhyil mo krung; rdor skhyil|vajra-posture [i.e., the full-lotus posture]; adamantine posture; vajra posture
 rdo rje skhyil mo krung|vajra-posture [i.e., the full-lotus posture]
 rdo rje slob dpon|vajra master
 rdo rje snying po|Vajragarbha
@@ -11080,7 +11080,7 @@ rdog thabs gcig gis|from a single point
 rdol ba|to come forth; to come out
 rdor|rub
 rdor bzlas|vajra repetition
-#rdor skhyil; rdo rje skhyil mo krung; rdo rje skhyil krung|vajra-posture [i.e., the full-lotus posture]
+rdor skhyil; rdo rje skhyil mo krung; rdo rje skhyil krung|vajra-posture [i.e., the full-lotus posture]
 rdul|dust; particle; atom
 rdul bral|pure; free from dust(N)
 rdul dang bral|free from dust; pure
@@ -11244,7 +11244,7 @@ rgya mtsho'i pha rol phyin par 'gyur|go to the other side of an ocean; cross an 
 rgya mtsho'i rlabs|ocean wave
 rgya mtshor 'jug pa|enter an ocean/lake
 rgya nag|[vast-black]; China
-#rgya nag 'grel chen; rgya nag gi 'grel chen; 'phags pa dgongs pa nges par 'grel pa'i mdo'i rgya cher 'grel pa|Chinese Great Commentary; Extensive Commentary on the "Sūtra Unraveling the Thought" [by the Korean scholar-monk Won-ch'uk (612/613-696; Tibetan: rdzogs gsal / wen tshig / wen tshegs / wanydzeg; Chinese: Yüan ts'e); P5517, vol. 116]
+rgya nag 'grel chen; rgya nag gi 'grel chen; 'phags pa dgongs pa nges par 'grel pa'i mdo'i rgya cher 'grel pa|Chinese Great Commentary; Extensive Commentary on the "Sūtra Unraveling the Thought" [by the Korean scholar-monk Won-ch'uk (612/613-696; Tibetan: rdzogs gsal / wen tshig / wen tshegs / wanydzeg; Chinese: Yüan ts'e); P5517, vol. 116]
 rgya rje 'gris|Ling Dynasty [502 - 557 CE] of China
 rgya rje song|Liu Sung Dynasty [420 - 479 ce] of China
 rgya rje thang|T'ang dynasty [618 - 906 CE] of China
@@ -11370,17 +11370,17 @@ rgyu zhing song|wander and go
 rgyu'i kun nas nyon mongs pa|causal affliction; causal afflictive emotion
 rgyu'i kun slong|causal motivation
 rgyu'i theg pa|Cause Vehicle
-#rgyu'i tshogs; rgyu tshogs|prerequisite
+rgyu'i tshogs; rgyu tshogs|prerequisite
 rgyud|continuum; mental continuum; life continuum; tantra
 rgyud 'gal|indirectly contradictory; indirect contradictories
-#rgyud bla ma; rgyud bla; theg pa chen po rgyud bla ma'i bstan bcos|[Maitreya's] Great Vehicle Treatise on the Sublime Continuum / Treatise on the Later Scriptures of the Great Vehicle [P5525, vol. 108]
+rgyud bla ma; rgyud bla; theg pa chen po rgyud bla ma'i bstan bcos|[Maitreya's] Great Vehicle Treatise on the Sublime Continuum / Treatise on the Later Scriptures of the Great Vehicle [P5525, vol. 108]
 rgyud bla tIk chen|Gyel-tsap's (rgyal tshab) Great Commentary on (Maitreya's) "Great Vehicle Treatise on the Sublime Continuum"
-#rgyud bla; rgyud bla ma; theg pa chen po rgyud bla ma'i bstan bcos|[Maitreya's] Great Vehicle Treatise on the Sublime Continuum / Treatise on the Later Scriptures of the Great Vehicle [P5525, vol. 108]
+rgyud bla; rgyud bla ma; theg pa chen po rgyud bla ma'i bstan bcos|[Maitreya's] Great Vehicle Treatise on the Sublime Continuum / Treatise on the Later Scriptures of the Great Vehicle [P5525, vol. 108]
 rgyud bla'i 'grel pa|[Asaṅga's] Commentary on (Maitreya's) "Great Vehicle Treatise on the Sublime Continuum" [theg pa chen po'i rgyud bla ma'i bstan bcos kyi rnam par bshad pa; P5526, vol. 108]
 rgyud bzhi|Four [Medical] Tantras
 rgyud drug|six transmigrations/tantras/continuums
-#rgyud gzhan grub pa zhes bya ba'i rab tu byed pa; rgyud gzhan grub pa|[Dharmakīrti's] Proof of Other Continuums [P5716, vol. 130]
-#rgyud gzhan grub pa; rgyud gzhan grub pa zhes bya ba'i rab tu byed pa|[Dharmakīrti's] Proof of Other Continuums [P5716, vol. 130]
+rgyud gzhan grub pa zhes bya ba'i rab tu byed pa; rgyud gzhan grub pa|[Dharmakīrti's] Proof of Other Continuums [P5716, vol. 130]
+rgyud gzhan grub pa; rgyud gzhan grub pa zhes bya ba'i rab tu byed pa|[Dharmakīrti's] Proof of Other Continuums [P5716, vol. 130]
 rgyud lung rtogs kyi yon tan gyis lci ba|mental continuum weighty with good qualities of scripture and realization
 rgyud nas skye byed|indirect producer
 rgyud pa|continuation; tradition; lineage
@@ -11639,7 +11639,7 @@ ring por mi thogs|after a long time
 ring tu song ba|Gone-Afar
 ris|lineage; type; king; clan; family
 ris chad kyi snang ba|restricted appearances
-#ris chad; ris su chad pa|separate
+ris chad; ris su chad pa|separate
 ris su bcad cing|cutting off [one's] lineage
 ris su chad pa|restricted
 ris su nges pa|definite in a lineage
@@ -11654,11 +11654,11 @@ rje nyid|the Master [i.e. Dzong-ka-ba] himself
 rje rin po che|Dzong-ka-ba
 rje yang sras kyi dgongs pa|the thought of the foremost father [Dzong-ka-ba] and his spiritual sons [Gyel-tsap and Kay-drub]
 rje'u rigs|merchant class
-#rjen char; rjen cher|nakedly
+rjen char; rjen cher|nakedly
 rjen cher kyis|[naked-great-ly]; nakedly
 rjen pa|naked
 rjes|after; subsequent to
-#rjes 'gro / rjes la 'gro|follow; go afterward
+rjes 'gro / rjes la 'gro|follow; go afterward
 rjes 'jug|[after-put]; (1) in grammar: suffix; (2) followers; follower
 rjes 'jug phal cher|most followers
 rjes 'thob|subsequent attainment
@@ -11759,7 +11759,7 @@ rjes su shes pa|subsequent knowledge; subsequent cognizer; subsequent cognition
 rjes su skyes pa|produce after
 rjes su slob pa'i tshul|the mode of learning; way of learning
 rjes su song ba|become; subsequently become; gone; passed
-#rjes su spyad pa; rjes su dpyad pa|analyze; subsequently analyze
+rjes su spyad pa; rjes su dpyad pa|analyze; subsequently analyze
 rjes su srung ba|protect/guard/keep/maintain/preserve/safeguard [e.g., vows and pledges]
 rjes su ston|teach; indicate
 rjes su ston byed|teach; indicate
@@ -11941,7 +11941,7 @@ rnam brgyad|eight aspects
 rnam brtags|the imputed
 rnam bsal|eradicate; remove; clear away; eliminate; avoid; exclude; separate
 rnam bsams|think; thought
-rnam bshad|explanation; Gyal-tshab's Explanation; Gyal-tshab-dar-ma-rin-chen’s (rgyal tshab dar ma rin chen; 1364-1432) Explanation Illuminating the Meaning of the Commentaries on (Maitreya’s) “Treatise of Quintessential Instructions on the Perfection of Wisdom; Ornament for the Clear Realizations”: Ornament for the Essence (rnam bshad snying po rgyan/ shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan gyi 'grel pa don gsal ba'i rnam bshad snying po'i rgyan)  
+rnam bshad|explanation; Gyal-tshab's Explanation; Gyal-tshab-dar-ma-rin-chen’s (rgyal tshab dar ma rin chen; 1364-1432) Explanation Illuminating the Meaning of the Commentaries on (Maitreya’s) “Treatise of Quintessential Instructions on the Perfection of Wisdom; Ornament for the Clear Realizations”: Ornament for the Essence (rnam bshad snying po rgyan/ shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan gyi 'grel pa don gsal ba'i rnam bshad snying po'i rgyan)
 rnam bshad rigs|Vasubandhu's Reasoning for Explanations (P. 5562, vol. 113)
 rnam byang|purification; very pure
 rnam byang gi chos|very pure phenomenon; phenomenon of purification [i.e. liberation](Lati)
@@ -11957,13 +11957,13 @@ rnam can|having the aspect(LG)
 rnam chad pa|cut off
 rnam dag|very pure; complete
 rnam dag gi dmigs pa'i gtso bo|main object of observation
-#rnam dag gi dmigs pa'i gtso bo; rnam dag dmigs pa'i gtso bo|main object of observation of purification
-#rnam dag gi dmigs pa'i gtso bo/rnam dag dmigs pa'i gtso bo|main object of observation of purification
+rnam dag gi dmigs pa'i gtso bo; rnam dag dmigs pa'i gtso bo|main object of observation of purification
+rnam dag gi dmigs pa'i gtso bo/rnam dag dmigs pa'i gtso bo|main object of observation of purification
 rnam dag gyur|become very pure
 rnam dag lam gyi dmigs pa mthar thug|final object of observation by a path of purification
 rnam dag lam gyi dmigs pa mthar thug tu gyur pa'i de bzhin nyid|thusness that is a final object of observation of a path of purification
-#rnam dag lam gyi dmigs pa; rnam dag lam gyi dmigs yul|object of observation by a path of purification
-#rnam dag lam gyi dmigs pa/rnam dag lam gyi dmigs yul|object of observation by a path of purification
+rnam dag lam gyi dmigs pa; rnam dag lam gyi dmigs yul|object of observation by a path of purification
+rnam dag lam gyi dmigs pa/rnam dag lam gyi dmigs yul|object of observation by a path of purification
 rnam dag lam gyi dmigs yul|object of observation by a path of purification
 rnam dag pa|very pure; complete
 rnam dag sgom lam|[Great Vehicle] path of complete purity; very pure path of meditation
@@ -11973,7 +11973,7 @@ rnam dpyad bsam pa can|having analytical thoughts
 rnam dpyod|discrimination; analysis(BJ 8.3)
 rnam dpyod pa|discrimination; analysis
 rnam g.yeng|distraction
-#rnam gcos yong gcod; rnam bcad yongs gcod|an exclusionary elimination and an inclusionary elimination
+rnam gcos yong gcod; rnam bcad yongs gcod|an exclusionary elimination and an inclusionary elimination
 rnam gnyis su 'jug pa|related in two ways
 rnam grangs|enumeration; format; framework; synonym
 rnam grangs du ma|many forms; many synonyms; many formats
@@ -11984,8 +11984,8 @@ rnam grangs pa'i kun brtags|enumerated imputations
 rnam grol|release
 rnam grol lam|path of release
 rnam kun|all aspects
-#rnam kun mkhyen nyid / rnam kun mkhyen pa / rnam kun mkhyen pa nyid|exalted-knower-of-all-aspects
-#rnam kun mngon par rdzogs par rtogs pa; rnam rdzogs sbyor ba|complete training in all the aspects; complete realization of all the aspects
+rnam kun mkhyen nyid / rnam kun mkhyen pa / rnam kun mkhyen pa nyid|exalted-knower-of-all-aspects
+rnam kun mngon par rdzogs par rtogs pa; rnam rdzogs sbyor ba|complete training in all the aspects; complete realization of all the aspects
 rnam kun shin tu ba|utmost from all aspects
 rnam log|reverse; oppose; to return
 rnam mang gzugs dag|many aspects and forms
@@ -11997,7 +11997,7 @@ rnam mkhyen gyis rtogs par bya ba|object of comprehension by an omniscient consc
 rnam mkhyen sbyor ba|training in an exalted-knower-of-all-aspects
 rnam mkhyen sbyor ba'i lam shes|knower of paths that is a training in an exalted-knower-of-all-aspects
 rnam mkhyen sbyor ba'i ngo bo nyid bdun|seven essentials of a training in an exalted-knower-of-all-aspects
-#rnam mkhyen; rnam pa thams cad mkhyen pa nyid|knower of all aspects; exalted knower of all aspects; omniscient consciousness; omniscience
+rnam mkhyen; rnam pa thams cad mkhyen pa nyid|knower of all aspects; exalted knower of all aspects; omniscient consciousness; omniscience
 rnam nges|Dharmakīrti's Ascertainment of Valid Cognition (P. 5701, vol. 130)
 rnam pa|aspect; subjective aspect; representation; kind; type; form
 rnam pa bcu|ten aspects
@@ -12039,7 +12039,7 @@ rnam pa thams cad du rtogs pa|understand all aspects; realize all aspects
 rnam pa thams cad mkhyen nyid lam|path of an exalted-knower-of-all-aspects; path of an exalted knower of all aspects
 rnam pa thams cad mkhyen pa|exalted knower of all aspects; omniscient consciousness; omniscience
 rnam pa thams cad mkhyen pa nyid|knowledge of all aspects; exalted knower of all aspects; omniscient consciousness
-#rnam pa thams cad mkhyen pa nyid; rnam mkhyen|exalted knower of all aspects
+rnam pa thams cad mkhyen pa nyid; rnam mkhyen|exalted knower of all aspects
 rnam pa thams cad mtshan nyid|character of all aspects
 rnam pa thams cad rtogs|realize all aspects; understand all aspects.
 rnam pa thams cad yongs su rdzogs pa|perfect in all aspects; complete in every respect
@@ -12226,14 +12226,14 @@ rnam par rig pa|knowledge; know; ideation; cognition
 rnam par rig pa byed pa|know
 rnam par rig pa med pa|non-knowledge; not know; non-ideation
 rnam par rig pa tsam|knowledge-only; ideation-only; cognition-only
-#rnam par rig pa; rnam rig|cognition
+rnam par rig pa; rnam rig|cognition
 rnam par rig pa'i de bzhin nyid|suchness of knowledge; suchness of ideation
 rnam par rig pa'i de kho na|suchness of knowledge; suchness of ideation
 rnam par rig par bya ba|object of knowledge; object of ideation
 rnam par rig par bya ba ma yin|not an object of knowledge; not known; not an object of ideation
 rnam par rig par byed pa|knower; know
 rnam par rig par byed pa'i gzugs|revelatory form
-#rnam par rig par byed pa'i gzugs; rnam par rig byed kyi gzugs|revelatory form
+rnam par rig par byed pa'i gzugs; rnam par rig byed kyi gzugs|revelatory form
 rnam par rmongs pa|very deluded
 rnam par rol pa|sport
 rnam par rol pa'i las|actions of sport; sportive actions
@@ -12271,8 +12271,8 @@ rnam par shes|consciousness; cognition
 rnam par shes pa 'dra ba med pa|non-similarity with consciousness
 rnam par shes pa gnas pa|abode of consciousness; source of consciousness
 rnam par shes pa po|cognizer
-#rnam par shes pa; rnam shes|consciousness
-#rnam par shes pa; rnam shes; shes pa|consciousness; cognition
+rnam par shes pa; rnam shes|consciousness
+rnam par shes pa; rnam shes; shes pa|consciousness; cognition
 rnam par shes pa'i khams|realm of consciousness
 rnam par shes pa'i rkyen gyis ming dang gzugs|name and form, the conditions of consciousness; (T) due to the condition—consciousness—there is name and form; conditioned by consciousness, name and form
 rnam par shes par bgyid pa|cognize; be conscious of
@@ -12307,9 +12307,9 @@ rnam par sun 'byin pa|disbelieve; refute
 rnam par thar pa|liberation; freedom
 rnam par tho 'tsham pa bsam pa|intent on hurting; attempt to hurt
 rnam rdzogs sbyor ba|complete training in all aspects; complete within unrestricted equality
-#rnam rdzogs sbyor ba; rnam kun mngon par rdzogs par rtogs pa|complete training in all the aspects; complete realization of all the aspects
-#rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|complete training in the aspects
-#rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|complete training in all the aspects; complete realization of all the aspects
+rnam rdzogs sbyor ba; rnam kun mngon par rdzogs par rtogs pa|complete training in all the aspects; complete realization of all the aspects
+rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|complete training in the aspects
+rnam rdzogs sbyor ba/ rnam kun mngon par rdzogs par rtogs pa|complete training in all the aspects; complete realization of all the aspects
 rnam rdzun dri bcas pa|Tainted False Aspectarian
 rnam rdzun pa|False Aspectarian
 rnam rgyal|[very-conqueror]; complete victory; conqueror
@@ -12319,8 +12319,8 @@ rnam rig tsam|mere cognition
 rnam rol|[diverse-play]; sport; play; activities
 rnam rtog|conception; conceptualization; conceptuality; coarse conceptuality; discursiveness; thought; conceptual thought; conceptual consciousnesses
 rnam rtog yong su spang ba|thoroughly abandoning thoughts
-#rnam rtog; rtog pa|conceptuality
-#rnam rtog; rtog pa|conceptual consciousness
+rnam rtog; rtog pa|conceptuality
+rnam rtog; rtog pa|conceptual consciousness
 rnam sbyong|purifying; wash; purify; practice
 rnam shes|[diverse-know]; consciousness; main consciousness; [ordinary] consciousness(N); knower; cognition
 rnam shes bstan du med pa|indemonstrability of consciousnesses
@@ -12471,8 +12471,8 @@ rten|verb: support; depend; relynoun: basis; support; base
 rten 'brel|[depend-connect]; dependent-arising; interdependence
 rten 'brel yan lag bcu gnyis|twelve branches of dependent arising
 rten 'byung chos|dependent-arising; dependently arisen phenomenon
-#rten 'byung; rten cing 'brel bar 'byung ba|dependent-arising
-#rten 'byung; rten cing 'brel bar 'byung ba|dependent-arising
+rten 'byung; rten cing 'brel bar 'byung ba|dependent-arising
+rten 'byung; rten cing 'brel bar 'byung ba|dependent-arising
 rten bcas kyi mig dbang|eye sense power which is a basis
 rten brten|support and supported; residence and resident
 rten can|based on; having a basis; based; having a support; supported
@@ -12665,7 +12665,7 @@ rtsa bar 'dod na|if one accepts the basic [consequence]
 rtsa dbu ma|central channel
 rtsa lag|kinsman
 rtsa mdud|channel-knot
-#rtsa nyon; rtsa ba'i nyon mongs|root afflictions; root afflictive emotions
+rtsa nyon; rtsa ba'i nyon mongs|root afflictions; root afflictive emotions
 rtsa rlung thig le gsum|the three channels, winds, and drops
 rtsa ro ma|right channel
 rtsa shes|Nāgārjuna's Fundamental Treatise on the Middle Way Called "Wisdom"
@@ -12860,7 +12860,7 @@ sa thob pa|attain a ground/level
 sa yi 'og|below the ground
 sa yis|within the level
 sa yongs su grub pa|thoroughly established ground/level
-#sa'i dngos gzhi; rnal 'byor spyod pa'i sa|Asaṅga's Actuality of the Levels / Levels of Yogic Practices, P.5536-8, vol.109-10
+sa'i dngos gzhi; rnal 'byor spyod pa'i sa|Asaṅga's Actuality of the Levels / Levels of Yogic Practices, P.5536-8, vol.109-10
 sa'i khams|earth-constituent
 sa'i rdul|particle of earth; particle of dust
 sa'i rnam pa|ground-aspect; aspect of a ground; earth-aspect
@@ -13011,7 +13011,7 @@ sbyangs pa mkhyen pa'i yon tan|the quality of knowledge through training (GZ 66a
 sbyangs pa'i yon tan bcu gnyis|twelve qualities of the purified
 sbyar|join; connect; affix; apply; prepare; establish; associate(BJ); applied to (with preceding la)(BJ 41.3) [past of sbyor]
 sbyar ba|join; connect; affix; apply; prepare; establish; associate(BJ); applied to (with preceding la)(BJ 41.3) [past of sbyor]
-#sbyar ba; ldan pa|conjunction; association
+sbyar ba; ldan pa|conjunction; association
 sbyar bar bgyi|join; connect; affix; apply; prepare; establish; associate; joined
 sbyar bar bya ba|should be joined/connected/etc.  (T)
 sbyar bar smon lam 'debs pa|make wishes to join/connect ...  ? (T)
@@ -13088,8 +13088,8 @@ sbyor ba dang mthong ba dang sgom pa dang mthar thug pa'i lam|paths of preparati
 sbyor ba de'i 'dzin stangs mnyam nyid|equality in the mode of apprehension of trainings [in a knower of bases]
 sbyor ba la brten par 'gyur te|depend upon application/connection
 sbyor ba la ldem por dgongs pa|intending translation
-#sbyor ba la ldem por dgongs pa; bsgyur ba la ldem por dgongs pa|indirectly intending translation; intending translation
-#sbyor ba la ldem por dgongs pa/ bsgyur ba la ldem por dgongs pa|indirectly intending translation
+sbyor ba la ldem por dgongs pa; bsgyur ba la ldem por dgongs pa|indirectly intending translation; intending translation
+sbyor ba la ldem por dgongs pa/ bsgyur ba la ldem por dgongs pa|indirectly intending translation
 sbyor ba las byung ba'i brtson grus|effort arising from application
 sbyor ba las mi ldog pa nyid|non-reversal from application/preparation
 sbyor ba ma yin pa|non-application; non-preparation; non-connection
@@ -13112,7 +13112,7 @@ sbyor ba'i yon tan|qualities of trainings
 sbyor bar byed|training; train; joining; connecting
 sbyor byed pa|training; train; joining; connecting
 sbyor byung gi dge ba|virtues arising from application in this life
-#sbyor bzhi / sbyor ba bzhi|four trainings
+sbyor bzhi / sbyor ba bzhi|four trainings
 sbyor dngos mjug gsum|the three—preparation, actual [session], end [of session]
 sbyor lam|path of preparation
 sbyor lam bzod pa|forbearance level of the path of preparation
@@ -13397,13 +13397,13 @@ sems dpa' che|great being
 sems dpa' chen po|great being
 sems dpa'i rnal 'byor|Bodhisattva's yoga
 sems dpa'i rnal 'byor mthar thug|Bodhisattva's final yoga
-#sems dpa'i skhyil krung; sems dpa'i skhyil mo krung|the cross-legged Bodhisattva posture [the half-lotus posture, with the right leg on the left]
+sems dpa'i skhyil krung; sems dpa'i skhyil mo krung|the cross-legged Bodhisattva posture [the half-lotus posture, with the right leg on the left]
 sems dpa'i skhyil mo krung|the cross-legged Bodhisattva posture [the half-lotus posture, with the right leg on the left]
 sems dran pa nye bar bzhag pa|establishment in mindfulness of mind
 sems drug|six minds
 sems dul ba|mental discipline; disciplined mind
 sems gnas|mental abiding
-#sems gnas dgu; sems gnas pa rnam pa dgu|nine mental abidings
+sems gnas dgu; sems gnas pa rnam pa dgu|nine mental abidings
 sems gnas pa|mental abiding
 sems gnas pa rnam pa dgu|nine mental abidings
 sems gnas skabs|mental state
@@ -13540,10 +13540,10 @@ sga skya|ginger
 sga smug|ginger; brown ginger
 sgang la|on top (of)
 sge'u khung|window
-#sgeg mo ma, sgeg mo|[Vajra]lāsyā, offering goddess of dance
-#sgeg mo, sgeg mo ma|[Vajra]lāsyā, offering goddess of dance
-#sgeg pa'i rdo rje, sgeg rdor|Vilāsavajra/ Līlāvajra
-#sgeg rdor, sgeg pa'i rdo rje|Vilāsavajra/ Līlāvajra
+sgeg mo ma, sgeg mo|[Vajra]lāsyā, offering goddess of dance
+sgeg mo, sgeg mo ma|[Vajra]lāsyā, offering goddess of dance
+sgeg pa'i rdo rje, sgeg rdor|Vilāsavajra/ Līlāvajra
+sgeg rdor, sgeg pa'i rdo rje|Vilāsavajra/ Līlāvajra
 sgo|approach; door; mode; gate; infuse; deposit; order
 sgo ba|infuse; deposit; order
 sgo mang|many doors; Go-mang ("Many Doors") College [of Dre-pung Monastic University]
@@ -13695,10 +13695,10 @@ sgrol ba|liberate; save; free; release
 sgrol ma|Tārā; liberatrix
 sgrol mdzad|liberate; save; free; release; untie; one who liberates/saves/frees/releases/unties
 sgrold|liberate; save; free; release
-#sgron gsal, sgron ma gsal bar byed pa zhes bya ba'i rgya cher bshad pa|[Candrakīrti's] Brilliant Lamp: Extensive Commentary [on the "Guhyasamāja Tantra"] [P2650, vol. 60]
-#sgron ma gsal bar byed pa zhes bya ba'i rgya cher bshad pa, sgron gsal|[Candrakīrti's] Brilliant Lamp: Extensive Commentary [on the "Guhyasamāja Tantra"] [P2650, vol. 60]
-#sgron ma, sgron me|lamp; light
-#sgron me, sgron ma|lamp; light
+sgron gsal, sgron ma gsal bar byed pa zhes bya ba'i rgya cher bshad pa|[Candrakīrti's] Brilliant Lamp: Extensive Commentary [on the "Guhyasamāja Tantra"] [P2650, vol. 60]
+sgron ma gsal bar byed pa zhes bya ba'i rgya cher bshad pa, sgron gsal|[Candrakīrti's] Brilliant Lamp: Extensive Commentary [on the "Guhyasamāja Tantra"] [P2650, vol. 60]
+sgron ma, sgron me|lamp; light
+sgron me, sgron ma|lamp; light
 sgrub|achieve; attain; accomplish; prove; complete; practice
 sgrub 'jug|collective/complete/holistic/full engagement/engager
 sgrub 'jug gi blo|awareness that is a collective/complete/holistic engager
@@ -13739,7 +13739,7 @@ sgyid lugs pa'i le lo|laziness of inadequacy; laziness of low self-esteem
 sgyu|deceit; magic; illusion
 sgyu 'phrul dra ba|magical emanation net; illusory emanation net
 sgyu 'phrul drwa ba|magical emanation net; illusory emanation net
-#sgyu 'phrul, sgyu ma'i 'phrul pa|magical emanation; illusory emanation
+sgyu 'phrul, sgyu ma'i 'phrul pa|magical emanation; illusory emanation
 sgyu lus|illusory body
 sgyu ma|magician's illusion; illusion [especially those created by magicians]
 sgyu ma 'drar|illusion-like; illusory
@@ -13860,8 +13860,8 @@ shes pa rnam par gzhag pa|positing of consciousness; posit consciousness (T)
 shes pa skye ba med pa|nonproduction of consciousness
 shes pa tshad ma|valid consciousness
 shes pa yis dmigs|object of observation by consciousness; observed by consciousness
-#shes pa; blo|cognition
-#shes pa; rnam shes|consciousness
+shes pa; blo|cognition
+shes pa; rnam shes|consciousness
 shes pa'i kun rdzob|mental conventionalities
 shes pa'i mtshan nyid|knowledge characteristics
 shes pa'i rnam pa bsgom pa|cultivation of/meditation on the aspects of consciousness
@@ -13899,16 +13899,16 @@ shes rab gyi tshogs|collection of wisdom
 shes rab kyi dbang po|power of wisdom; faculty of wisdom
 shes rab kyi go sgrub|achieving through the armor of wisdom
 shes rab kyi pha rol tu phyin pa brgyad stong pa'i bshad pa mngon par rtogs pa'i rgyan gyi snang ba|Illumination of [Maitreya's] "Ornament for Clear Realization", an Explanation of the Eight Thousand Stanza Perfection of Wisdom by Haribhadra (seng ge bzang po), P. 5189, vol. 90
-#shes rab kyi pha rol tu phyin pa gnyis stong lnga brgya pa/ rab kyi tshal gyis rnam par gnon pas zhus pa/|Two Thousand Five Hundred Stanza Perfection of Wisdom Sūtra, P. 736, vol. 21
+shes rab kyi pha rol tu phyin pa gnyis stong lnga brgya pa/ rab kyi tshal gyis rnam par gnon pas zhus pa/|Two Thousand Five Hundred Stanza Perfection of Wisdom Sūtra, P. 736, vol. 21
 shes rab kyi pha rol tu phyin pa sdud pa tshigs su bcad pa|Condensed Perfection of Wisdom Sūtra, P. 735, vol. 21
 shes rab kyi pha rol tu phyin pa stong phrag brgya pa|One Hundred Thousand Stanza Perfection of Wisdom Sūtra, P. 730, vol. 12
 shes rab kyi pha rol tu phyin pa stong phrag nyi shu lnga pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan gyi 'grel pa|Commentary on (Maitreya's) "Ornament for Clear Realization," Treatise of Quintessential Instructions on the Twenty-five Thousand Stanza Perfection of Wisdom [by Āryavimuktasena ('phags pa grol sde); P5185, vol. 88]
-#shes rab kyi pha rol tu phyin pa; sher phyin|perfection of wisdom
-#shes rab kyi pha rol tu phyin pa; sher phyin|Perfection of Wisdom
-#shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan ces bya'i 'grel pa; 'grel pa don gsal|Commentary on (Maitreya's) "Ornament for Clear Realization," Treatise of Quintessential Instructions on the Perfection of Wisdom / Clear Meaning Commentary [by Haribhadra (seng ge bzang po), P5191, vol. 90]
+shes rab kyi pha rol tu phyin pa; sher phyin|perfection of wisdom
+shes rab kyi pha rol tu phyin pa; sher phyin|Perfection of Wisdom
+shes rab kyi pha rol tu phyin pa'i man ngag gi bstan bcos mngon par rtogs pa'i rgyan ces bya'i 'grel pa; 'grel pa don gsal|Commentary on (Maitreya's) "Ornament for Clear Realization," Treatise of Quintessential Instructions on the Perfection of Wisdom / Clear Meaning Commentary [by Haribhadra (seng ge bzang po), P5191, vol. 90]
 shes rab kyi pha rol tu phyin pa'i mdo|Perfection of Wisdom Sūtras
 shes rab kyi pha rol tu phyin pa'i snying po|Essence/Heart of the Perfection of Wisdom Sūtra
-#shes rab kyi phar phyin / shes rab pha rol phyin pa / shes rab kyi pha rol tu phyin pa|perfection of wisdom
+shes rab kyi phar phyin / shes rab pha rol phyin pa / shes rab kyi pha rol tu phyin pa|perfection of wisdom
 shes rab kyi phar rol tu phyin pa|Perfection of Wisdom
 shes rab kyi phung po|aggregation of wisdom
 shes rab kyi rgyu nyid|cause of wisdom
@@ -13941,7 +13941,7 @@ shes rgyud|mental continuum
 shes rnam sgom pa|meditative cultivation of the aspect of a subject [e.g., meditatively cultivating compassion]
 shes sgrib kun btags|artificial obstruction to omniscience
 shes sgrib kyi zag pa|contamination which is an obstruction to omniscience
-#shes sgrib/ shes bya'i sgrib pa|obstructions to omniscience; obscurations of the knowable; obstruction to omniscience; obstruction to simultaneous cognition of all phenomena
+shes sgrib/ shes bya'i sgrib pa|obstructions to omniscience; obscurations of the knowable; obstruction to omniscience; obstruction to simultaneous cognition of all phenomena
 shes te|knows; cognize(s)
 shi|to die
 shi nas ngan 'gror 'khyam tshul|way/mode of wandering in a bad transmigration upon dying
@@ -13951,7 +13951,7 @@ shigs|to loosen (knots); to destroy
 shigs pa|to destroy; to loosen (knots)
 shin lkog|very hidden phenomenon
 shin sbyangs skye ba'i snga bltas|omen of pliancy
-#shin sbyangs; shin tu sbyangs pa|[very-practiced]; pliancy; flexibility; servicability; suppleness
+shin sbyangs; shin tu sbyangs pa|[very-practiced]; pliancy; flexibility; servicability; suppleness
 shin tu|an intensifier: very; exceedingly
 shin tu 'da' bar bya ste|well passed beyond
 shin tu 'das byas nas|well passed beyond
@@ -13987,7 +13987,7 @@ shin tu gya nom pa|very auspicious
 shin tu gzi brjid dang ldan pa|very hot; very heated; very majestic
 shin tu lci|very heavy
 shin tu lkog gyur|very hidden phenomenon; very hidden phenomena
-#shin tu lkog gyur gyi gzhal bya; gzhal bya shin tu lkog gyur|very obscure objects of comprehension
+shin tu lkog gyur gyi gzhal bya; gzhal bya shin tu lkog gyur|very obscure objects of comprehension
 shin tu ma skyes pa|very non-produced
 shin tu ma zhum pa|very non-discouraged/slack/weak/timid/cowardly
 shin tu mang po|very many
@@ -14052,7 +14052,7 @@ shing mkhan gyi slob ma|carpenter's apprentice
 shing nags|forest
 shing rta|[wooden horse]; chariot; opener of the chariot way [those who clear off paths which have become overgrown, e.g.: Nāgārjuna, Asaṅga, Dzong-ka-ba]; cart
 shing rta'i srol 'byed|opener of the chariot way(N)
-#shing sal gyi sgon; shing sal bal gyi sgon|cotton
+shing sal gyi sgon; shing sal bal gyi sgon|cotton
 shing skam po'i me tog|flower of a dead tree
 shis lugs|mode of dispostion
 shis pa|auspicious
@@ -14099,8 +14099,8 @@ skabs mchis pa|affords an occasion [for refutation]; affords an opportunity
 skabs mi 'byed|not opening up an opportunity
 skabs phyin|appropriately sized
 skabs shes pa|knowing the occassion
-#skabs su bab pa; skabs su babs pa|appropriate; relevant; germane
-#skabs su babs pa; skabs su bab pa|appropriate; relevant; germane
+skabs su bab pa; skabs su babs pa|appropriate; relevant; germane
+skabs su babs pa; skabs su bab pa|appropriate; relevant; germane
 skad|sound(s); language; voice
 skad cig|period; instant; moment
 skad cig cha med|temporally partless moment
@@ -14142,7 +14142,7 @@ skal pa can|having the lot; having the share; having the fortune
 skam|to dry up; wither; parch
 skar ma|star
 skar ma'i tshogs|collection of stars; group of stars; host of stars
-#skhyil krung; skhyil mo krung|cross-legged; cross-legged posture
+skhyil krung; skhyil mo krung|cross-legged; cross-legged posture
 skhyil mo krung|cross-legged; cross-legged posture
 skom|thirst
 skom pa|thirst
@@ -14621,7 +14621,7 @@ sngags|spell; mantra; general word for tantra
 sngags kyi rigs|chanting(?)
 sngags kyi theg pa|Mantra Vehicle
 sngags mthus|by the power of a mantra(S)
-#sngags rim, sngags rim chen mo|Tsong-kha-pa's (tsong kha pa) Great Exposition of Secret Mantra
+sngags rim, sngags rim chen mo|Tsong-kha-pa's (tsong kha pa) Great Exposition of Secret Mantra
 sngang ba|appear; appearance; bright; shining
 sngar|before; formerly; previously
 sngar gyi gnas cha 'jig pa|the factor of stability [attained] earlier disintegrates
@@ -14647,7 +14647,7 @@ sngon 'dzin mngon sum rang dbang du gtso bor dngos su skyed byed|main direct pro
 sngon 'dzin mngon sum rang gi rnam ldan du gtso bor dngos su skyed byed|main direct producer of a direct perception apprehending blue as having its aspect
 sngon 'dzin mngon sum sngon po'i rnam ldan du gtso bor dngos su skyed byed|main direct producer of a direct perception apprehending blue as having the aspect of blue
 sngon 'gro tsam yin pas|since [they] are mere preliminaries
-#sngon 'gro, sngon du 'gro ba|[before-go]; preliminary practices; preliminary; preparation; prerequisite
+sngon 'gro, sngon du 'gro ba|[before-go]; preliminary practices; preliminary; preparation; prerequisite
 sngon 'gro'i sbyor ba|preparatory training
 sngon 'jug|prefix
 sngon du 'gro|precede
@@ -14939,7 +14939,7 @@ spo|move; change location
 spobs pa|prowess; courage
 spobs pa dang ldan pa|courageous; inspired
 spobs pa med pa|not courageous; uninspired
-#spobs pa mi chod pa; spobs pa ma tshod pa|courage not cut off; inspiration not cut off
+spobs pa mi chod pa; spobs pa ma tshod pa|courage not cut off; inspiration not cut off
 spobs pa mi tshod pa|courage not cut off; inspiration not cut off
 spobs pa nges pa|definite inspiration; definite courage
 spobs par 'gyur ba|be courageous; inspired
@@ -15107,7 +15107,7 @@ spyong|practice(S)
 sra ba|hard
 sra bar byed pa|harden
 sra zhing 'thas pa|hard and obstructive(D1)
-#sra; sra ba|obstructive; hard
+sra; sra ba|obstructive; hard
 srab|to diminish; thin out; fine; thin
 srab mo|fine; thin; to diminish; thin out
 srab mo'i 'od gsal|delicate clear light
@@ -15279,7 +15279,7 @@ stong pa ma yin mi stong min|neither empty nor non-empty
 stong pa nyid|emptiness
 stong pa nyid gzugs so|emptiness is form
 stong pa nyid kyi lha|emptiness deity
-#stong pa nyid las kyang gzugs gzhan ma yin te/ gzugs nyid stong pa nyid stong pa nyid gzugs so/|form is not other than emptiness; form is emptiness; and emptiness is form
+stong pa nyid las kyang gzugs gzhan ma yin te/ gzugs nyid stong pa nyid stong pa nyid gzugs so/|form is not other than emptiness; form is emptiness; and emptiness is form
 stong pa nyid mchog mngon par rtogs pa|directly realize the highest emptiness
 stong pa nyid rnam pa gsum|three types of emptiness
 stong pa nyid smos pa'i rnam pas|through the aspect of speaking on emptiness
@@ -15433,7 +15433,7 @@ thabs mkhas kyi tshogs sgrub|achieving through the collection of skill in means
 thabs mkhas pa|skill in means
 thabs mkhas pa'i ye shes kyi bye brag|instance of the exalted wisdom of skill in means
 thabs mkhas sbyor ba|training in skill in means
-#thabs mkhas; thabs la mkhas pa|skill in means; skillful means
+thabs mkhas; thabs la mkhas pa|skill in means; skillful means
 thabs mkhyen pa|exalted knower of method
 thabs nyid du rung ba|suitable as method
 thabs rig|knowledge of method
@@ -15570,10 +15570,10 @@ theg bsdus|Summary of the Great Vehicle [by Asaṅga; P5549, vol. 112]
 theg bsdus|Summary of the Great Vehicle [by Asaṅga; P5549, vol. 112]
 theg chen|Great Vehicle; Mahāyāna
 theg chen 'phags pa|Great Vehicle Superior
-theg chen 'phags pa'i mngon rtogs|Great Vehicle Superior’s clear realization 
+theg chen 'phags pa'i mngon rtogs|Great Vehicle Superior’s clear realization
 theg chen 'phags rgyud kyi gzhi shes|knower of bases in the continuum of a Great Vehicle Superior
 theg chen gdams ngag|Great Vehicle guidance
-#theg chen gyi byang chub tu bgrod par byed pa'am/ der bgrod zin pa gang rung gis bsdus pa'i theg chen gyi mkhyen pa/|Great Vehicle exalted knower included either within that which causes progress toward the Great Vehicle enlightenment or within having progressed toward the Great Vehicle enlightenment
+theg chen gyi byang chub tu bgrod par byed pa'am/ der bgrod zin pa gang rung gis bsdus pa'i theg chen gyi mkhyen pa/|Great Vehicle exalted knower included either within that which causes progress toward the Great Vehicle enlightenment or within having progressed toward the Great Vehicle enlightenment
 theg chen gyi don mngon rtogs|Great Vehicle clear realization of the meaning
 theg chen gyi lam|Great Vehicle path
 theg chen gyi lam shes pa'i lam shes|knower of paths that know Great Vehicle paths
@@ -15584,14 +15584,14 @@ theg chen gyi mthong lam|GreatVehicle path of seeing
 theg chen gyi mthong lam bar chad med lam|uninterrupted path of a Great Vehicle path of seeing
 theg chen gyi mthong lam rjes thob ye shes|exalted wisdom of subsequent attainment of a Great Vehicle path of seeing
 theg chen gyi mthong lam rnam grol lam|path of release of a Great Vehicle path of seeing
-#theg chen gyi mthong lam rnam grol lam las langs pa'i mkhyen pa yang yin/ rang rgyud ldan gyi gang zag gi rgyud la mngon gyur du 'byung ba'i theg chen gyi bden pa mngon rtogs/|(1) an exalted knower of one who has risen from the path of release of a Great Vehicle path of seeing and (2) a Great Vehicle clear realizer of the truth which manifestly occurs in the continuum of persons who possess it in their continuums
+theg chen gyi mthong lam rnam grol lam las langs pa'i mkhyen pa yang yin/ rang rgyud ldan gyi gang zag gi rgyud la mngon gyur du 'byung ba'i theg chen gyi bden pa mngon rtogs/|(1) an exalted knower of one who has risen from the path of release of a Great Vehicle path of seeing and (2) a Great Vehicle clear realizer of the truth which manifestly occurs in the continuum of persons who possess it in their continuums
 theg chen gyi nges 'byed cha mthun|Great Vehicle concordance with a portion of definite discrimination
 theg chen gyi rgyu 'bras|Great Vehicle causes and effects
 theg chen gyi rigs chen|having the Mahāyāna/Great Vehicle lineage
 theg chen gyi rigs nges|[a person who is] definite in the Great Vehicle lineage
 theg chen gyi rigs sad pa'i gang zag|a person whose Great Vehicle lineage has been awakened
 theg chen gyi rjes la mngon rtogs|Great Vehicle subsequent clear realization
-theg chen gyi rjes la mngon rtogs rtog bcas|Great Vehicle subsequent conceptual clear realization 
+theg chen gyi rjes la mngon rtogs rtog bcas|Great Vehicle subsequent conceptual clear realization
 theg chen gyi rjes su yi rang sgom lam|Great Vehicle path of meditation of admiration
 theg chen gyi rnal 'byor mngon sum|yogic direct perception of a Mahāyānist
 theg chen gyi sbyor lam|Great Vehicle path of preparation
@@ -15616,7 +15616,7 @@ theg chen sgrub pa'i ched du bya ba|object of intent of Great Vehicle achieving
 theg chen sgrub pa'i dmigs pa|object of observation of Great Vehicle achieving
 theg chen sgrub pa'i rten rang bzhin gnas rigs|naturally abiding lineage—the basis of Great Vehicle achieving
 theg chen tshogs lam|Great Vehicle path of accumulation
-#theg chen/ theg pa chen po|Great Vehicle
+theg chen/ theg pa chen po|Great Vehicle
 theg dman|Lesser Vehicle; Hīnayāna; Inferior Vehicle
 theg dman 'phags rgyud|continuum of a Lesser Vehicle Superior
 theg dman gyi sbyor lam|path of preparation of the Lesser Vehicle
@@ -16110,7 +16110,7 @@ tshor ba btang snyoms kyi sa pa'i rigs su gnas pa|abiding in the type which is a
 tshor ba dran pa nye bar bzhag pa|establishment in mindfulness of feeling
 tshor ba po|feeler(N)
 tshor ba sems bde|feeling of mental bliss
-#tshor ba yid bde; tshor ba sems bde|feeling of mental bliss
+tshor ba yid bde; tshor ba sems bde|feeling of mental bliss
 tshor ba'i dbang po|power of feeling; faculty of feeling
 tshor ba'i rgyu|cause of feeling
 tshor bar byed du 'jug pa|engage in feeling
@@ -16333,7 +16333,7 @@ yang dag pa ma yin pa las yongs su brtags pa|imputation of what is unreal
 yang dag pa ma yin pa mtshan ma|unreal sign; incorrect sign
 yang dag pa ma yin pa yongs su 'dzin par byed|apprehending what is unreal
 yang dag pa ma yin pa'i chos yongs su mi 'dzin pa|a person who does not apprehend unreal phenomena
-#yang dag pa ma yin pa'i kun rtog; yang dag pa ma yin pa'i kun tu rtog pa ; yang dag min kun rtog|unreal ideation
+yang dag pa ma yin pa'i kun rtog; yang dag pa ma yin pa'i kun tu rtog pa ; yang dag min kun rtog|unreal ideation
 yang dag pa ma yin pa'i kun tu rtog pa|imputation of what is unreal
 yang dag pa nyid|correctness; completeness; reality
 yang dag pa nyid du nges pa|faultless reality; faultless correctness; (T) ascertain correctly
@@ -16652,7 +16652,7 @@ yid kyi mtsho|Lake Mānasarovara
 yid kyi nyes pa|mental fault  (T)
 yid kyi nyon mongs|mental afflictions
 yid kyi rnam par shes pa|mental consciousness(LG); (main) perceiver
-#yid kyi rnam shes; yid kyi rnam par shes pa|mental consciousness; (main) perceiver
+yid kyi rnam shes; yid kyi rnam par shes pa|mental consciousness; (main) perceiver
 yid kyi shes pa|mental consciousness
 yid kyi skyon yang dag par sel ba|completely eliminate/eradicate/remove/clear away/avoid/exclude the faults of mind
 yid kyi zas|mental nourishment
@@ -16980,8 +16980,8 @@ yongs su grol bar byed de|thoroughly liberate; thoroughly release; thoroughly lo
 yongs su grub|thoroughly established
 yongs su grub pa|thoroughly established
 yongs su grub pa'i mtshan nyid|the thoroughly established character
-#yongs su grub pa'i ngo bo nyid; yongs su grub pa'i rang bzhin|thoroughly established nature
-#yongs su grub pa'i ngo bo nyid/ yongs su grub pa'i rang bzhin|thoroughly established nature; thoroughly established entityness
+yongs su grub pa'i ngo bo nyid; yongs su grub pa'i rang bzhin|thoroughly established nature
+yongs su grub pa'i ngo bo nyid/ yongs su grub pa'i rang bzhin|thoroughly established nature; thoroughly established entityness
 yongs su grub pa'i rang bzhin|thoroughly established nature
 yongs su gsal bar byas|serve to clarify knowledge
 yongs su gtad pa|bestowal; entrusting; favors; favored
@@ -17154,7 +17154,7 @@ yul steng nas|objectively
 yul steng nas grub pa|objective establishment; establishment from within the object; objective existence
 yul thob par bya ba'i phyir|through obtaining an object
 yul yon tan ldan|having other qualities
-#yul; don|object
+yul; don|object
 yum|mother
 yum gyi lhums su 'jug pa|enter into mother's womb
 yum rgyas 'bring bsdus|extensive, middling, and condensed mothers [i.e., Perfection of Wisdom Sūtras]
@@ -17480,7 +17480,6 @@ zur gnyis|the second part(BJ 66.6)
 zur mchan|separate annotations
 zur snga ma|the first part; the early part(BJ 22.1)
 zur tsam yang ma gsungs|not even a phrase is said
-
 'dzam bu gling|Jambudvīpa; the Indian subcontinent; the world
 'gyur phyag|translator's homage
 bsnyel ba mi mnga' ba|not endowed with forgetfulness/ not having forgetfulness
@@ -17560,10 +17559,6 @@ theg chen gyi byang chub tu bgrod par byed pa'am|Great Vehicle exalted knower in
 theg chen gyi mthong lam rnam grol lam las langs pa'i mkhyen pa yang yin|(1) an exalted knower of one who has risen from the path of release of a Great Vehicle path of seeing and (2) a Great Vehicle clear realizer of the truth which manifestly occurs in the continuum of persons who possess it in their continuums
 theg chen|Great Vehicle
 yongs su grub pa'i ngo bo nyid|thoroughly established nature; thoroughly established entityness
-
-
-
-
 'jig lta|view of the transitory; view of the transitory collection [as a real I and mine]
 'khor 'das|cyclic existence and nirvāṇa
 'khor lo sgyur ba|universal monarch
@@ -17592,7 +17587,7 @@ de nyid|suchness; reality; principle
 de nyid|suchness
 de yang de dang 'dra ba nyid du gyur|it is just like that, and will be just like that(S1)
 dgag bzhag spong gsum|the three—refuting [other's mistakes], establishing [our own system], and dispelling [objections with respect to our own system]
-#dge bshes|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
+dge bshes|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
 dgongs 'grel|[thought-unravel]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School]; commentary on the thought
 dgongs pa nges par 'grel pa'i mdo|[thought-unravel-sūtra]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School; P774, Vol. 29]
 dgongs|thought; thinking; thinking of; hidden meaning; intention; notion
@@ -17771,7 +17766,7 @@ de kho na nyid|suchness; reality; principle
 de kho na nyid|suchness
 de yang de dang 'dra ba nyid du 'gyur ro|it is just like that, and will be just like that(S1)
 'khrul ba dgag pa rang lugs bzhag pa de la rtsod pa spong ba|the three—refuting [other's mistakes], establishing [our own system], and dispelling [objections with respect to our own system]
-#dge ba'i bshes gnyen/|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
+dge ba'i bshes gnyen/|[virtuous-friend]; spiritual guide; ge-shay; ge-she [a person who has completed the scholastic phase of monastic training]; geshe
 dgongs pa nges par 'grel pa'i mdo|[thought-unravel]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School]; commentary on the thought
 mdo sde dgongs 'grel|[thought-unravel-sūtra]; Saṃdhinirmocana-sūtra; Sūtra Unraveling the Thought [title of a third-wheel sūtra considered to be definitive by the Mind-Only School; P774, Vol. 29]
 dgongs pa|thought; thinking; thinking of; hidden meaning; intention; notion
@@ -17926,7 +17921,7 @@ dka' ba spyad pa|[difficult-deed] asceticism; austerities; difficult deed; diffi
 dka' ba spyod pa|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
 dka' spyad|[difficult-deed] asceticism; austerities; difficult deed; difficult act; performing difficult deeds
 dka' spyod|[difficult-deed] performing difficult deeds; asceticism; austerities; difficult deed; difficult act
-dkon mchog bstan pa'i sgron me|Kön-chog-ten-pay-drön-may (1762-1823) [aka. {gung thang dkon mchog bstan pa'i sgron me}; {gung thang 'jam dpal dbyangs}] 
+dkon mchog bstan pa'i sgron me|Kön-chog-ten-pay-drön-may (1762-1823) [aka. {gung thang dkon mchog bstan pa'i sgron me}; {gung thang 'jam dpal dbyangs}]
 gung thang dkon mchog bstan pa'i sgron me|Gung-thang Kön-chog-tan-pay-drön-may [1762-1823; aka {dkon mchog bstan pa'i sgron me}; {gung thang 'jam dpal dbyangs}]
 gung thang 'jam dpal dbyangs|Gung-thang Jam-pal-yang [1762-1823; aka {dkon mchog bstan pa'i sgron me}; {gung thang dkon mchog bstan pa'i sgron me}]
 kun 'byung ba'i bden pa|true sources/origins; truth of sources/origins [the second of the four noble truths]
