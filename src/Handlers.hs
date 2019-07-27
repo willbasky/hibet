@@ -5,6 +5,8 @@ module Handlers
        ( Title
        , Dictionary
        , DictionaryMeta (..)
+       , Source
+       , Target
        , makeTextMap
        , mergeWithNum
        , searchTranslation
