@@ -15,7 +15,7 @@ import qualified Data.HashMap.Strict as HM
 
 labels :: IO [LabelFull]
 labels = do
-    file <- getDataFileName "/titles.json"
+    file <- getDataFileName "stuff/titles.json"
     meta <- BLC.readFile file
     case decode meta :: Maybe Labels of
         Nothing               -> error "Not decoded"

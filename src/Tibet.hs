@@ -2,21 +2,26 @@ module Tibet
        ( start
        ) where
 
-import Conduit (decodeUtf8C, foldMapC, runConduitRes, sourceFileBS, (.|))
-import Control.Concurrent.Async (mapConcurrently)
-import Control.Concurrent.MVar
+
+import Control.Concurrent.MVar (MVar, modifyMVar_, newMVar, readMVar)
 import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
+import Control.Monad.Reader
 import Data.Either (fromRight)
 import Data.Maybe (catMaybes)
 import Data.RadixTree (RadixTree)
 import Data.Text (Text)
-import Path (fromAbsFile)
-import Path.Internal (Path (..))
+import Path (fromAbsFile, parseAbsDir)
 import Path.IO (listDir)
 import Paths_tibet (getDataFileName)
-import System.Exit
+import System.Exit (exitSuccess)
 import System.IO (stdout)
+
+import qualified Data.ByteString as BS
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
+import qualified Data.Text.IO as T
+import qualified Text.Megaparsec.Error as ME
 
 import Handlers (Dictionary, DictionaryMeta (..), makeTextMap, mergeWithNum, searchTranslation,
                  selectDict, separator, sortOutput, toDictionaryMeta)
@@ -24,48 +29,56 @@ import Labels (labels)
 import Parse (WylieTibet, makeTibet, makeWylieTibet, parseWylieInput, radixTreeMaker)
 import Prettify (blue, cyan, green, nothingFound, putTextFlush, red)
 
-import qualified Data.ByteString.Char8 as BC
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import qualified Data.Text.IO as T
-import qualified Text.Megaparsec.Error as ME
 
+data Env = Env
+  { envDictionaryMeta :: ![DictionaryMeta]
+  , envWylieTibet     :: !WylieTibet
+  , envRadixTree      :: !RadixTree
+  , envHistory        :: !(MVar [Text])
+  }
 
 start :: Maybe [Int] -> IO ()
 start mSelectedId = do
-    sylsPath <- getDataFileName "parser/tibetan-syllables"
-    syls <- T.decodeUtf8 <$> BC.readFile sylsPath
+    sylsPath <- getDataFileName "stuff/tibetan-syllables"
+    syls <- T.decodeUtf8 <$> BS.readFile sylsPath
     ls <- labels
     dir <- getDataFileName "dicts/"
-    files <- map fromAbsFile . snd <$> listDir (Path dir)
-    result <- mapConcurrently (\fp -> toDictionaryMeta ls fp <$> toDictionaryC fp) files
-    let mapped = selectDict mSelectedId result
-    history <- newMVar []
+    dirAbs <- parseAbsDir dir
+    files <- map fromAbsFile . snd <$> listDir dirAbs
+    result <- traverse (\fp -> toDictionaryMeta ls fp <$> toDictionary fp) files
+    let dmList = selectDict mSelectedId result
+    historyEmpty <- newMVar []
     let wt = makeWylieTibet syls
-    let radixTree = radixTreeMaker syls
-    mapped `deepseq` translator mapped wt radixTree history
+    let radix = radixTreeMaker syls
+    let env = Env
+            { envDictionaryMeta = dmList
+            , envWylieTibet = wt
+            , envRadixTree = radix
+            , envHistory = historyEmpty
+            }
+    dmList `deepseq` runReaderT translator env
 
--- | A loop handler of user commands.
-translator :: [DictionaryMeta] -> WylieTibet -> RadixTree -> MVar [Text] -> IO ()
-translator mapped wt radixTree history = forever $ do
+-- | Translator works forever until quit command
+translator :: ReaderT Env IO ()
+translator = ReaderT $ \env -> forever $ do
     putTextFlush $ blue "Which a tibetan word to translate?"
-    query <- fmap (T.strip . T.decodeUtf8) $ BC.hPutStr stdout "> " >> BC.getLine
+    query <- fmap (T.strip . T.decodeUtf8) $ BS.hPutStr stdout "> " >> BS.getLine
     case query of
         ":q" -> do
             putTextFlush $ green "Bye-bye!"
             exitSuccess
         ":h" -> do
-            history' <- readMVar history
+            history' <- readMVar (envHistory env)
             if null history' then putTextFlush $ red "No success queries."
             else do
                 putTextFlush $ green "Success queries:"
                 mapM_ (\h -> T.putStrLn $ "- " <> h) history'
         _    -> do
-            dscValues <- mapConcurrently (pure . searchTranslation query) mapped
+            dscValues <- traverse (pure . searchTranslation query) (envDictionaryMeta env)
             let dictMeta = sortOutput $ catMaybes dscValues
             if null dscValues then nothingFound
             else do
-                let toTibetan = makeTibet wt . parseWylieInput radixTree
+                let toTibetan = makeTibet (envWylieTibet env) . parseWylieInput (envRadixTree env)
                 case traverse (separator [37] toTibetan) dictMeta of
                     Left err -> putStrLn $ ME.errorBundlePretty err
                     Right list -> do
@@ -73,10 +86,10 @@ translator mapped wt radixTree history = forever $ do
                         let tibQuery = cyan . fromRight query $ T.concat <$> toTibetan query
                         T.putStrLn tibQuery
                         T.putStrLn translations
-                        modifyMVar_ history (pure . (query :))
+                        modifyHistory env $ pure . (query :)
 
-toDictionaryC :: FilePath -> IO Dictionary
-toDictionaryC path = runConduitRes
-    $ sourceFileBS path
-    .| decodeUtf8C
-    .| foldMapC makeTextMap
+toDictionary :: FilePath -> IO Dictionary
+toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path
+
+modifyHistory :: Env -> ([Text] -> IO [Text]) -> IO ()
+modifyHistory env f = modifyMVar_ (envHistory env) f
