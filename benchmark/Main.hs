@@ -1,6 +1,6 @@
 module Main where
 
-import Conduit
+import Conduit ((.|))
 import Control.Concurrent.Async (mapConcurrently)
 import Criterion.Main
 import Data.Conduit.Combinators (linesUnbounded)
@@ -10,40 +10,56 @@ import Path.Internal (Path (..))
 import Path.IO (listDir)
 import Paths_tibet (getDataFileName)
 import Weigh
+import Streamly
+import Streamly.Prelude ((|:))
 
+import qualified Streamly.Prelude as S
 import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
+import qualified Conduit as C
 import qualified Data.Text.Encoding as T
 
-import Handlers (Dictionary, makeTextMap)
+import Handlers (Dictionary, makeTextMap, Source, Target)
 
 
 main = do
+    -- undefined
     -- memory
     -- memory2
-    crit
+    -- crit
     crit2
+
+makeTextMapS :: Text -> Maybe Dictionary
+makeTextMapS txt
+    = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
+    <$> (S.toList
+    $ S.map ((\(y,x) -> (y :: Source, T.drop 1 x)) . T.span (<'|'))
+    $ S.fromList
+    $ T.lines txt)
 
 makeTextMapC :: Text -> Dictionary
 makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-  (runConduitPure
-  $ yield txt
+  (C.runConduitPure
+  $ C.yield txt
   .| linesUnbounded
-  .| mapC ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|'))
-  .| sinkList)
+  .| C.mapC ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|'))
+  .| C.sinkList)
 
 toDictionaryC2 :: FilePath -> IO Dictionary
-toDictionaryC2 path = runConduitRes
-    $ sourceFileBS path
-    .| decodeUtf8C
-    .| foldMapC makeTextMapC
+toDictionaryC2 path = C.runConduitRes
+    $ C.sourceFileBS path
+    .| C.decodeUtf8C
+    .| C.foldMapC makeTextMapC
 
 toDictionary :: FilePath -> IO Dictionary
 toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path
 
 toDictionaryC :: FilePath -> IO Dictionary
 toDictionaryC path = makeTextMapC . T.decodeUtf8 <$> BS.readFile path
+
+toDictionaryS :: FilePath -> IO (Maybe Dictionary)
+toDictionaryS path = makeTextMapS . T.decodeUtf8 <$> BS.readFile path
 
 memory = do
     dir <- getDataFileName "dicts/"
@@ -78,6 +94,7 @@ crit2 = do
     defaultMain
         [ bench "usual" $ nf makeTextMap txt
         , bench "conduit" $ nf makeTextMapC txt
+        , bench "streamly" $ nf makeTextMapS txt
         ]
 
 memory2 = do
@@ -86,3 +103,4 @@ memory2 = do
     mainWith $ do
         func "usual" makeTextMap txt
         func "conduit" makeTextMapC txt
+        func "streamly" makeTextMapS txt
