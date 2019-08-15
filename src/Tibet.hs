@@ -3,7 +3,7 @@ module Tibet
        ) where
 
 
-import Control.Concurrent.MVar (MVar, modifyMVar_, newEmptyMVar, readMVar)
+import Control.Concurrent.MVar (MVar, modifyMVar_, newMVar, readMVar)
 import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import Control.Monad.Reader
@@ -54,7 +54,7 @@ start mSelectedId = do
     files <- map fromAbsFile . snd <$> listDir dirAbs
     result <- traverse (\fp -> toDictionaryMeta ls fp <$> toDictionary fp) files
     let dmList = selectDict mSelectedId result
-    historyEmpty <- newEmptyMVar
+    historyEmpty <- newMVar $ History Nothing IntMap.empty
     let wt = makeWylieTibet syls
     let radix = radixTreeMaker syls
     let env = Env
