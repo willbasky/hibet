@@ -13,7 +13,7 @@ import Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import NeatInterpolation (text)
 import Options.Applicative (Parser, ParserInfo, ReadM, auto, command, eitherReader, execParser,
                             fullDesc, help, helper, info, infoHeader, infoOption, long, metavar,
-                            option, optional, progDesc, short, subparser)
+                            option, optional, progDesc, short, subparser, (<|>))
 import Options.Applicative.Help.Chunk (stringChunk)
 
 import Labels (LabelFull (..), labels)
@@ -26,7 +26,6 @@ import qualified Data.Text as T
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as MCL
-
 
 
 ----------------------------------------------------------------------------
@@ -89,7 +88,7 @@ runShow = \case
 -- | Main parser of the app.
 prsr :: ParserInfo Command
 prsr = modifyHeader
-    $ info ( helper <*> versionP <*> shellP)
+    $ info (helper <*> versionP <*> (shellP <|> commands))
     $ fullDesc
    <> progDesc "Translate from Tibetan to English"
 
@@ -108,14 +107,14 @@ tibetCliVersion = T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(g
     sDirty = red "There are non-committed files."
 
 -- All possible commands.
-shellP :: Parser Command
-shellP = subparser
-    $ command "shell" (info (helper <*> selectP) $ progDesc "Start the translate shell")
+commands :: Parser Command
+commands = subparser
+    $ command "shell" (info (helper <*> shellP) $ progDesc "Start the translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
    <> command "show" (info (helper <*> showP) $ progDesc "Show titles or descriptions of dictionaries")
 
-selectP :: Parser Command
-selectP = Shell <$> optional idListP
+shellP :: Parser Command
+shellP = Shell <$> optional idListP
 
 idListP :: Parser [Int]
 idListP = option attoparsecIdReader
