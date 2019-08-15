@@ -50,6 +50,7 @@ library
                      , ansi-terminal
                      , bifunctors
                      , bytestring
+                     , containers
                      , deepseq
                      , directory
                      , gitrev

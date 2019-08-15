@@ -1,26 +1,27 @@
 module Sandbox where
 
+import Control.Monad (when)
 import Data.ByteString.Char8 (ByteString)
 import Data.Text (Text)
 import Path (Abs, File, Path, filename, fromRelFile)
-import Prettify (cyan, putTextFlush)
-import System.IO (hPrint, stderr)
+-- import Prettify (cyan, putTextFlush)
+import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
 
-import Handlers (Title)
+-- import Handlers (Title)
 
-import qualified Data.ByteString.Char8 as BC
 import qualified Data.Text as T
 import qualified Data.Text.IO as IO
+import qualified Data.ByteString as BS
 
 
 -- | Show duplicates and write to file.
-getDubs :: IO ()
-getDubs = do
-    berzin <- IO.readFile "dicts/03-Berzin"
-    putTextFlush "Berzin file is loaded"
-    let dubs = findDups berzin
-    IO.writeFile "dics/dubs" $ T.pack $ show dubs
-    hPrint stderr dubs
+-- getDubs :: IO ()
+-- getDubs = do
+--     berzin <- IO.readFile "dicts/03-Berzin"
+--     putTextFlush "Berzin file is loaded"
+--     let dubs = findDups berzin
+--     IO.writeFile "dics/dubs" $ T.pack $ show dubs
+--     hPrint stderr dubs
 
 -- | List tuples of duplicates only from raw file.
 findDups :: Text -> [(Text,Text)]
@@ -50,27 +51,45 @@ mapMaybeTuple f ((x, t):xs) =
         (Just r, n)  -> (r,n):rs
 
 -- | Combine answers with numbering for raw text.
-zipWithRaw :: [ByteString] -> [Path Abs File] -> [(ByteString, Title)]
-zipWithRaw texts files = zip texts titles
-  where
-    titles :: [Title]
-    titles = map (BC.drop 3 . BC.pack . fromRelFile . filename) files
+-- zipWithRaw :: [ByteString] -> [Path Abs File] -> [(ByteString, Title)]
+-- zipWithRaw texts files = zip texts titles
+--   where
+--     titles :: [Title]
+--     titles = map (BC.drop 3 . BC.pack . fromRelFile . filename) files
 
 -- | Search in raw dictionary files.
-searchInRaw :: Text -> [(Text, Title)] -> [(Text, Title)]
-searchInRaw query = foldl (\ acc (x,y) -> if search x == "" then acc else (search x, y) : acc) []
-  where
-    search :: Text -> Text
-    search
-        = T.unlines
-        . map (T.append (cyan "༔ ") . T.drop 1 . T.dropWhile (/= '|'))
-        . filter (T.isPrefixOf (T.append query "|"))
-        . T.lines
+-- searchInRaw :: Text -> [(Text, Title)] -> [(Text, Title)]
+-- searchInRaw query = foldl (\ acc (x,y) -> if search x == "" then acc else (search x, y) : acc) []
+--   where
+--     search :: Text -> Text
+--     search
+--         = T.unlines
+--         . map (T.append (cyan "༔ ") . T.drop 1 . T.dropWhile (/= '|'))
+--         . filter (T.isPrefixOf (T.append query "|"))
+--         . T.lines
 
---
+-- --
 -- result <- runConduitRes
 --     $ sourceDirectoryDeep False dir  -- [FilePath]
 --     .| mapMC (\fp -> (fp,) <$> runConduit (sourceFileBS fp .| decodeUtf8C .| foldC )) -- [(FilePath,Text)]
 --     .| mapC (\(f,t) -> (f, makeTextMap t)) -- [Dictionary]
 --     .| mapC (\dict -> toDictionaryMeta labels' dict)
 --     .| sinkList
+
+
+
+-- Simple menu controller
+main = do
+  hSetBuffering stdin NoBuffering
+  hSetEcho stdin False
+  key <- BS.getLine -- is not good
+  when (key /= "\ESC") $ do
+    case key of
+      "\ESC[A" -> BS.putStrLn "↑"
+      "\ESC[B" -> BS.putStrLn "↓"
+      "\ESC[C" -> BS.putStrLn "→"
+      "\ESC[D" -> BS.putStrLn "←"
+      "\n"     -> BS.putStrLn "⎆"
+      "\DEL"   -> BS.putStrLn "⎋"
+      _        -> return ()
+    main

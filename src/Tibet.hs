@@ -3,7 +3,7 @@ module Tibet
        ) where
 
 
-import Control.Concurrent.MVar (MVar, modifyMVar_, newMVar, readMVar)
+import Control.Concurrent.MVar (MVar, modifyMVar_, newEmptyMVar, readMVar)
 import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import Control.Monad.Reader
@@ -16,7 +16,9 @@ import Path.IO (listDir)
 import Paths_tibet (getDataFileName)
 import System.Exit (exitSuccess)
 import System.IO (stdout)
+import Data.IntMap.Strict (IntMap)
 
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
@@ -34,8 +36,13 @@ data Env = Env
   { envDictionaryMeta :: ![DictionaryMeta]
   , envWylieTibet     :: !WylieTibet
   , envRadixTree      :: !RadixTree
-  , envHistory        :: !(MVar [Text])
+  , envHistory        :: !(MVar History)
   }
+
+data History = History
+    { currentPosition :: Maybe Int
+    , queries :: IntMap Text
+    } deriving Show
 
 start :: Maybe [Int] -> IO ()
 start mSelectedId = do
@@ -47,7 +54,7 @@ start mSelectedId = do
     files <- map fromAbsFile . snd <$> listDir dirAbs
     result <- traverse (\fp -> toDictionaryMeta ls fp <$> toDictionary fp) files
     let dmList = selectDict mSelectedId result
-    historyEmpty <- newMVar []
+    historyEmpty <- newEmptyMVar
     let wt = makeWylieTibet syls
     let radix = radixTreeMaker syls
     let env = Env
@@ -68,7 +75,7 @@ translator = ReaderT $ \env -> forever $ do
             putTextFlush $ green "Bye-bye!"
             exitSuccess
         ":h" -> do
-            history' <- readMVar (envHistory env)
+            history' <- IntMap.elems . queries <$> readMVar (envHistory env)
             if null history' then putTextFlush $ red "No success queries."
             else do
                 putTextFlush $ green "Success queries:"
@@ -86,10 +93,16 @@ translator = ReaderT $ \env -> forever $ do
                         let tibQuery = cyan . fromRight query $ T.concat <$> toTibetan query
                         T.putStrLn tibQuery
                         T.putStrLn translations
-                        modifyHistory env $ pure . (query :)
+                        modifyHistory env $ pure . addQuery query
 
 toDictionary :: FilePath -> IO Dictionary
 toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path
 
-modifyHistory :: Env -> ([Text] -> IO [Text]) -> IO ()
-modifyHistory env f = modifyMVar_ (envHistory env) f
+modifyHistory :: Env -> (History -> IO History) -> IO ()
+modifyHistory = modifyMVar_ . envHistory
+
+addQuery :: Text -> History -> History
+addQuery txt History{..} = History currentPosition newQueries
+  where
+    newKey = IntMap.size queries + 1
+    newQueries = IntMap.insert newKey txt queries
