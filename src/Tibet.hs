@@ -8,6 +8,7 @@ import Control.DeepSeq (deepseq)
 import Control.Monad (forever)
 import Control.Monad.Reader
 import Data.Either (fromRight)
+import Data.IntMap.Strict (IntMap)
 import Data.Maybe (catMaybes)
 import Data.RadixTree (RadixTree)
 import Data.Text (Text)
@@ -16,10 +17,9 @@ import Path.IO (listDir)
 import Paths_tibet (getDataFileName)
 import System.Exit (exitSuccess)
 import System.IO (stdout)
-import Data.IntMap.Strict (IntMap)
 
-import qualified Data.IntMap.Strict as IntMap
 import qualified Data.ByteString as BS
+import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.IO as T
@@ -41,7 +41,7 @@ data Env = Env
 
 data History = History
     { currentPosition :: Maybe Int
-    , queries :: IntMap Text
+    , queries         :: IntMap Text
     } deriving Show
 
 start :: Maybe [Int] -> IO ()
@@ -102,7 +102,7 @@ modifyHistory :: Env -> (History -> IO History) -> IO ()
 modifyHistory = modifyMVar_ . envHistory
 
 addQuery :: Text -> History -> History
-addQuery txt History{..} = History currentPosition newQueries
+addQuery query History{..} = History currentPosition newQueries
   where
     newKey = IntMap.size queries + 1
-    newQueries = IntMap.insert newKey txt queries
+    newQueries = IntMap.insert newKey query queries
