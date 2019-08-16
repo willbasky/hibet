@@ -10,12 +10,14 @@ and this project adheres to
 
 ### Added
 
-* Benchmarked most heivy functions comparing with conduit way of them. Conduit and concurrent didn't speed up them.
+* Benchmarked most heivy functions comparing with conduit way of them. Conduit and concurrent didn't speed them up.
 
 ### Fixed
 
 * Dictionaries to be parsed correctly
 * Data makers to load faster
+* [#54](https://github.com/willbasky/TibetCli/issues/54):
+  Buttons Up and Down move throuth the input history.
 
 ## [0.5] - 2019-07-07
 

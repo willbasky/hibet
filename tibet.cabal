@@ -50,12 +50,12 @@ library
                      , ansi-terminal
                      , bifunctors
                      , bytestring
-                     , containers
                      , deepseq
                      , directory
-                     , gitrev
                      , file-embed
                      , filepath
+                     , gitrev
+                     , haskeline
                      , megaparsec
                      , mtl
                      , neat-interpolation ^>= 0.3.2.2

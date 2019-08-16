@@ -1,7 +1,9 @@
-module Sandbox where
+module Sandbox (main) where
 
 import Control.Monad (when)
+import System.Console.Haskeline
 import Data.ByteString.Char8 (ByteString)
+import System.Exit (exitSuccess)
 import Data.Text (Text)
 import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
@@ -79,17 +81,49 @@ mapMaybeTuple f ((x, t):xs) =
 
 
 -- Simple menu controller
-main = do
-  hSetBuffering stdin NoBuffering
-  hSetEcho stdin False
-  key <- BS.getLine -- is not good
-  when (key /= "\ESC") $ do
-    case key of
-      "\ESC[A" -> BS.putStrLn "↑"
-      "\ESC[B" -> BS.putStrLn "↓"
-      "\ESC[C" -> BS.putStrLn "→"
-      "\ESC[D" -> BS.putStrLn "←"
-      "\n"     -> BS.putStrLn "⎆"
-      "\DEL"   -> BS.putStrLn "⎋"
-      _        -> return ()
-    main
+-- main = do
+--   hSetBuffering stdin NoBuffering
+--   hSetEcho stdin False
+--   key <- BS.getLine -- is not good
+--   when (key /= "\ESC") $ do
+--     case key of
+--       "^[[A" -> putStrLn "↑"
+--       "\ESC[B" -> putStrLn "↓"
+--       "\ESC[C" -> putStrLn "→"
+--       "\ESC[D" -> putStrLn "←"
+--       "\n"     -> putStrLn "⎆"
+--       "\DEL"   -> putStrLn "⎋"
+--       _        -> return ()
+--     main
+
+-- main = do
+--     cfg <- standardIOConfig
+--     vty <- mkVty cfg
+--     putStrLn "Click any button"
+--     loop vty
+
+-- loop vty = do
+--     e <- nextEvent vty
+--     case e of
+--         EvKey KUp [] -> putStrLn "Up"
+--         EvKey KDown [] -> putStrLn "Down"
+--         EvKey KEsc [] -> do
+--             shutdown vty
+--             exitSuccess
+--         _ -> putStrLn "Not Up/Down"
+--     print ("Last event was: " ++ show e)
+--     loop vty
+
+
+
+main :: IO ()
+main = runInputT defaultSettings loop
+   where
+       loop :: InputT IO ()
+       loop = do
+           minput <- getInputLine "% "
+           case minput of
+               Nothing -> return ()
+               Just "quit" -> return ()
+               Just input -> do outputStrLn $ "Input was: " ++ input
+                                loop
