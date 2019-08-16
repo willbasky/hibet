@@ -62,8 +62,7 @@ runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- sortLabels <$> labels
-        mapM_ (\LabelFull{..} -> putTextFlush $ green $ number lfId <> blue lfLabel)
-            $ titles
+        mapM_ (\LabelFull{..} -> putTextFlush $ green $ number lfId <> blue lfLabel) titles
     Meta Nothing -> do
         titles <- labels
         mapM_ (\LabelFull{..} -> do
@@ -90,16 +89,15 @@ prsr :: ParserInfo Command
 prsr = modifyHeader
     $ info (helper <*> versionP <*> (shellP <|> commands))
     $ fullDesc
-   <> progDesc "Translate from Tibetan to English"
 
 versionP :: Parser (a -> a)
-versionP = infoOption (T.unpack tibetCliVersion)
+versionP = infoOption tibetVersion
     $ long "version"
    <> short 'v'
    <> help "Show TibetCli's version"
 
-tibetCliVersion :: Text
-tibetCliVersion = T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(gitDirty)]
+tibetVersion :: String
+tibetVersion = T.unpack $ T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(gitDirty)]
   where
     sVersion = blue . bold $ "TibetCli " <> "v" <> T.pack (showVersion version)
     sHash = " ➤ " <> (blue . bold $ "Git revision: " <> resetCode <> $(gitHash))
