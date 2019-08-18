@@ -26,7 +26,7 @@ import qualified Text.Megaparsec.Error as ME
 import Handlers (Dictionary, DictionaryMeta (..), makeTextMap, mergeWithNum, searchTranslation,
                  selectDict, separator, sortOutput, toDictionaryMeta)
 import Labels (labels)
-import Parse (WylieTibet, makeTibet, makeWylieTibet, parseWylieInput, radixTreeMaker)
+import Parse
 import Prettify (blue, cyan, green, nothingFound, putTextFlush)
 
 
@@ -34,7 +34,9 @@ import Prettify (blue, cyan, green, nothingFound, putTextFlush)
 data Env = Env
   { envDictionaryMeta :: ![DictionaryMeta]
   , envWylieTibet     :: !WylieTibet
-  , envRadixTree      :: !RadixTree
+  , envTibetWylie     :: !TibetWylie
+  , envRadixWylie     :: !RadixTree
+  , envRadixTibet     :: !RadixTree
   }
 
 -- | Load all stuff for environment.
@@ -49,11 +51,15 @@ start mSelectedId = do
     result <- traverse (\fp -> toDictionaryMeta ls fp <$> toDictionary fp) files
     let dmList = selectDict mSelectedId result
     let wt = makeWylieTibet syls
-    let radix = radixTreeMaker syls
+    let tw = makeTibetWylie syls
+    let radixWylie = makeWylieRadexTree syls
+    let radixTibet = makeTibetanRadexTree syls
     let env = Env
             { envDictionaryMeta = dmList
             , envWylieTibet = wt
-            , envRadixTree = radix
+            , envTibetWylie = tw
+            , envRadixWylie = radixWylie
+            , envRadixTibet = radixTibet
             }
     dmList `deepseq` runReaderT translator env
 
@@ -77,19 +83,24 @@ translator = ReaderT $ \env ->
                 history <- queryInput inputState getHistory
                 mapM_ (T.putStrLn . T.pack) $ reverse $ historyLines history
             Just query -> do
-                dscMaybeValues <- traverse (pure . searchTranslation query) (envDictionaryMeta env)
+                let toWylie' = toWylie (envTibetWylie env) . parseTibetanInput (envRadixTibet env)
+                let wylieQuery = case toWylie' query  of
+                        Left _ -> query
+                        Right wylie -> if T.null wylie then query else wylie
+                dscMaybeValues <- traverse (pure . searchTranslation wylieQuery) (envDictionaryMeta env)
                 let dscValues = catMaybes dscMaybeValues
                 if null dscValues then nothingFound
                 else do
                     let dictMeta = sortOutput dscValues
-                    let toTibetan = makeTibet (envWylieTibet env) . parseWylieInput (envRadixTree env)
-                    case traverse (separator [37] toTibetan) dictMeta of
+                    let toTibetan' = toTibetan (envWylieTibet env) . parseWylieInput (envRadixWylie env)
+                    case traverse (separator [37] toTibetan') dictMeta of
                         Left err -> putStrLn $ ME.errorBundlePretty err
                         Right list -> do
                             let translations = mergeWithNum list
-                            case toTibetan query of
+                            if query == wylieQuery then case toTibetan' wylieQuery of
                                 Left err  -> putStrLn $ ME.errorBundlePretty err
                                 Right tib -> T.putStrLn $ cyan $ T.concat tib
+                            else T.putStrLn $ cyan wylieQuery
                             T.putStrLn translations
 
 toDictionary :: FilePath -> IO Dictionary
