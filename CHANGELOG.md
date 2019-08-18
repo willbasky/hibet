@@ -18,6 +18,8 @@ and this project adheres to
 * Data makers to load faster
 * [#54](https://github.com/willbasky/TibetCli/issues/54):
   Buttons Up and Down move throuth the input history.
+* [#57](https://github.com/willbasky/TibetCli/issues/57):
+  Consume tibetan input.
 
 ## [0.5] - 2019-07-07
 
