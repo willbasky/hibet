@@ -54,10 +54,10 @@ makeTextMap
     . T.lines
 
 -- | Select several dictionaries by id.
-selectDict :: Maybe [Int] -> [DictionaryMeta] -> [DictionaryMeta]
-selectDict mSelected dicts = case mSelected of
-    Nothing         -> dicts
-    Just selectedId -> filter (\DictionaryMeta{..} -> dmNumber `elem` selectedId) dicts
+selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]
+selectDict selected dicts = case selected of
+    []         -> dicts
+    selectedIds -> filter (\DictionaryMeta{..} -> dmNumber `elem` selectedIds) dicts
 
 -- Add lables to dictionaries
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta

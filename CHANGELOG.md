@@ -6,11 +6,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
+## Unrealesed
+
+### Changed
+
+* Rename application: `TibetCli` -> `Hibet`
+
+## Fixed
+
+* Fix selecting dictionary on start. Use `-s 7 -s 16` or `-s{7,16}` now.
+
 ## [0.6] - 2019-07-27
 
 ### Added
 
-* Benchmarked most heivy functions comparing with conduit way of them. Conduit and concurrent didn't speed them up.
+* Benchmarked most heavy functions comparing with conduit way of them. Conduit and concurrent didn't speed them up.
 
 ### Fixed
 

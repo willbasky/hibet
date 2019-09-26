@@ -5,27 +5,24 @@ module Cli
        ( trans
        ) where
 
+import Control.Applicative (many, optional, (<|>))
 import Data.Foldable (find)
 import Data.List (sortBy)
 import Data.Text (Text)
 import Data.Version (showVersion)
 import Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import NeatInterpolation (text)
-import Options.Applicative (Parser, ParserInfo, ReadM, auto, command, eitherReader, execParser,
-                            fullDesc, help, helper, info, infoHeader, infoOption, long, metavar,
-                            option, optional, progDesc, short, subparser, (<|>))
+import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullDesc, help, helper,
+                            info, infoHeader, infoOption, long, metavar, option, progDesc, short,
+                            subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
 
 import Labels (LabelFull (..), labels)
 import Paths_tibet (version)
 import Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode, yellow)
 import Tibet (start)
-import Data.Void (Void)
 
 import qualified Data.Text as T
-import qualified Text.Megaparsec as M
-import qualified Text.Megaparsec.Char as MC
-import qualified Text.Megaparsec.Char.Lexer as MCL
 
 
 ----------------------------------------------------------------------------
@@ -42,7 +39,7 @@ data Command
 -- | Commands parsed with @show@ command
 data Opt = Names | Meta (Maybe Int)
 
-type Select = Maybe [Int]
+type Select = [Int]
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -111,14 +108,14 @@ commands = subparser
    <> command "show" (info (helper <*> showP) $ progDesc "Show titles or descriptions of dictionaries")
 
 shellP :: Parser Command
-shellP = Shell <$> optional idListP
+shellP = Shell <$> idListP
 
 idListP :: Parser [Int]
-idListP = option attoparsecIdReader
+idListP = many $ option auto
     $ long "select"
    <> short 's'
-   <> help "Select id list of dictionaries separeted by space or comma"
-   <> metavar "ID_LIST"
+   <> help "Select id of dictionary"
+   <> metavar "DICT_ID"
 
 showP :: Parser Command
 showP = ShowOption <$> subparser
@@ -172,14 +169,3 @@ $endLine
                      .--:--'               +y+
                                             :+
             |]
-
--- Customized error message.
-attoparsecIdReader :: ReadM [Int]
-attoparsecIdReader = eitherReader $ \select ->
-    either (\err -> Left (select <> " could not be parsed. An error has occured: " <> show err))
-        Right (M.parse numListParserM "" select)
-
--- Parse list of numbers. Possible to parse: 1,2,3 or "1,2 3" or "1 2 3" or "1,2,3"
-numListParserM :: M.Parsec Void String [Int]
-numListParserM = MCL.decimal `M.sepBy1` M.choice [MC.char ',', MC.char ' ']
-

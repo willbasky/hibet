@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                Hibet
-version:             0.5
+version:             0.6
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet

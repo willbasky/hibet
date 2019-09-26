@@ -40,8 +40,8 @@ data Env = Env
   }
 
 -- | Load all stuff for environment.
-start :: Maybe [Int] -> IO ()
-start mSelectedId = do
+start :: [Int] -> IO ()
+start selectedIds = do
     sylsPath <- getDataFileName "stuff/tibetan-syllables"
     syls <- T.decodeUtf8 <$> BS.readFile sylsPath
     ls <- labels
@@ -49,7 +49,7 @@ start mSelectedId = do
     dirAbs <- parseAbsDir dir
     files <- map fromAbsFile . snd <$> listDir dirAbs
     result <- traverse (\fp -> toDictionaryMeta ls fp <$> toDictionary fp) files
-    let dmList = selectDict mSelectedId result
+    let dmList = selectDict selectedIds result
     let wt = makeWylieTibet syls
     let tw = makeTibetWylie syls
     let radixWylie = makeWylieRadexTree syls

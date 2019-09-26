@@ -69,21 +69,18 @@ $ tibet shell -h
 
 Input `tibet shell` in terminal. And then write your `query` using _Wylie_ or _Tibet script_:
 
-    $ tibet shell
+    $ tibet shell -s{7,16}
     Which a tibetan word to translate?
     > mo
-    5. Hopkins 2015
-    ► (1) female; woman; wife; feminine particle; she; (2) particle indicating the end of a statement
-
+     མོ
     7. Rangjung Yeshe
     ► the girl
-    ► lady, female, woman. 2) divination, prophecy
-    ► 1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3)  terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo: what is the meaning]
+    lady, female, woman. 2) divination, prophecy
+    1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming    particle [R]; 5) is [don ci mo: what is the meaning]
 
-    8. Berzin
-    ► prognostication
+    16. Ives Waldo
+    ► 1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing    particle [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo, chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/    prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo:    what is the meaning]. 1) auspicious, mo divination/ prophesy; 2) feminine particle, female, woman, she; 3) terminative after MA; 4) noun   forming particle; 5) is
 
-    etc...
 
 To quit, just input:
 
