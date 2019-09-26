@@ -18,7 +18,7 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
 import Options.Applicative.Help.Chunk (stringChunk)
 
 import Labels (LabelFull (..), labels)
-import Paths_tibet (version)
+import Paths_Hibet (version)
 import Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode, yellow)
 import Tibet (start)
 

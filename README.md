@@ -27,7 +27,7 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
 ## Usage video
 
-[![asciicast](https://asciinema.org/a/Me0raohKWoXNLFd9YbFeTNQZt.svg)](https://asciinema.org/a/Me0raohKWoXNLFd9YbFeTNQZt)
+[![asciicast](https://asciinema.org/a/271020.svg)](https://asciinema.org/a/271020)
 
 Help commands:
 

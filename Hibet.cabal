@@ -32,8 +32,8 @@ library
                      , Prettify
                      , Tibet
 
-  other-modules:       Paths_tibet
-  autogen-modules:     Paths_tibet
+  other-modules:       Paths_Hibet
+  autogen-modules:     Paths_Hibet
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
@@ -77,7 +77,7 @@ library
                        TypeApplications
 
 
-executable tibet
+executable hibet
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
@@ -105,7 +105,7 @@ executable tibet
                        TypeApplications
 
 
-test-suite tibet-test
+test-suite hibet-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs

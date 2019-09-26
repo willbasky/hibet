@@ -11,7 +11,7 @@ import Data.Maybe (catMaybes)
 import Data.RadixTree (RadixTree)
 import Path (fromAbsFile, parseAbsDir)
 import Path.IO (listDir)
-import Paths_tibet (getDataFileName)
+import Paths_Hibet (getDataFileName)
 import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
 import System.Console.Haskeline.History (historyLines)
 import System.Console.Haskeline.IO

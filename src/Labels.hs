@@ -7,7 +7,7 @@ import Data.Aeson (FromJSON (parseJSON), ToJSON (toJSON), decode, object, withOb
 import Data.List (sortOn)
 import Data.Text (Text)
 
-import Paths_tibet (getDataFileName)
+import Paths_Hibet (getDataFileName)
 
 import qualified Data.ByteString.Lazy.Char8 as BLC
 import qualified Data.HashMap.Strict as HM
