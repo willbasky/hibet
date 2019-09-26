@@ -6,22 +6,22 @@
 
 ## About
 
-The TibetCli translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back.
+The Hibet translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back.
 
 ## Features
 
-1. TibetCli uses about 40 dictionaries to translate from Tibetan (wylie yet) to English or Tibetan
+1. Hibet uses about 40 dictionaries to translate from Tibetan (wylie yet) to English or Tibetan
 2. Tibetan text outputs with wylie transcribtion or tibetan (check 37 dictionary).
 
 ## Installation
 
 1. Install [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 
-2. Install TibetCli
+2. Install Hibet
 
-        git clone https://github.com/willbasky/TibetCli.git
+        git clone https://github.com/willbasky/Hibet.git
 
-        cd ./TibetCli
+        cd ./Hibet
 
         stack install tibet
 
@@ -33,13 +33,13 @@ Help commands:
 
 $ tibet -h
 
-    TibetCli is command line translator from Tibet to English language.
+    Hibet is command line translator from Tibet to English language.
 
     Usage: tibet [-v|--version] COMMAND
       Translate from Tibetan to English
     Available options:
       -h,--help                Show this help text
-      -v,--version             Show TibetCli's version
+      -v,--version             Show Hibet's version
 
     Available commands:
       shell                    Start the translate shell

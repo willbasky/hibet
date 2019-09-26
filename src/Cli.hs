@@ -94,12 +94,12 @@ versionP :: Parser (a -> a)
 versionP = infoOption tibetVersion
     $ long "version"
    <> short 'v'
-   <> help "Show TibetCli's version"
+   <> help "Show Hibet's version"
 
 tibetVersion :: String
 tibetVersion = T.unpack $ T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(gitDirty)]
   where
-    sVersion = blue . bold $ "TibetCli " <> "v" <> T.pack (showVersion version)
+    sVersion = blue . bold $ "Hibet " <> "v" <> T.pack (showVersion version)
     sHash = " ➤ " <> (blue . bold $ "Git revision: " <> resetCode <> $(gitHash))
     sDate = " ➤ " <> (blue . bold $ "Commit date:  " <> resetCode <> $(gitCommitDate))
     sDirty = red "There are non-committed files."
@@ -145,7 +145,7 @@ modifyHeader :: ParserInfo a -> ParserInfo a
 modifyHeader p = p {infoHeader = stringChunk $ T.unpack artHeader}
 
 artHeader :: Text
-artHeader = yellow "TibetCli is command line translator from Tibet to English language."
+artHeader = yellow "Hibet is command line translator from Tibet to English language."
 
 om :: Text
 om = [text|

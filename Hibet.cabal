@@ -1,10 +1,10 @@
 cabal-version:       2.2
-name:                tibet
+name:                Hibet
 version:             0.5
 description:         tibetan-english translator
 synopsis:            translator
-homepage:            https://github.com/willbasky/TibetCli
-bug-reports:         https://github.com/willbasky/TibetCli/issues
+homepage:            https://github.com/willbasky/Hibet
+bug-reports:         https://github.com/willbasky/Hibet/issues
 license:             MIT
 license-file:        LICENSE
 author:              willbasky
@@ -21,7 +21,7 @@ tested-with:         GHC == 8.6.4
 
 source-repository head
   type:                git
-  location:            https://github.com/willbasky/TibetCli.git
+  location:            https://github.com/willbasky/Hibet.git
 
 library
   hs-source-dirs:      src
@@ -93,7 +93,7 @@ executable tibet
                        -Wmissing-export-lists
                        -Wpartial-fields
   build-depends:       base ^>= 4.12.0.0
-                     , tibet
+                     , Hibet
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
@@ -122,7 +122,7 @@ test-suite tibet-test
                        -Wmissing-export-lists
                        -Wpartial-fields
   build-depends:       base ^>= 4.12.0.0
-                     , tibet
+                     , Hibet
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
@@ -139,7 +139,7 @@ benchmark tibet-benchmark
   main-is:             Main.hs
 
   build-depends:       base ^>= 4.12.0.0
-                     , tibet
+                     , Hibet
                      , async
                      , criterion
                      , weigh
