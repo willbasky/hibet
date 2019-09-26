@@ -87,8 +87,7 @@ runShow = \case
 -- | Main parser of the app.
 prsr :: ParserInfo Command
 prsr = modifyHeader
-    $ info (helper <*> versionP <*> (shellP <|> commands))
-    $ fullDesc
+    $ info (helper <*> versionP <*> (shellP <|> commands)) fullDesc
 
 versionP :: Parser (a -> a)
 versionP = infoOption tibetVersion

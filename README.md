@@ -6,12 +6,12 @@
 
 ## About
 
-The Hibet translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. And it use [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) to input tibetan words yet. There is [convertor](http://www.digitaltibetan.org/cgi-bin/wylie.pl) from native tibetan to wylie translit and back.
+The Hibet translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. It consume both [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) and [tibetan script](https://en.wikipedia.org/wiki/Tibetan_script) from input.
 
 ## Features
 
-1. Hibet uses about 40 dictionaries to translate from Tibetan (wylie yet) to English or Tibetan
-2. Tibetan text outputs with wylie transcribtion or tibetan (check 37 dictionary).
+1. Hibet uses about 40 dictionaries to translate Tibetan words to English or Tibetan.
+2. If translations have Tibetan texts it printed as wylie (and as tibetan script for dictionary №37 yet).
 
 ## Installation
 
@@ -23,7 +23,7 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
         cd ./Hibet
 
-        stack install tibet
+        stack install Hibet
 
 ## Usage video
 
@@ -67,10 +67,7 @@ $ tibet shell -h
       -h,--help                Show this help text
       -s,--select ID_LIST      Select id list of dictionaries separeted by space or comma
 
-
-
-
-Input `tibet shell` in terminal. And then write your `query` using _Wylie_ transcribtion:
+Input `tibet shell` in terminal. And then write your `query` using _Wylie_ or _Tibet script_:
 
     $ tibet shell
     Which a tibetan word to translate?
@@ -96,9 +93,6 @@ To get queries of the session, input:
 
     :h
 
-## ToDo
+## Contribution
 
-- [x] Lookup throuth all available libaries.
-- [x] move backand to [lib](https://hackage.haskell.org/package/optparse-applicative-0.14.2.0)
-- [] Handle unicode (native tibetan script) from input
-
+Contribution is welcome!
