@@ -19,6 +19,27 @@ packages:
   original:
     hackage: radixtree-0.4.0.0
 - completed:
+    hackage: tomland-1.1.0.1@sha256:dcf629b1a39006276823b3bbf48658816e0812abeb55a8e84f7b9d8301166898,6589
+    pantry-tree:
+      size: 3622
+      sha256: dcfe03cbfa5df93a92a68daaa589b9a222dfd1ec3a9b8d6fda890c77c95c0be7
+  original:
+    hackage: tomland-1.1.0.1
+- completed:
+    hackage: megaparsec-7.0.5@sha256:45e1f1348fab2783646fdb4d9e6097568981a740951c7356d36d794e2baba305,3902
+    pantry-tree:
+      size: 1428
+      sha256: 1f8baf6e07326f8c8a2dd31de6b2860427f158b0892c52ba5fe9ffeb6cd3bf7f
+  original:
+    hackage: megaparsec-7.0.5
+- completed:
+    hackage: parser-combinators-1.2.0@sha256:784ab858e0a814d2aa36785e3c359a393be7ef7be9a37428a59908331249eb80,1845
+    pantry-tree:
+      size: 725
+      sha256: 2bc4acaba61498d2f8d1eefcaeb557e8612cb2058918203fddc7f1595966b11b
+  original:
+    hackage: parser-combinators-1.2.0
+- completed:
     hackage: parsers-megaparsec-0.1.0.1@sha256:2ebe722e6468bdfa1c236e2106815b0132e152eada60607f1f5f607a5f759037,1670
     pantry-tree:
       size: 238

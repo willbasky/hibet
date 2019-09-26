@@ -15,7 +15,7 @@ build-type:          Simple
 extra-doc-files:     README.md
                    , CHANGELOG.md
 data-files:          dicts/*.txt
-                   , stuff/titles.json
+                   , stuff/titles.toml
                    , stuff/tibetan-syllables
 tested-with:         GHC == 8.6.4
 
@@ -46,7 +46,6 @@ library
                        -Wpartial-fields
 
   build-depends:       base ^>= 4.12.0.0
-                     , aeson
                      , ansi-terminal
                      , bifunctors
                      , bytestring
@@ -65,6 +64,7 @@ library
                      , path-io >= 1.4.0
                      , radixtree
                      , text
+                     , tomland >= 1.1.0.1
                      , unordered-containers
 
   default-language:    Haskell2010
