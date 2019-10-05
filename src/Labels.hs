@@ -1,7 +1,3 @@
-{-# OPTIONS -Wno-unused-top-binds #-}
-{-# LANGUAGE LambdaCase           #-}
-{-# LANGUAGE OverloadedStrings    #-}
-
 module Labels
        ( LabelFull(..)
        , labels
@@ -13,14 +9,15 @@ import Toml (TomlCodec, (.=))
 
 import Paths_Hibet (getDataFileName)
 
-import qualified Data.Text.IO as TIO
+import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as TE
 import qualified Toml
 
 
 labels :: IO [LabelFull]
 labels = do
     file <- getDataFileName "stuff/titles.toml"
-    meta <- TIO.readFile file
+    meta <- TE.decodeUtf8 <$> BS.readFile file
     case Toml.decode labelsCodec meta of
         Left err               -> error $ show err
         Right (Labels decoded) -> pure $ sortOn lfId decoded
