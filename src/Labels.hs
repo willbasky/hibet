@@ -22,14 +22,12 @@ labels = do
         Left err               -> error $ show err
         Right (Labels decoded) -> pure $ sortOn lfId decoded
 
-
 data LabelFull = LabelFull
     { lfPath  :: Text
     , lfId    :: Int
     , lfLabel :: Text
     , lfMeta  :: Text
     } deriving (Eq, Show, Ord)
-
 
 data Labels = Labels
     { labelTitles :: [LabelFull]
@@ -41,7 +39,6 @@ labelFullCodec = LabelFull
     <*> Toml.int  "id"    .= lfId
     <*> Toml.text "label" .= lfLabel
     <*> Toml.text "about" .= lfMeta
-
 
 labelsCodec :: TomlCodec Labels
 labelsCodec = Labels
