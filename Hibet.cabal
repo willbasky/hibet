@@ -29,7 +29,7 @@ library
                      , Handlers
                      , Labels
                      , Parse
-                     , Prettify
+                     , Pretty
                      , Tibet
 
   other-modules:       Paths_Hibet
@@ -46,7 +46,6 @@ library
                        -Wpartial-fields
 
   build-depends:       base ^>= 4.12.0.0
-                     , ansi-terminal
                      , bifunctors
                      , bytestring
                      , deepseq
@@ -59,17 +58,20 @@ library
                      , mtl
                      , neat-interpolation ^>= 0.3.2.2
                      , optparse-applicative
+                     , pager
                      , parsers-megaparsec
                      , path
                      , path-io >= 1.4.0
+                     , prettyprinter
+                     , prettyprinter-ansi-terminal
                      , radixtree
+                     , terminal-size
                      , text
                      , tomland >= 1.1.0.1
                      , unordered-containers
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
-                       GeneralizedNewtypeDeriving
                        LambdaCase
                        OverloadedStrings
                        RecordWildCards
@@ -97,7 +99,6 @@ executable hibet
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
-                       GeneralizedNewtypeDeriving
                        LambdaCase
                        OverloadedStrings
                        RecordWildCards
@@ -126,7 +127,6 @@ test-suite hibet-test
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
-                       GeneralizedNewtypeDeriving
                        LambdaCase
                        OverloadedStrings
                        RecordWildCards

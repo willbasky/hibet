@@ -8,7 +8,6 @@ module Handlers
        , Source
        , Target
        , makeTextMap
-       , mergeWithNum
        , searchTranslation
        , selectDict
        , separator
@@ -31,8 +30,6 @@ import qualified Data.Text as T
 
 import Labels (LabelFull (..))
 import Parse (ParseError, Tibet, Wylie)
-import Prettify (blue, bold, cyan, green)
-
 
 type Title = Text
 type Source = Text
@@ -56,7 +53,7 @@ makeTextMap
 -- | Select several dictionaries by id.
 selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]
 selectDict selected dicts = case selected of
-    []         -> dicts
+    []          -> dicts
     selectedIds -> filter (\DictionaryMeta{..} -> dmNumber `elem` selectedIds) dicts
 
 -- Add lables to dictionaries
@@ -77,29 +74,8 @@ searchTranslation query DictionaryMeta{..} = if null ts then Nothing else Just (
     search :: Source -> Target -> [Target] -> [Target]
     search k v acc = if k == query then v : acc else acc
 
-sortOutput :: [([Text], (Title, Int))] -> [([Text], (Title, Int))]
+sortOutput :: [([Target], (Title, Int))] -> [([Target], (Title, Int))]
 sortOutput = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
-
--- | Add numbers and flatten.
-mergeWithNum :: [([Text], (Title, Int))] -> Text
-mergeWithNum = T.intercalate "\n" . map flatten
-  where
-    -- Prettify number.
-    prettyN :: Int -> Text
-    prettyN = (\x -> green $ T.append (T.pack x) ". ") . show
-
-    flatten :: ([Text], (Title, Int)) -> Text
-    flatten (value, (title, number)) =
-        T.concat [prettyN number, prettyT title, "\n", valueMarked value]
-    -- Decode and paint title.
-    prettyT :: Title -> Text
-    prettyT title = blue $ bold title
-    -- Decode value and add mark.
-    valueMarked :: [Text] -> Text
-    valueMarked = T.unlines . map (\v -> cyan "► " <> insideNewLine v)
-    -- Fix new lines inside value.
-    insideNewLine :: Text -> Text
-    insideNewLine = T.replace "\\n" "\n  "
 
 -- Convert dictionaries from list to tibetan and pass others.
 separator

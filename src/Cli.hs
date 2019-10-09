@@ -19,7 +19,7 @@ import Options.Applicative.Help.Chunk (stringChunk)
 
 import Labels (LabelFull (..), labels)
 import Paths_Hibet (version)
-import Prettify (blue, bold, endLine, green, magenta, putTextFlush, red, resetCode, yellow)
+import Pretty
 import Tibet (start)
 
 import qualified Data.Text as T
@@ -52,28 +52,28 @@ trans = execParser prsr >>= runCommand
 runCommand :: Command -> IO ()
 runCommand = \case
     Shell select -> start select
-    Om -> putTextFlush $ magenta om
+    Om -> putColorDoc magenta om
     ShowOption opt -> runShow opt
 
 runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- sortLabels <$> labels
-        mapM_ (\LabelFull{..} -> putTextFlush $ green $ number lfId <> blue lfLabel) titles
+        mapM_ (\LabelFull{..} -> putColorDoc green $ number lfId <> lfLabel) titles
     Meta Nothing -> do
         titles <- labels
         mapM_ (\LabelFull{..} -> do
-            putTextFlush $ green $ number lfId <> green lfLabel
-            putTextFlush $ blue lfMeta
+            putColorDoc green $ number lfId <> lfLabel
+            putColorDoc blue lfMeta
             ) titles
     Meta (Just n) -> find (\LabelFull{..} -> n == lfId) <$> labels >>= \case
-        Nothing -> putTextFlush $ red "No such number of dictionary!"
+        Nothing -> putColorDoc red "No such number of dictionary!"
         Just LabelFull{..} -> do
-            putTextFlush $ green $ number lfId <> green lfLabel
-            putTextFlush $ blue lfMeta
+            putColorDoc green $ number lfId <> lfLabel
+            putColorDoc blue lfMeta
   where
     number :: Int -> Text
-    number n = green . T.pack $ show n <> ". "
+    number n = T.pack $ show n <> ". "
     sortLabels :: [LabelFull] -> [LabelFull]
     sortLabels = sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b)
 
@@ -95,10 +95,10 @@ versionP = infoOption tibetVersion
 tibetVersion :: String
 tibetVersion = T.unpack $ T.intercalate "\n" $ [sVersion, sHash, sDate] ++ [sDirty | $(gitDirty)]
   where
-    sVersion = blue . bold $ "Hibet " <> "v" <> T.pack (showVersion version)
-    sHash = " ➤ " <> (blue . bold $ "Git revision: " <> resetCode <> $(gitHash))
-    sDate = " ➤ " <> (blue . bold $ "Commit date:  " <> resetCode <> $(gitCommitDate))
-    sDirty = red "There are non-committed files."
+    sVersion = textToColorText green $ "Hibet " <> "v" <> T.pack (showVersion version)
+    sHash = " ➤ " <> (textToColorText blue "Git revision: " <> $(gitHash))
+    sDate = " ➤ " <> (textToColorText blue "Commit date:  " <> $(gitCommitDate))
+    sDirty = textToColorText red "There are non-committed files."
 
 -- All possible commands.
 commands :: Parser Command
@@ -141,7 +141,10 @@ modifyHeader :: ParserInfo a -> ParserInfo a
 modifyHeader p = p {infoHeader = stringChunk $ T.unpack artHeader}
 
 artHeader :: Text
-artHeader = yellow "Hibet is command line translator from Tibet to English language."
+artHeader = textToColorText yellow "Hibet is command line translator from Tibet to English language."
+
+endLine :: Text
+endLine = "\n"
 
 om :: Text
 om = [text|

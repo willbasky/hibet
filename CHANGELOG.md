@@ -8,11 +8,19 @@ and this project adheres to
 
 ## Unrealesed
 
+### Added
+
+* Add hlint check to CI.
+
 ### Changed
 
-* Rename application: `TibetCli` -> `Hibet`
+* Rename application: `TibetCli` -> `Hibet`.
+* [#44](https://github.com/willbasky/Hibet/issues/44):
+  Use modern `prettyprinter` instead of `ansi-terminal`.
+* [#77](https://github.com/willbasky/Hibet/issues/77):
+  Swap json with toml format.
 
-## Fixed
+### Fixed
 
 * Fix selecting dictionary on start. Use `-s 7 -s 16` or `-s{7,16}` now.
 
@@ -24,8 +32,8 @@ and this project adheres to
 
 ### Fixed
 
-* Dictionaries to be parsed correctly
-* Data makers to load faster
+* Dictionaries to be parsed correctly.
+* Data makers to load faster.
 * [#54](https://github.com/willbasky/Hibet/issues/54):
   Buttons Up and Down move throuth the input history.
 * [#57](https://github.com/willbasky/Hibet/issues/57):
