@@ -102,7 +102,7 @@ translator = ReaderT $ \env ->
                                     else Right wylieQuery
                             case eitherQuery of
                                 Left err     -> putStrLn $ ME.errorBundlePretty err
-                                Right query' -> pprint $ withHeaderQuery yellow query' translations
+                                Right query' -> pprint $ withHeaderSpaces yellow query' translations
 
 toDictionary :: FilePath -> IO Dictionary
 toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path

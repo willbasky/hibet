@@ -12,7 +12,7 @@ module Pretty (
        textToColorText,
        viewTranslations,
        withHeader,
-       withHeaderQuery
+       withHeaderSpaces
 ) where
 
 import Control.Monad (when)
@@ -40,8 +40,8 @@ withHeader col header value =
     hang indentation $ vsep [col $ pretty header, value]
 
 -- | Header with spaces.
-withHeaderQuery :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
-withHeaderQuery col header value =
+withHeaderSpaces :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
+withHeaderSpaces col header value =
     hang indentation $ vsep [space, col $ pretty header, space, value]
 
 indentation :: Int
