@@ -12,12 +12,10 @@ import Data.Text (Text)
 import Data.Version (showVersion)
 import Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import NeatInterpolation (text)
-import Data.Text.Prettyprint.Doc.Render.Terminal (putDoc)
 import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullDesc, help, helper,
                             info, infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
-import Data.Text.Prettyprint.Doc (pretty)
 
 import Labels (LabelFull (..), labels)
 import Paths_Hibet (version)
@@ -66,10 +64,10 @@ runShow = \case
         titles <- labels
         mapM_ (\LabelFull{..} -> do
             putColorDoc green $ number lfId <> lfLabel
-            putDoc $ blue $ pretty lfMeta
+            putColorDoc blue lfMeta
             ) titles
     Meta (Just n) -> find (\LabelFull{..} -> n == lfId) <$> labels >>= \case
-        Nothing -> putDoc $ red "No such number of dictionary!"
+        Nothing -> putColorDoc red "No such number of dictionary!"
         Just LabelFull{..} -> do
             putColorDoc green $ number lfId <> lfLabel
             putColorDoc blue lfMeta
