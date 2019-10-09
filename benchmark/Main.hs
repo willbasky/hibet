@@ -23,7 +23,7 @@ import qualified Data.Text.Encoding as T
 import Handlers (Dictionary, makeTextMap, Source, Target)
 
 
-main = do
+main =
     -- undefined
     -- memory
     -- memory2
@@ -31,12 +31,10 @@ main = do
     crit2
 
 makeTextMapS :: Text -> Maybe Dictionary
-makeTextMapS txt
-    = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-    <$> (S.toList
-    $ S.map ((\(y,x) -> (y :: Source, T.drop 1 x)) . T.span (<'|'))
-    $ S.fromList
-    $ T.lines txt)
+makeTextMapS txt = HMS.fromListWith
+    (\ a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2]) <$> S.toList
+        (S.map ((\ (y, x) -> (y :: Source, T.drop 1 x)) . T.span (< '|')) $
+            S.fromList $ T.lines txt)
 
 makeTextMapC :: Text -> Dictionary
 makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])

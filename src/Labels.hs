@@ -29,7 +29,7 @@ data LabelFull = LabelFull
     , lfMeta  :: Text
     } deriving (Eq, Show, Ord)
 
-data Labels = Labels
+newtype Labels = Labels
     { labelTitles :: [LabelFull]
     } deriving (Eq, Show)
 
