@@ -58,24 +58,31 @@ runCommand = \case
 runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
-        titles <- sortLabels <$> labels
+        titles <- sortById . filterAvailable <$> labels
         mapM_ (\LabelFull{..} -> putColorDoc green $ number lfId <> lfLabel) titles
+        putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta Nothing -> do
-        titles <- labels
+        titles <- filterAvailable <$> labels
         mapM_ (\LabelFull{..} -> do
             putColorDoc green $ number lfId <> lfLabel
-            putColorDoc blue lfMeta
+            putColorDoc blue lfAbout
             ) titles
-    Meta (Just n) -> find (\LabelFull{..} -> n == lfId) <$> labels >>= \case
-        Nothing -> putColorDoc red "No such number of dictionary!"
-        Just LabelFull{..} -> do
-            putColorDoc green $ number lfId <> lfLabel
-            putColorDoc blue lfMeta
+        putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
+    Meta (Just n) -> do
+        availableLabels <- filterAvailable <$> labels
+        case find (\LabelFull{..} -> n == lfId) availableLabels of
+            Nothing -> putColorDoc red "No such number of dictionary!"
+            Just LabelFull{..} -> do
+                putColorDoc green $ number lfId <> lfLabel
+                putColorDoc blue lfAbout
   where
     number :: Int -> Text
     number n = T.pack $ show n <> ". "
-    sortLabels :: [LabelFull] -> [LabelFull]
-    sortLabels = sortBy (\(LabelFull _ a _ _) (LabelFull _ b _ _) -> compare a b)
+    sortById :: [LabelFull] -> [LabelFull]
+    sortById = sortBy (\labelFull1 labelFull2 ->
+        compare (lfId labelFull1) (lfId labelFull2))
+    filterAvailable :: [LabelFull] -> [LabelFull]
+    filterAvailable = filter lfAvailable
 
 ----------------------------------------------------------------------------
 -- Parsers
