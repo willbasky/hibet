@@ -6,7 +6,7 @@ module Cli
        ) where
 
 import Control.Applicative (many, optional, (<|>))
-import Data.Foldable (find)
+import Data.Foldable (find, toList)
 import Data.List (sortBy)
 import Data.Text (Text)
 import Data.Version (showVersion)
@@ -59,13 +59,31 @@ runShow :: Opt -> IO ()
 runShow = \case
     Names -> do
         titles <- sortById . filterAvailable <$> labels
-        mapM_ (\LabelFull{..} -> putColorDoc green $ number lfId <> lfLabel) titles
+        mapM_ (\LabelFull{..} -> putColorDocs
+            [ (cyan, toText lfId <> ". ")
+            , (green, lfLabel <> ". ")
+            , (cyan, maybe "" (const "Year ") lfYear)
+            , (green, maybe "" (flip T.append ". " . toText) lfYear)
+            , (cyan, "From ")
+            , (green, lfSource <> " ")
+            , (cyan, "to ")
+            , (green, T.intercalate ", " (toList lfTarget) <> ".")]) titles
         putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta Nothing -> do
         titles <- filterAvailable <$> labels
         mapM_ (\LabelFull{..} -> do
-            putColorDoc green $ number lfId <> lfLabel
+            putColorDocs
+                [ (cyan, toText lfId <> ". ")
+                , (green, lfLabel)
+                , (cyan, maybe "" (const ". Year ") lfYear)
+                , (green, maybe "" toText lfYear)]
             putColorDoc blue lfAbout
+            putColorDocs
+                [ (cyan, "From ")
+                , (green, lfSource <> " ")
+                , (cyan, "to ")
+                , (green, T.intercalate ", " (toList lfTarget))]
+            putStrLn ""
             ) titles
         putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta (Just n) -> do
@@ -73,11 +91,11 @@ runShow = \case
         case find (\LabelFull{..} -> n == lfId) availableLabels of
             Nothing -> putColorDoc red "No such number of dictionary!"
             Just LabelFull{..} -> do
-                putColorDoc green $ number lfId <> lfLabel
+                putColorDoc green $ toText lfId <> lfLabel
                 putColorDoc blue lfAbout
   where
-    number :: Int -> Text
-    number n = T.pack $ show n <> ". "
+    toText :: Int -> Text
+    toText n = T.pack $ show n
     sortById :: [LabelFull] -> [LabelFull]
     sortById = sortBy (\labelFull1 labelFull2 ->
         compare (lfId labelFull1) (lfId labelFull2))
