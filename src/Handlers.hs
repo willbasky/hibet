@@ -58,13 +58,13 @@ selectDict selected dicts = case selected of
 
 -- Add lables to dictionaries
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
-toDictionaryMeta labels path dict = DictionaryMeta dict title number
+toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
   where
-    (title, number) = findTitle $ takeBaseName path
+    (title, number) = findTitle $ T.pack $ takeBaseName filepath
     -- Match filpath with labels
-    findTitle :: String -> (Title, Int)
-    findTitle f = maybe ("Invalid title",0) (\LabelFull{..} -> (lfLabel, lfId))
-      $ find (\LabelFull{..} -> T.pack f == lfPath) labels
+    findTitle :: Text -> (Title, Int)
+    findTitle path = maybe ("Invalid title",0) (\LabelFull{..} -> (lfLabel, lfId))
+      $ find (\LabelFull{..} -> path == lfPath) labels
 
 -- Search query in dictionary.
 searchTranslation :: Text -> DictionaryMeta -> Maybe ([Target], (Title, Int))

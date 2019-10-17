@@ -9,6 +9,7 @@ module Pretty (
        -- Functions
        pprint,
        putColorDoc,
+       putColorDocs,
        textToColorText,
        viewTranslations,
        withHeader,
@@ -109,6 +110,11 @@ pprint doc = do
 
 putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> IO ()
 putColorDoc col txt = putDoc $ col $ pretty (txt `Text.snoc` '\n')
+
+putColorDocs :: [(Doc AnsiStyle -> Doc AnsiStyle, Text)] -> IO ()
+putColorDocs docs = do
+  mapM_ (\(col,txt) -> putDoc $ col $ pretty txt) docs
+  putStrLn ""
 
 textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text  -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt

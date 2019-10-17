@@ -9,6 +9,7 @@ import Toml (TomlCodec, (.=))
 
 import Paths_Hibet (getDataFileName)
 
+import qualified Data.Set as Set
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as TE
 import qualified Toml
@@ -23,10 +24,14 @@ labels = do
         Right (Labels decoded) -> pure $ sortOn lfId decoded
 
 data LabelFull = LabelFull
-    { lfPath  :: Text
-    , lfId    :: Int
+    { lfPath :: Text
+    , lfId :: Int
     , lfLabel :: Text
-    , lfMeta  :: Text
+    , lfAbout :: Text
+    , lfAvailable :: Bool
+    , lfSource :: Text
+    , lfTarget :: Set.Set Text
+    , lfYear :: Maybe Int
     } deriving (Eq, Show, Ord)
 
 newtype Labels = Labels
@@ -38,7 +43,11 @@ labelFullCodec = LabelFull
     <$> Toml.text "path"  .= lfPath
     <*> Toml.int  "id"    .= lfId
     <*> Toml.text "label" .= lfLabel
-    <*> Toml.text "about" .= lfMeta
+    <*> Toml.text "about" .= lfAbout
+    <*> Toml.bool "available" .= lfAvailable
+    <*> Toml.text "source" .= lfSource
+    <*> Toml.arraySetOf Toml._Text "target" .= lfTarget
+    <*> Toml.dioptional (Toml.int "year") .= lfYear
 
 labelsCodec :: TomlCodec Labels
 labelsCodec = Labels
