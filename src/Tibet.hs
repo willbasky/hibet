@@ -14,6 +14,7 @@ import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
 import System.Console.Haskeline.History (historyLines, History)
 import System.Console.Haskeline.IO
 import Data.Text (Text)
+import Data.List (foldl')
 
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
@@ -78,8 +79,4 @@ toDictionary :: FilePath -> IO Dictionary
 toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path
 
 fromHistory :: History -> [Text]
-fromHistory = reverseT [] . filter (/=":h") . historyLines
-    where
-        reverseT :: [Text] -> [String] -> [Text]
-        reverseT a [] = a
-        reverseT a (x:xs) = reverseT (T.pack x : a) xs
+fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
