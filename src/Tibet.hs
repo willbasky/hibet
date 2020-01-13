@@ -7,37 +7,26 @@ import Control.DeepSeq (deepseq)
 import Control.Exception (bracketOnError)
 import Control.Monad (forever)
 import Control.Monad.Reader (ReaderT (..), runReaderT)
-import Data.Maybe (catMaybes)
-import Data.RadixTree (RadixTree)
 import Path (fromAbsFile, parseAbsDir)
 import Path.IO (listDir)
 import Paths_Hibet (getDataFileName)
 import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
-import System.Console.Haskeline.History (historyLines)
+import System.Console.Haskeline.History (historyLines, History)
 import System.Console.Haskeline.IO
-import System.Exit (exitSuccess)
+import Data.Text (Text)
 
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import qualified Data.Text.IO as T
-import qualified Text.Megaparsec.Error as ME
 
-import Handlers (Dictionary, DictionaryMeta (..), makeTextMap, searchTranslation, selectDict,
-                 separator, sortOutput, toDictionaryMeta)
+import Handlers (Dictionary, makeTextMap, selectDict, toDictionaryMeta)
+import Interpretator
 import Labels (labels)
+import Language
 import Parse
 import Pretty
+import Types
 
-
--- | Environment fot translator
-data Env = Env
-  { envDictionaryMeta :: ![DictionaryMeta]
-  , envWylieTibet     :: !WylieTibet
-  , envTibetWylie     :: !TibetWylie
-  , envRadixWylie     :: !RadixTree
-  , envRadixTibet     :: !RadixTree
-  }
 
 -- | Load all stuff for environment.
 start :: [Int] -> IO ()
@@ -71,38 +60,26 @@ translator = ReaderT $ \env ->
         (\inputState -> loop env inputState >> closeInput inputState)
   where
     loop :: Env -> InputState -> IO ()
-    loop env inputState = forever $ do
-        putColorDoc blue "Which a tibetan word to translate?"
-        mQuery <- queryInput inputState $ getInputLine "> "
+    loop env inputState = forever $ runHibet $ do
+        putColorTextH blue "Which a tibetan word to translate?"
+        mQuery <- queryInputH inputState $ getInputLine "> "
         case T.strip . T.pack <$> mQuery of
-            Nothing -> return ()
+            Nothing -> pure ()
             Just ":q" -> do
-                putColorDoc blue "Bye-bye!"
-                exitSuccess
+                putColorTextH yellow "Bye-bye!"
+                exitH
             Just ":h" -> do
-                history <- queryInput inputState getHistory
-                mapM_ (T.putStrLn . T.pack) $ reverse $ historyLines history
-            Just query -> do
-                let toWylie' = toWylie (envTibetWylie env) . parseTibetanInput (envRadixTibet env)
-                let wylieQuery = case toWylie' query  of
-                        Left _      -> query
-                        Right wylie -> if T.null wylie then query else wylie
-                dscMaybeValues <- traverse (pure . searchTranslation wylieQuery) (envDictionaryMeta env)
-                let dscValues = catMaybes dscMaybeValues
-                if null dscValues then putColorDoc red "Nothing found."
-                else do
-                    let dictMeta = sortOutput dscValues
-                    let toTibetan' = toTibetan (envWylieTibet env) . parseWylieInput (envRadixWylie env)
-                    case traverse (separator [37] toTibetan') dictMeta of
-                        Left err -> putStrLn $ ME.errorBundlePretty err
-                        Right list -> do
-                            let translations = viewTranslations list
-                            let eitherQuery = if query == wylieQuery
-                                    then T.concat <$> toTibetan' wylieQuery
-                                    else Right wylieQuery
-                            case eitherQuery of
-                                Left err     -> putStrLn $ ME.errorBundlePretty err
-                                Right query' -> pprint $ withHeaderSpaces yellow query' translations
+                history <- fromHistory <$> queryInputH inputState getHistory
+                mapM_ (putColorTextH id) history
+            Just query -> translateH query env
+
 
 toDictionary :: FilePath -> IO Dictionary
 toDictionary path = makeTextMap . T.decodeUtf8 <$> BS.readFile path
+
+fromHistory :: History -> [Text]
+fromHistory = reverseT [] . filter (/=":h") . historyLines
+    where
+        reverseT :: [Text] -> [String] -> [Text]
+        reverseT a [] = a
+        reverseT a (x:xs) = reverseT (T.pack x : a) xs

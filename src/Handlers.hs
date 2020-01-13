@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
-
-
 module Handlers
        ( Title
        , Dictionary
@@ -15,33 +12,20 @@ module Handlers
        , toDictionaryMeta
        ) where
 
+import Types
+import Labels (LabelFull (..))
+import Parse (ParseError, Tibet, Wylie)
 
-import Control.DeepSeq (NFData)
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
-import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
 import Data.Text (Text)
-import GHC.Generics (Generic)
 import System.FilePath.Posix (takeBaseName)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
 
-import Labels (LabelFull (..))
-import Parse (ParseError, Tibet, Wylie)
 
-type Title = Text
-type Source = Text
-type Target = Text
-
-type Dictionary = HashMap Source Target -- | key and value
-
-data DictionaryMeta = DictionaryMeta
-  { dmDictionary :: Dictionary
-  , dmTitle      :: Text
-  , dmNumber     :: Int
-  } deriving (Generic, NFData)
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary

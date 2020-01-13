@@ -1,4 +1,4 @@
-resolver: lts-13.19
+resolver: lts-14.20
 
 extra-deps:
     - path-io-1.4.0
@@ -10,4 +10,9 @@ extra-deps:
 
 ghc-options:
   "$locals": -fhide-source-paths
+
+# build:
+#   library-profiling: true
+#   executable-profiling: true
+
 
