@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 
 * Add hlint check to CI.
+* Add free church monad layer.
 
 ### Changed
 
