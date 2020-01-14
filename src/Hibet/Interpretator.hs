@@ -1,9 +1,9 @@
-module Interpretator
+module Hibet.Interpretator
   ( runHibet
   )
   where
 
-import Language
+import Hibet.Language
 import Pretty
 
 import Control.Monad (when)

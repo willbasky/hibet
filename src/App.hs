@@ -23,9 +23,9 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Text.Megaparsec.Error as ME
 
-import Interpretator
+import Hibet.Interpretator
+import Hibet.Language
 import Labels (labels)
-import Language
 import Parse
 import Pretty
 import Translate (Dictionary, getAnswer, makeTextMap, selectDict, toDictionaryMeta)
@@ -78,10 +78,10 @@ app = ReaderT $ \env ->
             Just query -> do
                 let answerE = runExcept $ getAnswer query env
                 case answerE of
-                  Left err -> putColorTextH red $ T.pack $ ME.errorBundlePretty err
-                  Right (answer, isEmpty) -> do
-                      when isEmpty $ putColorTextH red "Nothing found"
-                      pprintH answer
+                    Left err -> putColorTextH red $ T.pack $ ME.errorBundlePretty err
+                    Right (answer, isEmpty) ->
+                        if isEmpty then putColorTextH red "Nothing found"
+                        else pprintH answer
 
 
 toDictionary :: FilePath -> IO Dictionary

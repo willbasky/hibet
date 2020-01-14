@@ -25,15 +25,16 @@ source-repository head
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Cli
-                     , Translate
-                     , Interpretator
-                     , Labels
-                     , Language
-                     , Parse
-                     , Pretty
-                     , App
-                     , Types
+  exposed-modules:
+                       App
+                       Cli
+                       Hibet.Interpretator
+                       Hibet.Language
+                       Labels
+                       Parse
+                       Pretty
+                       Translate
+                       Types
 
   other-modules:       Paths_Hibet
   autogen-modules:     Paths_Hibet

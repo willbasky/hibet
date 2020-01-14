@@ -6,12 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
-## Unrealesed
+## ## [0.7] - 2020-01-14
 
 ### Added
 
 * Add hlint check to CI.
 * Add free church monad layer.
+* Strip out business logic from effects
 
 ### Changed
 

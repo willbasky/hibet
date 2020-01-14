@@ -1,6 +1,6 @@
 # Tibetan-English translator for CLI
 
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GPL-3 license](https://img.shields.io/badge/license-GPL--3-blue.svg)](LICENSE)
 
 ![Bod](bod.png)
 
@@ -22,6 +22,12 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
         git clone https://github.com/willbasky/Hibet.git
 
         cd ./Hibet
+
+        stack install Hibet
+
+## Upgrade
+
+        stack purge
 
         stack install Hibet
 

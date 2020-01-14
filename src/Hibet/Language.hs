@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Language
+module Hibet.Language
   ( HibetMethod(..)
   , Hibet
 
