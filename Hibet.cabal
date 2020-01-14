@@ -25,12 +25,16 @@ source-repository head
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Cli
-                     , Handlers
-                     , Labels
-                     , Parse
-                     , Pretty
-                     , Tibet
+  exposed-modules:
+                       App
+                       Cli
+                       Hibet.Interpretator
+                       Hibet.Language
+                       Labels
+                       Parse
+                       Pretty
+                       Translate
+                       Types
 
   other-modules:       Paths_Hibet
   autogen-modules:     Paths_Hibet
@@ -53,6 +57,7 @@ library
                      , directory
                      , file-embed
                      , filepath
+                     , free
                      , gitrev
                      , haskeline
                      , megaparsec

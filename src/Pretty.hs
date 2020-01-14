@@ -7,7 +7,6 @@ module Pretty (
        red,
        yellow,
        -- Functions
-       pprint,
        putColorDoc,
        putColorDocs,
        textToColorText,
@@ -16,23 +15,17 @@ module Pretty (
        withHeaderSpaces
 ) where
 
-import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (intersperse)
-import Data.Maybe (isNothing)
 import Data.Semigroup ((<>))
 import Data.Text (Text)
 import qualified Data.Text as Text
-import Data.Text.Prettyprint.Doc (Doc, LayoutOptions (..), PageWidth (..), annotate,
-                                  defaultLayoutOptions, fillSep, hang, layoutSmart, pretty, space,
-                                  vsep)
+import Data.Text.Prettyprint.Doc (Doc, annotate, defaultLayoutOptions, fillSep, hang, layoutSmart,
+                                  pretty, space, vsep)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
                                                   renderStrict)
-import qualified System.Console.Terminal.Size as Terminal
-import System.Environment (lookupEnv, setEnv)
-import System.Pager (printOrPage)
 
-import Handlers (Target, Title)
+import Types
 
 
 -- | Header.
@@ -82,10 +75,10 @@ yellow = annotate $ color Yellow <> bold
 ---------------------------------------------------------------------
 
 -- | Pretty view translation.
-viewTranslations :: [([Target], (Title, Int))] -> Doc AnsiStyle
+viewTranslations :: [Answer] -> Doc AnsiStyle
 viewTranslations = sparsedStack . map viewTranslation
   where
-    viewTranslation :: ([Target], (Title, Int)) -> Doc AnsiStyle
+    viewTranslation :: Answer -> Doc AnsiStyle
     viewTranslation (value, (title, number)) =
       withHeader green (header number title) $ prettyTargets value
     -- Compose header
@@ -97,16 +90,6 @@ viewTranslations = sparsedStack . map viewTranslation
     -- Fix new lines inside value
     fixNewLine :: Text -> Text
     fixNewLine = Text.replace "\\n" "\n"
-
-pprint :: Doc AnsiStyle -> IO ()
-pprint doc = do
-  -- enable colors in `less`
-  lessConf <- lookupEnv "LESS"
-  when (isNothing lessConf) $ setEnv "LESS" "-R"
-  width' <- maybe 80 Terminal.width <$> Terminal.size
-  let layoutOptions =
-        defaultLayoutOptions {layoutPageWidth = AvailablePerLine width' 1}
-  printOrPage . (`Text.snoc` '\n') . renderStrict $ layoutSmart layoutOptions doc
 
 putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> IO ()
 putColorDoc col txt = putDoc $ col $ pretty (txt `Text.snoc` '\n')

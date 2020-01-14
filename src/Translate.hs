@@ -1,7 +1,4 @@
-{-# LANGUAGE DeriveAnyClass #-}
-
-
-module Handlers
+module Translate
        ( Title
        , Dictionary
        , DictionaryMeta (..)
@@ -13,35 +10,43 @@ module Handlers
        , separator
        , sortOutput
        , toDictionaryMeta
+       , getAnswer
        ) where
 
+import Labels (LabelFull (..))
+import Types
+import Parse
+import Pretty
 
-import Control.DeepSeq (NFData)
+import Control.Monad.Except
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
-import Data.HashMap.Strict (HashMap)
 import Data.List (sortBy)
 import Data.Text (Text)
-import GHC.Generics (Generic)
+import Data.Maybe (mapMaybe)
+import Data.Text.Prettyprint.Doc (Doc)
+import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
 
-import Labels (LabelFull (..))
-import Parse (ParseError, Tibet, Wylie)
 
-type Title = Text
-type Source = Text
-type Target = Text
-
-type Dictionary = HashMap Source Target -- | key and value
-
-data DictionaryMeta = DictionaryMeta
-  { dmDictionary :: Dictionary
-  , dmTitle      :: Text
-  , dmNumber     :: Int
-  } deriving (Generic, NFData)
+getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
+getAnswer query env = do
+  let toWylie' = toWylie (envTibetWylie env) . parseTibetanInput (envRadixTibet env)
+      queryWylie = case runExcept $ toWylie' query  of
+          Left _      -> query
+          Right wylie -> if T.null wylie then query else wylie
+      dscValues = mapMaybe (searchTranslation queryWylie) (envDictionaryMeta env)
+  let dictMeta = sortOutput dscValues
+      toTibetan' = toTibetan (envWylieTibet env) . parseWylieInput (envRadixWylie env)
+  list <- traverse (separator [37] toTibetan') dictMeta
+  let (translations, isEmpty) = (viewTranslations list, list == mempty)
+  query' <- if query == queryWylie
+        then T.concat <$> toTibetan' queryWylie
+        else pure queryWylie
+  pure (withHeaderSpaces yellow query' translations, isEmpty)
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary
@@ -67,26 +72,27 @@ toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
       $ find (\LabelFull{..} -> path == lfPath) labels
 
 -- Search query in dictionary.
-searchTranslation :: Text -> DictionaryMeta -> Maybe ([Target], (Title, Int))
-searchTranslation query DictionaryMeta{..} = if null ts then Nothing else Just (ts, (dmTitle, dmNumber))
+searchTranslation :: Text -> DictionaryMeta -> Maybe Answer
+searchTranslation query DictionaryMeta{..} =
+  if null ts then Nothing else Just (ts, (dmTitle, dmNumber))
   where
     ts = HMS.foldrWithKey search [] dmDictionary
     search :: Source -> Target -> [Target] -> [Target]
     search k v acc = if k == query then v : acc else acc
 
-sortOutput :: [([Target], (Title, Int))] -> [([Target], (Title, Int))]
+sortOutput :: [Answer] -> [Answer]
 sortOutput = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
 
 -- Convert dictionaries from list to tibetan and pass others.
 separator
   :: [Int]
-  -> (Text -> Either ParseError [Tibet])
+  -> (Text -> Except ParseError [Tibet])
   -> ([Text], (Title, Int))
-  -> Either ParseError ([Tibet], (Title, Int))
-separator dictNumbers toTibetan d@(_, (_,i)) =
-  if i `elem` dictNumbers then bitraverse (listToTibet toTibetan) pure d else Right d
+  -> Except ParseError ([Tibet], (Title, Int))
+separator dictNumbers toTibetan' d@(_, (_,i)) =
+  if i `elem` dictNumbers then bitraverse (listToTibet toTibetan') pure d else pure d
 
-listToTibet :: (Text -> Either ParseError [Tibet]) -> [Wylie] -> Either ParseError [Tibet]
-listToTibet toTibetan list = do
-  tibets <- traverse toTibetan list
+listToTibet :: (Text -> Except ParseError [Tibet]) -> [Wylie] -> Except ParseError [Tibet]
+listToTibet toTibetan' list = do
+  tibets <- traverse toTibetan' list
   pure $ map (T.intercalate "\n" ) tibets

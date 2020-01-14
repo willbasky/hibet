@@ -20,7 +20,7 @@ import Options.Applicative.Help.Chunk (stringChunk)
 import Labels (LabelFull (..), labels)
 import Paths_Hibet (version)
 import Pretty
-import Tibet (start)
+import App (start)
 
 import qualified Data.Text as T
 

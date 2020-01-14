@@ -20,7 +20,7 @@ import qualified Data.Text as T
 import qualified Conduit as C
 import qualified Data.Text.Encoding as T
 
-import Handlers (Dictionary, makeTextMap, Source, Target)
+import Translate (Dictionary, makeTextMap, Source, Target)
 
 
 main =

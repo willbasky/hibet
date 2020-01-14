@@ -32,6 +32,7 @@ import Data.RadixTree
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec.Parsers
+import Control.Monad.Except
 
 import qualified Data.Foldable as F
 import qualified Data.HashMap.Strict as HMS
@@ -45,8 +46,8 @@ import qualified Text.Megaparsec.Error as ME
 type Parser a = ParsecT Void Text Identity a
 type ParseError = ME.ParseErrorBundle Text Void
 
-parseT :: Parser a -> String -> Text -> Either ParseError a
-parseT = M.runParser . unParsecT
+parseT :: Parser a -> String -> Text -> Except ParseError a
+parseT p s t = liftEither $ M.runParser (unParsecT p) s t
 
 -- parseTest :: Show a => Parser a -> Text -> IO ()
 -- parseTest = M.parseTest . unParsecT
@@ -54,8 +55,8 @@ parseT = M.runParser . unParsecT
 -- | Convert parsed wylie text to tibetan script.
 toTibetan
     :: WylieTibet
-    -> Either ParseError [([Wylie], [[Wylie]])]
-    -> Either ParseError [Tibet]
+    -> Except ParseError [([Wylie], [[Wylie]])]
+    -> Except ParseError [Tibet]
 toTibetan wt ts = do
     txt <- ts
     let look :: Wylie -> Tibet
@@ -67,8 +68,8 @@ toTibetan wt ts = do
 -- | Convert parsed tibetan text to wylie.
 toWylie
     :: TibetWylie
-    -> Either ParseError [[Tibet]]
-    -> Either ParseError Wylie
+    -> Except ParseError [[Tibet]]
+    -> Except ParseError Wylie
 toWylie tw ts = do
     txt <- ts
     let look :: Tibet -> Wylie
@@ -78,7 +79,7 @@ toWylie tw ts = do
     pure $ T.unwords $ map fromLook txt
 
 -- | Parse text to wylie or fail.
-parseWylieInput :: RadixTree -> Text -> Either ParseError [([Wylie], [[Wylie]])]
+parseWylieInput :: RadixTree -> Text -> Except ParseError [([Wylie], [[Wylie]])]
 parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
     list <- tibList ls
@@ -86,13 +87,13 @@ parseWylieInput radix txt  = do
     traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
 
 -- | Parse text to tibetan or fail.
-parseTibetanInput :: RadixTree -> Text -> Either ParseError [[Tibet]]
+parseTibetanInput :: RadixTree -> Text -> Except ParseError [[Tibet]]
 parseTibetanInput radix txt  = do
     ts <- parseT tibetanScript "" txt
     let radixSearch = parseT (search radix) ""
     traverse radixSearch ts
 
-applyRadex :: (Text -> Either ParseError [Text]) -> Either ParseError [Text] -> Either ParseError [[Text]]
+applyRadex :: (Text -> Except ParseError [Text]) -> Except ParseError [Text] -> Except ParseError [[Text]]
 applyRadex radex eitherList = do
     list <- eitherList
     traverse radex list
@@ -199,7 +200,7 @@ tibLines = do
 
 -- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
-tibList :: [Text] -> Either ParseError [(Text, Text)]
+tibList :: [Text] -> Except ParseError [(Text, Text)]
 tibList = traverse (parseT tibSentences "")
 
 tibSentences :: Parser (Text, Text)
@@ -370,12 +371,14 @@ makeTibetWylie
 splitterWT :: Text -> [(Text,Text)]
 splitterWT
     = either (error . ME.errorBundlePretty) id
+    . runExcept
     . traverse (parseT syllableParserWT "")
     . T.lines
 
 splitterTW :: Text -> [(Text,Text)]
 splitterTW
     = either (error . ME.errorBundlePretty) id
+    . runExcept
     . traverse (parseT syllableParserTW "")
     . T.lines
 
