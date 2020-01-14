@@ -1,31 +1,34 @@
-module Tibet
-       ( start
-       ) where
+module App
+  ( start
+  )
+  where
 
 
 import Control.DeepSeq (deepseq)
 import Control.Exception (bracketOnError)
 import Control.Monad (forever)
+import Control.Monad.Except
 import Control.Monad.Reader (ReaderT (..), runReaderT)
+import Data.List (foldl')
+import Data.Text (Text)
 import Path (fromAbsFile, parseAbsDir)
 import Path.IO (listDir)
 import Paths_Hibet (getDataFileName)
 import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
-import System.Console.Haskeline.History (historyLines, History)
+import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO
-import Data.Text (Text)
-import Data.List (foldl')
 
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import qualified Text.Megaparsec.Error as ME
 
-import Handlers (Dictionary, makeTextMap, selectDict, toDictionaryMeta)
 import Interpretator
 import Labels (labels)
 import Language
 import Parse
 import Pretty
+import Translate (Dictionary, getAnswer, makeTextMap, selectDict, toDictionaryMeta)
 import Types
 
 
@@ -51,11 +54,11 @@ start selectedIds = do
             , envRadixWylie = radixWylie
             , envRadixTibet = radixTibet
             }
-    dmList `deepseq` runReaderT translator env
+    dmList `deepseq` runReaderT app env
 
 -- | Translator works forever until quit command.
-translator :: ReaderT Env IO ()
-translator = ReaderT $ \env ->
+app :: ReaderT Env IO ()
+app = ReaderT $ \env ->
     bracketOnError (initializeInput defaultSettings)
         cancelInput -- This will only be called if an exception such as a SigINT is received.
         (\inputState -> loop env inputState >> closeInput inputState)
@@ -72,7 +75,13 @@ translator = ReaderT $ \env ->
             Just ":h" -> do
                 history <- fromHistory <$> queryInputH inputState getHistory
                 mapM_ (putColorTextH id) history
-            Just query -> translateH query env
+            Just query -> do
+                let answerE = runExcept $ getAnswer query env
+                case answerE of
+                  Left err -> putColorTextH red $ T.pack $ ME.errorBundlePretty err
+                  Right (answer, isEmpty) -> do
+                      when isEmpty $ putColorTextH red "Nothing found"
+                      pprintH answer
 
 
 toDictionary :: FilePath -> IO Dictionary

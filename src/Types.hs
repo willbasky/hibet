@@ -2,12 +2,14 @@
 
 module Types
   ( Env(..)
-  , Query
+  , Answer
   , Dictionary
   , DictionaryMeta (..)
-  , Title
+  , Query
+  , QueryWylie
   , Source
   , Target
+  , Title
   )
   where
 
@@ -24,6 +26,8 @@ import Control.DeepSeq (NFData)
 type Title = Text
 type Source = Text
 type Target = Text
+type Answer = ([Target], (Title, Int))
+
 
 type Dictionary = HashMap Source Target -- | key and value
 
@@ -43,3 +47,4 @@ data Env = Env
   }
 
 type Query = Text
+type QueryWylie = Text

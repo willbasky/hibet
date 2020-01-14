@@ -8,11 +8,10 @@ module Language
   , exitH
   , putColorTextH
   , queryInputH
-  , translateH
+  , pprintH
   )
   where
 
-import Types
 
 import Control.Monad.Free.Church
 import Data.Text (Text)
@@ -30,7 +29,7 @@ data HibetMethod next where
 
   PutColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> (() -> next) -> HibetMethod next
 
-  Translate :: Query -> Env -> (() -> next) -> HibetMethod next
+  PrettyPrint :: Doc AnsiStyle -> (() -> next) -> HibetMethod next
 
   QueryInput :: forall a next . InputState -> InputT IO a -> (a -> next) -> HibetMethod next
 
@@ -40,7 +39,7 @@ instance Functor HibetMethod where
 
   fmap _ Exit                          = Exit
 
-  fmap f (Translate query env next)    = Translate query env (f . next)
+  fmap f (PrettyPrint doc next)        = PrettyPrint doc (f . next)
 
   fmap f (QueryInput state input next) = QueryInput state input (f . next)
 
@@ -55,8 +54,8 @@ exitH = liftF Exit
 putColorTextH :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Hibet ()
 putColorTextH col str = liftF $ PutColorText col str id
 
-translateH :: Query -> Env -> Hibet ()
-translateH query env = liftF $ Translate query env id
+pprintH :: Doc AnsiStyle -> Hibet ()
+pprintH doc = liftF $ PrettyPrint doc id
 
 queryInputH :: forall a . InputState -> InputT IO a -> Hibet a
 queryInputH state input = liftF $ QueryInput state input id

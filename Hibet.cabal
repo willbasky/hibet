@@ -26,13 +26,13 @@ source-repository head
 library
   hs-source-dirs:      src
   exposed-modules:     Cli
-                     , Handlers
+                     , Translate
                      , Interpretator
                      , Labels
                      , Language
                      , Parse
                      , Pretty
-                     , Tibet
+                     , App
                      , Types
 
   other-modules:       Paths_Hibet
