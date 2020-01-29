@@ -7,31 +7,29 @@ import Data.List (sortOn)
 import Data.Text (Text)
 import Toml (TomlCodec, (.=))
 
-import Paths_Hibet (getDataFileName)
+import Hibet.Language
 
 import qualified Data.Set as Set
-import qualified Data.ByteString as BS
-import qualified Data.Text.Encoding as TE
 import qualified Toml
 
 
-labels :: IO [LabelFull]
+labels :: Hibet [LabelFull]
 labels = do
-    file <- getDataFileName "stuff/titles.toml"
-    meta <- TE.decodeUtf8 <$> BS.readFile file
+    file <- getDataFileNameH "stuff/titles.toml"
+    meta <- getContentH file
     case Toml.decode labelsCodec meta of
         Left err               -> error $ show err
         Right (Labels decoded) -> pure $ sortOn lfId decoded
 
 data LabelFull = LabelFull
-    { lfPath :: Text
-    , lfId :: Int
-    , lfLabel :: Text
-    , lfAbout :: Text
+    { lfPath      :: Text
+    , lfId        :: Int
+    , lfLabel     :: Text
+    , lfAbout     :: Text
     , lfAvailable :: Bool
-    , lfSource :: Text
-    , lfTarget :: Set.Set Text
-    , lfYear :: Maybe Int
+    , lfSource    :: Text
+    , lfTarget    :: Set.Set Text
+    , lfYear      :: Maybe Int
     } deriving (Eq, Show, Ord)
 
 newtype Labels = Labels

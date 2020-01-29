@@ -1,6 +1,6 @@
-cabal-version:       2.2
-name:                Hibet
-version:             0.6
+cabal-version:       2.4
+name:                hibet
+version:             0.7
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -9,7 +9,7 @@ license:             MIT
 license-file:        LICENSE
 author:              willbasky
 maintainer:          no mail
-copyright:           2018 willbasky
+copyright:           2020 willbasky
 category:            Utility
 build-type:          Simple
 extra-doc-files:     README.md
@@ -17,7 +17,6 @@ extra-doc-files:     README.md
 data-files:          dicts/*.txt
                    , stuff/titles.toml
                    , stuff/tibetan-syllables
-tested-with:         GHC == 8.6.4
 
 source-repository head
   type:                git
@@ -36,8 +35,8 @@ library
                        Translate
                        Types
 
-  other-modules:       Paths_Hibet
-  autogen-modules:     Paths_Hibet
+  other-modules:       Paths_hibet
+  autogen-modules:     Paths_hibet
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
@@ -50,10 +49,8 @@ library
                        -Wpartial-fields
 
   build-depends:       base ^>= 4.12.0.0
-                     , bifunctors
                      , bytestring
                      , containers
-                     , deepseq
                      , directory
                      , file-embed
                      , filepath
@@ -101,7 +98,7 @@ executable hibet
                        -Wmissing-export-lists
                        -Wpartial-fields
   build-depends:       base ^>= 4.12.0.0
-                     , Hibet
+                     , hibet
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
@@ -129,7 +126,7 @@ test-suite hibet-test
                        -Wmissing-export-lists
                        -Wpartial-fields
   build-depends:       base ^>= 4.12.0.0
-                     , Hibet
+                     , hibet
 
   default-language:    Haskell2010
   default-extensions:  DeriveGeneric
@@ -145,7 +142,7 @@ benchmark tibet-benchmark
   main-is:             Main.hs
 
   build-depends:       base ^>= 4.12.0.0
-                     , Hibet
+                     , hibet
                      , async
                      , criterion
                      , weigh
@@ -157,7 +154,7 @@ benchmark tibet-benchmark
                      , bytestring
                      , conduit
 
-  other-modules:       Paths_tibet
+  other-modules:       Paths_hibet
 
   ghc-options:         -Wall
                        -threaded

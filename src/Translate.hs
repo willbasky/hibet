@@ -33,19 +33,19 @@ import qualified Data.Text as T
 
 
 getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
-getAnswer query env = do
-  let toWylie' = toWylie (envTibetWylie env) . parseTibetanInput (envRadixTibet env)
+getAnswer query Env{..} = do
+  let toWylie' = toWylie envTibetWylie . parseTibetanInput envRadixTibet
       queryWylie = case runExcept $ toWylie' query  of
-          Left _      -> query
-          Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) (envDictionaryMeta env)
+        Left _      -> query
+        Right wylie -> if T.null wylie then query else wylie
+      dscValues = mapMaybe (searchTranslation queryWylie) envDictionaryMeta
   let dictMeta = sortOutput dscValues
-      toTibetan' = toTibetan (envWylieTibet env) . parseWylieInput (envRadixWylie env)
+      toTibetan' = toTibetan envWylieTibet . parseWylieInput envRadixWylie
   list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie
-        then T.concat <$> toTibetan' queryWylie
-        else pure queryWylie
+    then T.concat <$> toTibetan' queryWylie
+    else pure queryWylie
   pure (withHeaderSpaces yellow query' translations, isEmpty)
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.

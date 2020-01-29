@@ -6,7 +6,7 @@ module Cli
        ) where
 
 import Control.Applicative (many, optional, (<|>))
-import Data.Foldable (find, toList)
+import Data.Foldable (find, toList, traverse_)
 import Data.List (sortBy)
 import Data.Text (Text)
 import Data.Version (showVersion)
@@ -17,10 +17,13 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
 
+import App (app)
+import Hibet.Interpretator
+import Hibet.Language
 import Labels (LabelFull (..), labels)
-import Paths_Hibet (version)
+import Paths_hibet (version)
 import Pretty
-import App (start)
+import Types
 
 import qualified Data.Text as T
 
@@ -51,15 +54,17 @@ trans = execParser prsr >>= runCommand
 -- | Run 'tibet' with cli command
 runCommand :: Command -> IO ()
 runCommand = \case
-    Shell select -> start select
-    Om -> putColorDoc magenta om
-    ShowOption opt -> runShow opt
+    Shell selectedIds -> app selectedIds
+    Om -> putColorDoc magenta NewLine om
+    ShowOption opt -> runHibet $ runShow opt
 
-runShow :: Opt -> IO ()
-runShow = \case
+runShow :: Opt -> Hibet ()
+runShow opt =
+  case opt of
     Names -> do
         titles <- sortById . filterAvailable <$> labels
-        mapM_ (\LabelFull{..} -> putColorDocs
+        mapM_ (\LabelFull{..} -> do
+          putColorList
             [ (cyan, toText lfId <> ". ")
             , (green, lfLabel <> ". ")
             , (cyan, maybe "" (const "Year ") lfYear)
@@ -67,32 +72,35 @@ runShow = \case
             , (cyan, "From ")
             , (green, lfSource <> " ")
             , (cyan, "to ")
-            , (green, T.intercalate ", " (toList lfTarget) <> ".")]) titles
-        putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
+            , (green, T.intercalate ", " (toList lfTarget) <> ".")]
+          putColorTextH blue NewLine ""
+          ) titles
+        putColorTextH yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta Nothing -> do
         titles <- filterAvailable <$> labels
         mapM_ (\LabelFull{..} -> do
-            putColorDocs
-                [ (cyan, toText lfId <> ". ")
-                , (green, lfLabel)
-                , (cyan, maybe "" (const ". Year ") lfYear)
-                , (green, maybe "" toText lfYear)]
-            putColorDoc blue lfAbout
-            putColorDocs
-                [ (cyan, "From ")
-                , (green, lfSource <> " ")
-                , (cyan, "to ")
-                , (green, T.intercalate ", " (toList lfTarget))]
-            putStrLn ""
+            putColorList
+              [ (cyan, toText lfId <> ". ")
+              , (green, lfLabel)
+              , (cyan, maybe "" (const ". Year ") lfYear)
+              , (green, maybe "" toText lfYear)]
+            putColorTextH blue NewLine ""
+            putColorTextH blue NewLine lfAbout
+            putColorList
+              [ (cyan, "From ")
+              , (green, lfSource <> " ")
+              , (cyan, "to ")
+              , (green, T.intercalate ", " (toList lfTarget))]
+            putColorTextH blue NewLine ""
             ) titles
-        putColorDoc yellow $ T.pack $ "Available dictionaries: " <> show (length titles)
+        putColorTextH yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta (Just n) -> do
         availableLabels <- filterAvailable <$> labels
         case find (\LabelFull{..} -> n == lfId) availableLabels of
-            Nothing -> putColorDoc red "No such number of dictionary!"
+            Nothing -> putColorTextH red NewLine "No such number of dictionary!"
             Just LabelFull{..} -> do
-                putColorDoc green $ toText lfId <> lfLabel
-                putColorDoc blue lfAbout
+              putColorTextH green NewLine $ toText lfId <> lfLabel
+              putColorTextH blue NewLine lfAbout
   where
     toText :: Int -> Text
     toText n = T.pack $ show n
@@ -101,9 +109,10 @@ runShow = \case
         compare (lfId labelFull1) (lfId labelFull2))
     filterAvailable :: [LabelFull] -> [LabelFull]
     filterAvailable = filter lfAvailable
+    putColorList = traverse_ (\(c,d) -> putColorTextH c CurrentLine d)
 
 ----------------------------------------------------------------------------
--- Parsers
+-- Command parsers
 ----------------------------------------------------------------------------
 
 -- | Main parser of the app.

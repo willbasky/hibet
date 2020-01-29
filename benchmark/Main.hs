@@ -8,7 +8,7 @@ import Data.Text (Text)
 import Path (fromAbsFile)
 import Path.Internal (Path (..))
 import Path.IO (listDir)
-import Paths_tibet (getDataFileName)
+import Paths_Hibet (getDataFileName)
 import Weigh
 import Streamly
 import Streamly.Prelude ((|:))
@@ -87,7 +87,7 @@ crit = do
         ]
 
 crit2 = do
-    let path = "/media/metaxis/stock/Coding/Haskell/tibet/dicts/RangjungYeshe.txt"
+    let path = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"
     txt <- T.decodeUtf8 <$> BS.readFile path
     defaultMain
         [ bench "usual" $ nf makeTextMap txt
@@ -96,7 +96,7 @@ crit2 = do
         ]
 
 memory2 = do
-    let file = "/media/metaxis/stock/Coding/Haskell/tibet/dicts/RangjungYeshe.txt"
+    let file = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"
     txt <- T.decodeUtf8 <$> BS.readFile file
     mainWith $ do
         func "usual" makeTextMap txt

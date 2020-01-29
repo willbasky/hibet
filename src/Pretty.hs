@@ -1,19 +1,20 @@
-module Pretty (
-       -- Colors
-       blue,
-       cyan,
-       green,
-       magenta,
-       red,
-       yellow,
-       -- Functions
-       putColorDoc,
-       putColorDocs,
-       textToColorText,
-       viewTranslations,
-       withHeader,
-       withHeaderSpaces
-) where
+module Pretty
+  (
+  -- Colors
+    blue
+  , cyan
+  , green
+  , magenta
+  , red
+  , yellow
+  -- Functions
+  , putColorDoc
+  , textToColorText
+  , viewTranslations
+  , withHeader
+  , withHeaderSpaces
+  ) where
+
 
 import Data.Char (isSpace)
 import Data.List (intersperse)
@@ -28,12 +29,12 @@ import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, c
 import Types
 
 
--- | Header.
+-- | Header
 withHeader :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
 withHeader col header value =
     hang indentation $ vsep [col $ pretty header, value]
 
--- | Header with spaces.
+-- | Header with spaces
 withHeaderSpaces :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
 withHeaderSpaces col header value =
     hang indentation $ vsep [space, col $ pretty header, space, value]
@@ -91,13 +92,12 @@ viewTranslations = sparsedStack . map viewTranslation
     fixNewLine :: Text -> Text
     fixNewLine = Text.replace "\\n" "\n"
 
-putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> IO ()
-putColorDoc col txt = putDoc $ col $ pretty (txt `Text.snoc` '\n')
-
-putColorDocs :: [(Doc AnsiStyle -> Doc AnsiStyle, Text)] -> IO ()
-putColorDocs docs = do
-  mapM_ (\(col,txt) -> putDoc $ col $ pretty txt) docs
-  putStrLn ""
+putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Line -> Text -> IO ()
+putColorDoc col isNewLine txt =
+  let txtLn = case isNewLine of
+        NewLine     -> txt `Text.snoc` '\n'
+        CurrentLine -> txt
+  in putDoc $ col $ pretty txtLn
 
 textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text  -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
