@@ -5,10 +5,12 @@
 # This file contains a template configuration file, which is typically
 # placed as .hlint.yaml in the root of your project
 
+- ignore: {}
+
 # Warnings currently triggered by your code
 # - ignore: {name: "Redundant do"}
 # - ignore: {name: "Move brackets to avoid $"}
-- ignore: {name: "Reduce duplication"}
+# - ignore: {name: "Reduce duplication"}
 # - ignore: {name: "Redundant $"}
 # - ignore: {name: "Eta reduce"}
 
@@ -27,8 +29,8 @@
 # - flags:
 #   - {name: -w, within: []} # -w is allowed nowhere
 #
-# - modules:
-#   - {name: [Data.Set, Data.HashSet], as: Set} # if you import Data.Set qualified, it must be as 'Set'
+- modules:
+  - {name: [Data.Text], as: T} # if you import Data.Set qualified, it must be as 'Set'
 #   - {name: Control.Arrow, within: []} # Certain modules are banned entirely
 #
 # - functions:
