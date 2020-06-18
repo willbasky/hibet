@@ -27,7 +27,7 @@ type Answer = ([Target], (Title, Int))
 
 data Line = NewLine | CurrentLine
 
-type Dictionary = HashMap Source Target -- | key and value
+type Dictionary = HashMap Source Target -- key and value
 
 data DictionaryMeta = DictionaryMeta
   { dmDictionary :: Dictionary

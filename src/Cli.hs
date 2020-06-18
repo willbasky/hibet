@@ -55,7 +55,7 @@ trans = execParser prsr >>= runCommand
 runCommand :: Command -> IO ()
 runCommand = \case
     Shell selectedIds -> app selectedIds
-    Om -> putColorDoc magenta NewLine om
+    Om -> runHibet $ putColorTextH magenta NewLine om
     ShowOption opt -> runHibet $ runShow opt
 
 runShow :: Opt -> Hibet ()

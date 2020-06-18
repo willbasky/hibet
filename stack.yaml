@@ -1,12 +1,14 @@
-resolver: lts-14.20
+resolver: lts-15.15
+
+packages:
+- .
 
 extra-deps:
-    - path-io-1.4.0
-    - radixtree-0.4.0.0
-    - tomland-1.1.0.1
-    - megaparsec-7.0.5
-    - parser-combinators-1.2.0
-    - parsers-megaparsec-0.1.0.1
+- parsers-megaparsec-0.1.0.1@sha256:eda0fa6cb3e2efeeea31ba373e7ee6cc5cb24efa485d082818e9084c4d804799,1724
+- radixtree-0.4.0.0@sha256:8f0214d8d546d440b10c4775ef34b620ac0eb356e4d1a2030296da416bcbfcc9,2292
+- store-0.7.4@sha256:ad89cd2f525bccece875423147d8a1f35cdf7a1fef1eb32a1db896e61848b70a,7825
+- store-core-0.4.4.2@sha256:11403cad88cf4f3675d49baf76cb5dd56363e786c7e25ef00fa57296af29a7b2,1444
+- th-utilities-0.2.4.0@sha256:ba19cd8441aa43dbaed40e9055bb5a7cbd7cf9e154f5253c6bf9293af8b1f96b,1869
 
 ghc-options:
   "$locals": -fhide-source-paths
@@ -14,5 +16,6 @@ ghc-options:
 # build:
 #   library-profiling: true
 #   executable-profiling: true
+
 
 
