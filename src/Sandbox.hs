@@ -1,19 +1,19 @@
-module Sandbox (main) where
+module Sandbox where
 
-import Control.Monad (when)
+-- import Control.Monad (when)
 import System.Console.Haskeline
-import Data.ByteString.Char8 (ByteString)
-import System.Exit (exitSuccess)
+-- import Data.ByteString.Char8 (ByteString)
+-- import System.Exit (exitSuccess)
 import Data.Text (Text)
-import Path (Abs, File, Path, filename, fromRelFile)
+-- import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
-import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
+-- import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
 
 -- import Handlers (Title)
 
 import qualified Data.Text as T
-import qualified Data.Text.IO as IO
-import qualified Data.ByteString as BS
+-- import qualified Data.Text.IO as IO
+-- import qualified Data.ByteString as BS
 
 
 -- | Show duplicates and write to file.

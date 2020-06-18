@@ -18,7 +18,6 @@ module Pretty
 
 import Data.Char (isSpace)
 import Data.List (intersperse)
-import Data.Semigroup ((<>))
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Text.Prettyprint.Doc (Doc, annotate, defaultLayoutOptions, fillSep, hang, layoutSmart,

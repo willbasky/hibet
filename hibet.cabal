@@ -8,7 +8,7 @@ bug-reports:         https://github.com/willbasky/Hibet/issues
 license:             MIT
 license-file:        LICENSE
 author:              willbasky
-maintainer:          no mail
+maintainer:          willgame(at)mail(dot)ru
 copyright:           2020 willbasky
 category:            Utility
 build-type:          Simple
@@ -36,7 +36,6 @@ library
                        Types
 
   other-modules:       Paths_hibet
-  autogen-modules:     Paths_hibet
 
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
@@ -48,7 +47,7 @@ library
                        -Wmissing-export-lists
                        -Wpartial-fields
 
-  build-depends:       base ^>= 4.12.0.0
+  build-depends:       base ^>= 4.13.0.0
                      , bytestring
                      , containers
                      , directory
@@ -59,18 +58,18 @@ library
                      , haskeline
                      , megaparsec
                      , mtl
-                     , neat-interpolation ^>= 0.3.2.2
+                     , neat-interpolation
                      , optparse-applicative
                      , pager
                      , parsers-megaparsec
                      , path
-                     , path-io >= 1.4.0
+                     , path-io
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
                      , terminal-size
                      , text
-                     , tomland >= 1.1.0.1
+                     , tomland
                      , unordered-containers
 
   default-language:    Haskell2010
@@ -97,7 +96,7 @@ executable hibet
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base ^>= 4.12.0.0
+  build-depends:       base ^>= 4.13.0.0
                      , hibet
 
   default-language:    Haskell2010
@@ -125,7 +124,7 @@ test-suite hibet-test
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base ^>= 4.12.0.0
+  build-depends:       base ^>= 4.13.0.0
                      , hibet
 
   default-language:    Haskell2010
@@ -141,7 +140,7 @@ benchmark tibet-benchmark
   hs-source-dirs:      benchmark
   main-is:             Main.hs
 
-  build-depends:       base ^>= 4.12.0.0
+  build-depends:       base ^>= 4.13.0.0
                      , hibet
                      , async
                      , criterion
