@@ -19,7 +19,7 @@ module Pretty
 import Data.Char (isSpace)
 import Data.List (intersperse)
 import Data.Text (Text)
-import qualified Data.Text as Text
+import qualified Data.Text as T
 import Data.Text.Prettyprint.Doc (Doc, annotate, defaultLayoutOptions, fillSep, hang, layoutSmart,
                                   pretty, space, vsep)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
@@ -43,7 +43,7 @@ indentation = 2
 
 wrapLines :: Text -> Doc ann
 wrapLines =
-    vsep . map (fillSep . map pretty . Text.split isSpace) . Text.splitOn "\n"
+    vsep . map (fillSep . map pretty . T.split isSpace) . T.splitOn "\n"
 
 sparsedStack :: [Doc ann] -> Doc ann
 sparsedStack = vsep . intersperse space
@@ -83,18 +83,18 @@ viewTranslations = sparsedStack . map viewTranslation
       withHeader green (header number title) $ prettyTargets value
     -- Compose header
     header :: Int -> Target -> Text
-    header number title = Text.concat [Text.pack $ show number, ". ", title]
+    header number title = T.concat [T.pack $ show number, ". ", title]
     -- Decode value
     prettyTargets :: [Target] -> Doc AnsiStyle
     prettyTargets = vsep . map (wrapLines . fixNewLine)
     -- Fix new lines inside value
     fixNewLine :: Text -> Text
-    fixNewLine = Text.replace "\\n" "\n"
+    fixNewLine = T.replace "\\n" "\n"
 
 putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Line -> Text -> IO ()
 putColorDoc col isNewLine txt =
   let txtLn = case isNewLine of
-        NewLine     -> txt `Text.snoc` '\n'
+        NewLine     -> txt `T.snoc` '\n'
         CurrentLine -> txt
   in putDoc $ col $ pretty txtLn
 

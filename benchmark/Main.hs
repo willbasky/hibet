@@ -3,24 +3,25 @@ module Main where
 import Conduit ((.|))
 import Control.Concurrent.Async (mapConcurrently)
 import Criterion.Main
+import Data.Bifunctor (second)
 import Data.Conduit.Combinators (linesUnbounded)
 import Data.Text (Text)
 import Path (fromAbsFile)
 import Path.Internal (Path (..))
 import Path.IO (listDir)
 import Paths_Hibet (getDataFileName)
-import Weigh
 import Streamly
 import Streamly.Prelude ((|:))
+import Weigh
 
-import qualified Streamly.Prelude as S
+import qualified Conduit as C
 import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
-import qualified Conduit as C
 import qualified Data.Text.Encoding as T
+import qualified Streamly.Prelude as S
 
-import Translate (Dictionary, makeTextMap, Source, Target)
+import Translate (Dictionary, Source, Target, makeTextMap)
 
 
 main =
@@ -41,7 +42,7 @@ makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat
   (C.runConduitPure
   $ C.yield txt
   .| linesUnbounded
-  .| C.mapC ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|'))
+  .| C.mapC (second (T.drop 1) . T.span (<'|'))
   .| C.sinkList)
 
 toDictionaryC2 :: FilePath -> IO Dictionary

@@ -14,16 +14,17 @@ module Translate
        ) where
 
 import Labels (LabelFull (..))
-import Types
 import Parse
 import Pretty
+import Types
 
 import Control.Monad.Except
+import Data.Bifunctor (second)
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.List (sortBy)
-import Data.Text (Text)
 import Data.Maybe (mapMaybe)
+import Data.Text (Text)
 import Data.Text.Prettyprint.Doc (Doc)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
@@ -52,7 +53,7 @@ getAnswer query Env{..} = do
 makeTextMap :: Text -> Dictionary
 makeTextMap
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-    . map ((\(y,x) -> (y, T.drop 1 x)) . T.span (<'|'))
+    . map (second (T.drop 1) . T.span (<'|'))
     . T.lines
 
 -- | Select several dictionaries by id.

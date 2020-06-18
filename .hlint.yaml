@@ -5,12 +5,12 @@
 # This file contains a template configuration file, which is typically
 # placed as .hlint.yaml in the root of your project
 
-- ignore: {}
+# - ignore: {}
 
 # Warnings currently triggered by your code
 # - ignore: {name: "Redundant do"}
 # - ignore: {name: "Move brackets to avoid $"}
-# - ignore: {name: "Reduce duplication"}
+- ignore: {name: "Reduce duplication"}
 # - ignore: {name: "Redundant $"}
 # - ignore: {name: "Eta reduce"}
 

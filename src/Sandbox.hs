@@ -4,6 +4,7 @@ module Sandbox where
 import System.Console.Haskeline
 -- import Data.ByteString.Char8 (ByteString)
 -- import System.Exit (exitSuccess)
+import Data.Bifunctor (second)
 import Data.Text (Text)
 -- import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
@@ -29,7 +30,7 @@ import qualified Data.Text as T
 findDups :: Text -> [(Text,Text)]
 findDups
     = dups
-    . map ((\(y,x) -> (y, T.drop 1 x))
+    . map (second (T.drop 1)
     . T.span (<'|'))
     . T.lines
 
