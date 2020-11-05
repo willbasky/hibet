@@ -1,4 +1,4 @@
-cabal-version:       2.4
+cabal-version:       3.0
 name:                hibet
 version:             0.7
 description:         tibetan-english translator
@@ -22,7 +22,40 @@ source-repository head
   type:                git
   location:            https://github.com/willbasky/Hibet.git
 
+common common-options
+  build-depends:       base ^>= 4.14.1.0
+
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-uni-patterns
+                       -Wincomplete-record-updates
+                       -Wredundant-constraints
+  if impl(ghc >= 8.2)
+    ghc-options:       -fhide-source-paths
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+                       -Wpartial-fields
+  if impl(ghc >= 8.8)
+    ghc-options:       -Wmissing-deriving-strategies
+                       -fwrite-ide-info
+                       -hiedir=.hie
+  if impl(ghc >= 8.10)
+    ghc-options:       -Wunused-packages
+
+  default-language:    Haskell2010
+
+  default-extensions:  OverloadedStrings
+                       RecordWildCards
+                       ScopedTypeVariables
+                       LambdaCase
+                       TypeApplications
+                       TupleSections
+                       DeriveGeneric
+                       DerivingStrategies
+
 library
+  import:              common-options
   hs-source-dirs:      src
   exposed-modules:
                        App
@@ -37,21 +70,9 @@ library
 
   other-modules:       Paths_hibet
 
-  ghc-options:         -Wall
-                       -Wincomplete-uni-patterns
-                       -Wincomplete-record-updates
-                       -Wcompat
-                       -Widentities
-                       -Wredundant-constraints
-                       -fhide-source-paths
-                       -Wmissing-export-lists
-                       -Wpartial-fields
-
-  build-depends:       base ^>= 4.13.0.0
+  build-depends:       base ^>= 4.14.1.0
                      , bytestring
                      , containers
-                     , directory
-                     , file-embed
                      , filepath
                      , free
                      , gitrev
@@ -72,16 +93,9 @@ library
                      , tomland
                      , unordered-containers
 
-  default-language:    Haskell2010
-  default-extensions:  DeriveGeneric
-                       LambdaCase
-                       OverloadedStrings
-                       RecordWildCards
-                       ScopedTypeVariables
-                       TypeApplications
-
 
 executable hibet
+  import:              common-options
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
@@ -96,19 +110,12 @@ executable hibet
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base ^>= 4.13.0.0
+  build-depends:       base ^>= 4.14.1.0
                      , hibet
-
-  default-language:    Haskell2010
-  default-extensions:  DeriveGeneric
-                       LambdaCase
-                       OverloadedStrings
-                       RecordWildCards
-                       ScopedTypeVariables
-                       TypeApplications
 
 
 test-suite hibet-test
+  import:              common-options
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
@@ -116,31 +123,18 @@ test-suite hibet-test
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N
-                       -Wincomplete-uni-patterns
-                       -Wincomplete-record-updates
-                       -Wcompat
-                       -Widentities
-                       -Wredundant-constraints
-                       -fhide-source-paths
-                       -Wmissing-export-lists
-                       -Wpartial-fields
-  build-depends:       base ^>= 4.13.0.0
+
+  build-depends:       base ^>= 4.14.1.0
                      , hibet
 
-  default-language:    Haskell2010
-  default-extensions:  DeriveGeneric
-                       LambdaCase
-                       OverloadedStrings
-                       RecordWildCards
-                       ScopedTypeVariables
-                       TypeApplications
 
 benchmark tibet-benchmark
+  import:              common-options
   type:                exitcode-stdio-1.0
   hs-source-dirs:      benchmark
   main-is:             Main.hs
 
-  build-depends:       base ^>= 4.13.0.0
+  build-depends:       base ^>= 4.14.1.0
                      , hibet
                      , async
                      , criterion
@@ -157,25 +151,8 @@ benchmark tibet-benchmark
   other-modules:       Paths_hibet
                        Assets
 
-  ghc-options:         -Wall
-                       -threaded
+  ghc-options:         -threaded
                        -rtsopts
                        -with-rtsopts=-N
-                       -Wincomplete-uni-patterns
-                       -Wincomplete-record-updates
-                       -Wcompat
-                       -Widentities
-                       -Wredundant-constraints
-                       -fhide-source-paths
-                       -Wmissing-export-lists
-                       -Wpartial-fields
-
-  default-language:    Haskell2010
-  default-extensions:  RecordWildCards
-                       OverloadedStrings
-                       LambdaCase
-                       ScopedTypeVariables
-                       TypeApplications
-                       TupleSections
 
 

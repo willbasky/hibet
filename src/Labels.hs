@@ -30,11 +30,13 @@ data LabelFull = LabelFull
     , lfSource    :: Text
     , lfTarget    :: Set.Set Text
     , lfYear      :: Maybe Int
-    } deriving (Eq, Show, Ord)
+    }
+    deriving stock (Eq, Show)
 
 newtype Labels = Labels
     { labelTitles :: [LabelFull]
-    } deriving (Eq, Show)
+    }
+    deriving stock (Eq, Show)
 
 labelFullCodec :: TomlCodec LabelFull
 labelFullCodec = LabelFull

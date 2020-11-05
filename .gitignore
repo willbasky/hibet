@@ -60,3 +60,5 @@ thinking.txt
 src/Sandbox.hs
 *.prof.html
 *.svg
+
+.hie/
