@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
+## Unreleased
+
+* Benchmark file-embed against path_hibet
+
 ## ## [0.7] - 2020-01-14
 
 ### Added
