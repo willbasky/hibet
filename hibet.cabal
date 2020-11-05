@@ -152,8 +152,10 @@ benchmark tibet-benchmark
                      , unordered-containers
                      , bytestring
                      , conduit
+                     , file-embed
 
   other-modules:       Paths_hibet
+                       Assets
 
   ghc-options:         -Wall
                        -threaded
@@ -174,5 +176,6 @@ benchmark tibet-benchmark
                        LambdaCase
                        ScopedTypeVariables
                        TypeApplications
+                       TupleSections
 
 

@@ -5,7 +5,6 @@ module App
 
 
 import Control.Exception (bracketOnError)
-import Control.Monad (forever)
 import Control.Monad.Except
 import Data.List (foldl')
 import Data.Text (Text)
@@ -43,20 +42,15 @@ makeEnv selectedIds = do
     syls <- getContentH sylsPath
     ls <- labels
     dir <- getDataFileNameH "dicts/"
-    (_, files') <- listDirectoryH dir
-    filesAndTexts <- traverse getFilesTexts files'
+    (_, files) <- listDirectoryH dir
+    filesAndTexts <- traverse getFilesTexts files
     let dictsMeta = map (\(f,t) -> toDictionaryMeta ls f $ makeTextMap t) filesAndTexts
-    let dmList = selectDict selectedIds dictsMeta
-    let wt = makeWylieTibet syls
-    let tw = makeTibetWylie syls
-    let radixWylie = makeWylieRadexTree syls
-    let radixTibet = makeTibetanRadexTree syls
     pure Env
-            { envDictionaryMeta = dmList
-            , envWylieTibet = wt
-            , envTibetWylie = tw
-            , envRadixWylie = radixWylie
-            , envRadixTibet = radixTibet
+            { envDictionaryMeta = selectDict selectedIds dictsMeta
+            , envWylieTibet = makeWylieTibet syls
+            , envTibetWylie = makeTibetWylie syls
+            , envRadixWylie = makeWylieRadexTree syls
+            , envRadixTibet = makeTibetanRadexTree syls
             }
   where
     getFilesTexts fp = do
