@@ -154,6 +154,7 @@ textLoad = do
 
 
 
+
 -- crit2 = do
 --     let path = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"
 --     txt <- T.decodeUtf8 <$> BS.readFile path
