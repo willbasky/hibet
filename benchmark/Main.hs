@@ -150,7 +150,7 @@ textLoad = do
   dirAbs <- parseAbsDir dir
   files <- snd <$> listDir dirAbs
   let paths = map fromAbsFile files
-  mapM (\p -> TE.decodeUtf8 <$> BS.readFile p) paths
+  mapM (fmap TE.decodeUtf8 . BS.readFile) paths
 
 
 
