@@ -1,10 +1,11 @@
 {-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 
 module Types where
 
 
-import Parse (TibetWylie, WylieTibet)
-
+import GHC.Generics (Generic)
+import Control.DeepSeq
 import Control.Monad.Reader (ReaderT)
 import Data.HashMap.Strict (HashMap)
 import Data.RadixTree (RadixTree)
@@ -29,6 +30,8 @@ data DictionaryMeta = DictionaryMeta
   , title      :: Text
   , number     :: Int
   }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NFData)
 
 -- | Environment fot translator
 data Env = Env
@@ -39,6 +42,9 @@ data Env = Env
   , radixTibet     :: !RadixTree
   , labels         :: !Labels
   }
+  deriving stock (Eq, Generic)
+  deriving anyclass (NFData)
+
 
 type Query = Text
 type QueryWylie = Text
@@ -53,12 +59,15 @@ data LabelFull = LabelFull
     , target    :: Set.Set Text
     , year      :: Maybe Int
     }
-    deriving stock (Eq, Show)
+    deriving stock (Eq, Show, Generic)
+    deriving anyclass (NFData)
+
 
 newtype Labels = Labels
     { labelTitles :: [LabelFull]
     }
-    deriving stock (Eq, Show)
+    deriving stock (Eq, Show, Generic)
+    deriving anyclass (NFData)
 
 ----------------------------------------------------------------------------
 -- Command data types
@@ -75,3 +84,10 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 type Select = [Int]
+
+-- | Prepare syllables hashmaps.
+type WylieTibet = HashMap Wylie Tibet
+type TibetWylie = HashMap Tibet Wylie
+
+type Wylie = Text
+type Tibet = Text

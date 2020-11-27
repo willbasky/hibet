@@ -90,7 +90,7 @@ library
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                     , record-dot-preprocessor
+                    --  , record-dot-preprocessor
                      , record-hasfield
                      , terminal-size
                      , text
@@ -103,6 +103,7 @@ executable hibet
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
+                       -O2 -eventlog
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N

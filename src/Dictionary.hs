@@ -44,7 +44,7 @@ getAnswer query env = do
       dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta
   let dictMeta = sortOutput dscValues
       toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
-  list <- traverse (separator [37] toTibetan') dictMeta
+  list <- sequence $ parMap rpar (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie
     then T.concat <$> toTibetan' queryWylie
@@ -97,5 +97,5 @@ separator dictNumbers toTibetan' d@(_, (_,i)) =
 
 listToTibet :: (Text -> Except ParseError [Tibet]) -> [Wylie] -> Except ParseError [Tibet]
 listToTibet toTibetan' list = do
-  tibets <- traverse toTibetan' list
+  tibets <- sequence $ parMap rpar toTibetan' list
   pure $ parMap rpar (T.intercalate "\n" ) tibets

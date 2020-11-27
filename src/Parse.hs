@@ -23,6 +23,8 @@ module Parse
        , TibetWylie
        ) where
 
+import Types
+
 import Control.Applicative
 import Data.Bitraversable (Bitraversable (..))
 import Data.Functor.Identity (Identity)
@@ -85,19 +87,19 @@ parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
     list <- tibList ls
     let radixSearch = parseT (search radix) ""
-    traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
+    sequence $ parMap rpar (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
 
 -- | Parse text to tibetan or fail.
 parseTibetanInput :: RadixTree -> Text -> Except ParseError [[Tibet]]
 parseTibetanInput radix txt  = do
     ts <- parseT tibetanScript "" txt
     let radixSearch = parseT (search radix) ""
-    traverse radixSearch ts
+    sequence $ parMap rpar radixSearch ts
 
 applyRadex :: (Text -> Except ParseError [Text]) -> Except ParseError [Text] -> Except ParseError [[Text]]
 applyRadex radex eitherList = do
     list <- eitherList
-    traverse radex list
+    sequence $ parMap rpar radex list
 
 -- | Make wylie radix tree from syllables.
 makeWylieRadexTree :: Text -> RadixTree
@@ -202,7 +204,7 @@ tibLines = do
 -- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
 tibList :: [Text] -> Except ParseError [(Text, Text)]
-tibList = traverse (parseT tibSentences "")
+tibList = sequence . parMap rpar (parseT tibSentences "")
 
 tibSentences :: Parser (Text, Text)
 tibSentences = try tibSen <|> try tibSenD <|> try tibSenDT
@@ -350,13 +352,6 @@ tibetanScript = (:[]) <$> try tibetanScriptEnd
 -- Hashmaps from syllables
 ---------------------------------------------------------------------
 
--- | Prepare syllables hashmaps.
-type WylieTibet = HashMap Wylie Tibet
-type TibetWylie = HashMap Tibet Wylie
-
-type Wylie = Text
-type Tibet = Text
-
 -- Make 'WylieTibet' from syllables text
 makeWylieTibet :: Text -> WylieTibet
 makeWylieTibet
@@ -373,14 +368,16 @@ splitterWT :: Text -> [(Text,Text)]
 splitterWT
     = either (error . ME.errorBundlePretty) id
     . runExcept
-    . traverse (parseT syllableParserWT "")
+    . sequence
+    . parMap rpar (parseT syllableParserWT "")
     . T.lines
 
 splitterTW :: Text -> [(Text,Text)]
 splitterTW
     = either (error . ME.errorBundlePretty) id
     . runExcept
-    . traverse (parseT syllableParserTW "")
+    . sequence
+    . parMap rpar (parseT syllableParserTW "")
     . T.lines
 
 syllableParserWT :: Parser (Text, Text)
