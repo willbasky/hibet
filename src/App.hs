@@ -41,7 +41,7 @@ makeEnv :: IO Env
 makeEnv = do
     sylsPath <- getDataFileName "stuff/tibetan-syllables"
     syls <- TE.decodeUtf8 <$> BS.readFile sylsPath
-    labels@(Labels ls) <- getLabels <$> (BS.readFile =<< (getDataFileName "stuff/titles.toml"))
+    labels@(Labels ls) <- getLabels <$> (BS.readFile =<< getDataFileName "stuff/titles.toml")
     (_, files) <- listDir =<< parseAbsDir "dicts/"
     filesAndTexts <- traverse getFilesTexts files
     let dictsMeta = map (\(f,t) -> toDictionaryMeta ls f $ makeTextMap t) filesAndTexts
