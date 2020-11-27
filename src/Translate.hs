@@ -24,6 +24,7 @@ import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.List (sortBy)
 import Data.Maybe (mapMaybe)
+import Control.Parallel.Strategies
 import Data.Text (Text)
 import Data.Text.Prettyprint.Doc (Doc)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
@@ -53,7 +54,7 @@ getAnswer query Env{..} = do
 makeTextMap :: Text -> Dictionary
 makeTextMap
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-    . map (second (T.drop 1) . T.span (<'|'))
+    . parMap rpar (second (T.drop 1) . T.span (<'|'))
     . T.lines
 
 -- | Select several dictionaries by id.
@@ -96,4 +97,4 @@ separator dictNumbers toTibetan' d@(_, (_,i)) =
 listToTibet :: (Text -> Except ParseError [Tibet]) -> [Wylie] -> Except ParseError [Tibet]
 listToTibet toTibetan' list = do
   tibets <- traverse toTibetan' list
-  pure $ map (T.intercalate "\n" ) tibets
+  pure $ parMap rpar (T.intercalate "\n" ) tibets

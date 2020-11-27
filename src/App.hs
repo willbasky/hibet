@@ -5,7 +5,7 @@ module App
 
 
 import Control.Exception (bracketOnError)
-import Control.Monad (forever)
+-- import Control.Monad (forever)
 import Control.Monad.Except
 import Data.List (foldl')
 import Data.Text (Text)
@@ -13,6 +13,7 @@ import Path (fromAbsFile)
 import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO
+import Control.Parallel.Strategies
 
 import qualified Data.Text as T
 import qualified Text.Megaparsec.Error as ME
@@ -29,11 +30,12 @@ import Types
 -- | Load environment and start loop dialog
 app :: [Int] -> IO ()
 app selectedIds = do
-    env <- runHibet $ makeEnv selectedIds
-    bracketOnError
-      (initializeInput defaultSettings)
-      cancelInput -- This will only be called if an exception such as a SigINT is received.
-      (\inputState -> runHibet (loopDialog env inputState) >> closeInput inputState)
+    void $ runHibet $ makeEnv selectedIds
+    -- env <- runHibet $ makeEnv selectedIds
+    -- bracketOnError
+    --   (initializeInput defaultSettings)
+    --   cancelInput -- This will only be called if an exception such as a SigINT is received.
+    --   (\inputState -> runHibet (loopDialog env inputState) >> closeInput inputState)
 
 
 -- Make environment
@@ -44,8 +46,8 @@ makeEnv selectedIds = do
     ls <- labels
     dir <- getDataFileNameH "dicts/"
     (_, files') <- listDirectoryH dir
-    filesAndTexts <- traverse getFilesTexts files'
-    let dictsMeta = map (\(f,t) -> toDictionaryMeta ls f $ makeTextMap t) filesAndTexts
+    filesAndTexts <- traverse getFilesTexts files' -- TODO make lazy loading
+    let dictsMeta = parMap rpar (\(f,t) -> toDictionaryMeta ls f $ makeTextMap t) filesAndTexts
     let dmList = selectDict selectedIds dictsMeta
     let wt = makeWylieTibet syls
     let tw = makeTibetWylie syls

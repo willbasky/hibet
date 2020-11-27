@@ -33,6 +33,7 @@ import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec.Parsers
 import Control.Monad.Except
+import Control.Parallel.Strategies
 
 import qualified Data.Foldable as F
 import qualified Data.HashMap.Strict as HMS
@@ -63,7 +64,7 @@ toTibetan wt ts = do
         look = fromMaybe "" . flip HMS.lookup wt
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
-    pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
+    pure $ parMap rpar (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
 
 -- | Convert parsed tibetan text to wylie.
 toWylie
@@ -76,7 +77,7 @@ toWylie tw ts = do
         look = fromMaybe "" . flip HMS.lookup tw
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
-    pure $ T.unwords $ map fromLook txt
+    pure $ T.unwords $ parMap rpar fromLook txt
 
 -- | Parse text to wylie or fail.
 parseWylieInput :: RadixTree -> Text -> Except ParseError [([Wylie], [[Wylie]])]
@@ -102,14 +103,14 @@ applyRadex radex eitherList = do
 makeWylieRadexTree :: Text -> RadixTree
 makeWylieRadexTree syls =
     let linedSyls = T.lines syls
-        firstPart = map (T.takeWhile (/= '|')) linedSyls
+        firstPart = parMap rpar (T.takeWhile (/= '|')) linedSyls
     in  fromFoldable firstPart
 
 -- | Make tibetan radix tree from syllables.
 makeTibetanRadexTree :: Text -> RadixTree
 makeTibetanRadexTree syls =
     let linedSyls = T.lines syls
-        firstPart = map (T.takeWhileEnd (/= '|')) linedSyls
+        firstPart = parMap rpar (T.takeWhileEnd (/= '|')) linedSyls
     in  fromFoldable firstPart
 
 spaceBetween :: Text -> Text -> Text

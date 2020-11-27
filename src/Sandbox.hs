@@ -1,3 +1,6 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
+
 module Sandbox where
 
 -- import Control.Monad (when)
@@ -6,6 +9,7 @@ import System.Console.Haskeline
 -- import System.Exit (exitSuccess)
 import Data.Bifunctor (second)
 import Data.Text (Text)
+import Data.String
 -- import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
 -- import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
