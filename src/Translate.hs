@@ -31,6 +31,7 @@ import System.FilePath.Posix (takeBaseName)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
+import Data.Vector
 
 
 getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)

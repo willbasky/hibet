@@ -13,11 +13,12 @@ module Types
   where
 
 
-import Parse (WylieTibet, TibetWylie)
+import Parse (TibetWylie, WylieTibet)
 
+import Data.HashMap.Strict (HashMap)
 import Data.RadixTree (RadixTree)
 import Data.Text (Text)
-import Data.HashMap.Strict (HashMap)
+import Data.Vector
 
 
 type Title = Text
@@ -37,7 +38,7 @@ data DictionaryMeta = DictionaryMeta
 
 -- | Environment fot translator
 data Env = Env
-  { envDictionaryMeta :: ![DictionaryMeta]
+  { envDictionaryMeta :: !(Vector DictionaryMeta)
   , envWylieTibet     :: !WylieTibet
   , envTibetWylie     :: !TibetWylie
   , envRadixWylie     :: !RadixTree
