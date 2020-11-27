@@ -34,7 +34,8 @@ common common-options
   if impl(ghc >= 8.2)
     ghc-options:       -fhide-source-paths
   if impl(ghc >= 8.4)
-    ghc-options:       -Wmissing-export-lists
+    ghc-options:
+                      --  -Wmissing-export-lists
                        -Wpartial-fields
   if impl(ghc >= 8.8)
     ghc-options:       -Wmissing-deriving-strategies
@@ -60,21 +61,20 @@ library
   exposed-modules:
                        App
                        Cli
-                       Hibet.Interpretator
-                       Hibet.Language
                        Labels
                        Parse
                        Pretty
-                       Translate
+                       Translator
+                       Dictionary
                        Types
 
   other-modules:       Paths_hibet
+                     , Sandbox
 
   build-depends:       base ^>= 4.14.1.0
                      , bytestring
                      , containers
                      , filepath
-                     , free
                      , gitrev
                      , haskeline
                      , megaparsec
@@ -88,6 +88,8 @@ library
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
+                     , record-dot-preprocessor
+                     , record-hasfield
                      , terminal-size
                      , text
                      , tomland

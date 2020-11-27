@@ -18,41 +18,6 @@ packages:
       sha256: 4c4065b6d54b09ace1891324a215b3668ccf09791399886983ad953840028c69
   original:
     hackage: radixtree-0.4.0.0@sha256:8f0214d8d546d440b10c4775ef34b620ac0eb356e4d1a2030296da416bcbfcc9,2292
-- completed:
-    hackage: store-0.7.4@sha256:ad89cd2f525bccece875423147d8a1f35cdf7a1fef1eb32a1db896e61848b70a,7825
-    pantry-tree:
-      size: 1292
-      sha256: 1137f5d7e631636ff74cac4d223d6817cb229be99e5db4b555a988463a8ffa80
-  original:
-    hackage: store-0.7.4@sha256:ad89cd2f525bccece875423147d8a1f35cdf7a1fef1eb32a1db896e61848b70a,7825
-- completed:
-    hackage: store-core-0.4.4.2@sha256:11403cad88cf4f3675d49baf76cb5dd56363e786c7e25ef00fa57296af29a7b2,1444
-    pantry-tree:
-      size: 271
-      sha256: 0db8705011f7f25d9e5f639c52ccce5fccb1de578de685def2b79e289d9de4cc
-  original:
-    hackage: store-core-0.4.4.2@sha256:11403cad88cf4f3675d49baf76cb5dd56363e786c7e25ef00fa57296af29a7b2,1444
-- completed:
-    hackage: th-utilities-0.2.4.0@sha256:ba19cd8441aa43dbaed40e9055bb5a7cbd7cf9e154f5253c6bf9293af8b1f96b,1869
-    pantry-tree:
-      size: 882
-      sha256: 8c577d112a8398a5542aa4205b2e8a470a66d57590e6606d752d71e75d7425ea
-  original:
-    hackage: th-utilities-0.2.4.0@sha256:ba19cd8441aa43dbaed40e9055bb5a7cbd7cf9e154f5253c6bf9293af8b1f96b,1869
-- completed:
-    hackage: streamly-0.7.2@sha256:2dbcbd2d807b5465a281bde1a71a21f1e1e1b00be93b23083a868a07dc76de95,28286
-    pantry-tree:
-      size: 12739
-      sha256: fe4ea63b78d983f54a4a159727aa1f441b23aa1d919405de370474bdd0e6791f
-  original:
-    hackage: streamly-0.7.2@sha256:2dbcbd2d807b5465a281bde1a71a21f1e1e1b00be93b23083a868a07dc76de95,28286
-- completed:
-    hackage: primitive-0.7.0.1@sha256:a381571c36edc7dca28b77fe8159b43c14c640087ec5946adacf949feec64231,3433
-    pantry-tree:
-      size: 3221
-      sha256: fea4312bd404ad504e44a7fd933a3b3442c0a5e1c41bd8abec3c2e7282d88e18
-  original:
-    hackage: primitive-0.7.0.1@sha256:a381571c36edc7dca28b77fe8159b43c14c640087ec5946adacf949feec64231,3433
 snapshots:
 - completed:
     size: 544004
