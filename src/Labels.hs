@@ -1,53 +1,34 @@
 module Labels
-       ( LabelFull(..)
-       , labels
+       ( getLabels
        ) where
 
+import Types (Labels(..), LabelFull(..))
+
 import Data.List (sortOn)
-import Data.Text (Text)
 import Toml (TomlCodec, (.=))
 
-import Hibet.Language
-
-import qualified Data.Set as Set
 import qualified Toml
+import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as TE
 
 
-labels :: Hibet [LabelFull]
-labels = do
-    file <- getDataFileNameH "stuff/titles.toml"
-    meta <- getContentH file
+getLabels :: BS.ByteString -> Labels
+getLabels fileContent = do
+    let meta = TE.decodeUtf8 fileContent
     case Toml.decode labelsCodec meta of
-        Left err               -> error $ show err
-        Right (Labels decoded) -> pure $ sortOn lfId decoded
-
-data LabelFull = LabelFull
-    { lfPath      :: Text
-    , lfId        :: Int
-    , lfLabel     :: Text
-    , lfAbout     :: Text
-    , lfAvailable :: Bool
-    , lfSource    :: Text
-    , lfTarget    :: Set.Set Text
-    , lfYear      :: Maybe Int
-    }
-    deriving stock (Eq, Show)
-
-newtype Labels = Labels
-    { labelTitles :: [LabelFull]
-    }
-    deriving stock (Eq, Show)
+        Left err  -> error $ show err
+        Right (Labels lbs) -> Labels $ sortOn lfId lbs
 
 labelFullCodec :: TomlCodec LabelFull
 labelFullCodec = LabelFull
-    <$> Toml.text "path"  .= lfPath
+    <$> Toml.text "path"  .= path
     <*> Toml.int  "id"    .= lfId
-    <*> Toml.text "label" .= lfLabel
-    <*> Toml.text "about" .= lfAbout
-    <*> Toml.bool "available" .= lfAvailable
-    <*> Toml.text "source" .= lfSource
-    <*> Toml.arraySetOf Toml._Text "target" .= lfTarget
-    <*> Toml.dioptional (Toml.int "year") .= lfYear
+    <*> Toml.text "label" .= label
+    <*> Toml.text "about" .= about
+    <*> Toml.bool "available" .= available
+    <*> Toml.text "source" .= source
+    <*> Toml.arraySetOf Toml._Text "target" .= target
+    <*> Toml.dioptional (Toml.int "year") .= year
 
 labelsCodec :: TomlCodec Labels
 labelsCodec = Labels
