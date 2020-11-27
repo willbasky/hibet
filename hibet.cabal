@@ -1,181 +1,162 @@
-cabal-version:        2.4
-name:                 hibet
-version:              0.7
-description:          tibetan-english translator
-synopsis:             translator
-homepage:             https://github.com/willbasky/Hibet
-bug-reports:          https://github.com/willbasky/Hibet/issues
-license:              MIT
-license-file:         LICENSE
-author:               willbasky
-maintainer:           willgame(at)mail(dot)ru
-copyright:            2020 willbasky
-category:             Utility
-build-type:           Simple
-extra-doc-files:      README.md
-                    , CHANGELOG.md
-data-files:           dicts/*.txt
-                    , stuff/titles.toml
-                    , stuff/tibetan-syllables
+cabal-version:       3.0
+name:                hibet
+version:             0.7
+description:         tibetan-english translator
+synopsis:            translator
+homepage:            https://github.com/willbasky/Hibet
+bug-reports:         https://github.com/willbasky/Hibet/issues
+license:             MIT
+license-file:        LICENSE
+author:              willbasky
+maintainer:          willgame(at)mail(dot)ru
+copyright:           2020 willbasky
+category:            Utility
+build-type:          Simple
+extra-doc-files:     README.md
+                   , CHANGELOG.md
+data-files:          dicts/*.txt
+                   , stuff/titles.toml
+                   , stuff/tibetan-syllables
 
 source-repository head
   type:               git
   location:           https://github.com/willbasky/Hibet.git
 
+common common-options
+  build-depends:       base ^>= 4.14.1.0
+
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-uni-patterns
+                       -Wincomplete-record-updates
+                       -Wredundant-constraints
+  if impl(ghc >= 8.2)
+    ghc-options:       -fhide-source-paths
+  if impl(ghc >= 8.4)
+    ghc-options:
+                      --  -Wmissing-export-lists
+                       -Wpartial-fields
+  if impl(ghc >= 8.8)
+    ghc-options:       -Wmissing-deriving-strategies
+                       -fwrite-ide-info
+                       -hiedir=.hie
+  if impl(ghc >= 8.10)
+    ghc-options:       -Wunused-packages
+
+  default-language:    Haskell2010
+
+  default-extensions:  OverloadedStrings
+                       RecordWildCards
+                       ScopedTypeVariables
+                       LambdaCase
+                       TypeApplications
+                       TupleSections
+                       DeriveGeneric
+                       DerivingStrategies
+
 library
-  hs-source-dirs:     src
+  import:              common-options
+  hs-source-dirs:      src
   exposed-modules:
-                      App
-                      Cli
-                      Hibet.Interpretator
-                      Hibet.Language
-                      Labels
-                      Parse
-                      Pretty
-                      Translate
-                      Types
+                       App
+                       Cli
+                       Labels
+                       Parse
+                       Pretty
+                       Translator
+                       Dictionary
+                       Types
 
-  other-modules:      Paths_hibet
+  other-modules:       Paths_hibet
+                     , Sandbox
 
-  ghc-options:        -Wall
-                      -Wincomplete-uni-patterns
-                      -Wincomplete-record-updates
-                      -Wcompat
-                      -Widentities
-                      -Wredundant-constraints
-                      -fhide-source-paths
-                      -Wmissing-export-lists
-                      -Wpartial-fields
-
-  build-depends:      base ^>= 4.13.0.0
-                    , bytestring
-                    , containers
-                    , deepseq
-                    , directory
-                    , file-embed
-                    , filepath
-                    , free
-                    , gitrev
-                    , haskeline
-                    , megaparsec
-                    , mtl
-                    , neat-interpolation
-                    , optparse-applicative
-                    , pager
-                    , parallel
-                    , parsers-megaparsec
-                    , path
-                    , path-io
-                    , prettyprinter
-                    , prettyprinter-ansi-terminal
-                    , radixtree
-                    , terminal-size
-                    , text
-                    , tomland
-                    , unordered-containers
-
-  default-language:   Haskell2010
-  default-extensions: DeriveGeneric
-                      LambdaCase
-                      OverloadedStrings
-                      RecordWildCards
-                      ScopedTypeVariables
-                      TypeApplications
+  build-depends:       base ^>= 4.14.1.0
+                     , bytestring
+                     , containers
+                     , deepseq
+                     , filepath
+                     , gitrev
+                     , haskeline
+                     , megaparsec
+                     , mtl
+                     , neat-interpolation
+                     , optparse-applicative
+                     , pager
+                     , parallel
+                     , parsers-megaparsec
+                     , path
+                     , path-io
+                     , prettyprinter
+                     , prettyprinter-ansi-terminal
+                     , radixtree
+                     , record-dot-preprocessor
+                     , record-hasfield
+                     , terminal-size
+                     , text
+                     , tomland
+                     , unordered-containers
 
 
 executable hibet
-  hs-source-dirs:     app
-  main-is:            Main.hs
-  ghc-options:        -Wall
-                      -threaded
-                      -rtsopts
-                      -O2 -eventlog
-                      -with-rtsopts=-N
-                      -Wincomplete-uni-patterns
-                      -Wincomplete-record-updates
-                      -Wcompat
-                      -Widentities
-                      -Wredundant-constraints
-                      -fhide-source-paths
-                      -Wmissing-export-lists
-                      -Wpartial-fields
-  build-depends:      base ^>= 4.13.0.0
-                    , hibet
-
-  default-language:   Haskell2010
-  default-extensions: DeriveGeneric
-                      LambdaCase
-                      OverloadedStrings
-                      RecordWildCards
-                      ScopedTypeVariables
-                      TypeApplications
+  import:              common-options
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+                       -Wincomplete-uni-patterns
+                       -Wincomplete-record-updates
+                       -Wcompat
+                       -Widentities
+                       -Wredundant-constraints
+                       -fhide-source-paths
+                       -Wmissing-export-lists
+                       -Wpartial-fields
+  build-depends:       base ^>= 4.14.1.0
+                     , hibet
 
 
 test-suite hibet-test
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     test
-  main-is:            Spec.hs
-  ghc-options:        -Wall
-                      -threaded
-                      -rtsopts
-                      -with-rtsopts=-N
-                      -Wincomplete-uni-patterns
-                      -Wincomplete-record-updates
-                      -Wcompat
-                      -Widentities
-                      -Wredundant-constraints
-                      -fhide-source-paths
-                      -Wmissing-export-lists
-                      -Wpartial-fields
-  build-depends:      base ^>= 4.13.0.0
-                    , hibet
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
 
-  default-language:   Haskell2010
-  default-extensions: DeriveGeneric
-                      LambdaCase
-                      OverloadedStrings
-                      RecordWildCards
-                      ScopedTypeVariables
-                      TypeApplications
+  build-depends:       base ^>= 4.14.1.0
+                     , hibet
+
 
 benchmark tibet-benchmark
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     benchmark
-  main-is:            Main.hs
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      benchmark
+  main-is:             Main.hs
 
-  build-depends:      base ^>= 4.13.0.0
-                    , hibet
-                    , async
-                    , criterion
-                    , weigh
-                    , path
-                    , path-io >= 1.4.0
-                    , text
-                    , streamly
-                    , unordered-containers
-                    , bytestring
-                    , conduit
+  build-depends:       base ^>= 4.14.1.0
+                     , hibet
+                     , async
+                     , criterion
+                     , weigh
+                     , path
+                     , path-io >= 1.4.0
+                     , text
+                     , streamly
+                     , unordered-containers
+                     , bytestring
+                     , conduit
+                     , file-embed
 
-  other-modules:      Paths_hibet
+  other-modules:       Paths_hibet
+                       Assets
 
-  ghc-options:        -Wall
-                      -threaded
-                      -rtsopts
-                      -with-rtsopts=-N
-                      -Wincomplete-uni-patterns
-                      -Wincomplete-record-updates
-                      -Wcompat
-                      -Widentities
-                      -Wredundant-constraints
-                      -fhide-source-paths
-                      -Wmissing-export-lists
-                      -Wpartial-fields
-
-  default-language:   Haskell2010
-  default-extensions: RecordWildCards
-                      OverloadedStrings
-                      LambdaCase
-                      ScopedTypeVariables
-                      TypeApplications
+  ghc-options:         -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
 
 
