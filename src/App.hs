@@ -14,6 +14,7 @@ import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO
 import Control.Parallel.Strategies
+-- import Control.DeepSeq
 
 import qualified Data.Text as T
 import qualified Text.Megaparsec.Error as ME

@@ -50,6 +50,7 @@ library
   build-depends:      base ^>= 4.13.0.0
                     , bytestring
                     , containers
+                    , deepseq
                     , directory
                     , file-embed
                     , filepath
