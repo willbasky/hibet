@@ -19,8 +19,8 @@ data-files:          dicts/*.txt
                    , stuff/tibetan-syllables
 
 source-repository head
-  type:                git
-  location:            https://github.com/willbasky/Hibet.git
+  type:               git
+  location:           https://github.com/willbasky/Hibet.git
 
 common common-options
   build-depends:       base ^>= 4.14.1.0
@@ -74,6 +74,7 @@ library
   build-depends:       base ^>= 4.14.1.0
                      , bytestring
                      , containers
+                     , deepseq
                      , filepath
                      , gitrev
                      , haskeline
@@ -82,13 +83,14 @@ library
                      , neat-interpolation
                      , optparse-applicative
                      , pager
+                     , parallel
                      , parsers-megaparsec
                      , path
                      , path-io
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                     , record-dot-preprocessor
+                    --  , record-dot-preprocessor
                      , record-hasfield
                      , terminal-size
                      , text
@@ -101,6 +103,7 @@ executable hibet
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
+                      --  -O2 -eventlog
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N

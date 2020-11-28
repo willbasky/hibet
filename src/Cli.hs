@@ -19,6 +19,8 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
                             info, infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
+import Control.DeepSeq
+import Control.Parallel.Strategies
 
 import App (app, makeEnv)
 import Paths_hibet (version)
@@ -34,6 +36,8 @@ import qualified Data.Text as T
 
 trans :: IO ()
 trans = do
+  -- makeEnv `using` rseq
+  -- print "Env made forcely"
   env <- makeEnv
   execParser prsr >>= \c -> runReaderT (runCommand c) env
 
@@ -125,7 +129,7 @@ commands :: Parser Command
 commands = subparser
     $ command "shell" (info (helper <*> shellP) $ progDesc "Start the translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
-   <> command "show" (info (helper <*> showP) $ progDesc "Show titles or descriptions of dictionaries")
+   <> command "show" (info (helper <*> showP) $ progDesc "Show names or meta of dictionaries")
 
 shellP :: Parser Command
 shellP = Shell <$> idListP

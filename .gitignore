@@ -61,4 +61,9 @@ src/Sandbox.hs
 *.prof.html
 *.svg
 
+# Build_files
+PKGBUILD
+*.pkg.tar.xz
+hibet/
+pkg/
 .hie/

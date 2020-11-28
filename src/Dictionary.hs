@@ -25,10 +25,12 @@ import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.List (sortBy)
 import Data.Maybe (mapMaybe)
+import Control.Parallel.Strategies
 import Data.Text (Text)
 import Data.Text.Prettyprint.Doc (Doc)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
+import Debug.Trace
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -40,10 +42,11 @@ getAnswer query env = do
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
         Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta
-  let dictMeta = sortOutput dscValues
-      toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
-  list <- traverse (separator [37] toTibetan') dictMeta
+      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
+  let list = sortOutput dscValues
+  -- let dictMeta = sortOutput dscValues
+  let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
+  -- list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie
     then T.concat <$> toTibetan' queryWylie
