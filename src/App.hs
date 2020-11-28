@@ -1,84 +1,93 @@
+{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+
 module App
   ( app
+  , makeEnv
   )
   where
 
+import Dictionary (makeTextMap, selectDict, toDictionaryMeta)
+import Labels (getLabels)
+import Parse
+import Translator (loopDialog, testDialog)
+import Types
 
+import Control.DeepSeq
 import Control.Exception (bracketOnError)
-import Control.Monad.Except
-import Data.List (foldl')
-import Data.Text (Text)
-import Path (fromAbsFile)
-import System.Console.Haskeline (defaultSettings, getHistory, getInputLine)
-import System.Console.Haskeline.History (History, historyLines)
+import Control.Monad.Reader
+import Control.Parallel.Strategies
+import Debug.Trace
+import Path (fromAbsFile, parseAbsDir)
+import Path.IO (listDir)
+import Paths_hibet (getDataFileName)
+import System.Console.Haskeline (defaultSettings)
 import System.Console.Haskeline.IO
 
-import qualified Data.Text as T
-import qualified Text.Megaparsec.Error as ME
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BSL
+import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Lazy.Encoding as TLE
+import qualified Data.Text.Lazy as TL
 
-import Hibet.Interpretator
-import Hibet.Language
-import Labels (labels)
-import Parse
-import Pretty
-import Translate (getAnswer, makeTextMap, selectDict, toDictionaryMeta)
-import Types
+
 
 
 -- | Load environment and start loop dialog
-app :: [Int] -> IO ()
-app selectedIds = do
-    env <- runHibet $ makeEnv selectedIds
-    bracketOnError
-      (initializeInput defaultSettings)
-      cancelInput -- This will only be called if an exception such as a SigINT is received.
-      (\inputState -> runHibet (loopDialog env inputState) >> closeInput inputState)
+app :: [Int] -> Hibet ()
+app selectedDicts = do
+  withReaderT (\env -> env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}) $
+    ReaderT $ \env -> do
+      bracketOnError
+        (initializeInput defaultSettings)
+        cancelInput -- This will only be called if an exception such as a SigINT is received.
+        (\inputState -> runReaderT (loopDialog inputState) env >> closeInput inputState)
+        -- (\inputState -> runReaderT (testDialog inputState) env >> closeInput inputState) -- for tests
 
 
 -- Make environment
-makeEnv :: [Int] -> Hibet Env
-makeEnv selectedIds = do
-    sylsPath <- getDataFileNameH "stuff/tibetan-syllables"
-    syls <- getContentH sylsPath
-    ls <- labels
-    dir <- getDataFileNameH "dicts/"
-    (_, files) <- listDirectoryH dir
+makeEnv :: IO Env
+makeEnv = do
+    sylsPath <- getDataFileName "stuff/tibetan-syllables"
+    syls <- TE.decodeUtf8 <$> BS.readFile sylsPath
+    labels@(Labels ls) <- getLabels <$> (BS.readFile =<< getDataFileName "stuff/titles.toml")
+    (_, files) <- listDir =<< parseAbsDir =<< getDataFileName "dicts/"
     filesAndTexts <- traverse getFilesTexts files
-    let dictsMeta = map (\(f,t) -> toDictionaryMeta ls f $ makeTextMap t) filesAndTexts
-    pure Env
-            { envDictionaryMeta = selectDict selectedIds dictsMeta
-            , envWylieTibet = makeWylieTibet syls
-            , envTibetWylie = makeTibetWylie syls
-            , envRadixWylie = makeWylieRadexTree syls
-            , envRadixTibet = makeTibetanRadexTree syls
-            }
+    let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeTextMap $ TL.toStrict t) filesAndTexts
+    pure $ runEval $ do
+      wt <- rparWith rdeepseq $ makeWylieTibet syls
+      tw <- rparWith rdeepseq $ makeTibetWylie syls
+      wr <- rparWith rdeepseq $ makeWylieRadexTree syls
+      tr <- rparWith rdeepseq $ makeTibetanRadexTree syls
+      pure Env
+              { dictionaryMeta = dictsMeta
+              , wylieTibet = wt
+              , tibetWylie = tw
+              , radixWylie = wr
+              , radixTibet = tr
+              , labels     = labels
+              }
   where
+    -- getFilesTexts :: FilePath -> IO (FilePath, Text)
     getFilesTexts fp = do
       let path = fromAbsFile fp
-      txt <- getContentH path
+      txt <- TLE.decodeUtf8 <$> BSL.readFile path
       pure (path, txt)
 
--- Looped dialog with user
-loopDialog :: Env -> InputState -> Hibet ()
-loopDialog env inputState = forever $ do
-    putColorTextH blue NewLine "Which a tibetan word to translate?"
-    mQuery <- queryInputH inputState $ getInputLine "> "
-    case T.strip . T.pack <$> mQuery of
-        Nothing -> pure ()
-        Just ":q" -> do
-            putColorTextH yellow NewLine "Bye-bye!"
-            exitH
-        Just ":h" -> do
-            history <- fromHistory <$> queryInputH inputState getHistory
-            mapM_ (putColorTextH id NewLine) history
-        Just query -> do
-            let answerE = runExcept $ getAnswer query env
-            case answerE of
-                Left err -> putColorTextH red NewLine $ T.pack $ ME.errorBundlePretty err
-                Right (answer, isEmpty) ->
-                    if isEmpty then putColorTextH red NewLine "Nothing found"
-                    else pprintH answer
+    -- getFilesTextsPar fs = mapM (\f -> do
+    --   let path = fromAbsFile f
+    --   txt <- TE.decodeUtf8 <$> BS.readFile path
+    --   pure (path, txt)) fs
 
+-- parMapC :: (a -> b) -> [a] -> Eval [b]
+-- parMapC f [] = return []
+-- parMapC f (a:as) = do
+--    b <- rpar (f a)
+--    bs <- parMapC f as
+--    return (b:bs)
 
-fromHistory :: History -> [Text]
-fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
+-- parMap strat f = withStrategy (parList strat) . map f
+
+-- parTraverseC :: Applicative t1 => Strategy [b] -> (a -> t1 b) -> [a] -> t1 [b]
+-- parTraverseC strat f = withStrategy (parTraversable strat) . traverse f
+-- traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+-- mapM :: Monad m => (a -> m b) -> t a -> m (t b)

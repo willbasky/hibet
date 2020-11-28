@@ -1,4 +1,6 @@
-module Translate
+{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+
+module Dictionary
        ( Title
        , Dictionary
        , DictionaryMeta (..)
@@ -13,12 +15,12 @@ module Translate
        , getAnswer
        ) where
 
-import Labels (LabelFull (..))
 import Parse
 import Pretty
 import Types
 
 import Control.Monad.Except
+import Control.Parallel.Strategies
 import Data.Bifunctor (second)
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
@@ -27,23 +29,26 @@ import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.Text.Prettyprint.Doc (Doc)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
+import Data.Vector (Vector)
+import Debug.Trace
 import System.FilePath.Posix (takeBaseName)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
-import Data.Vector
+-- import qualified Data.Vector as V
 
 
 getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
-getAnswer query Env{..} = do
-  let toWylie' = toWylie envTibetWylie . parseTibetanInput envRadixTibet
+getAnswer query env = do
+  let toWylie' = toWylie env.tibetWylie . parseTibetanInput env.radixTibet
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
         Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) envDictionaryMeta
-  let dictMeta = sortOutput dscValues
-      toTibetan' = toTibetan envWylieTibet . parseWylieInput envRadixWylie
-  list <- traverse (separator [37] toTibetan') dictMeta
+      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
+  let list = sortOutput dscValues
+  -- let dictMeta = sortOutput dscValues
+  let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
+  -- list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie
     then T.concat <$> toTibetan' queryWylie
@@ -61,7 +66,7 @@ makeTextMap
 selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]
 selectDict selected dicts = case selected of
     []          -> dicts
-    selectedIds -> filter (\DictionaryMeta{..} -> dmNumber `elem` selectedIds) dicts
+    selectedIds -> filter (\dm -> dm.number `elem` selectedIds) dicts
 
 -- Add lables to dictionaries
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
@@ -70,15 +75,15 @@ toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
     (title, number) = findTitle $ T.pack $ takeBaseName filepath
     -- Match filpath with labels
     findTitle :: Text -> (Title, Int)
-    findTitle path = maybe ("Invalid title",0) (\LabelFull{..} -> (lfLabel, lfId))
-      $ find (\LabelFull{..} -> path == lfPath) labels
+    findTitle path = maybe ("Invalid title",0) (\lf -> (lf.label, lf.lfId))
+      $ find (\lf -> path == lf.path) labels
 
 -- Search query in dictionary.
 searchTranslation :: Text -> DictionaryMeta -> Maybe Answer
-searchTranslation query DictionaryMeta{..} =
-  if null ts then Nothing else Just (ts, (dmTitle, dmNumber))
+searchTranslation query dm =
+  if null ts then Nothing else Just (ts, (dm.title, dm.number))
   where
-    ts = HMS.foldrWithKey search [] dmDictionary
+    ts = HMS.foldrWithKey search [] dm.dictionary
     search :: Source -> Target -> [Target] -> [Target]
     search k v acc = if k == query then v : acc else acc
 

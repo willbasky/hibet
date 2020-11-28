@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+
 {-# LANGUAGE QuasiQuotes     #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -6,6 +8,7 @@ module Cli
        ) where
 
 import Control.Applicative (many, optional, (<|>))
+import Control.Monad.Reader (ReaderT (..), runReaderT)
 import Data.Foldable (find, toList, traverse_)
 import Data.List (sortBy)
 import Data.Text (Text)
@@ -16,11 +19,10 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
                             info, infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
+import Control.DeepSeq
+import Control.Parallel.Strategies
 
-import App (app)
-import Hibet.Interpretator
-import Hibet.Language
-import Labels (LabelFull (..), labels)
+import App (app, makeEnv)
 import Paths_hibet (version)
 import Pretty
 import Types
@@ -28,88 +30,76 @@ import Types
 import qualified Data.Text as T
 
 
-----------------------------------------------------------------------------
--- Command data types
-----------------------------------------------------------------------------
-
--- | Represent all available commands
-data Command
-    -- | @shell@ command launch translating shell
-    = Shell Select
-    | Om
-    | ShowOption Opt
-
--- | Commands parsed with @show@ command
-data Opt = Names | Meta (Maybe Int)
-
-type Select = [Int]
-
 ---------------------------------------------------------------------------
 -- CLI
 ---------------------------------------------------------------------------
 
 trans :: IO ()
-trans = execParser prsr >>= runCommand
+trans = do
+  -- makeEnv `using` rseq
+  -- print "Env made forcely"
+  env <- makeEnv
+  execParser prsr >>= \c -> runReaderT (runCommand c) env
 
 -- | Run 'tibet' with cli command
-runCommand :: Command -> IO ()
+runCommand :: Command -> Hibet ()
 runCommand = \case
     Shell selectedIds -> app selectedIds
-    Om -> runHibet $ putColorTextH magenta NewLine om
-    ShowOption opt -> runHibet $ runShow opt
+    Om -> ReaderT $ \_ -> putColorDoc magenta NewLine om
+    ShowOption opt -> runShow opt
 
 runShow :: Opt -> Hibet ()
-runShow opt =
+runShow opt = ReaderT $ \env -> do
+  let Labels labels = env.labels
+  let filteredLabels = filterAvailable labels
   case opt of
     Names -> do
-        titles <- sortById . filterAvailable <$> labels
-        mapM_ (\LabelFull{..} -> do
+        let titles = sortById filteredLabels
+        mapM_ (\label-> do
           putColorList
-            [ (cyan, toText lfId <> ". ")
-            , (green, lfLabel <> ". ")
-            , (cyan, maybe "" (const "Year ") lfYear)
-            , (green, maybe "" (flip T.append ". " . toText) lfYear)
+            [ (cyan, toText label.lfId <> ". ")
+            , (green, label.label <> ". ")
+            , (cyan, maybe "" (const "Year ") label.year)
+            , (green, maybe "" (flip T.append ". " . toText) label.year)
             , (cyan, "From ")
-            , (green, lfSource <> " ")
+            , (green, label.source <> " ")
             , (cyan, "to ")
-            , (green, T.intercalate ", " (toList lfTarget) <> ".")]
-          putColorTextH blue NewLine ""
+            , (green, T.intercalate ", " (toList label.target) <> ".")]
+          putColorDoc blue NewLine ""
           ) titles
-        putColorTextH yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length titles)
+        putColorDoc yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length titles)
     Meta Nothing -> do
-        titles <- filterAvailable <$> labels
-        mapM_ (\LabelFull{..} -> do
+        mapM_ (\label -> do
             putColorList
-              [ (cyan, toText lfId <> ". ")
-              , (green, lfLabel)
-              , (cyan, maybe "" (const ". Year ") lfYear)
-              , (green, maybe "" toText lfYear)]
-            putColorTextH blue NewLine ""
-            putColorTextH blue NewLine lfAbout
+              [ (cyan, toText label.lfId <> ". ")
+              , (green, label.label)
+              , (cyan, maybe "" (const ". Year ") label.year)
+              , (green, maybe "" toText label.year)]
+            putColorDoc blue NewLine ""
+            putColorDoc blue NewLine label.about
             putColorList
               [ (cyan, "From ")
-              , (green, lfSource <> " ")
+              , (green, label.source <> " ")
               , (cyan, "to ")
-              , (green, T.intercalate ", " (toList lfTarget))]
-            putColorTextH blue NewLine ""
-            ) titles
-        putColorTextH yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length titles)
+              , (green, T.intercalate ", " (toList label.target))]
+            putColorDoc blue NewLine ""
+            ) filteredLabels
+        putColorDoc yellow NewLine $ T.pack $ "Available dictionaries: " <> show (length filteredLabels)
     Meta (Just n) -> do
-        availableLabels <- filterAvailable <$> labels
-        case find (\LabelFull{..} -> n == lfId) availableLabels of
-            Nothing -> putColorTextH red NewLine "No such number of dictionary!"
-            Just LabelFull{..} -> do
-              putColorTextH green NewLine $ toText lfId <> lfLabel
-              putColorTextH blue NewLine lfAbout
+        case find (\label -> n == label.lfId) filteredLabels of
+            Nothing -> putColorDoc red NewLine "No such number of dictionary!"
+            Just label -> do
+              putColorDoc green NewLine $ toText label.lfId <> label.label
+              putColorDoc blue NewLine label.about
   where
     toText :: Int -> Text
     toText n = T.pack $ show n
     sortById :: [LabelFull] -> [LabelFull]
     sortById = sortBy (\labelFull1 labelFull2 ->
-        compare (lfId labelFull1) (lfId labelFull2))
+        compare labelFull1.lfId labelFull2.lfId)
     filterAvailable :: [LabelFull] -> [LabelFull]
-    filterAvailable = filter lfAvailable
-    putColorList = traverse_ (\(c,d) -> putColorTextH c CurrentLine d)
+    filterAvailable = filter available
+    putColorList = traverse_ (\(c,d) -> putColorDoc c CurrentLine d)
 
 ----------------------------------------------------------------------------
 -- Command parsers
@@ -139,7 +129,7 @@ commands :: Parser Command
 commands = subparser
     $ command "shell" (info (helper <*> shellP) $ progDesc "Start the translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
-   <> command "show" (info (helper <*> showP) $ progDesc "Show titles or descriptions of dictionaries")
+   <> command "show" (info (helper <*> showP) $ progDesc "Show names or meta of dictionaries")
 
 shellP :: Parser Command
 shellP = Shell <$> idListP

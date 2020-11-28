@@ -8,6 +8,7 @@ module Pretty
   , red
   , yellow
   -- Functions
+  , pprint
   , putColorDoc
   , textToColorText
   , viewTranslations
@@ -16,14 +17,23 @@ module Pretty
   ) where
 
 
+import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (intersperse)
+import Data.Maybe (isNothing)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Text.Prettyprint.Doc (Doc, annotate, defaultLayoutOptions, fillSep, hang, layoutSmart,
-                                  pretty, space, vsep)
+import Data.Text.Prettyprint.Doc (Doc, LayoutOptions (..), PageWidth (..), annotate,
+                                  defaultLayoutOptions, fillSep, hang, layoutSmart, pretty, space,
+                                  vsep)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
                                                   renderStrict)
+import qualified System.Console.Terminal.Size as Terminal
+import System.Environment (lookupEnv, setEnv)
+import System.Pager (printOrPage)
+
+
+
 
 import Types
 
@@ -98,8 +108,16 @@ putColorDoc col isNewLine txt =
         CurrentLine -> txt
   in putDoc $ col $ pretty txtLn
 
-textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text  -> Text
+textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
 
-
+pprint :: Doc AnsiStyle -> IO ()
+pprint doc = do
+  -- enable colors in `less`
+  lessConf <- lookupEnv "LESS"
+  when (isNothing lessConf) $ setEnv "LESS" "-R"
+  width' <- maybe 80 Terminal.width <$> Terminal.size
+  let layoutOptions =
+        defaultLayoutOptions {layoutPageWidth = AvailablePerLine width' 1}
+  printOrPage . (`T.snoc` '\n') . renderStrict $ layoutSmart layoutOptions doc
 
