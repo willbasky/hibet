@@ -26,9 +26,9 @@ data Line = NewLine | CurrentLine
 type Dictionary = HashMap Source Target -- key and value
 
 data DictionaryMeta = DictionaryMeta
-  { dictionary :: Dictionary
-  , title      :: Text
-  , number     :: Int
+  { dictionary :: !Dictionary
+  , title      :: !Text
+  , number     :: !Int
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (NFData)
@@ -50,14 +50,14 @@ type Query = Text
 type QueryWylie = Text
 
 data LabelFull = LabelFull
-    { path      :: Text
-    , lfId      :: Int
-    , label     :: Text
-    , about     :: Text
-    , available :: Bool
-    , source    :: Text
-    , target    :: Set.Set Text
-    , year      :: Maybe Int
+    { path      :: !Text
+    , lfId      :: !Int
+    , label     :: !Text
+    , about     :: !Text
+    , available :: !Bool
+    , source    :: !Text
+    , target    :: !(Set.Set Text)
+    , year      :: !(Maybe Int)
     }
     deriving stock (Eq, Show, Generic)
     deriving anyclass (NFData)

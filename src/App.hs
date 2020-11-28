@@ -52,17 +52,21 @@ makeEnv = do
     syls <- TE.decodeUtf8 <$> BS.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (BS.readFile =<< getDataFileName "stuff/titles.toml")
     (_, files) <- listDir =<< parseAbsDir =<< getDataFileName "dicts/"
-    filesAndTexts <- sequence $ parMap rpar getFilesTexts files
-    let dictsMeta = parMap (force rpar) (\(f,t) -> toDictionaryMeta ls f $ makeTextMap $ TL.toStrict t) filesAndTexts
-    let env = Env
-            { dictionaryMeta = dictsMeta
-            , wylieTibet = syls `seq` withStrategy rpar $ makeWylieTibet syls
-            , tibetWylie = syls `seq` withStrategy rpar $ makeTibetWylie syls
-            , radixWylie = syls `seq` withStrategy rpar $ makeWylieRadexTree syls
-            , radixTibet = syls `seq` withStrategy rpar $ makeTibetanRadexTree syls
-            , labels     = labels `seq` withStrategy rpar $ labels
-            }
-    env `seq` pure env
+    filesAndTexts <- traverse getFilesTexts files
+    let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeTextMap $ TL.toStrict t) filesAndTexts
+    pure $ runEval $ do
+      wt <- rparWith rdeepseq $ makeWylieTibet syls
+      tw <- rparWith rdeepseq $ makeTibetWylie syls
+      wr <- rparWith rdeepseq $ makeWylieRadexTree syls
+      tr <- rparWith rdeepseq $ makeTibetanRadexTree syls
+      rdeepseq Env
+              { dictionaryMeta = dictsMeta
+              , wylieTibet = wt
+              , tibetWylie = tw
+              , radixWylie = wr
+              , radixTibet = tr
+              , labels     = labels
+              }
   where
     -- getFilesTexts :: FilePath -> IO (FilePath, Text)
     getFilesTexts fp = do

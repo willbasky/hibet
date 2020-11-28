@@ -41,10 +41,10 @@ getAnswer query env = do
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
         Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta
+      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
   let dictMeta = sortOutput dscValues
       toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
-  list <- sequence $ parMap rpar (separator [37] toTibetan') dictMeta
+  list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie
     then T.concat <$> toTibetan' queryWylie
@@ -55,7 +55,7 @@ getAnswer query env = do
 makeTextMap :: Text -> Dictionary
 makeTextMap
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-    . parMap rpar (second (T.drop 1) . T.span (<'|'))
+    . map (second (T.drop 1) . T.span (<'|'))
     . T.lines
 
 -- | Select several dictionaries by id.
@@ -97,5 +97,5 @@ separator dictNumbers toTibetan' d@(_, (_,i)) =
 
 listToTibet :: (Text -> Except ParseError [Tibet]) -> [Wylie] -> Except ParseError [Tibet]
 listToTibet toTibetan' list = do
-  tibets <- sequence $ parMap rpar toTibetan' list
-  pure $ parMap rpar (T.intercalate "\n" ) tibets
+  tibets <- traverse toTibetan' list
+  pure $ map (T.intercalate "\n" ) tibets

@@ -20,6 +20,7 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
 import Control.DeepSeq
+import Control.Parallel.Strategies
 
 import App (app, makeEnv)
 import Paths_hibet (version)
@@ -35,7 +36,7 @@ import qualified Data.Text as T
 
 trans :: IO ()
 trans = do
-  -- makeEnv
+  -- makeEnv `using` rseq
   -- print "Env made forcely"
   env <- makeEnv
   execParser prsr >>= \c -> runReaderT (runCommand c) env

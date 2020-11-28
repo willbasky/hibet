@@ -66,7 +66,7 @@ toTibetan wt ts = do
         look = fromMaybe "" . flip HMS.lookup wt
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
-    pure $ parMap rpar (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
+    pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
 
 -- | Convert parsed tibetan text to wylie.
 toWylie
@@ -79,7 +79,7 @@ toWylie tw ts = do
         look = fromMaybe "" . flip HMS.lookup tw
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
-    pure $ T.unwords $ parMap rpar fromLook txt
+    pure $ T.unwords $ map fromLook txt
 
 -- | Parse text to wylie or fail.
 parseWylieInput :: RadixTree -> Text -> Except ParseError [([Wylie], [[Wylie]])]
@@ -87,32 +87,32 @@ parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
     list <- tibList ls
     let radixSearch = parseT (search radix) ""
-    sequence $ parMap rpar (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
+    traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
 
 -- | Parse text to tibetan or fail.
 parseTibetanInput :: RadixTree -> Text -> Except ParseError [[Tibet]]
 parseTibetanInput radix txt  = do
     ts <- parseT tibetanScript "" txt
     let radixSearch = parseT (search radix) ""
-    sequence $ parMap rpar radixSearch ts
+    traverse radixSearch ts
 
 applyRadex :: (Text -> Except ParseError [Text]) -> Except ParseError [Text] -> Except ParseError [[Text]]
 applyRadex radex eitherList = do
     list <- eitherList
-    sequence $ parMap rpar radex list
+    traverse radex list
 
 -- | Make wylie radix tree from syllables.
 makeWylieRadexTree :: Text -> RadixTree
 makeWylieRadexTree syls =
     let linedSyls = T.lines syls
-        firstPart = parMap rpar (T.takeWhile (/= '|')) linedSyls
+        firstPart = map (T.takeWhile (/= '|')) linedSyls
     in  fromFoldable firstPart
 
 -- | Make tibetan radix tree from syllables.
 makeTibetanRadexTree :: Text -> RadixTree
 makeTibetanRadexTree syls =
     let linedSyls = T.lines syls
-        firstPart = parMap rpar (T.takeWhileEnd (/= '|')) linedSyls
+        firstPart = map (T.takeWhileEnd (/= '|')) linedSyls
     in  fromFoldable firstPart
 
 spaceBetween :: Text -> Text -> Text
@@ -204,7 +204,7 @@ tibLines = do
 -- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
 tibList :: [Text] -> Except ParseError [(Text, Text)]
-tibList = sequence . parMap rpar (parseT tibSentences "")
+tibList = traverse (parseT tibSentences "")
 
 tibSentences :: Parser (Text, Text)
 tibSentences = try tibSen <|> try tibSenD <|> try tibSenDT
@@ -369,15 +369,14 @@ splitterWT
     = either (error . ME.errorBundlePretty) id
     . runExcept
     . sequence
-    . parMap rpar (parseT syllableParserWT "")
+    . map (parseT syllableParserWT "")
     . T.lines
 
 splitterTW :: Text -> [(Text,Text)]
 splitterTW
     = either (error . ME.errorBundlePretty) id
     . runExcept
-    . sequence
-    . parMap rpar (parseT syllableParserTW "")
+    . traverse (parseT syllableParserTW "")
     . T.lines
 
 syllableParserWT :: Parser (Text, Text)
