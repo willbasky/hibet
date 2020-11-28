@@ -19,8 +19,8 @@ import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullD
                             info, infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
-import Control.DeepSeq
-import Control.Parallel.Strategies
+-- import Control.DeepSeq
+-- import Control.Parallel.Strategies
 
 import App (app, makeEnv)
 import Paths_hibet (version)

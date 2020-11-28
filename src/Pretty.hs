@@ -22,18 +22,17 @@ import Data.Char (isSpace)
 import Data.List (intersperse)
 import Data.Maybe (isNothing)
 import Data.Text (Text)
-import qualified Data.Text as T
 import Data.Text.Prettyprint.Doc (Doc, LayoutOptions (..), PageWidth (..), annotate,
                                   defaultLayoutOptions, fillSep, hang, layoutSmart, pretty, space,
                                   vsep)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
                                                   renderStrict)
-import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv, setEnv)
 import System.Pager (printOrPage)
+import Data.List (sortBy)
 
-
-
+import qualified Data.Text as T
+import qualified System.Console.Terminal.Size as Terminal
 
 import Types
 
@@ -86,7 +85,7 @@ yellow = annotate $ color Yellow <> bold
 
 -- | Pretty view translation.
 viewTranslations :: [Answer] -> Doc AnsiStyle
-viewTranslations = sparsedStack . map viewTranslation
+viewTranslations = sparsedStack . map viewTranslation . sortAnswers
   where
     viewTranslation :: Answer -> Doc AnsiStyle
     viewTranslation (value, (title, number)) =
@@ -100,6 +99,9 @@ viewTranslations = sparsedStack . map viewTranslation
     -- Fix new lines inside value
     fixNewLine :: Text -> Text
     fixNewLine = T.replace "\\n" "\n"
+    -- Sort answers
+    sortAnswers :: [Answer] -> [Answer]
+    sortAnswers = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
 
 putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Line -> Text -> IO ()
 putColorDoc col isNewLine txt =

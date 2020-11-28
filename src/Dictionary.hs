@@ -10,7 +10,6 @@ module Dictionary
        , searchTranslation
        , selectDict
        , separator
-       , sortOutput
        , toDictionaryMeta
        , getAnswer
        ) where
@@ -24,18 +23,16 @@ import Control.Parallel.Strategies
 import Data.Bifunctor (second)
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
-import Data.List (sortBy)
-import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.Text.Prettyprint.Doc (Doc)
 import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
 import Data.Vector (Vector)
-import Debug.Trace
+-- import Debug.Trace
 import System.FilePath.Posix (takeBaseName)
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
--- import qualified Data.Vector as V
+import qualified Data.Vector as V
 
 
 getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
@@ -44,12 +41,10 @@ getAnswer query env = do
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
         Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
-  let list = sortOutput dscValues
-  -- let dictMeta = sortOutput dscValues
+      dscValues = V.mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parTraversable rseq
   let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
   -- list <- traverse (separator [37] toTibetan') dictMeta
-  let (translations, isEmpty) = (viewTranslations list, list == mempty)
+  let (translations, isEmpty) = (viewTranslations $ V.toList dscValues, V.null dscValues)
   query' <- if query == queryWylie
     then T.concat <$> toTibetan' queryWylie
     else pure queryWylie
@@ -58,15 +53,16 @@ getAnswer query env = do
 -- | Make Map from raw file. Merge duplicates to on key without delete.
 makeTextMap :: Text -> Dictionary
 makeTextMap
-    = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
+    -- = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2]) -- O(n*log n)
+    = HMS.fromList -- O(n)
     . map (second (T.drop 1) . T.span (<'|'))
     . T.lines
 
 -- | Select several dictionaries by id.
-selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]
+selectDict :: [Int] -> Vector DictionaryMeta -> Vector DictionaryMeta
 selectDict selected dicts = case selected of
     []          -> dicts
-    selectedIds -> filter (\dm -> dm.number `elem` selectedIds) dicts
+    selectedIds -> V.filter (\dm -> dm.number `elem` selectedIds) dicts
 
 -- Add lables to dictionaries
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
@@ -86,9 +82,6 @@ searchTranslation query dm =
     ts = HMS.foldrWithKey search [] dm.dictionary
     search :: Source -> Target -> [Target] -> [Target]
     search k v acc = if k == query then v : acc else acc
-
-sortOutput :: [Answer] -> [Answer]
-sortOutput = sortBy (\(_,(_,a)) (_,(_,b)) -> compare a b)
 
 -- Convert dictionaries from list to tibetan and pass others.
 separator

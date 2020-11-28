@@ -28,15 +28,14 @@ import Types
 import Control.Applicative
 import Data.Bitraversable (Bitraversable (..))
 import Data.Functor.Identity (Identity)
-import Data.HashMap.Strict (HashMap)
 import Data.Maybe (fromMaybe)
 import Data.RadixTree
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec.Parsers
 import Control.Monad.Except
-import Control.Parallel.Strategies
-import Debug.Trace
+-- import Control.Parallel.Strategies
+-- import Debug.Trace
 
 import qualified Data.Foldable as F
 import qualified Data.HashMap.Strict as HMS

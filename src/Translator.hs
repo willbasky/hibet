@@ -1,4 +1,7 @@
-module Translator where
+module Translator
+  ( testDialog
+  , loopDialog
+  ) where
 
 import Pretty
 import Dictionary (getAnswer)
@@ -39,8 +42,8 @@ loopDialog inputState = ReaderT $ \env -> forever $ do
                     else pprint answer
 
 testDialog :: InputState -> Hibet ()
-testDialog inputState = ReaderT $ \env -> forever $ do
-  putColorDoc blue NewLine "Which a tibetan word to translate?"
+testDialog _ = ReaderT $ \env -> forever $ do
+  putColorDoc blue NewLine "[TEST] Which a tibetan word to translate?"
   let answerE = runExcept $ getAnswer "mo" env
   case answerE of
       Left err -> putColorDoc red NewLine $ T.pack $ ME.errorBundlePretty err

@@ -12,7 +12,7 @@ import Data.RadixTree (RadixTree)
 import Data.Text (Text)
 import Data.Vector
 
-import qualified Data.Set as Set
+import Data.Set (Set)
 
 
 
@@ -36,7 +36,7 @@ data DictionaryMeta = DictionaryMeta
 
 -- | Environment fot translator
 data Env = Env
-  { dictionaryMeta :: ![DictionaryMeta]
+  { dictionaryMeta :: !(Vector DictionaryMeta)
   , wylieTibet     :: !WylieTibet
   , tibetWylie     :: !TibetWylie
   , radixWylie     :: !RadixTree
@@ -57,7 +57,7 @@ data LabelFull = LabelFull
     , about     :: !Text
     , available :: !Bool
     , source    :: !Text
-    , target    :: !(Set.Set Text)
+    , target    :: !(Set Text)
     , year      :: !(Maybe Int)
     }
     deriving stock (Eq, Show, Generic)
