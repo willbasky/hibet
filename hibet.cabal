@@ -103,7 +103,7 @@ executable hibet
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -Wall
-                       -O2 -eventlog
+                      --  -O2 -eventlog
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N

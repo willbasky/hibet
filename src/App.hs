@@ -16,7 +16,6 @@ import Control.DeepSeq
 import Control.Exception (bracketOnError)
 import Control.Monad.Reader
 import Control.Parallel.Strategies
-import Data.Text (Text)
 import Debug.Trace
 import Path (fromAbsFile, parseAbsDir)
 import Path.IO (listDir)

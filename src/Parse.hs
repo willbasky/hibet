@@ -36,6 +36,7 @@ import Data.Void (Void)
 import Text.Megaparsec.Parsers
 import Control.Monad.Except
 import Control.Parallel.Strategies
+import Debug.Trace
 
 import qualified Data.Foldable as F
 import qualified Data.HashMap.Strict as HMS
@@ -282,7 +283,7 @@ tibSentEndFE = do
 -- > parseTest tibSentEndList "sdf / /sdf  / fgdg / /sdf/"
 -- ["sdf/","/sdf/","fgdg/","/sdf/"]
 tibSentEndList :: Parser [Text]
-tibSentEndList = some $ try tibSentEndFE <|> try tibSentEndE <|> try tibSentEnd
+tibSentEndList = some $ try tibSentEndFE <|> try tibSentEndE <|> try tibSentEnd <|> try tibBase
 
 -- safeListCall :: Foldable t => (t a -> b) -> t a -> Maybe b
 -- safeListCall f xs
