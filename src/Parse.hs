@@ -368,8 +368,7 @@ splitterWT :: Text -> [(Text,Text)]
 splitterWT
     = either (error . ME.errorBundlePretty) id
     . runExcept
-    . sequence
-    . map (parseT syllableParserWT "")
+    . traverse (parseT syllableParserWT "")
     . T.lines
 
 splitterTW :: Text -> [(Text,Text)]

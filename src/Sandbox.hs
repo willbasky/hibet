@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
+-- {-# LANGUAGE TypeApplications #-}
 
 module Sandbox where
 
