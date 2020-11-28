@@ -9,7 +9,7 @@ module App
 import Dictionary (makeTextMap, selectDict, toDictionaryMeta)
 import Labels (getLabels)
 import Parse
-import Translator (loopDialog)
+import Translator (loopDialog, testDialog)
 import Types
 
 import Control.DeepSeq
@@ -38,11 +38,11 @@ app :: [Int] -> Hibet ()
 app selectedDicts = do
   withReaderT (\env -> env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}) $
     ReaderT $ \env -> do
-      traceIO $ "ReaderT changed to: " <> show (length env.dictionaryMeta)
       bracketOnError
         (initializeInput defaultSettings)
         cancelInput -- This will only be called if an exception such as a SigINT is received.
         (\inputState -> runReaderT (loopDialog inputState) env >> closeInput inputState)
+        -- (\inputState -> runReaderT (testDialog inputState) env >> closeInput inputState) -- for tests
 
 
 -- Make environment
@@ -59,7 +59,7 @@ makeEnv = do
       tw <- rparWith rdeepseq $ makeTibetWylie syls
       wr <- rparWith rdeepseq $ makeWylieRadexTree syls
       tr <- rparWith rdeepseq $ makeTibetanRadexTree syls
-      rdeepseq Env
+      pure Env
               { dictionaryMeta = dictsMeta
               , wylieTibet = wt
               , tibetWylie = tw
