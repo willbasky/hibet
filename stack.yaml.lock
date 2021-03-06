@@ -12,15 +12,26 @@ packages:
   original:
     hackage: parsers-megaparsec-0.1.0.1@sha256:eda0fa6cb3e2efeeea31ba373e7ee6cc5cb24efa485d082818e9084c4d804799,1724
 - completed:
-    hackage: radixtree-0.4.0.0@sha256:8f0214d8d546d440b10c4775ef34b620ac0eb356e4d1a2030296da416bcbfcc9,2292
+    hackage: megaparsec-8.0.0@sha256:362f85e243ecbcb550e1de6e5c74ba5a50c09edaa1208c99bc5b9fd242227fc6,3808
     pantry-tree:
-      size: 384
-      sha256: 4c4065b6d54b09ace1891324a215b3668ccf09791399886983ad953840028c69
+      size: 1446
+      sha256: 955117c00a86970f2d0c215f33cf5293b16589c04678a0a790c03368ab6fd0aa
   original:
-    hackage: radixtree-0.4.0.0@sha256:8f0214d8d546d440b10c4775ef34b620ac0eb356e4d1a2030296da416bcbfcc9,2292
+    hackage: megaparsec-8.0.0@sha256:362f85e243ecbcb550e1de6e5c74ba5a50c09edaa1208c99bc5b9fd242227fc6,3808
+- completed:
+    name: radixtree
+    version: 0.5.0.0
+    git: https://gitlab.com/transportengineering/radixtree
+    pantry-tree:
+      size: 534
+      sha256: 390a86fec8ef185100c3260f51591cb30c3c3926a52bd1256c2787144acf8e58
+    commit: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
+  original:
+    git: https://gitlab.com/transportengineering/radixtree
+    commit: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
 snapshots:
 - completed:
-    size: 544004
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2020/11/4.yaml
-    sha256: e019d8be6b71a73e1b914d1b3392678e50a7393f8ce1d2f287846c228451dbdd
-  original: nightly-2020-11-04
+    size: 565266
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/5.yaml
+    sha256: 78e8ebabf11406261abbc95b44f240acf71802630b368888f6d758de7fc3a2f7
+  original: lts-17.5
