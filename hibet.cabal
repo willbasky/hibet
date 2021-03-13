@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             0.7
+version:             0.7.1
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -20,10 +20,12 @@ data-files:          dicts/*.txt
 
 source-repository head
   type:               git
-  location:           https://github.com/willbasky/Hibet.git
+  location:           https://github.com/willbasky/hibet.git
 
 common common-options
   build-depends:       base ^>= 4.14.1.0
+                     , record-dot-preprocessor  ^>=0.2.10
+                     , record-hasfield
 
   ghc-options:         -Wall
                        -Wcompat
@@ -72,8 +74,8 @@ library
   other-modules:       Paths_hibet
                      , Sandbox
 
-  build-depends:       base ^>= 4.14.1.0
-                     , bytestring
+  build-depends:
+                       bytestring
                      , containers
                      , deepseq
                      , filepath
@@ -91,8 +93,6 @@ library
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                     , record-dot-preprocessor
-                     , record-hasfield
                      , terminal-size
                      , text
                      , tomland
@@ -162,3 +162,7 @@ benchmark hibet-benchmark
                        -with-rtsopts=-N
 
 
+source-repository this
+  type:     darcs
+  location: http://darcs.haskell.org/cabal-branches/cabal-1.6/
+  tag:      1.6.1

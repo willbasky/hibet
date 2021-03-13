@@ -1,0 +1,6 @@
+packages: .
+
+source-repository-package
+    type: git
+    location: https://gitlab.com/transportengineering/radixtree.git
+    tag: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
