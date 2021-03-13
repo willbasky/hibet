@@ -134,7 +134,7 @@ test-suite hibet-test
                      , hibet
 
 
-benchmark tibet-benchmark
+benchmark hibet-benchmark
   import:              common-options
   type:                exitcode-stdio-1.0
   hs-source-dirs:      benchmark
@@ -143,16 +143,16 @@ benchmark tibet-benchmark
   build-depends:       base ^>= 4.14.1.0
                      , hibet
                      , async
-                     , criterion
-                     , weigh
+                    --  , criterion
+                    --  , weigh
                      , path
                      , path-io >= 1.4.0
                      , text
-                     , streamly
+                    --  , streamly
                      , unordered-containers
                      , bytestring
                      , conduit
-                     , file-embed
+                    --  , file-embed
 
   other-modules:       Paths_hibet
                        Assets
