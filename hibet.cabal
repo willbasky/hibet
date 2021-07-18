@@ -81,13 +81,13 @@ library
                      , filepath
                      , gitrev
                      , haskeline
-                     , megaparsec
+                     , megaparsec >= 8.0.0
                      , mtl
                      , neat-interpolation
                      , optparse-applicative
                      , pager
                      , parallel
-                     , parsers-megaparsec
+                     , parsers-megaparsec >= 0.1.0.1
                      , path
                      , path-io
                      , prettyprinter
