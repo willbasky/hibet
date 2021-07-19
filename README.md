@@ -1,6 +1,6 @@
 # Tibetan-English translator for CLI
 
-[![GPL-3 license](https://img.shields.io/badge/license-GPL--3-blue.svg)](LICENSE)
+[![Unlicense license](https://img.shields.io/badge/License-Unlicense-violet)](LICENSE)
 
 ![Bod](bod.png)
 
