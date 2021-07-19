@@ -5,8 +5,8 @@ description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
 bug-reports:         https://github.com/willbasky/Hibet/issues
-license:             MIT
-license-file:        LICENSE
+license:             UNLICENSE
+license-file:        UNLICENSE
 author:              willbasky
 maintainer:          willgame(at)mail(dot)ru
 copyright:           2020 willbasky
