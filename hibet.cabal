@@ -5,8 +5,8 @@ description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
 bug-reports:         https://github.com/willbasky/Hibet/issues
-license:             Unlicense
-license-file:        UNLICENSE
+license:             BSD-3-Clause
+license-file:        LICENSE
 author:              willbasky
 maintainer:          willgame(at)mail(dot)ru
 copyright:           2020 willbasky
@@ -90,7 +90,7 @@ library
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                    --  , record-dot-preprocessor
+                     , record-dot-preprocessor
                      , record-hasfield
                      , terminal-size
                      , text
