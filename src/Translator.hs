@@ -38,16 +38,16 @@ loopDialog inputState = ReaderT $ \env -> forever $ do
                     if isEmpty then putColorDoc red NewLine "Nothing found"
                     else pprint answer
 
-testDialog :: InputState -> Hibet ()
-testDialog inputState = ReaderT $ \env -> forever $ do
-  putColorDoc blue NewLine "Which a tibetan word to translate?"
-  let answerE = runExcept $ getAnswer "mo" env
-  case answerE of
-      Left err -> putColorDoc red NewLine $ T.pack $ ME.errorBundlePretty err
-      Right (answer, isEmpty) ->
-          if isEmpty then putColorDoc red NewLine "Nothing found"
-          else print answer
-  exitSuccess
+-- testDialog :: InputState -> Hibet ()
+-- testDialog inputState = ReaderT $ \env -> forever $ do
+--   putColorDoc blue NewLine "Which a tibetan word to translate?"
+--   let answerE = runExcept $ getAnswer "mo" env
+--   case answerE of
+--       Left err -> putColorDoc red NewLine $ T.pack $ ME.errorBundlePretty err
+--       Right (answer, isEmpty) ->
+--           if isEmpty then putColorDoc red NewLine "Nothing found"
+--           else print answer
+--   exitSuccess
 
 fromHistory :: History -> [Text]
 fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines

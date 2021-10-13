@@ -49,12 +49,25 @@ common common-options
 
   default-extensions:  OverloadedStrings
                        RecordWildCards
-                       ScopedTypeVariables
+                      --  ScopedTypeVariables
                        LambdaCase
-                       TypeApplications
+                      --  TypeApplications
                        TupleSections
                        DeriveGeneric
                        DerivingStrategies
+                       -- for polysemy
+                       DataKinds
+                       FlexibleContexts
+                       GADTs
+                       LambdaCase
+                       PolyKinds
+                       RankNTypes
+                       ScopedTypeVariables
+                       TypeApplications
+                       TypeOperators
+                       TypeFamilies
+                       TemplateHaskell
+                       GADTs
 
 library
   import:              common-options
@@ -68,6 +81,7 @@ library
                        Translator
                        Dictionary
                        Types
+                       Effects.File
 
   other-modules:       Paths_hibet
                      , Sandbox
@@ -88,6 +102,8 @@ library
                      , parsers-megaparsec
                      , path
                      , path-io
+                     , polysemy
+                     , polysemy-path
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree

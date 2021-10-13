@@ -23,11 +23,9 @@ import Data.List (intersperse)
 import Data.Maybe (isNothing)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Text.Prettyprint.Doc (Doc, LayoutOptions (..), PageWidth (..), annotate,
-                                  defaultLayoutOptions, fillSep, hang, layoutSmart, pretty, space,
-                                  vsep)
-import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
-                                                  renderStrict)
+import Prettyprinter (Doc, LayoutOptions (..), PageWidth (..), annotate, defaultLayoutOptions,
+                      fillSep, hang, layoutSmart, pretty, space, vsep)
+import Prettyprinter.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc, renderStrict)
 import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv, setEnv)
 import System.Pager (printOrPage)

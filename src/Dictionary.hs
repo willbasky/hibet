@@ -27,10 +27,10 @@ import Data.List (sortBy)
 import Data.Maybe (mapMaybe)
 import Control.Parallel.Strategies
 import Data.Text (Text)
-import Data.Text.Prettyprint.Doc (Doc)
-import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle)
+import Prettyprinter (Doc)
+import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
-import Debug.Trace
+-- import Debug.Trace
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T

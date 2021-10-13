@@ -7,27 +7,35 @@ module App
   where
 
 import Dictionary (makeTextMap, selectDict, toDictionaryMeta)
+import Effects.File (FileIO)
+import qualified Effects.File as File
 import Labels (getLabels)
 import Parse
-import Translator (loopDialog, testDialog)
+-- import qualified Polysemy as P
+import Polysemy (Members, Sem)
+import Polysemy.Error (Error, throw)
+import Polysemy.Path (Abs, File, Path, PathException, fromAbsFile, parseAbsDir)
+import Translator (loopDialog)
 import Types
 
-import Control.DeepSeq
+-- import Control.DeepSeq
 import Control.Exception (bracketOnError)
 import Control.Monad.Reader
 import Control.Parallel.Strategies
-import Debug.Trace
-import Path (fromAbsFile, parseAbsDir)
-import Path.IO (listDir)
-import Paths_hibet (getDataFileName)
+-- import Debug.Trace
+-- import Path (fromAbsFile, parseAbsDir)
+
+-- import Path.IO (listDir)
+-- import Paths_hibet (getDataFileName)
 import System.Console.Haskeline (defaultSettings)
 import System.Console.Haskeline.IO
 
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
+-- import qualified Data.ByteString as BS
+-- import qualified Data.ByteString.Lazy as BSL
+import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
-import qualified Data.Text.Lazy.Encoding as TLE
 import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.Encoding as TLE
 
 
 
@@ -46,12 +54,18 @@ app selectedDicts = do
 
 -- Make environment
 makeEnv :: IO Env
-makeEnv = do
-    sylsPath <- getDataFileName "stuff/tibetan-syllables"
-    syls <- TE.decodeUtf8 <$> BS.readFile sylsPath
-    labels@(Labels ls) <- getLabels <$> (BS.readFile =<< getDataFileName "stuff/titles.toml")
-    (_, files) <- listDir =<< parseAbsDir =<< getDataFileName "dicts/"
-    filesAndTexts <- traverse getFilesTexts files
+makeEnv = undefined
+
+makeEnvS :: Members
+  [ FileIO
+  , Error PathException
+  , Error Text] r => Sem r Env
+makeEnvS = do
+    sylsPath <- File.getPath "stuff/tibetan-syllables"
+    syls <- TE.decodeUtf8 <$> File.readFile sylsPath
+    labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
+    (_, files) <- File.listDirectory =<< parseAbsDir =<< File.getPath "dicts/"
+    filesAndTexts <- getFilesTexts files
     let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeTextMap $ TL.toStrict t) filesAndTexts
     pure $ runEval $ do
       wt <- rparWith rdeepseq $ makeWylieTibet syls
@@ -66,12 +80,19 @@ makeEnv = do
               , radixTibet = tr
               , labels     = labels
               }
-  where
-    -- getFilesTexts :: FilePath -> IO (FilePath, Text)
-    getFilesTexts fp = do
-      let path = fromAbsFile fp
-      txt <- TLE.decodeUtf8 <$> BSL.readFile path
-      pure (path, txt)
+
+getFilesTexts :: Members
+  [ FileIO
+  , Error Text] r
+  => [Path Abs File] -> Sem r [(FilePath, TL.Text)]
+getFilesTexts fp = do
+  let paths = map fromAbsFile fp
+  let contents = map (fmap TLE.decodeUtf8 . File.readFileLazy) paths
+  txts <- sequenceA contents
+  if length paths == length txts
+    then pure $ zip paths txts
+    else throw @Text
+     "Not all dictionary files was read successfully"
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f
