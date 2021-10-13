@@ -72,14 +72,14 @@ library
   other-modules:       Paths_hibet
                      , Sandbox
 
-  build-depends:       base ^>= 4.14.1.0
-                     , bytestring
+  build-depends:
+                       bytestring
                      , containers
                      , deepseq
                      , filepath
                      , gitrev
                      , haskeline
-                     , megaparsec
+                     , megaparsec ^>= 8.0.0
                      , mtl
                      , neat-interpolation
                      , optparse-applicative
@@ -91,7 +91,7 @@ library
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                     , record-dot-preprocessor
+                    --  , record-dot-preprocessor
                      , record-hasfield
                      , terminal-size
                      , text
@@ -116,8 +116,8 @@ executable hibet
                        -fhide-source-paths
                        -Wmissing-export-lists
                        -Wpartial-fields
-  build-depends:       base ^>= 4.14.1.0
-                     , hibet
+  build-depends:
+                       hibet
 
 
 test-suite hibet-test
@@ -130,8 +130,8 @@ test-suite hibet-test
                        -rtsopts
                        -with-rtsopts=-N
 
-  build-depends:       base ^>= 4.14.1.0
-                     , hibet
+  build-depends:
+                       hibet
 
 
 benchmark hibet-benchmark
@@ -140,8 +140,8 @@ benchmark hibet-benchmark
   hs-source-dirs:      benchmark
   main-is:             Main.hs
 
-  build-depends:       base ^>= 4.14.1.0
-                     , hibet
+  build-depends:
+                       hibet
                      , async
                     --  , criterion
                     --  , weigh

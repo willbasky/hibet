@@ -11,7 +11,7 @@ extra-deps:
 #   commit: d2c7d398e78d5a5bffa3a2a98aca2897b5bd6cbe
 
 - git: https://gitlab.com/transportengineering/radixtree
-  commit: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
+  commit: 94462dfdca5d01ea445642ced7aad136deab2c1a
 
 ghc-options:
   "$locals": -fhide-source-paths

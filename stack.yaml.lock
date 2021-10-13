@@ -24,11 +24,11 @@ packages:
     git: https://gitlab.com/transportengineering/radixtree
     pantry-tree:
       size: 534
-      sha256: 390a86fec8ef185100c3260f51591cb30c3c3926a52bd1256c2787144acf8e58
-    commit: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
+      sha256: f28a92b8db1052ad972bdca2a18da88e67aedf59ae82c0e9df364be4cffa6bed
+    commit: 94462dfdca5d01ea445642ced7aad136deab2c1a
   original:
     git: https://gitlab.com/transportengineering/radixtree
-    commit: 23dea67daa4dad8baee97b25ecaf0c5250ba2cde
+    commit: 94462dfdca5d01ea445642ced7aad136deab2c1a
 snapshots:
 - completed:
     size: 565266
