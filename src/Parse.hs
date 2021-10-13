@@ -83,7 +83,7 @@ toWylie tw ts = do
     pure $ T.unwords $ map fromLook txt
 
 -- | Parse text to wylie or fail.
-parseWylieInput :: RadixTree -> Text -> Except ParseError [([Wylie], [[Wylie]])]
+parseWylieInput :: RadixTree () -> Text -> Except ParseError [([Wylie], [[Wylie]])]
 parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
     list <- tibList ls
@@ -91,7 +91,7 @@ parseWylieInput radix txt  = do
     traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
 
 -- | Parse text to tibetan or fail.
-parseTibetanInput :: RadixTree -> Text -> Except ParseError [[Tibet]]
+parseTibetanInput :: RadixTree () -> Text -> Except ParseError [[Tibet]]
 parseTibetanInput radix txt  = do
     ts <- parseT tibetanScript "" txt
     let radixSearch = parseT (search radix) ""
@@ -103,18 +103,18 @@ applyRadex radex eitherList = do
     traverse radex list
 
 -- | Make wylie radix tree from syllables.
-makeWylieRadexTree :: Text -> RadixTree
+makeWylieRadexTree :: Text -> RadixTree ()
 makeWylieRadexTree syls =
     let linedSyls = T.lines syls
         firstPart = map (T.takeWhile (/= '|')) linedSyls
-    in  fromFoldable firstPart
+    in  fromFoldable_ firstPart
 
 -- | Make tibetan radix tree from syllables.
-makeTibetanRadexTree :: Text -> RadixTree
+makeTibetanRadexTree :: Text -> RadixTree ()
 makeTibetanRadexTree syls =
     let linedSyls = T.lines syls
         firstPart = map (T.takeWhileEnd (/= '|')) linedSyls
-    in  fromFoldable firstPart
+    in  fromFoldable_ firstPart
 
 spaceBetween :: Text -> Text -> Text
 spaceBetween a b = a <> " " <> b

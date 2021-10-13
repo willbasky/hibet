@@ -38,8 +38,8 @@ data Env = Env
   { dictionaryMeta :: ![DictionaryMeta]
   , wylieTibet     :: !WylieTibet
   , tibetWylie     :: !TibetWylie
-  , radixWylie     :: !RadixTree
-  , radixTibet     :: !RadixTree
+  , radixWylie     :: !(RadixTree ())
+  , radixTibet     :: !(RadixTree ())
   , labels         :: !Labels
   }
   deriving stock (Eq, Generic)
