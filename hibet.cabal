@@ -73,7 +73,7 @@ library
   import:              common-options
   hs-source-dirs:      src
   exposed-modules:
-                       App
+                      --  App
                        Cli
                        Labels
                        Parse
@@ -82,6 +82,7 @@ library
                        Dictionary
                        Types
                        Effects.File
+                       Env
 
   other-modules:       Paths_hibet
                      , Sandbox

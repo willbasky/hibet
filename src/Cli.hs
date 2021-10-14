@@ -4,7 +4,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Cli
-       ( trans
+       ( app
        ) where
 
 import Control.Applicative (many, optional, (<|>))
@@ -22,7 +22,8 @@ import Options.Applicative.Help.Chunk (stringChunk)
 -- import Control.DeepSeq
 -- import Control.Parallel.Strategies
 
-import App (app, makeEnv)
+import Translator (translator)
+import Env (makeEnv)
 import Paths_hibet (version)
 import Pretty
 import Types
@@ -34,17 +35,23 @@ import qualified Data.Text as T
 -- CLI
 ---------------------------------------------------------------------------
 
-trans :: IO ()
-trans = do
+app :: IO ()
+app = do
   -- makeEnv `using` rseq
   -- print "Env made forcely"
   env <- makeEnv
-  execParser prsr >>= \c -> runReaderT (runCommand c) env
+  case env of
+    Left err -> do
+      putStrLn "An Environment creation failed."
+      putStrLn err
+    Right e -> do
+      commanda <- execParser prsr
+      runReaderT (runCommand commanda) e
 
 -- | Run 'tibet' with cli command
 runCommand :: Command -> Hibet ()
 runCommand = \case
-    Shell selectedIds -> app selectedIds
+    Shell selectedIds -> translator selectedIds
     Om -> ReaderT $ \_ -> putColorDoc magenta NewLine om
     ShowOption opt -> runShow opt
 

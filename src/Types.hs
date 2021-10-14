@@ -45,6 +45,7 @@ data Env = Env
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
 
+type Environment = Either String Env
 
 type Query = Text
 type QueryWylie = Text
