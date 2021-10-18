@@ -73,16 +73,18 @@ library
   import:              common-options
   hs-source-dirs:      src
   exposed-modules:
-                      --  App
+                       App
                        Cli
+                       Effects.File
+                       Effects.Console
+                       Effects.PrettyPrint
+                       Env
+                       Dictionary
                        Labels
                        Parse
                        Pretty
                        Translator
-                       Dictionary
                        Types
-                       Effects.File
-                       Env
 
   other-modules:       Paths_hibet
                      , Sandbox

@@ -7,42 +7,32 @@ module Pretty
   , magenta
   , red
   , yellow
+  , Colorize
   -- Functions
-  , pprint
-  , putColorDoc
   , textToColorText
   , viewTranslations
   , withHeader
   , withHeaderSpaces
   ) where
 
+import Types
 
-import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (intersperse)
-import Data.Maybe (isNothing)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Prettyprinter (Doc, LayoutOptions (..), PageWidth (..), annotate, defaultLayoutOptions,
-                      fillSep, hang, layoutSmart, pretty, space, vsep)
-import Prettyprinter.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc, renderStrict)
-import qualified System.Console.Terminal.Size as Terminal
-import System.Environment (lookupEnv, setEnv)
-import System.Pager (printOrPage)
-
-
-
-
-import Types
+import Prettyprinter (Doc, annotate, defaultLayoutOptions, fillSep, hang, layoutSmart, pretty,
+                      space, vsep)
+import Prettyprinter.Render.Terminal (AnsiStyle, Color (..), bold, color, renderStrict)
 
 
 -- | Header
-withHeader :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
+withHeader :: Colorize -> Text -> Doc AnsiStyle -> Doc AnsiStyle
 withHeader col header value =
     hang indentation $ vsep [col $ pretty header, value]
 
 -- | Header with spaces
-withHeaderSpaces :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Doc AnsiStyle -> Doc AnsiStyle
+withHeaderSpaces :: Colorize -> Text -> Doc AnsiStyle -> Doc AnsiStyle
 withHeaderSpaces col header value =
     hang indentation $ vsep [space, col $ pretty header, space, value]
 
@@ -60,22 +50,24 @@ sparsedStack = vsep . intersperse space
 -- Colors
 ---------------------------------------------------------------------
 
-red :: Doc AnsiStyle -> Doc AnsiStyle
+type Colorize = Doc AnsiStyle -> Doc AnsiStyle
+
+red :: Colorize
 red = annotate $ color Red <> bold
 
-green :: Doc AnsiStyle -> Doc AnsiStyle
+green :: Colorize
 green = annotate $ color Green <> bold
 
-blue :: Doc AnsiStyle -> Doc AnsiStyle
+blue :: Colorize
 blue = annotate $ color Blue <> bold
 
-cyan :: Doc AnsiStyle -> Doc AnsiStyle
+cyan :: Colorize
 cyan = annotate $ color Cyan <> bold
 
-magenta :: Doc AnsiStyle -> Doc AnsiStyle
+magenta :: Colorize
 magenta = annotate $ color Magenta <> bold
 
-yellow :: Doc AnsiStyle -> Doc AnsiStyle
+yellow :: Colorize
 yellow = annotate $ color Yellow <> bold
 
 ---------------------------------------------------------------------
@@ -99,23 +91,5 @@ viewTranslations = sparsedStack . map viewTranslation
     fixNewLine :: Text -> Text
     fixNewLine = T.replace "\\n" "\n"
 
-textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Text
+textToColorText :: Colorize -> Text -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
-
-putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Line -> Text -> IO ()
-putColorDoc col isNewLine txt =
-  let txtLn = case isNewLine of
-        NewLine     -> txt `T.snoc` '\n'
-        CurrentLine -> txt
-  in putDoc $ col $ pretty txtLn
-
-pprint :: Doc AnsiStyle -> IO ()
-pprint doc = do
-  -- enable colors in `less`
-  lessConf <- lookupEnv "LESS"
-  when (isNothing lessConf) $ setEnv "LESS" "-R"
-  width' <- maybe 80 Terminal.width <$> Terminal.size
-  let layoutOptions =
-        defaultLayoutOptions {layoutPageWidth = AvailablePerLine width' 1}
-  printOrPage . (`T.snoc` '\n') . renderStrict $ layoutSmart layoutOptions doc
-

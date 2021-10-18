@@ -1,9 +1,3 @@
--- {-# LANGUAGE AllowAmbiguousTypes        #-}
--- {-# LANGUAGE FlexibleContexts #-}
--- {-# LANGUAGE TemplateHaskell  #-}
-
-
-
 module Effects.File where
 
 import Types
@@ -26,9 +20,6 @@ data FileIO m a where
   ParseAbsDirectory :: FilePath -> FileIO r (Path Abs Dir)
 
 P.makeSem ''FileIO
-
--- readFile :: Member File r => FilePath -> Sem r BS.ByteString
--- readFile x = P.send (ReadFile x :: File (Sem r) BS.ByteString)
 
 runFile :: Members [Embed IO, Error HibetErrors] r => Sem (FileIO : r) a -> Sem r a
 runFile = P.interpret $ \case

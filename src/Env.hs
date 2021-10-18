@@ -1,40 +1,26 @@
-{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
-
 module Env
   ( makeEnv
   )
   where
 
 import Dictionary (makeTextMap, toDictionaryMeta)
-import Effects.File (FileIO, runFile)
+import Effects.File (FileIO)
 import qualified Effects.File as File
 import Labels (getLabels)
 import Parse
 import Types
 
 import Control.Parallel.Strategies
-import Data.Function ((&))
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
-import Polysemy (Members, Sem, runM)
+import Polysemy (Members, Sem)
 import Polysemy.Path (Path, Abs, File, fromAbsFile)
-import Polysemy.Error (Error, throw, runError)
+import Polysemy.Error (Error, throw)
 
 
--- Make environment
-makeEnv :: IO Environment
-makeEnv = runEnv makeEnvS
-
-runEnv :: (forall r . Members [FileIO, Error HibetErrors] r => Sem r Env)
-  -> IO Environment
-runEnv program = program
-  & runFile
-  & runError @HibetErrors
-  & runM
-
-makeEnvS :: Members [FileIO, Error HibetErrors] r => Sem r Env
-makeEnvS = do
+makeEnv :: Members [FileIO, Error HibetErrors] r => Sem r Env
+makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
     syls <- TE.decodeUtf8 <$> File.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
@@ -67,6 +53,8 @@ getFilesTexts fp = do
   if length paths == length txts
     then pure $ zip paths txts
     else throw $ UnknownError "Not all dictionary files was read successfully"
+
+
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f
