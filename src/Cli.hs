@@ -4,59 +4,53 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Cli
-       ( app
+       ( runCommand
+       , parser
        ) where
 
+import Dictionary (selectDict)
+import Effects.Console
+import Effects.PrettyPrint
+import Paths_hibet (version)
+import Pretty
+import Translator (translator)
+import Types
+
 import Control.Applicative (many, optional, (<|>))
-import Control.Monad.Reader (ReaderT (..), runReaderT)
-import Data.Foldable (find, toList, traverse_)
+import Data.Foldable (find, toList)
 import Data.List (sortBy)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Version (showVersion)
 import Development.GitRev (gitCommitDate, gitDirty, gitHash)
 import NeatInterpolation (text)
-import Options.Applicative (Parser, ParserInfo, auto, command, execParser, fullDesc, help, helper,
-                            info, infoHeader, infoOption, long, metavar, option, progDesc, short,
+import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, helper, info,
+                            infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
--- import Control.DeepSeq
--- import Control.Parallel.Strategies
 
-import Translator (translator)
-import Env (makeEnv)
-import Paths_hibet (version)
-import Pretty
-import Types
+import Polysemy (Member, Members, Sem)
+import Polysemy.Resource (Resource)
 
-import qualified Data.Text as T
 
 
 ---------------------------------------------------------------------------
 -- CLI
 ---------------------------------------------------------------------------
 
-app :: IO ()
-app = do
-  -- makeEnv `using` rseq
-  -- print "Env made forcely"
-  env <- makeEnv
-  case env of
-    Left err -> do
-      putStrLn "An Environment creation failed."
-      print err
-    Right e -> do
-      commanda <- execParser prsr
-      runReaderT (runCommand commanda) e
-
 -- | Run 'tibet' with cli command
-runCommand :: Command -> Hibet ()
-runCommand = \case
-    Shell selectedIds -> translator selectedIds
-    Om -> ReaderT $ \_ -> putColorDoc magenta NewLine om
-    ShowOption opt -> runShow opt
+runCommand :: Members [Resource, PrettyPrint, Console] r
+  => Env -> Command -> Sem r ()
+runCommand env = \case
+    Shell selectedDicts -> do
+      let newEnv = env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
+      translator newEnv
+    Om -> putColorDoc magenta NewLine om
+    ShowOption opt -> runShow env opt
 
-runShow :: Opt -> Hibet ()
-runShow opt = ReaderT $ \env -> do
+runShow :: Member PrettyPrint r
+  => Env -> Opt -> Sem r ()
+runShow env opt = do
   let Labels labels = env.labels
   let filteredLabels = filterAvailable labels
   case opt of
@@ -106,15 +100,15 @@ runShow opt = ReaderT $ \env -> do
         compare labelFull1.lfId labelFull2.lfId)
     filterAvailable :: [LabelFull] -> [LabelFull]
     filterAvailable = filter available
-    putColorList = traverse_ (\(c,d) -> putColorDoc c CurrentLine d)
+
 
 ----------------------------------------------------------------------------
 -- Command parsers
 ----------------------------------------------------------------------------
 
 -- | Main parser of the app.
-prsr :: ParserInfo Command
-prsr = modifyHeader
+parser :: ParserInfo Command
+parser = modifyHeader
     $ info (helper <*> versionP <*> (shellP <|> commands)) fullDesc
 
 versionP :: Parser (a -> a)

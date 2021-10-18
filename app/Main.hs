@@ -1,6 +1,6 @@
 module Main (main) where
 
-import           Cli (app)
+import           App (app)
 
 main :: IO ()
 main = app

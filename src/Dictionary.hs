@@ -30,7 +30,6 @@ import Data.Text (Text)
 import Prettyprinter (Doc)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
--- import Debug.Trace
 
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
@@ -44,7 +43,6 @@ getAnswer query env = do
         Right wylie -> if T.null wylie then query else wylie
       dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
   let list = sortOutput dscValues
-  -- let dictMeta = sortOutput dscValues
   let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
   -- list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
