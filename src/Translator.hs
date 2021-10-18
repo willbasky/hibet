@@ -67,7 +67,7 @@ translator selectedDicts = do
 -- Looped dialog with user
 loopDialog :: InputState -> Hibet ()
 loopDialog inputState = ReaderT $ \env -> forever $ do
-    putColorDoc blue NewLine "Which a tibetan word to translate?"
+    putColorDoc blue NewLine "Input a tibetan word in wylie transcription, please."
     mQuery <- queryInput inputState $ getInputLine "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()

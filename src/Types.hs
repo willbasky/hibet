@@ -10,7 +10,6 @@ import Control.Monad.Reader (ReaderT)
 import Data.HashMap.Strict (HashMap)
 import Data.RadixTree (RadixTree)
 import Data.Text (Text)
-import Control.Monad.Except (Except)
 import qualified Data.Set as Set
 
 import Polysemy.Path (PathException)
