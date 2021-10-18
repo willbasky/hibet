@@ -43,7 +43,7 @@ app = do
   case env of
     Left err -> do
       putStrLn "An Environment creation failed."
-      putStrLn err
+      print err
     Right e -> do
       commanda <- execParser prsr
       runReaderT (runCommand commanda) e
