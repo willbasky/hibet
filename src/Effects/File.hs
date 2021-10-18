@@ -12,12 +12,10 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Paths_hibet (getDataFileName)
 import Polysemy (Embed, Members, Sem)
-import Polysemy.Error (Error, throw, runError)
+import Polysemy.Error (Error, mapError)
 import qualified Polysemy as P
-import Polysemy.Path (Abs, File, Path, Dir, PathException, parseAbsDir)
+import Polysemy.Path (Abs, File, Path, Dir, parseAbsDir)
 import Path.IO (listDir)
-import Data.Text (Text)
-
 
 
 data FileIO m a where
@@ -38,11 +36,7 @@ runFile = P.interpret $ \case
   ReadFileLazy path -> P.embed $ BSL.readFile path
   GetPath path -> P.embed $ getDataFileName path
   ListDirectory path -> P.embed $ listDir @IO path
-  ParseAbsDirectory path -> do
-    eAbsDir <- runError $ parseAbsDir path
-    case eAbsDir of
-      Left err -> throw $ PathError err
-      Right r -> pure r
+  ParseAbsDirectory path -> mapError PathError $ parseAbsDir path
 
 
 

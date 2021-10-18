@@ -16,11 +16,9 @@ import Control.Parallel.Strategies
 import Data.Function ((&))
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
-import Data.Text (Text)
 import qualified Data.Text.Lazy.Encoding as TLE
-import Polysemy (Member, Members, Sem, runM)
+import Polysemy (Members, Sem, runM)
 import Polysemy.Path (Path, Abs, File, fromAbsFile)
-import Control.Monad.Except
 import Polysemy.Error (Error, throw, runError)
 
 
@@ -41,14 +39,8 @@ makeEnvS = do
     syls <- TE.decodeUtf8 <$> File.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
     absDir <- File.parseAbsDirectory =<< File.getPath "dicts/"
-    -- case eitherDir of
-    --   Left err -> pure $ Left $ show err
-    --   Right absDir -> do
     (_, files) <- File.listDirectory absDir
     filesAndTexts <- getFilesTexts files
-    -- case filesAndTexts' of
-    --   Left err -> pure $ Left err
-    --   Right filesAndTexts -> do
     let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeTextMap $ TL.toStrict t) filesAndTexts
     pure $ runEval $ do
       wt <- rparWith rdeepseq $ makeWylieTibet syls
