@@ -10,9 +10,9 @@ import Control.Monad.Reader (ReaderT)
 import Data.HashMap.Strict (HashMap)
 import Data.RadixTree (RadixTree)
 import Data.Text (Text)
-
 import qualified Data.Set as Set
 
+import Polysemy.Path (PathException)
 
 
 type Hibet = ReaderT Env IO
@@ -45,6 +45,12 @@ data Env = Env
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
 
+data HibetErrors
+  = PathError PathException
+  | UnknownError Text
+  deriving stock (Eq, Show)
+
+type Environment = Either HibetErrors Env
 
 type Query = Text
 type QueryWylie = Text

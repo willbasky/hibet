@@ -23,11 +23,9 @@ import Data.List (intersperse)
 import Data.Maybe (isNothing)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Text.Prettyprint.Doc (Doc, LayoutOptions (..), PageWidth (..), annotate,
-                                  defaultLayoutOptions, fillSep, hang, layoutSmart, pretty, space,
-                                  vsep)
-import Data.Text.Prettyprint.Doc.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc,
-                                                  renderStrict)
+import Prettyprinter (Doc, LayoutOptions (..), PageWidth (..), annotate, defaultLayoutOptions,
+                      fillSep, hang, layoutSmart, pretty, space, vsep)
+import Prettyprinter.Render.Terminal (AnsiStyle, Color (..), bold, color, putDoc, renderStrict)
 import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv, setEnv)
 import System.Pager (printOrPage)
@@ -101,15 +99,15 @@ viewTranslations = sparsedStack . map viewTranslation
     fixNewLine :: Text -> Text
     fixNewLine = T.replace "\\n" "\n"
 
+textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Text
+textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
+
 putColorDoc :: (Doc AnsiStyle -> Doc AnsiStyle) -> Line -> Text -> IO ()
 putColorDoc col isNewLine txt =
   let txtLn = case isNewLine of
         NewLine     -> txt `T.snoc` '\n'
         CurrentLine -> txt
   in putDoc $ col $ pretty txtLn
-
-textToColorText :: (Doc AnsiStyle -> Doc AnsiStyle) -> Text -> Text
-textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
 
 pprint :: Doc AnsiStyle -> IO ()
 pprint doc = do

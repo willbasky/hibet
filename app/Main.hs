@@ -1,6 +1,6 @@
 module Main (main) where
 
-import           Cli (trans)
+import           Cli (app)
 
 main :: IO ()
-main = trans
+main = app
