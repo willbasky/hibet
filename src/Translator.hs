@@ -22,9 +22,8 @@ import Control.Monad.Except
 import Control.Monad.Reader
 import Data.List (foldl')
 import Data.Text (Text)
-import System.Console.Haskeline (getHistory, getInputLine)
+import System.Console.Haskeline (getHistory, getInputLine, defaultSettings)
 import System.Console.Haskeline.History (History, historyLines)
-import System.Console.Haskeline (defaultSettings)
 import System.Console.Haskeline.IO
 import System.Exit (exitSuccess)
 
