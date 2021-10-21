@@ -1,6 +1,5 @@
 module Effects.PrettyPrint where
 
-import Types
 import Pretty
 
 import Control.Monad (when)
@@ -17,6 +16,7 @@ import System.Environment (lookupEnv, setEnv)
 import System.Pager (printOrPage)
 import Data.Foldable (traverse_)
 
+data Line = NewLine | CurrentLine
 
 data PrettyPrint m a where
   PutColorDoc :: Colorize -> Line -> Text -> PrettyPrint m ()

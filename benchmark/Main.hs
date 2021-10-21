@@ -20,7 +20,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Streamly.Prelude as S
 
-import Translate (Dictionary, Source, Target, makeTextMap)
+import Translate (Dictionary, Source, Target, makeDictionary)
 import Assets (dictinaries)
 
 
@@ -56,8 +56,8 @@ Benchmark tibet-benchmark: FINISH
 
 memory = do
     dicts <- textLoad
-    let toDictMetaT = map makeTextMap
-    let toDictMetaC = mapConcurrently (pure . makeTextMap)
+    let toDictMetaT = map makeDictionary
+    let toDictMetaC = mapConcurrently (pure . makeDictionary)
     let toDictMetaConduitT = map makeTextMapC
     let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
     mainWith $ do
@@ -98,8 +98,8 @@ variance introduced by outliers: 19% (moderately inflated)
 
 crit = do
     dicts <- textLoad
-    let toDictMetaT = map makeTextMap
-    let toDictMetaC = mapConcurrently (pure . makeTextMap)
+    let toDictMetaT = map makeDictionary
+    let toDictMetaC = mapConcurrently (pure . makeDictionary)
     let toDictMetaConduitT = map makeTextMapC
     let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
     defaultMain
@@ -159,7 +159,7 @@ textLoad = do
 --     let path = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"
 --     txt <- T.decodeUtf8 <$> BS.readFile path
 --     defaultMain
---         [ bench "usual" $ nf makeTextMap txt
+--         [ bench "usual" $ nf makeDictionary txt
 --         , bench "conduit" $ nf makeTextMapC txt
 --         , bench "streamly" $ nf makeTextMapS txt
 --         ]
@@ -168,6 +168,6 @@ textLoad = do
 --     let file = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"
 --     txt <- T.decodeUtf8 <$> BS.readFile file
 --     mainWith $ do
---         func "usual" makeTextMap txt
+--         func "usual" makeDictionary txt
 --         func "conduit" makeTextMapC txt
 --         func "streamly" makeTextMapS txt

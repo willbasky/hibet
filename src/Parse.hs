@@ -23,29 +23,32 @@ module Parse
        , TibetWylie
        ) where
 
-import Types
-
-import Control.Applicative
+import Control.Applicative ( Alternative(some, many, (<|>)) )
+import Control.Monad.Except ( Except, liftEither, runExcept )
 import Data.Bitraversable (Bitraversable (..))
-import Data.Functor.Identity (Identity)
--- import Data.HashMap.Strict (HashMap)
-import Data.Maybe (fromMaybe)
-import Data.RadixTree
-import Data.Text (Text)
-import Data.Void (Void)
-import Text.Megaparsec.Parsers
-import Control.Monad.Except
--- import Control.Parallel.Strategies
--- import Debug.Trace
-
 import qualified Data.Foldable as F
+import Data.Functor.Identity (Identity)
+import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HMS
+import Data.Maybe (fromMaybe)
+import Data.RadixTree ( fromFoldable_, search, RadixTree )
+import Data.Text (Text)
 import qualified Data.Text as T
+import Data.Void (Void)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
 import qualified Text.Megaparsec.Error as ME
+import Text.Megaparsec.Parsers
+    ( CharParsing(char), Parsing(try), ParsecT(unParsecT) )
 
+
+type Wylie = Text
+type Tibet = Text
+
+-- | Prepare syllables hashmaps.
+type WylieTibet = HashMap Wylie Tibet
+type TibetWylie = HashMap Tibet Wylie
 
 type Parser a = ParsecT Void Text Identity a
 type ParseError = ME.ParseErrorBundle Text Void

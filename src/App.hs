@@ -7,7 +7,6 @@ import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
 import Env (makeEnv)
-import Types
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
@@ -25,20 +24,20 @@ app = do
       print err
 
 interpretHibet :: Sem
-  '[ FileIO
+  '[  FileIO
     , Error HibetErrors
-    , PrettyPrint
-    , Console
     , Resource
+    , Console
+    , PrettyPrint
     , Embed IO
     ] ()
   -> IO (Either HibetErrors ())
 interpretHibet program = program
   & runFile
   & runError @HibetErrors
-  & runPrettyPrint
-  & runConsole
   & runResource
+  & runConsole
+  & runPrettyPrint
   & runM
 
 hibet :: Members

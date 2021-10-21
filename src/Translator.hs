@@ -5,18 +5,23 @@ module Translator
   )
   where
 
-import Dictionary (getAnswer)
 import Effects.Console
 import Effects.PrettyPrint
 import Pretty
-import Types
+import Parse
+import Env (Env)
+import Dictionary
 
 import Control.Monad.Except
+import Control.Parallel.Strategies
 import Data.List (foldl')
+import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Polysemy (Members, Sem)
 import Polysemy.Resource (Resource, bracketOnError)
+import Prettyprinter (Doc)
+import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified Text.Megaparsec.Error as ME
@@ -59,6 +64,24 @@ loopDialog env inputState = forever $ do
 
 fromHistory :: History -> [Text]
 fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
+
+
+getAnswer :: Text -> Env -> Except ParseError (Doc AnsiStyle, Bool)
+getAnswer query env = do
+  let toWylie' = toWylie env.tibetWylie . parseTibetanInput env.radixTibet
+      queryWylie = case runExcept $ toWylie' query  of
+        Left _      -> query
+        Right wylie -> if T.null wylie then query else wylie
+      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
+  let list = sortOutput dscValues
+  let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
+  -- list <- traverse (separator [37] toTibetan') dictMeta
+  let (translations, isEmpty) = (viewTranslations list, list == mempty)
+  query' <- if query == queryWylie
+    then T.concat <$> toTibetan' queryWylie
+    else pure queryWylie
+  pure (withHeaderSpaces yellow query' translations, isEmpty)
+
 
 -- testDialog :: InputState -> Hibet ()
 -- testDialog inputState = ReaderT $ \env -> forever $ do

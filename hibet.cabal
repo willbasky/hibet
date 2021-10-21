@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             0.7
+version:             0.8
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -9,7 +9,7 @@ license:             BSD-3-Clause
 license-file:        LICENSE
 author:              willbasky
 maintainer:          willgame(at)mail(dot)ru
-copyright:           2020 willbasky
+copyright:           2021 willbasky
 category:            Utility
 build-type:          Simple
 extra-doc-files:     README.md
@@ -84,7 +84,7 @@ library
                        Parse
                        Pretty
                        Translator
-                       Types
+                       Utility
 
   other-modules:       Paths_hibet
                      , Sandbox

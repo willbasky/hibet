@@ -8,7 +8,13 @@ and this project adheres to
 
 ## Unreleased
 
-* Benchmark file-embed against path_hibet
+## ## [0.8] - 2021-10-21
+
+* Benchmark file-embed against path_hibet.
+* Move effects on polysemy.
+* Refactor modules vertically.
+* Make types stricter.
+* Change license to BSD 3.
 
 ## ## [0.7] - 2020-01-14
 
