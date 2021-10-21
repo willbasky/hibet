@@ -7,7 +7,6 @@ import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
 import Env (makeEnv)
-import Types
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)

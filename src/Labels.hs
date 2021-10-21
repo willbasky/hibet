@@ -1,22 +1,48 @@
+{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric  #-}
+
 module Labels
        ( getLabels
+       , Labels(..)
+       , LabelFull(..)
        ) where
 
-import Types (Labels(..), LabelFull(..))
-
-import Data.List (sortOn)
-import Toml (TomlCodec, (.=))
-
-import qualified Toml
+import Control.DeepSeq (NFData)
 import qualified Data.ByteString as BS
+import Data.List (sortOn)
+import qualified Data.Set as Set
+import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
+import GHC.Generics (Generic)
+import Toml (TomlCodec, (.=))
+import qualified Toml
 
+
+data LabelFull = LabelFull
+    { path      :: !Text
+    , lfId      :: !Int
+    , label     :: !Text
+    , about     :: !Text
+    , available :: !Bool
+    , source    :: !Text
+    , target    :: !(Set.Set Text)
+    , year      :: !(Maybe Int)
+    }
+    deriving stock (Eq, Show, Generic)
+    deriving anyclass (NFData)
+
+newtype Labels = Labels
+    { labelTitles :: [LabelFull]
+    }
+    deriving stock (Eq, Show, Generic)
+    deriving anyclass (NFData)
 
 getLabels :: BS.ByteString -> Labels
 getLabels fileContent = do
     let meta = TE.decodeUtf8 fileContent
     case Toml.decode labelsCodec meta of
-        Left err  -> error $ show err
+        Left err           -> error $ show err
         Right (Labels lbs) -> Labels $ sortOn lfId lbs
 
 labelFullCodec :: TomlCodec LabelFull

@@ -1,4 +1,6 @@
 {-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+
 
 module Dictionary
        ( Title
@@ -6,54 +8,49 @@ module Dictionary
        , DictionaryMeta (..)
        , Source
        , Target
-       , makeTextMap
+       , Answer
+       , makeDictionary
        , searchTranslation
        , selectDict
        , separator
        , sortOutput
        , toDictionaryMeta
-       , getAnswer
        ) where
 
 import Parse
-import Pretty
-import Types
+import Labels
 
 import Control.Monad.Except
 import Data.Bifunctor (second)
 import Data.Bitraversable (Bitraversable (..))
 import Data.Foldable (find)
 import Data.List (sortBy)
-import Data.Maybe (mapMaybe)
-import Control.Parallel.Strategies
 import Data.Text (Text)
-import Prettyprinter (Doc)
-import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.FilePath.Posix (takeBaseName)
-
 import qualified Data.HashMap.Strict as HMS
 import qualified Data.Text as T
+import Control.DeepSeq (NFData)
+import GHC.Generics (Generic)
+import Data.HashMap.Strict (HashMap)
 
+type Title = Text
+type Source = Text
+type Target = Text
+type Answer = ([Target], (Title, Int))
 
-getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
-getAnswer query env = do
-  let toWylie' = toWylie env.tibetWylie . parseTibetanInput env.radixTibet
-      queryWylie = case runExcept $ toWylie' query  of
-        Left _      -> query
-        Right wylie -> if T.null wylie then query else wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
-  let list = sortOutput dscValues
-  let toTibetan' = toTibetan env.wylieTibet . parseWylieInput env.radixWylie
-  -- list <- traverse (separator [37] toTibetan') dictMeta
-  let (translations, isEmpty) = (viewTranslations list, list == mempty)
-  query' <- if query == queryWylie
-    then T.concat <$> toTibetan' queryWylie
-    else pure queryWylie
-  pure (withHeaderSpaces yellow query' translations, isEmpty)
+type Dictionary = HashMap Source Target -- key and value
+
+data DictionaryMeta = DictionaryMeta
+  { dictionary :: !Dictionary
+  , title      :: !Text
+  , number     :: !Int
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (NFData)
 
 -- | Make Map from raw file. Merge duplicates to on key without delete.
-makeTextMap :: Text -> Dictionary
-makeTextMap
+makeDictionary :: Text -> Dictionary
+makeDictionary
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
     . map (second (T.drop 1) . T.span (<'|'))
     . T.lines

@@ -14,7 +14,8 @@ import Effects.PrettyPrint
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)
-import Types
+import Labels
+import Env
 
 import Control.Applicative (many, optional, (<|>))
 import Data.Foldable (find, toList)
@@ -38,7 +39,19 @@ import Polysemy.Resource (Resource)
 -- CLI
 ---------------------------------------------------------------------------
 
--- | Run 'tibet' with cli command
+-- | Represent all available commands
+data Command
+    -- | @shell@ command launch translating shell
+    = Shell Select
+    | Om
+    | ShowOption Opt
+
+-- | Commands parsed with @show@ command
+data Opt = Names | Meta (Maybe Int)
+
+type Select = [Int]
+
+-- | Run 'hibet' with cli command
 runCommand :: Members [Resource, PrettyPrint, Console] r
   => Env -> Command -> Sem r ()
 runCommand env = \case

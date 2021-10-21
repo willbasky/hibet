@@ -15,7 +15,7 @@ module Pretty
   , withHeaderSpaces
   ) where
 
-import Types
+import Dictionary
 
 import Data.Char (isSpace)
 import Data.List (intersperse)
