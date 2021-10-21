@@ -26,7 +26,6 @@ import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified Text.Megaparsec.Error as ME
 
-type Query = Text
 
 -- | Load environment and start loop dialog
 translator :: Members [PrettyPrint, Resource, Console] r
@@ -67,7 +66,7 @@ fromHistory :: History -> [Text]
 fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
 
 
-getAnswer :: Query -> Env -> Except ParseError (Doc AnsiStyle, Bool)
+getAnswer :: Text -> Env -> Except ParseError (Doc AnsiStyle, Bool)
 getAnswer query env = do
   let toWylie' = toWylie env.tibetWylie . parseTibetanInput env.radixTibet
       queryWylie = case runExcept $ toWylie' query  of

@@ -15,8 +15,7 @@ import Labels (Labels (..), getLabels)
 import Parse (TibetWylie, WylieTibet, makeTibetWylie, makeTibetanRadexTree, makeWylieRadexTree,
               makeWylieTibet)
 
--- import Control.DeepSeq (NFData)
-import Control.Parallel.Strategies
+import Control.Parallel.Strategies (NFData, parMap, rdeepseq, rparWith, runEval)
 import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL

@@ -32,8 +32,3 @@ runFile = P.interpret $ \case
   GetPath path -> P.embed $ getDataFileName path
   ListDirectory path -> P.embed $ listDir @IO path
   ParseAbsDirectory path -> mapError PathError $ parseAbsDir path
-
-
-
-
-

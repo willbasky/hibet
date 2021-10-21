@@ -84,7 +84,7 @@ library
                        Parse
                        Pretty
                        Translator
-                       Types
+                       Utility
 
   other-modules:       Paths_hibet
                      , Sandbox

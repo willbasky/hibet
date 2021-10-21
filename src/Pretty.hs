@@ -16,6 +16,7 @@ module Pretty
   ) where
 
 import Dictionary
+import Utility (toText)
 
 import Data.Char (isSpace)
 import Data.List (intersperse)
@@ -79,17 +80,17 @@ viewTranslations :: [Answer] -> Doc AnsiStyle
 viewTranslations = sparsedStack . map viewTranslation
   where
     viewTranslation :: Answer -> Doc AnsiStyle
-    viewTranslation (value, (title, number)) =
-      withHeader green (header number title) $ prettyTargets value
+    viewTranslation Answer{..} =
+      withHeader green (header dictNumber dictTitle) $ prettyTargets targets
     -- Compose header
-    header :: Int -> Target -> Text
-    header number title = T.concat [T.pack $ show number, ". ", title]
-    -- Decode value
+    header :: Int -> Title -> Text
+    header number title = T.concat [toText number, ". ", toText title]
+    -- Decode targets
     prettyTargets :: [Target] -> Doc AnsiStyle
-    prettyTargets = vsep . map (wrapLines . fixNewLine)
-    -- Fix new lines inside value
-    fixNewLine :: Text -> Text
-    fixNewLine = T.replace "\\n" "\n"
+    prettyTargets = vsep . map (wrapLines . toText)
+    -- Fix new lines inside targets
+    -- fixNewLine :: Target -> Text
+    -- fixNewLine = T.replace "\\n" "\n"
 
 textToColorText :: Colorize -> Text -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt

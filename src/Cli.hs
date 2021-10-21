@@ -11,11 +11,12 @@ module Cli
 import Dictionary (selectDict)
 import Effects.Console
 import Effects.PrettyPrint
+import Env (Env)
+import Labels (LabelFull (..), Labels (..))
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)
-import Labels
-import Env
+import Utility (toText)
 
 import Control.Applicative (many, optional, (<|>))
 import Data.Foldable (find, toList)
@@ -42,14 +43,12 @@ import Polysemy.Resource (Resource)
 -- | Represent all available commands
 data Command
     -- | @shell@ command launch translating shell
-    = Shell Select
+    = Shell [Int]
     | Om
     | ShowOption Opt
 
 -- | Commands parsed with @show@ command
 data Opt = Names | Meta (Maybe Int)
-
-type Select = [Int]
 
 -- | Run 'hibet' with cli command
 runCommand :: Members [Resource, PrettyPrint, Console] r
@@ -72,7 +71,7 @@ runShow env opt = do
         mapM_ (\label-> do
           putColorList
             [ (cyan, toText label.lfId <> ". ")
-            , (green, label.label <> ". ")
+            , (green, toText label.label <> ". ")
             , (cyan, maybe "" (const "Year ") label.year)
             , (green, maybe "" (flip T.append ". " . toText) label.year)
             , (cyan, "From ")
@@ -86,7 +85,7 @@ runShow env opt = do
         mapM_ (\label -> do
             putColorList
               [ (cyan, toText label.lfId <> ". ")
-              , (green, label.label)
+              , (green, toText label.label)
               , (cyan, maybe "" (const ". Year ") label.year)
               , (green, maybe "" toText label.year)]
             putColorDoc blue NewLine ""
@@ -103,11 +102,9 @@ runShow env opt = do
         case find (\label -> n == label.lfId) filteredLabels of
             Nothing -> putColorDoc red NewLine "No such number of dictionary!"
             Just label -> do
-              putColorDoc green NewLine $ toText label.lfId <> label.label
+              putColorDoc green NewLine $ toText label.lfId <> toText label.label
               putColorDoc blue NewLine label.about
   where
-    toText :: Int -> Text
-    toText n = T.pack $ show n
     sortById :: [LabelFull] -> [LabelFull]
     sortById = sortBy (\labelFull1 labelFull2 ->
         compare labelFull1.lfId labelFull2.lfId)

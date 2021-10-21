@@ -1,11 +1,13 @@
 {-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Labels
        ( getLabels
        , Labels(..)
        , LabelFull(..)
+       , Title(..)
        ) where
 
 import Control.DeepSeq (NFData)
@@ -18,11 +20,15 @@ import GHC.Generics (Generic)
 import Toml (TomlCodec, (.=))
 import qualified Toml
 
+newtype Title = Title Text
+  deriving stock (Eq, Ord, Generic)
+  deriving newtype (Show)
+  deriving anyclass (NFData)
 
 data LabelFull = LabelFull
     { path      :: !Text
     , lfId      :: !Int
-    , label     :: !Text
+    , label     :: !Title
     , about     :: !Text
     , available :: !Bool
     , source    :: !Text
@@ -49,7 +55,7 @@ labelFullCodec :: TomlCodec LabelFull
 labelFullCodec = LabelFull
     <$> Toml.text "path"  .= path
     <*> Toml.int  "id"    .= lfId
-    <*> Toml.text "label" .= label
+    <*> Toml.diwrap (Toml.text "label") .= label
     <*> Toml.text "about" .= about
     <*> Toml.bool "available" .= available
     <*> Toml.text "source" .= source

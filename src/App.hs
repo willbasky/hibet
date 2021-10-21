@@ -24,20 +24,20 @@ app = do
       print err
 
 interpretHibet :: Sem
-  '[ FileIO
+  '[  FileIO
     , Error HibetErrors
-    , PrettyPrint
-    , Console
     , Resource
+    , Console
+    , PrettyPrint
     , Embed IO
     ] ()
   -> IO (Either HibetErrors ())
 interpretHibet program = program
   & runFile
   & runError @HibetErrors
-  & runPrettyPrint
-  & runConsole
   & runResource
+  & runConsole
+  & runPrettyPrint
   & runM
 
 hibet :: Members
