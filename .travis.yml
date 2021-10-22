@@ -2,39 +2,37 @@ sudo: true
 dist: bionic
 
 language: generic
-# language: haskell
+
+git:
+  depth: 5
 
 cache:
   directories:
-    - $HOME/.stack
-    # - .stack-work
-  timeout: 1000
+  - "$HOME/.stack"
 
-jobs:
+matrix:
   include:
-    - stage: "Build the backend"
-      before_install:
-        - sudo apt-get install -y libgmp-dev
-        - curl -sSL https://get.haskellstack.org/ | sh
-        # travis_retry works around https://github.com/commercialhaskell/stack/issues/4888
-        - travis_retry stack setup
-      install:
-        # Build
-        - stack build --no-terminal --test --no-run-tests --dependencies-only
-      script:
-        - stack build --no-terminal --test
-      before_cache:
-        - rm -rf $HOME/.stack/programs  # GHC is faster to install than to cache
-    - stage: "Hlint"
-      before_install:
-        - sudo apt-get install -y libgmp-dev
-        - curl -sSL https://get.haskellstack.org/ | sh
-        # travis_retry works around https://github.com/commercialhaskell/stack/issues/4888
-        - travis_retry stack setup
-      install:
-        - stack install hlint
-      script:
-        # Check
-        - hlint .
-      before_cache:
-        - rm -rf $HOME/.stack/programs  # GHC is faster to install than to cache
+  - env: GHC='8.10.7'
+    os: linux
+  - env: GHC='8.10.7'
+    os: osx
+
+before_install:
+  - sudo apt-get install -y libgmp-dev
+
+  # HLint check
+  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint .
+
+install:
+  # install stack and build project
+  - curl -sSL https://get.haskellstack.org/ | sh
+  - travis_retry stack setup
+  - stack --version
+  # build project
+  - stack build --test --no-run-tests --dependencies-only
+
+script:
+  - stack build --no-terminal --test
+
+notifications:
+  email: false
