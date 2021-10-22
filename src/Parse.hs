@@ -70,7 +70,7 @@ toTibetan wt ts = do
         look = fromMaybe "" . flip HMS.lookup wt
         fromLook :: [Wylie] -> Tibet
         fromLook = F.foldMap look
-    pure $ map (\(f,s) -> uncurry spaceBetween (fromLook f, F.foldMap fromLook s)) txt
+    pure $ map (\(f,s) -> spaceBetween (fromLook f) (F.foldMap fromLook s)) txt
 
 -- | Convert parsed tibetan text to wylie.
 toWylie
