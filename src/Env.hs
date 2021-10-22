@@ -11,7 +11,7 @@ module Env
 import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
 import Effects.File (FileIO, HibetErrors (..))
 import qualified Effects.File as File
-import Labels (Labels (..), getLabels)
+import Label (Labels (..), getLabels)
 import Parse (TibetWylie, WylieTibet, makeTibetWylie, makeTibetanRadexTree, makeWylieRadexTree,
               makeWylieTibet)
 

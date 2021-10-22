@@ -12,7 +12,7 @@ import Dictionary (selectDict)
 import Effects.Console
 import Effects.PrettyPrint
 import Env (Env)
-import Labels (LabelFull (..), Labels (..))
+import Label (LabelFull (..), Labels (..))
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)

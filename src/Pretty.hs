@@ -15,7 +15,8 @@ module Pretty
   , withHeaderSpaces
   ) where
 
-import Dictionary
+import Dictionary (Target(..), Answer(..))
+import Label (Title(..))
 import Utility (toText)
 
 import Data.Char (isSpace)
@@ -84,13 +85,13 @@ viewTranslations = sparsedStack . map viewTranslation
       withHeader green (header dictNumber dictTitle) $ prettyTargets targets
     -- Compose header
     header :: Int -> Title -> Text
-    header number title = T.concat [toText number, ". ", toText title]
+    header number title = T.concat [toText number, ". ", unTitle title]
     -- Decode targets
     prettyTargets :: [Target] -> Doc AnsiStyle
-    prettyTargets = vsep . map (wrapLines . toText)
+    prettyTargets = vsep . map (wrapLines . fixNewLine . unTarget)
     -- Fix new lines inside targets
-    -- fixNewLine :: Target -> Text
-    -- fixNewLine = T.replace "\\n" "\n"
+    fixNewLine :: Text -> Text
+    fixNewLine = T.replace "\\n" "\n"
 
 textToColorText :: Colorize -> Text -> Text
 textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col $ pretty txt
