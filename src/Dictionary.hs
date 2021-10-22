@@ -9,7 +9,6 @@ module Dictionary
        , Dictionary
        , DictionaryMeta (..)
        , Target(..)
-       , unTarget
        , Answer(..)
        , makeDictionary
        , searchTranslation
@@ -36,13 +35,10 @@ import GHC.Generics (Generic)
 import System.FilePath.Posix (takeBaseName)
 
 
-newtype Target = Target Text
+newtype Target = Target {unTarget :: Text}
   deriving stock (Eq, Generic, Ord)
   deriving newtype (Show)
   deriving anyclass (NFData)
-
-unTarget :: Target -> Text
-unTarget (Target t) = t
 
 data Answer = Answer
   { targets    :: ![Target]

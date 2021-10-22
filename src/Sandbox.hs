@@ -12,23 +12,23 @@ import Data.Text (Text)
 -- import Data.String
 -- import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
--- import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
+import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
 
 -- import Handlers (Title)
 
 import qualified Data.Text as T
--- import qualified Data.Text.IO as IO
+import qualified Data.Text.IO as IO
 -- import qualified Data.ByteString as BS
 
 
 -- | Show duplicates and write to file.
--- getDubs :: IO ()
--- getDubs = do
---     berzin <- IO.readFile "dicts/03-Berzin"
---     putTextFlush "Berzin file is loaded"
---     let dubs = findDups berzin
---     IO.writeFile "dics/dubs" $ T.pack $ show dubs
---     hPrint stderr dubs
+getDubs :: IO ()
+getDubs = do
+    berzin <- IO.readFile "dicts/Berzin-T|E.txt"
+    IO.putStrLn "Berzin file is loaded"
+    let dubs = findDups berzin
+    -- IO.writeFile "dics/dubs" $ T.pack $ show dubs
+    hPrint stderr dubs
 
 -- | List tuples of duplicates only from raw file.
 findDups :: Text -> [(Text,Text)]

@@ -8,7 +8,9 @@ and this project adheres to
 
 ## Unreleased
 
-## ## [0.8] - 2021-10-21
+* Remove extra quotes
+
+## [0.8] - 2021-10-21
 
 * Benchmark file-embed against path_hibet.
 * Move effects on polysemy.
@@ -16,7 +18,7 @@ and this project adheres to
 * Make types stricter.
 * Change license to BSD 3.
 
-## ## [0.7] - 2020-01-14
+## [0.7] - 2020-01-14
 
 ### Added
 
