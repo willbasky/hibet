@@ -16,7 +16,7 @@ module Pretty
   ) where
 
 import Dictionary (Target(..), Answer(..))
-import Labels (Title(..))
+import Label (Title(..))
 import Utility (toText)
 
 import Data.Char (isSpace)

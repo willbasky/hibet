@@ -80,7 +80,7 @@ library
                        Effects.PrettyPrint
                        Env
                        Dictionary
-                       Labels
+                       Label
                        Parse
                        Pretty
                        Translator
@@ -139,18 +139,36 @@ executable hibet
                        hibet
 
 
-test-suite hibet-test
+test-suite hibet-pretty
   import:              common-options
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
+  hs-source-dirs:      test/pretty
+  main-is:             Main.hs
   ghc-options:         -Wall
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N
-
   build-depends:
                        hibet
+                     , hspec
+                    --  , hedgehog
+                    --  , hspec-hedgehog
+                     , prettyprinter
+
+test-suite hibet-labels
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test/labels
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+  build-depends:
+                       hibet
+                     , bytestring
+                     , containers
+                     , hspec
 
 
 benchmark hibet-benchmark

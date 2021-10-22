@@ -2,33 +2,36 @@ sudo: true
 dist: bionic
 
 language: generic
+# language: haskell
 
 cache:
   directories:
     - $HOME/.stack
-    - .stack-work
+    # - .stack-work
   timeout: 1000
 
 jobs:
   include:
     - stage: "Build the backend"
-      before_script:
+      before_install:
         - sudo apt-get install -y libgmp-dev
         - curl -sSL https://get.haskellstack.org/ | sh
         # travis_retry works around https://github.com/commercialhaskell/stack/issues/4888
         - travis_retry stack setup
-      script:
+      install:
         # Build
-        - stack --no-terminal build --test --no-run-tests --dependencies-only
-        - stack --no-terminal build --test --no-run-tests
+        - stack build --no-terminal --test --no-run-tests --dependencies-only
+      script:
+        - stack build --no-terminal --test
       before_cache:
         - rm -rf $HOME/.stack/programs  # GHC is faster to install than to cache
     - stage: "Hlint"
-      before_script:
+      before_install:
         - sudo apt-get install -y libgmp-dev
         - curl -sSL https://get.haskellstack.org/ | sh
         # travis_retry works around https://github.com/commercialhaskell/stack/issues/4888
         - travis_retry stack setup
+      install:
         - stack install hlint
       script:
         # Check

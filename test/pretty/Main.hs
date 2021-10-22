@@ -1,8 +1,8 @@
 module Main where
 
-import Pretty ( viewTranslations )
-import Dictionary ( Answer(..), Target(Target) )
-import Label ( Title(Title) )
+import Dictionary (Answer (..), Target (Target))
+import Label (Title (Title))
+import Pretty (viewTranslations)
 
 import Prettyprinter (defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.Text (renderStrict)

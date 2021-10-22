@@ -5,6 +5,7 @@ module Sandbox where
 
 -- import Control.Monad (when)
 import System.Console.Haskeline
+    ( defaultSettings, getInputLine, outputStrLn, runInputT, InputT )
 -- import Data.ByteString.Char8 (ByteString)
 -- import System.Exit (exitSuccess)
 import Data.Bifunctor (second)
@@ -12,7 +13,7 @@ import Data.Text (Text)
 -- import Data.String
 -- import Path (Abs, File, Path, filename, fromRelFile)
 -- import Prettify (cyan, putTextFlush)
-import System.IO (BufferMode (..), hPrint, hSetBuffering, hSetEcho, stderr, stdin)
+import System.IO (hPrint, stderr)
 
 -- import Handlers (Title)
 

@@ -18,7 +18,7 @@ module Dictionary
        , toDictionaryMeta
        ) where
 
-import Labels (Title(..), LabelFull(..))
+import Label (Title(..), LabelFull(..))
 import Parse (ParseError, Tibet, Wylie)
 
 import Control.Monad.Except (Except)

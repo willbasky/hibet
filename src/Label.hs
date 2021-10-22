@@ -3,7 +3,7 @@
 {-# LANGUAGE DeriveGeneric  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Labels
+module Label
        ( getLabels
        , Labels(..)
        , LabelFull(..)

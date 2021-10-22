@@ -9,6 +9,7 @@ and this project adheres to
 ## Unreleased
 
 * Remove extra quotes
+* Add tests for Pretty and Labels modules
 
 ## [0.8] - 2021-10-21
 
