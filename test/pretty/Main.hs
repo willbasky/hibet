@@ -2,7 +2,7 @@ module Main where
 
 import Pretty ( viewTranslations )
 import Dictionary ( Answer(..), Target(Target) )
-import Labels ( Title(Title) )
+import Label ( Title(Title) )
 
 import Prettyprinter (defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.Text (renderStrict)

@@ -1,6 +1,6 @@
 module Main where
 
-import Labels (LabelFull (..), Labels (..), Title (..), getLabels)
+import Label (LabelFull (..), Labels (..), Title (..), getLabels)
 
 import qualified Data.ByteString as BS
 import qualified Data.Set as Set
