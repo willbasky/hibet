@@ -40,6 +40,13 @@ packages:
   original:
     hackage: polysemy-kvstore-0.1.2.0@sha256:d7016144ed6bfce89d6df18af47cf18020574d286ec743b42c8e9be83097e1e5,985
 - completed:
+    hackage: polysemy-1.6.0.0@sha256:29a73b1bf3d0049b12041016b7ee25e76bd8f6e99f9c37c2dde2b46368246697,6184
+    pantry-tree:
+      size: 4577
+      sha256: c4ca508b4a6786fc27e0f484344ce8dba119ea2f7fe47fb7379a51313a94cd10
+  original:
+    hackage: polysemy-1.6.0.0@sha256:29a73b1bf3d0049b12041016b7ee25e76bd8f6e99f9c37c2dde2b46368246697,6184
+- completed:
     name: radixtree
     version: 0.5.0.0
     git: https://gitlab.com/transportengineering/radixtree

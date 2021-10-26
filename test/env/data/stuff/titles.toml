@@ -1,0 +1,22 @@
+[[titles]]
+    path = "Berzin-T|E"
+    id = 8
+    label = "Berzin"
+    mergeLines = true
+    about = "Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "RichardBarron-T|E"
+    id = 18
+    label = "Richard Barron"
+    about = "Richard Barron's glossary. © Copyright 2002 by Turquoise Dragon Media Services. Source: Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 (2003)|online version: http://rywiki.tsadra.org"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]

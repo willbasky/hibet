@@ -9,7 +9,7 @@ module Env
   where
 
 import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
-import Effects.File (FileIO, HibetErrors (..))
+import Effects.File (FileIO, HibetError (..))
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
 import Parse (TibetWylie, WylieTibet, makeTibetWylie, makeTibetanRadexTree, makeWylieRadexTree,
@@ -25,6 +25,8 @@ import Polysemy (Members, Sem)
 import Polysemy.Error (Error, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 
+-- import Debug.Trace
+
 -- | Environment fot translator
 data Env = Env
   { dictionaryMeta :: ![DictionaryMeta]
@@ -38,14 +40,18 @@ data Env = Env
   deriving anyclass (NFData)
 
 
-makeEnv :: Members [FileIO, Error HibetErrors] r => Sem r Env
+makeEnv :: Members [FileIO, Error HibetError] r => Sem r Env
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
     syls <- TE.decodeUtf8 <$> File.readFile sylsPath
+
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
-    absDir <- File.parseAbsDirectory =<< File.getPath "dicts/"
+
+    dir <- File.getPath "dicts/"
+    absDir <- File.parseAbsDir dir
     (_, files) <- File.listDirectory absDir
     filesAndTexts <- getFilesTexts files
+
     let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
     pure $ runEval $ do
       wt <- rparWith rdeepseq $ makeWylieTibet syls
@@ -63,7 +69,7 @@ makeEnv = do
 
 getFilesTexts :: Members
   [ FileIO
-  , Error HibetErrors] r
+  , Error HibetError] r
   => [Path Abs File] -> Sem r [(FilePath, TL.Text)]
 getFilesTexts fp = do
   let paths = map fromAbsFile fp

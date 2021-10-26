@@ -93,6 +93,8 @@ library
                        bytestring
                      , containers
                      , deepseq
+                     , directory
+                     , extra
                      , filepath
                      , gitrev
                      , haskeline
@@ -105,7 +107,7 @@ library
                      , parsers-megaparsec
                      , path
                      , path-io
-                     , polysemy
+                     , polysemy ^>=1.6.0.0
                      , polysemy-path
                      , prettyprinter
                      , prettyprinter-ansi-terminal
@@ -151,8 +153,6 @@ test-suite hibet-pretty
   build-depends:
                        hibet
                      , hspec
-                    --  , hedgehog
-                    --  , hspec-hedgehog
                      , prettyprinter
 
 test-suite hibet-labels
@@ -170,6 +170,27 @@ test-suite hibet-labels
                      , containers
                      , hspec
 
+test-suite hibet-env
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test/env
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+  build-depends:
+                       hibet
+                     , bytestring
+                     , hspec
+                     , containers
+                     , polysemy
+                     , polysemy-path
+                     , record-hasfield
+                     , unordered-containers
+
+  other-modules:       Paths_hibet
+                       Paths
 
 benchmark hibet-benchmark
   import:              common-options
