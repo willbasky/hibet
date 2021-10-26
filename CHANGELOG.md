@@ -8,8 +8,9 @@ and this project adheres to
 
 ## Unreleased
 
-* Remove extra quotes
-* Add tests for Pretty and Labels modules
+* Remove extra quotes.
+* Add tests for Pretty and Labels modules.
+* Make travis to work work with tests.
 
 ## [0.8] - 2021-10-21
 

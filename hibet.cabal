@@ -105,7 +105,7 @@ library
                      , parsers-megaparsec
                      , path
                      , path-io
-                     , polysemy
+                     , polysemy ^>=1.6.0.0
                      , polysemy-path
                      , prettyprinter
                      , prettyprinter-ansi-terminal
@@ -170,6 +170,31 @@ test-suite hibet-labels
                      , containers
                      , hspec
 
+test-suite hibet-env
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test/env
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+  build-depends:
+                       hibet
+                     , bytestring
+                    --  , containers
+                     , hspec
+                     , path
+                    --  , path-io
+                     , polysemy
+                     , polysemy-path
+                     , record-hasfield
+                     , text
+                     , unordered-containers
+                     , directory
+
+  other-modules:       Paths_hibet
+                       Paths
 
 benchmark hibet-benchmark
   import:              common-options

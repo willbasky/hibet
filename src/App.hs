@@ -12,6 +12,8 @@ import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
 import Polysemy.Resource (Resource, runResource)
+-- import Polysemy.Trace (Trace, traceToStdout)
+
 
 
 app :: IO ()
@@ -29,6 +31,7 @@ interpretHibet :: Sem
     , Resource
     , Console
     , PrettyPrint
+    -- , Trace
     , Embed IO
     ] ()
   -> IO (Either HibetErrors ())
@@ -38,6 +41,7 @@ interpretHibet program = program
   & runResource
   & runConsole
   & runPrettyPrint
+  -- & traceToStdout
   & runM
 
 hibet :: Members

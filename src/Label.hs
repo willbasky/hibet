@@ -20,6 +20,7 @@ import GHC.Generics (Generic)
 import Toml (TomlCodec, (.=))
 import qualified Toml
 
+
 newtype Title = Title {unTitle :: Text}
   deriving stock (Eq, Ord, Generic)
   deriving newtype (Show)
