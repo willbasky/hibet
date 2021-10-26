@@ -27,17 +27,17 @@ app = do
 
 interpretHibet :: Sem
   '[  FileIO
-    , Error HibetErrors
+    , Error HibetError
     , Resource
     , Console
     , PrettyPrint
     -- , Trace
     , Embed IO
     ] ()
-  -> IO (Either HibetErrors ())
+  -> IO (Either HibetError ())
 interpretHibet program = program
   & runFile
-  & runError @HibetErrors
+  & runError @HibetError
   & runResource
   & runConsole
   & runPrettyPrint
@@ -46,7 +46,7 @@ interpretHibet program = program
 
 hibet :: Members
   [ FileIO
-  , Error HibetErrors
+  , Error HibetError
   , Resource
   , Console
   , PrettyPrint

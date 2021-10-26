@@ -93,6 +93,8 @@ library
                        bytestring
                      , containers
                      , deepseq
+                     , directory
+                     , extra
                      , filepath
                      , gitrev
                      , haskeline
@@ -151,8 +153,6 @@ test-suite hibet-pretty
   build-depends:
                        hibet
                      , hspec
-                    --  , hedgehog
-                    --  , hspec-hedgehog
                      , prettyprinter
 
 test-suite hibet-labels
@@ -182,16 +182,12 @@ test-suite hibet-env
   build-depends:
                        hibet
                      , bytestring
-                    --  , containers
                      , hspec
-                     , path
-                    --  , path-io
+                     , containers
                      , polysemy
                      , polysemy-path
                      , record-hasfield
-                     , text
                      , unordered-containers
-                     , directory
 
   other-modules:       Paths_hibet
                        Paths
