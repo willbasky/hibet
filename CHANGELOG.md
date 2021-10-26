@@ -8,9 +8,12 @@ and this project adheres to
 
 ## Unreleased
 
+## [0.9] - 2021-10-27
+
 * Remove extra quotes.
 * Add tests for Pretty and Labels modules.
 * Make travis to work work with tests.
+* Mock FileIO stuff
 
 ## [0.8] - 2021-10-21
 
