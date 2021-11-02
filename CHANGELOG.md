@@ -8,6 +8,7 @@ and this project adheres to
 
 ## Unreleased
 
+* Polysemy tracing added.
 ## [0.9] - 2021-10-27
 
 * Remove extra quotes.
