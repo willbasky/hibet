@@ -4,14 +4,34 @@ module Utility
   , filename
   , mkAbsolute
   , T.pack
-  ) where
+  , debugEnabledEnvVar
+  ,toTitle) where
 
+import Data.Char (toLower, toUpper)
 import Data.List.Extra (takeWhileEnd)
-import qualified Data.Text as T
+import Data.Map as Map (Map, fromList, lookup)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import qualified Data.Text as T
+import System.Directory (makeAbsolute)
+import System.Environment (getEnvironment)
 import System.IO.Unsafe (unsafePerformIO)
-import System.Directory ( makeAbsolute )
+import Text.Read (readMaybe)
 
+environmentVars :: IO (Map String String)
+environmentVars = Map.fromList <$> getEnvironment
+
+lookupEnv :: String -> IO (Maybe String)
+lookupEnv k = Map.lookup k <$> environmentVars
+
+debugEnabledEnvVar :: IO Bool
+debugEnabledEnvVar = do
+  isDebug <- lookupEnv "HIBET_DEBUG"
+  pure $ fromMaybe False $ readMaybe . toTitle =<< isDebug
+
+toTitle :: String -> String
+toTitle ""     = ""
+toTitle (x:xs) = toUpper x : map toLower xs
 
 toText :: Show a => a -> Text
 toText = T.pack . show

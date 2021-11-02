@@ -20,10 +20,8 @@ import Polysemy (Member, Sem)
 import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
 import qualified Polysemy.Path as PP
-
+import Polysemy.Trace (Trace, runTraceList)
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
-
--- import Debug.Trace
 
 
 main :: IO ()
@@ -34,53 +32,55 @@ mockMakeEnvSpec ::Spec
 mockMakeEnvSpec =
   describe "FileIO: " $ do
     it "GetPath syllabies" $ do
-      let res = runFileMock (EF.getPath "stuff/tibetan-syllables")
+      let res = snd $ runFileMock (EF.getPath "stuff/tibetan-syllables")
       res `shouldBe` Right sylPath
     it "GetPath titles" $ do
-      let res = runFileMock (EF.getPath "stuff/titles.toml")
+      let res = snd $ runFileMock (EF.getPath "stuff/titles.toml")
       res `shouldBe` Right titlePath
     it "GetPath dicts" $ do
-      let res = runFileMock (EF.getPath "dicts/")
+      let res = snd $ runFileMock (EF.getPath "dicts/")
       res `shouldBe` Right dictDir
 
     it "Read file syllabies" $ do
-      let res = runFileMock (EF.readFile sylPath)
+      let res = snd $ runFileMock (EF.readFile sylPath)
       res `shouldBe` Right syllabies
     it "Read file titles" $ do
-      let res = runFileMock (EF.readFile titlePath)
+      let res = snd $ runFileMock (EF.readFile titlePath)
       res `shouldBe` Right toml
     it "Read file lazy dict 1" $ do
-      let res = runFileMock (EF.readFileLazy dictPath1)
+      let res = snd $ runFileMock (EF.readFileLazy dictPath1)
       res `shouldBe` Right dict1
     it "Read file lazy dict 2" $ do
-      let res = runFileMock (EF.readFileLazy dictPath2)
+      let res = snd $ runFileMock (EF.readFileLazy dictPath2)
       res `shouldBe` Right dict2
 
     it "Make env. Meta" $ do
-      case runFileMock makeEnv of
+      case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
         Right env -> env.dictionaryMeta `shouldBe` [meta1,meta2]
     it "Make env. Labels" $ do
-      case runFileMock makeEnv of
+      case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
         Right env -> env.labels `shouldBe` labels
     it "Make env. WylieTibet" $ do
-      case runFileMock makeEnv of
+      case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
         Right env -> env.wylieTibet `shouldBe` wylieTibet
     it "Make env. TibetWylie" $ do
-      case runFileMock makeEnv of
+      case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
         Right env -> env.tibetWylie `shouldBe` tibetWylie
 
 runFileMock :: Sem
   '[  FileIO
     , Error HibetError
+    , Trace
     ] a
-  -> Either HibetError a
+  -> ([String], Either HibetError a)
 runFileMock program = program
   & interpretFileMock
   & runError @HibetError
+  & runTraceList
   & P.run
 
 interpretFileMock :: Member (Error HibetError) r => Sem (FileIO : r) a -> Sem r a
