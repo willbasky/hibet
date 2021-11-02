@@ -7,18 +7,20 @@ import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
 import Env (makeEnv)
+import Utility (debugEnabledEnvVar)
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
 import Polysemy.Resource (Resource, runResource)
--- import Polysemy.Trace (Trace, traceToStdout)
+import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
 
 
 
 app :: IO ()
 app = do
-  res <- interpretHibet hibet
+  isDebug <- debugEnabledEnvVar
+  res <- interpretHibet hibet isDebug
   case res of
     Right _ -> pure ()
     Left err -> do
@@ -31,17 +33,18 @@ interpretHibet :: Sem
     , Resource
     , Console
     , PrettyPrint
-    -- , Trace
+    , Trace
     , Embed IO
     ] ()
+  -> Bool -- isDebug
   -> IO (Either HibetError ())
-interpretHibet program = program
+interpretHibet program isDebug = program
   & runFile
   & runError @HibetError
   & runResource
   & runConsole
   & runPrettyPrint
-  -- & traceToStdout
+  & (if isDebug then traceToStdout else ignoreTrace)
   & runM
 
 hibet :: Members
@@ -50,6 +53,7 @@ hibet :: Members
   , Resource
   , Console
   , PrettyPrint
+  , Trace
   , Embed IO
   ] r
   => Sem r ()

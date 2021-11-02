@@ -24,8 +24,8 @@ import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
+import Polysemy.Trace (Trace, trace)
 
--- import Debug.Trace
 
 -- | Environment fot translator
 data Env = Env
@@ -40,11 +40,12 @@ data Env = Env
   deriving anyclass (NFData)
 
 
-makeEnv :: Members [FileIO, Error HibetError] r => Sem r Env
+makeEnv :: Members [FileIO, Error HibetError, Trace] r => Sem r Env
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
-    syls <- TE.decodeUtf8 <$> File.readFile sylsPath
+    trace sylsPath
 
+    syls <- TE.decodeUtf8 <$> File.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
 
     dir <- File.getPath "dicts/"
