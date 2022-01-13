@@ -6,12 +6,13 @@ import Cli (parser, runCommand)
 import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
-import Env (makeEnv)
+import Env (Env, makeEnv)
 import Utility (debugEnabledEnvVar)
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
+import Polysemy.Input (Input, runInputSem)
 import Polysemy.Resource (Resource, runResource)
 import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
 
@@ -28,7 +29,8 @@ app = do
       print err
 
 interpretHibet :: Sem
-  '[  FileIO
+  '[  Input Env
+    , FileIO
     , Error HibetError
     , Resource
     , Console
@@ -39,6 +41,7 @@ interpretHibet :: Sem
   -> Bool -- isDebug
   -> IO (Either HibetError ())
 interpretHibet program isDebug = program
+  & runInputSem makeEnv
   & runFile
   & runError @HibetError
   & runResource
@@ -48,7 +51,8 @@ interpretHibet program isDebug = program
   & runM
 
 hibet :: Members
-  [ FileIO
+  [ Input Env
+  , FileIO
   , Error HibetError
   , Resource
   , Console
@@ -58,6 +62,5 @@ hibet :: Members
   ] r
   => Sem r ()
 hibet = do
-  env <- makeEnv
   com <- execParser parser
-  runCommand env com
+  runCommand com

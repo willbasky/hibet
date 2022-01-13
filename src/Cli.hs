@@ -31,8 +31,9 @@ import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, h
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
 
-import Polysemy (Member, Members, Sem)
+import Polysemy (Members, Sem)
 import Polysemy.Resource (Resource)
+import Polysemy.Input (Input, input)
 
 
 
@@ -51,18 +52,20 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members [Resource, PrettyPrint, Console] r
-  => Env -> Command -> Sem r ()
-runCommand env = \case
+runCommand :: Members [Input Env, Resource, PrettyPrint, Console] r
+  => Command -> Sem r ()
+runCommand = \case
     Shell selectedDicts -> do
+      env <- input
       let newEnv = env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
       translator newEnv
     Om -> putColorDoc magenta NewLine om
-    ShowOption opt -> runShow env opt
+    ShowOption opt -> runShow opt
 
-runShow :: Member PrettyPrint r
-  => Env -> Opt -> Sem r ()
-runShow env opt = do
+runShow :: Members [Input Env, PrettyPrint] r
+  => Opt -> Sem r ()
+runShow opt = do
+  env :: Env <- input
   let Labels labels = env.labels
   let filteredLabels = filterAvailable labels
   case opt of
