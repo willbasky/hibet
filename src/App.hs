@@ -51,9 +51,9 @@ interpretHibet program isDebug = program
   & runM
 
 hibet :: Members
-  [ FileIO
+  [ Input Env
+  , FileIO
   , Error HibetError
-  , Input Env
   , Resource
   , Console
   , PrettyPrint
@@ -62,6 +62,5 @@ hibet :: Members
   ] r
   => Sem r ()
 hibet = do
-  -- env <- makeEnv
   com <- execParser parser
   runCommand com
