@@ -24,6 +24,8 @@ source-repository head
 
 common common-options
   build-depends:       base ^>= 4.14.3.0
+                     , record-hasfield
+                     , record-dot-preprocessor
 
   ghc-options:         -Wall
                        -Wcompat
@@ -32,42 +34,39 @@ common common-options
                        -Wincomplete-record-updates
                        -Wredundant-constraints
                       --  -split-sections
-  if impl(ghc >= 8.2)
-    ghc-options:       -fhide-source-paths
-  if impl(ghc >= 8.4)
-    ghc-options:
+                       -fhide-source-paths
                       --  -Wmissing-export-lists
                        -Wpartial-fields
-  if impl(ghc >= 8.8)
-    ghc-options:       -Wmissing-deriving-strategies
+                       -Wmissing-deriving-strategies
                        -fwrite-ide-info
                        -hiedir=.hie
-  if impl(ghc >= 8.10)
-    ghc-options:       -Wunused-packages
+                       -Wunused-packages
+                       -fplugin=RecordDotPreprocessor
 
   default-language:    Haskell2010
 
-  default-extensions:  OverloadedStrings
-                       RecordWildCards
-                      --  ScopedTypeVariables
-                       LambdaCase
-                      --  TypeApplications
-                       TupleSections
+  default-extensions:
+                       DataKinds
                        DeriveGeneric
                        DerivingStrategies
-                       -- for polysemy
-                       DataKinds
+                       DuplicateRecordFields
                        FlexibleContexts
+                       FlexibleInstances
                        GADTs
                        LambdaCase
-                       PolyKinds
+                       MultiParamTypeClasses
+                       OverloadedStrings
                        RankNTypes
+                       RecordWildCards
+                       PolyKinds
                        ScopedTypeVariables
-                       TypeApplications
-                       TypeOperators
-                       TypeFamilies
                        TemplateHaskell
-                       GADTs
+                       TupleSections
+                       TypeApplications
+                       TypeFamilies
+                       TypeOperators
+                       TypeSynonymInstances
+                       UndecidableInstances
 
 library
   import:              common-options
@@ -84,6 +83,7 @@ library
                        Parse
                        Pretty
                        Translator
+                       Type
                        Utility
 
   other-modules:       Paths_hibet
@@ -91,6 +91,7 @@ library
 
   build-depends:
                        bytestring
+                     , bimap
                      , containers
                      , deepseq
                      , directory
@@ -98,22 +99,19 @@ library
                      , filepath
                      , gitrev
                      , haskeline
-                     , megaparsec ^>= 8.0.0
+                     , megaparsec
                      , mtl
                      , neat-interpolation
                      , optparse-applicative
                      , pager
                      , parallel
-                     , parsers-megaparsec
                      , path
                      , path-io
-                     , polysemy ^>=1.6.0.0
+                     , polysemy ^>=1.7.1.0
                      , polysemy-path
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree
-                     , record-dot-preprocessor
-                     , record-hasfield
                      , terminal-size
                      , text
                      , tomland
@@ -186,7 +184,8 @@ test-suite hibet-env
                      , containers
                      , polysemy
                      , polysemy-path
-                     , record-hasfield
+                     , bimap
+                    --  , record-hasfield
                      , unordered-containers
 
   other-modules:       Paths_hibet

@@ -1,20 +1,21 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric  #-}
-{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
 
 module Env
   ( makeEnv
   , Env(..)
+  , updateEnv
   )
   where
 
-import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
-import Effects.File (FileIO, HibetError (..))
+import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
+import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (TibetWylie, WylieTibet, makeTibetWylie, makeTibetanRadexTree, makeWylieRadexTree,
-              makeWylieTibet)
+import Parse (BimapWylieTibet, makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
+import Type (HibetError (..))
 
+import Control.Monad.Except (runExcept)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq, rparWith, runEval)
 import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
@@ -22,19 +23,18 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
-import Polysemy.Error (Error, throw)
+import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace, trace)
 
 
 -- | Environment fot translator
 data Env = Env
-  { dictionaryMeta :: ![DictionaryMeta]
-  , wylieTibet     :: !WylieTibet
-  , tibetWylie     :: !TibetWylie
-  , radixWylie     :: !(RadixTree ())
-  , radixTibet     :: !(RadixTree ())
-  , labels         :: !Labels
+  { dictionaryMeta  :: ![DictionaryMeta]
+  , bimapWylieTibet :: !BimapWylieTibet
+  , radixWylie      :: !(RadixTree ())
+  , radixTibet      :: !(RadixTree ())
+  , labels          :: !Labels
   }
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
@@ -54,17 +54,16 @@ makeEnv = do
     filesAndTexts <- getFilesTexts files
 
     let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
+    sylList <- fromEither $ runExcept $ splitSyllables syls
     pure $ runEval $ do
-      wt <- rparWith rdeepseq $ makeWylieTibet syls
-      tw <- rparWith rdeepseq $ makeTibetWylie syls
-      wr <- rparWith rdeepseq $ makeWylieRadexTree syls
-      tr <- rparWith rdeepseq $ makeTibetanRadexTree syls
+      wtSyllables <- rparWith rdeepseq $ makeBi sylList
+      wRadix <- rparWith rdeepseq $ makeWylieRadexTree syls
+      tRadix <- rparWith rdeepseq $ makeTibetanRadexTree syls
       pure Env
               { dictionaryMeta = dictsMeta
-              , wylieTibet = wt
-              , tibetWylie = tw
-              , radixWylie = wr
-              , radixTibet = tr
+              , bimapWylieTibet = wtSyllables
+              , radixWylie = wRadix
+              , radixTibet = tRadix
               , labels     = labels
               }
 
@@ -80,6 +79,9 @@ getFilesTexts fp = do
     then pure $ zip paths txts
     else throw $ UnknownError "Not all dictionary files was read successfully"
 
+updateEnv :: [Int] -> Env -> Env
+updateEnv selectedDicts env =
+  env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f

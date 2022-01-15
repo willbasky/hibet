@@ -1,15 +1,19 @@
-resolver: lts-18.13
+resolver: lts-18.21
 
 packages:
 - .
 
 extra-deps:
-- parsers-megaparsec-0.1.0.1@sha256:eda0fa6cb3e2efeeea31ba373e7ee6cc5cb24efa485d082818e9084c4d804799,1724
-- megaparsec-8.0.0@sha256:362f85e243ecbcb550e1de6e5c74ba5a50c09edaa1208c99bc5b9fd242227fc6,3808
-- polysemy-path-0.2.1.0@sha256:704522bc0efdc43c22729039dc1234ebfd1af4103d2f0cb4ac761180ea0f2b75,1046
-- polysemy-extra-0.2.0.0@sha256:c7ea076fc5124e04cfd4d4b32c03a21debca2385d0803e01edb0d8112ece8448,1066
-- polysemy-kvstore-0.1.2.0@sha256:d7016144ed6bfce89d6df18af47cf18020574d286ec743b42c8e9be83097e1e5,985
-- polysemy-1.6.0.0@sha256:29a73b1bf3d0049b12041016b7ee25e76bd8f6e99f9c37c2dde2b46368246697,6184
+- polysemy-1.7.1.0@sha256:3ead7a332abd70b202920ed3bf2e36866de163f821e643adfdcc9d39867b8033,5977
+
+- git: https://gitlab.homotopic.tech/metaxis/polysemy-extra
+  commit: b3f53c7fd7385e2d2e6bcca07e92a1f2f28f8704
+
+- git: https://gitlab.homotopic.tech/metaxis/polysemy-kvstore
+  commit: 5e5e247fffc77aa67f03825dbfcc51f0dec2fb30
+
+- git: https://gitlab.homotopic.tech/metaxis/polysemy-path
+  commit: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
 
 - git: https://gitlab.com/transportengineering/radixtree
   commit: 94462dfdca5d01ea445642ced7aad136deab2c1a

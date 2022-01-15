@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
-
 {-# LANGUAGE QuasiQuotes     #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -8,7 +6,6 @@ module Cli
        , parser
        ) where
 
-import Dictionary (selectDict)
 import Effects.Console
 import Effects.PrettyPrint
 import Env (Env)
@@ -16,6 +13,7 @@ import Label (LabelFull (..), Labels (..))
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)
+import Type (HibetError (..))
 import Utility (toText)
 
 import Control.Applicative (many, optional, (<|>))
@@ -30,12 +28,11 @@ import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, h
                             infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
-
 import Polysemy (Members, Sem)
-import Polysemy.Resource (Resource)
+import Polysemy.Error (Error)
 import Polysemy.Input (Input, input)
-
-
+import Polysemy.Resource (Resource)
+import Prelude hiding (lookup)
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -47,20 +44,25 @@ data Command
     = Shell [Int]
     | Om
     | ShowOption Opt
+    | Debug
 
 -- | Commands parsed with @show@ command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members [Input Env, Resource, PrettyPrint, Console] r
+runCommand :: Members [Input Env, Resource, PrettyPrint, Console, Error HibetError] r
   => Command -> Sem r ()
-runCommand = \case
+runCommand com = do
+  env :: Env <- input
+  case com of
     Shell selectedDicts -> do
-      env <- input
-      let newEnv = env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
-      translator newEnv
+      -- TODO: selection modify Env. It requires Reader.
+      -- I don't know how to pass 'Sem r i' to 'runReader'
+      translator
     Om -> putColorDoc magenta NewLine om
     ShowOption opt -> runShow opt
+    Debug -> do
+      printDebug env.radixWylie
 
 runShow :: Members [Input Env, PrettyPrint] r
   => Opt -> Sem r ()
@@ -144,6 +146,7 @@ commands = subparser
     $ command "shell" (info (helper <*> shellP) $ progDesc "Start the translate shell")
    <> command "om" (info (helper <*> pure Om) $ progDesc "Print Om to a terminal")
    <> command "show" (info (helper <*> showP) $ progDesc "Show names or meta of dictionaries")
+   <> command "debug" (info (helper <*> pure Debug) $ progDesc "Debug hibet")
 
 shellP :: Parser Command
 shellP = Shell <$> idListP

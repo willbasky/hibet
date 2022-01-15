@@ -27,7 +27,7 @@ lookupEnv k = Map.lookup k <$> environmentVars
 debugEnabledEnvVar :: IO Bool
 debugEnabledEnvVar = do
   isDebug <- lookupEnv "HIBET_DEBUG"
-  pure $ fromMaybe False $ readMaybe . toTitle =<< isDebug
+  pure $ Just True == (readMaybe . toTitle =<< isDebug)
 
 toTitle :: String -> String
 toTitle ""     = ""
