@@ -10,6 +10,8 @@ and this project adheres to
 
 * Polysemy tracing added.
 * Polysemy input added.
+* Swap Hashmap with Bimap for syllables
+* Get rid of `parsers-megaparsec`
 
 ## [0.9] - 2021-10-27
 
