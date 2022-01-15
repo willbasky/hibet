@@ -1,8 +1,9 @@
 module Effects.File where
 
+import Type (HibetError (..))
+
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import Data.Text (Text)
 import Path.IO (listDir)
 import Paths_hibet (getDataFileName)
 import Polysemy (Embed, Members, Member, Sem)
@@ -11,10 +12,6 @@ import Polysemy.Error (Error, mapError)
 import Polysemy.Path (Abs, Dir, File, Path, PathException)
 import qualified Polysemy.Path as PP
 
-data HibetError
-  = PathError PathException
-  | UnknownError Text
-  deriving stock (Eq, Show)
 
 data FileIO m a where
   ReadFile :: FilePath -> FileIO m BS.ByteString

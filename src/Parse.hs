@@ -1,109 +1,175 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DerivingVia    #-}
+
 module Parse
        (
-       -- Convertors from parsed text
+       -- * Convertors from parsed text
          toTibetan
        , toWylie
-       -- Make hashmaps from syllables
-       , makeWylieTibet
-       , makeTibetWylie
-       -- Parsers
+       -- * Make bimap from syllables
+      , makeBi
+       -- * Parsers
        , parseWylieInput
        , parseTibetanInput
-       -- Radex trees
+       -- * Radex trees
        , makeWylieRadexTree
        , makeTibetanRadexTree
-       -- splitters
-       , splitterWT
-       , splitterTW
-       -- Data types
-       , ParseError
-       , Wylie
-       , Tibet
-       , WylieTibet
-       , TibetWylie
+       -- * splitter
+       , splitSyllables
+       -- * Data types
+       , BimapWylieTibet
+       , TibetScript(..)
+       , fromTibetScript
+       , WylieScript(..)
+       , fromWylieScript
+       , TibetSyllable(..)
+       , WylieSyllable(..)
+       , lookupWylieScript
+       , lookupTibetScript
        ) where
 
-import Control.Applicative ( Alternative(some, many, (<|>)) )
-import Control.Monad.Except ( Except, liftEither, runExcept )
-import Data.Bitraversable (Bitraversable (..))
-import qualified Data.Foldable as F
-import Data.Functor.Identity (Identity)
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HMS
-import Data.Maybe (fromMaybe)
-import Data.RadixTree ( fromFoldable_, search, RadixTree )
+import Type (HibetError (..))
+
+import Control.Applicative (Alternative (many, some, (<|>)))
+import Control.Exception (SomeException)
+import Control.Monad.Except (Except, liftEither)
+import Control.Parallel.Strategies (NFData)
+import Data.Bimap (Bimap)
+import qualified Data.Bimap as Bi
+import Data.Either.Extra (mapLeft)
+import Data.RadixTree (RadixTree, fromFoldable_, lookup)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Void (Void)
+import GHC.Generics (Generic)
+import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
-import qualified Text.Megaparsec.Error as ME
-import Text.Megaparsec.Parsers
-    ( CharParsing(char), Parsing(try), ParsecT(unParsecT) )
 
 
-type Wylie = Text
-type Tibet = Text
+-- | For transcripton
+data WylieScript
+  = ScriptWylie WylieSyllable
+  | NonScriptWylie Text
+  deriving stock (Show, Eq)
 
--- | Prepare syllables hashmaps.
-type WylieTibet = HashMap Wylie Tibet
-type TibetWylie = HashMap Tibet Wylie
+fromWylieScript :: WylieScript -> Text
+fromWylieScript (ScriptWylie s)    = unWylie s
+fromWylieScript (NonScriptWylie t) = t
 
-type Parser a = ParsecT Void Text Identity a
-type ParseError = ME.ParseErrorBundle Text Void
+data TibetScript
+  = ScriptTibet TibetSyllable
+  | NonScriptTibet Text
+  deriving stock (Show, Eq)
 
-parseT :: Parser a -> String -> Text -> Except ParseError a
-parseT p s t = liftEither $ M.runParser (unParsecT p) s t
+fromTibetScript :: TibetScript -> Text
+fromTibetScript (ScriptTibet s)    = unTibet s
+fromTibetScript (NonScriptTibet t) = t
 
--- parseTest :: Show a => Parser a -> Text -> IO ()
--- parseTest = M.parseTest . unParsecT
+newtype WylieSyllable = WylieSyllable {unWylie :: Text}
+  deriving stock (Show, Eq, Generic)
+  deriving (Ord) via Text
+  deriving anyclass (NFData)
+newtype TibetSyllable = TibetSyllable {unTibet :: Text}
+  deriving stock (Show, Eq, Generic)
+  deriving (Ord) via Text
+  deriving anyclass (NFData)
+
+
+-- | Syllable bimap.
+type BimapWylieTibet = Bimap WylieSyllable TibetSyllable
+
+type Parser a = M.Parsec Void Text a
+
+parseT :: Parser a -> String -> Text -> Except HibetError a
+parseT p s t = liftEither $ mapLeft MegaError $ M.runParser p s t
 
 -- | Convert parsed wylie text to tibetan script.
+-- TODO: Check perfomance on big input
 toTibetan
-    :: WylieTibet
-    -> Except ParseError [([Wylie], [[Wylie]])]
-    -> Except ParseError [Tibet]
-toTibetan wt ts = do
+    :: BimapWylieTibet
+    -> Except HibetError [WylieScript]
+    -> Except HibetError [TibetScript]
+toTibetan bi ts = do
     txt <- ts
-    let look :: Wylie -> Tibet
-        look = fromMaybe "" . flip HMS.lookup wt
-        fromLook :: [Wylie] -> Tibet
-        fromLook = F.foldMap look
-    pure $ map (\(f,s) -> spaceBetween (fromLook f) (F.foldMap fromLook s)) txt
+    let look :: WylieSyllable -> Either SomeException TibetSyllable
+        look = flip Bi.lookup bi
+    liftEither $ traverse (\case
+      ScriptWylie w -> case look w of
+        Left err  -> Left $ BimapError err
+        Right res -> Right $ ScriptTibet res
+      NonScriptWylie t -> Right $ NonScriptTibet t
+      ) txt
+
+
 
 -- | Convert parsed tibetan text to wylie.
 toWylie
-    :: TibetWylie
-    -> Except ParseError [[Tibet]]
-    -> Except ParseError Wylie
-toWylie tw ts = do
+    :: BimapWylieTibet
+    -> Except HibetError [TibetScript]
+    -> Except HibetError [WylieScript]
+toWylie bi ts = do
     txt <- ts
-    let look :: Tibet -> Wylie
-        look = fromMaybe "" . flip HMS.lookup tw
-        fromLook :: [Wylie] -> Tibet
-        fromLook = F.foldMap look
-    pure $ T.unwords $ map fromLook txt
+    let look :: TibetSyllable -> Either SomeException WylieSyllable
+        look = flip Bi.lookupR bi
+    liftEither $ traverse (\case
+      ScriptTibet w -> case look w of
+        Left err  -> Left $ BimapError err
+        Right res -> Right $ ScriptWylie res
+      NonScriptTibet t -> Right $ NonScriptWylie t
+      ) txt
 
--- | Parse text to wylie or fail.
-parseWylieInput :: RadixTree () -> Text -> Except ParseError [([Wylie], [[Wylie]])]
+
+lookupWylieScript :: RadixTree a -> Text -> WylieScript
+lookupWylieScript radix t = case lookup radix t of
+  Nothing     -> NonScriptWylie t
+  Just (t',_) -> ScriptWylie $ WylieSyllable t'
+
+lookupTibetScript :: RadixTree a -> Text -> TibetScript
+lookupTibetScript radix t = case lookup radix t of
+  Nothing     -> NonScriptTibet t
+  Just (t',_) -> ScriptTibet $ TibetSyllable t'
+
+{- | Parse text to wylie or fail.
+'search' gives parsing of dirty strings, e.g.
+@
+> parseWylieInput radix "(balka)"
+> parseWylieInput radix "(balkana)"
+ExceptT (Identity (Right [([],[["balka"]])]))
+@
+it reads radixed words and drops non-radixed in anyway.
+Therefore dirty wylie text should parsed better beforehand.
+There are two approaches
+1. Add non-wylie chars and strings to sillabies
+and then parse (1.balka) -> ["(", "1", "." "balka", ")"]
+and then it become "(1.བལྐ)" or "(༡.བལྐ)", etc...
+2. Parse dirty text by separating non-wylie stuff from wylie
+and then 'map lookupLemient', 'lookupLemient' left non-wylie untouched
+and convert wylie to tibetan script.
+@
+> map (lookupLenient radix) ["(", "balka", ")"]
+["(","balka",")"]
+@
+In both 1 and 2 a dirty text must be separated roughly,
+hence it is better to keep syllabies non-wylie-free
+therefore second approach is better.
+
+At first, current transforming will be reduced (broken) to flat list.
+Something won't be consumed, and droped.
+At second, current parsers will be refactored to more and more correct result against flat list.
+
+-}
+parseWylieInput :: RadixTree () -> Text -> Except HibetError [WylieScript]
 parseWylieInput radix txt  = do
     ls <- parseT tibLines "" txt
-    list <- tibList ls
-    let radixSearch = parseT (search radix) ""
-    traverse (bitraverse radixSearch (applyRadex radixSearch . parseT tibSentEndList "")) list
+    pure $ map (lookupWylieScript radix) ls
 
 -- | Parse text to tibetan or fail.
-parseTibetanInput :: RadixTree () -> Text -> Except ParseError [[Tibet]]
+parseTibetanInput :: RadixTree () -> Text -> Except HibetError [TibetScript]
 parseTibetanInput radix txt  = do
     ts <- parseT tibetanScript "" txt
-    let radixSearch = parseT (search radix) ""
-    traverse radixSearch ts
-
-applyRadex :: (Text -> Except ParseError [Text]) -> Except ParseError [Text] -> Except ParseError [[Text]]
-applyRadex radex eitherList = do
-    list <- eitherList
-    traverse radex list
+    pure $ map (lookupTibetScript radix) ts
 
 -- | Make wylie radix tree from syllables.
 makeWylieRadexTree :: Text -> RadixTree ()
@@ -119,9 +185,6 @@ makeTibetanRadexTree syls =
         firstPart = map (T.takeWhileEnd (/= '|')) linedSyls
     in  fromFoldable_ firstPart
 
-spaceBetween :: Text -> Text -> Text
-spaceBetween a b = a <> " " <> b
-
 
 ---------------------------------------------------------------------
 -- Parse wylie script
@@ -134,7 +197,7 @@ parensMNoSpace :: Parser a -> Parser a
 parensMNoSpace = M.between (symbolM "(") (symbolM ")")
 
 parensM :: Parser a -> Parser a
-parensM = M.between (char '(') (char ')')
+parensM = M.between (MC.char '(') (MC.char ')')
 
 dotM :: Parser (M.Tokens Text)
 dotM = symbolM "."
@@ -178,16 +241,22 @@ oneLine = do
     pure $ d <> b
 
 tibBase :: Parser Text
-tibBase = try tibBaseSub
-    <|> try letterInParens
-    <|> T.singleton <$> try tibParens
-    <|> try digits
+tibBase = M.try tibBaseSub
+    <|> M.try letterInParens
+    <|> T.singleton <$> M.try tibParens
+    <|> M.try digits
 
+{-
+parseTest tibBaseSen "(sdf)sdf"
+"(sdf)"
+parseTest tibBaseSen "(sdf)"
+"(sdf)"
+-}
 tibBaseSen :: Parser Text
-tibBaseSen = try tibBaseSub
-    <|> try letterInParensSen
-    <|> T.singleton <$> try tibParens
-    <|> try digits
+tibBaseSen = M.try tibBaseSub
+    <|> M.try letterInParensSen
+    <|> T.singleton <$> M.try tibParens
+    <|> M.try digits
 
 tibBaseSub :: Parser Text
 tibBaseSub = do
@@ -202,16 +271,16 @@ tibBaseSub = do
 tibLines :: Parser [Text]
 tibLines = do
     first <- T.concat <$> many tibBase
-    second <- many (try oneLine)
+    second <- many (M.try oneLine)
     pure $ if T.null first then second else first : second
 
 -- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
-tibList :: [Text] -> Except ParseError [(Text, Text)]
+tibList :: [Text] -> Except HibetError [(Text, Text)]
 tibList = traverse (parseT tibSentences "")
 
 tibSentences :: Parser (Text, Text)
-tibSentences = try tibSen <|> try tibSenD <|> try tibSenDT
+tibSentences = M.try tibSen <|> M.try tibSenD <|> M.try tibSenDT
 
 tibSenDT :: Parser (Text,Text)
 tibSenDT = do
@@ -286,7 +355,7 @@ tibSentEndFE = do
 -- > parseTest tibSentEndList "sdf / /sdf  / fgdg / /sdf/"
 -- ["sdf/","/sdf/","fgdg/","/sdf/"]
 tibSentEndList :: Parser [Text]
-tibSentEndList = some $ try tibSentEndFE <|> try tibSentEndE <|> try tibSentEnd <|> try tibBase
+tibSentEndList = some $ M.try tibSentEndFE <|> M.try tibSentEndE <|> M.try tibSentEnd <|> M.try tibBase
 
 -- safeListCall :: Foldable t => (t a -> b) -> t a -> Maybe b
 -- safeListCall f xs
@@ -314,18 +383,18 @@ tibetanScriptDot :: Parser Text
 tibetanScriptDot = tibetanWord <* tibetanDotM
 
 tibetanScriptDots :: Parser [Text]
-tibetanScriptDots = some (try tibetanScriptDot)
+tibetanScriptDots = some (M.try tibetanScriptDot)
 
 tibetanScriptDotsNoDot :: Parser [Text]
 tibetanScriptDotsNoDot = do
     tds <- tibetanScriptDots
-    t <- try tibetanWord
+    t <- M.try tibetanWord
     pure $ tds <> [t]
 
 tibetanScriptDotsEnd :: Parser [Text]
 tibetanScriptDotsEnd = do
     tds <- tibetanScriptDots
-    te <- try tibetanScriptEnd
+    te <- M.try tibetanScriptEnd
     pure $ tds <> [te]
 
 -- | Parse tibetan script. Order matters.
@@ -345,56 +414,31 @@ tibetanScriptDotsEnd = do
 "མ"
 --}
 tibetanScript :: Parser [Text]
-tibetanScript = (:[]) <$> try tibetanScriptEnd
-    <|> try tibetanScriptDotsEnd
-    <|> try tibetanScriptDotsNoDot
-    <|> try tibetanScriptDots
-    <|> (:[]) <$> try tibetanWord
+tibetanScript = (:[]) <$> M.try tibetanScriptEnd
+    <|> M.try tibetanScriptDotsEnd
+    <|> M.try tibetanScriptDotsNoDot
+    <|> M.try tibetanScriptDots
+    <|> (:[]) <$> M.try tibetanWord
 
 
 ---------------------------------------------------------------------
--- Hashmaps from syllables
+-- Bimap from syllables
 ---------------------------------------------------------------------
 
--- Make 'WylieTibet' from syllables text
-makeWylieTibet :: Text -> WylieTibet
-makeWylieTibet
-    = HMS.fromList
-    . splitterWT
+makeBi :: [(WylieSyllable,TibetSyllable)] -> Bi.Bimap WylieSyllable TibetSyllable
+makeBi = Bi.fromList
 
--- Make 'TibetWylie' from syllables text
-makeTibetWylie :: Text -> TibetWylie
-makeTibetWylie
-    = HMS.fromList
-    . splitterTW
-
-splitterWT :: Text -> [(Text,Text)]
-splitterWT
-    = either (error . ME.errorBundlePretty) id
-    . runExcept
-    . traverse (parseT syllableParserWT "")
+splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
+splitSyllables
+    = traverse (parseT syllableParserWT "")
     . T.lines
 
-splitterTW :: Text -> [(Text,Text)]
-splitterTW
-    = either (error . ME.errorBundlePretty) id
-    . runExcept
-    . traverse (parseT syllableParserTW "")
-    . T.lines
-
-syllableParserWT :: Parser (Text, Text)
+syllableParserWT :: Parser (WylieSyllable,TibetSyllable)
 syllableParserWT = do
     w <- some $ M.anySingleBut '|'
-    _ <- char '|'
+    _ <- MC.char '|'
     t <- some M.anySingle
-    pure (T.pack w, T.pack t)
-
-syllableParserTW :: Parser (Text, Text)
-syllableParserTW = do
-    w <- some $ M.anySingleBut '|'
-    _ <- char '|'
-    t <- some M.anySingle
-    pure (T.pack t, T.pack w)
+    pure (WylieSyllable $ T.pack w, TibetSyllable $ T.pack t)
 
 -------------
 -- Sandbox --

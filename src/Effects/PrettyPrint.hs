@@ -21,6 +21,7 @@ data Line = NewLine | CurrentLine
 data PrettyPrint m a where
   PutColorDoc :: Colorize -> Line -> Text -> PrettyPrint m ()
   Pprint :: Doc AnsiStyle -> PrettyPrint m ()
+  PrintDebug :: Show a => a -> PrettyPrint m ()
 
 P.makeSem ''PrettyPrint
 
@@ -40,6 +41,7 @@ runPrettyPrint = P.interpret $ \case
     let layoutOptions =
           defaultLayoutOptions {layoutPageWidth = AvailablePerLine width' 1}
     printOrPage . (`T.snoc` '\n') . renderStrict $ layoutSmart layoutOptions doc
+  PrintDebug str -> P.embed $ print str
 
 
 putColorList :: Member PrettyPrint r

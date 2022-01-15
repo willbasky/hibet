@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
+-- {-# OPTIONS_GHC -F -pgmF=record-dot-preprocessor #-}
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -19,7 +19,7 @@ module Dictionary
        ) where
 
 import Label (Title(..), LabelFull(..))
-import Parse (ParseError, Tibet, Wylie)
+import Type (HibetError (..))
 
 import Control.Monad.Except (Except)
 import Control.Parallel.Strategies (NFData)
@@ -94,16 +94,19 @@ searchTranslation query dm =
 sortOutput :: [Answer] -> [Answer]
 sortOutput = sortBy (\a1 a2-> compare a1.dictNumber a2.dictNumber)
 
+type Tibet = Text
+type Wylie = Text
+
 -- Convert dictionaries from list to tibetan and pass others.
 separator
   :: [Int]
-  -> (Text -> Except ParseError [Tibet])
+  -> (Text -> Except HibetError [Tibet])
   -> ([Text], (Title, Int))
-  -> Except ParseError ([Tibet], (Title, Int))
+  -> Except HibetError ([Tibet], (Title, Int))
 separator dictNumbers toTibetan' d@(_, (_,i)) =
   if i `elem` dictNumbers then bitraverse (listToTibet toTibetan') pure d else pure d
 
-listToTibet :: (Text -> Except ParseError [Tibet]) -> [Wylie] -> Except ParseError [Tibet]
+listToTibet :: (Text -> Except HibetError [Tibet]) -> [Wylie] -> Except HibetError [Tibet]
 listToTibet toTibetan' list = do
   tibets <- traverse toTibetan' list
   pure $ map (T.intercalate "\n" ) tibets

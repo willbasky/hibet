@@ -8,9 +8,10 @@ import Effects.File
 import Effects.PrettyPrint
 import Env (Env, makeEnv)
 import Utility (debugEnabledEnvVar)
+import Type (HibetError (..))
 
 import Data.Function ((&))
-import Polysemy (Embed, Members, Sem, runM)
+import Polysemy (Embed, Members, Sem, runM, raise)
 import Polysemy.Error (Error, runError)
 import Polysemy.Input (Input, runInputSem)
 import Polysemy.Resource (Resource, runResource)
@@ -29,7 +30,8 @@ app = do
       print err
 
 interpretHibet :: Sem
-  '[  Input Env
+  '[
+      Input Env
     , FileIO
     , Error HibetError
     , Resource
@@ -51,7 +53,8 @@ interpretHibet program isDebug = program
   & runM
 
 hibet :: Members
-  [ Input Env
+  [
+    Input Env
   , FileIO
   , Error HibetError
   , Resource
