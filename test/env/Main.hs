@@ -3,13 +3,14 @@
 module Main where
 
 import Dictionary
-import Effects.File (FileIO (..), HibetError (..))
+import Effects.File (FileIO (..))
 import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
-import Parse (TibetWylie, WylieTibet)
+import Parse (BimapWylieTibet, TibetSyllable(..), WylieSyllable(..))
 import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
 import Utility (filename, mkAbsolute, pack)
+import Type (HibetError (..))
 
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
@@ -22,7 +23,7 @@ import Polysemy.Error (Error, runError, throw)
 import qualified Polysemy.Path as PP
 import Polysemy.Trace (Trace, runTraceList)
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
-
+import qualified Data.Bimap as Bi
 
 main :: IO ()
 main = hspec $ do
@@ -62,14 +63,10 @@ mockMakeEnvSpec =
       case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
         Right env -> env.labels `shouldBe` labels
-    it "Make env. WylieTibet" $ do
+    it "Make env. BimapWylieTibet" $ do
       case snd $ runFileMock makeEnv of
         Left err  -> expectationFailure $ show err
-        Right env -> env.wylieTibet `shouldBe` wylieTibet
-    it "Make env. TibetWylie" $ do
-      case snd $ runFileMock makeEnv of
-        Left err  -> expectationFailure $ show err
-        Right env -> env.tibetWylie `shouldBe` tibetWylie
+        Right env -> env.bimapWylieTibet `shouldBe` biWylieTibet
 
 runFileMock :: Sem
   '[  FileIO
@@ -165,8 +162,14 @@ labels = Labels
     ]
   }
 
-wylieTibet :: WylieTibet
-wylieTibet = HM.fromList [("blag","\3926\4019\3906"),("blabs","\3926\4019\3926\3942"),("bla'am","\3926\4019\3936\3928"),("bla","\3926\4019"),("blab","\3926\4019\3926"),("blad","\3926\4019\3921"),("blags","\3926\4019\3906\3942"),("bla'i","\3926\4019\3936\3954")]
-
-tibetWylie :: TibetWylie
-tibetWylie = HM.fromList [("\3926\4019\3936\3954","bla'i"),("\3926\4019\3906","blag"),("\3926\4019\3921","blad"),("\3926\4019\3926\3942","blabs"),("\3926\4019\3926","blab"),("\3926\4019\3936\3928","bla'am"),("\3926\4019","bla"),("\3926\4019\3906\3942","blags")]
+biWylieTibet :: BimapWylieTibet
+biWylieTibet = Bi.fromList
+  [ (WylieSyllable "blag"  , TibetSyllable "\3926\4019\3906")
+  , (WylieSyllable "blabs" , TibetSyllable "\3926\4019\3926\3942")
+  , (WylieSyllable "bla'am", TibetSyllable "\3926\4019\3936\3928")
+  , (WylieSyllable "bla"   , TibetSyllable "\3926\4019")
+  , (WylieSyllable "blab"  , TibetSyllable "\3926\4019\3926")
+  , (WylieSyllable "blad"  , TibetSyllable "\3926\4019\3921")
+  , (WylieSyllable "blags" , TibetSyllable "\3926\4019\3906\3942")
+  , (WylieSyllable "bla'i" , TibetSyllable "\3926\4019\3936\3954")
+  ]

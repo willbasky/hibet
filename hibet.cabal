@@ -184,6 +184,7 @@ test-suite hibet-env
                      , containers
                      , polysemy
                      , polysemy-path
+                     , bimap
                     --  , record-hasfield
                      , unordered-containers
 

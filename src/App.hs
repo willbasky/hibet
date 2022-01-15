@@ -11,7 +11,7 @@ import Utility (debugEnabledEnvVar)
 import Type (HibetError (..))
 
 import Data.Function ((&))
-import Polysemy (Embed, Members, Sem, runM, raise)
+import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
 import Polysemy.Input (Input, runInputSem)
 import Polysemy.Resource (Resource, runResource)

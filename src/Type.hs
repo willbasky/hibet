@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass #-}
+
 module Type
   (
     -- * Error
@@ -17,3 +19,6 @@ data HibetError
   | BimapError SomeException
   | UnknownError Text
   deriving stock (Show)
+  deriving anyclass (Eq)
+
+-- deriving instance Eq SomeException
