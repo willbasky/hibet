@@ -21,7 +21,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither)
-import Polysemy.Input (Input, input)
+import Polysemy.Reader (Reader, ask)
 import Polysemy.Resource (Resource, bracketOnError)
 import Prettyprinter (Doc)
 import Prettyprinter.Render.Terminal (AnsiStyle)
@@ -30,7 +30,7 @@ import System.Console.Haskeline.IO (InputState)
 
 
 -- | Load environment and start loop dialog
-translator :: Members [PrettyPrint, Resource, Console, Error HibetError, Input Env ] r
+translator :: Members [PrettyPrint, Resource, Console, Error HibetError, Reader Env ] r
   => Sem r ()
 translator = bracketOnError
   initializeInput
@@ -40,7 +40,7 @@ translator = bracketOnError
 
 
 -- Looped dialog with user
-loopDialog :: Members [PrettyPrint, Console, Error HibetError, Input Env ] r
+loopDialog :: Members [PrettyPrint, Console, Error HibetError, Reader Env ] r
   => InputState
   -> Sem r ()
 loopDialog inputState = forever $ do
@@ -55,7 +55,7 @@ loopDialog inputState = forever $ do
             history <- fromHistory <$> getHistory inputState
             mapM_ (putColorDoc id NewLine) history
         Just query -> do
-            env :: Env <- input
+            env :: Env <- ask
             (answer, isEmpty) <- fromEither $ runExcept $ getAnswer query env
             if isEmpty
               then putColorDoc red NewLine "Nothing found"
