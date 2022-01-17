@@ -13,10 +13,9 @@ import Type (HibetError (..))
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
-import Polysemy.Input (Input, runInputSem)
+import Polysemy.Reader (Reader, runReader)
 import Polysemy.Resource (Resource, runResource)
 import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
-
 
 
 app :: IO ()
@@ -31,7 +30,7 @@ app = do
 
 interpretHibet :: Sem
   '[
-      Input Env
+      Reader Env
     , FileIO
     , Error HibetError
     , Resource
@@ -43,7 +42,7 @@ interpretHibet :: Sem
   -> Bool -- isDebug
   -> IO (Either HibetError ())
 interpretHibet program isDebug = program
-  & runInputSem makeEnv
+  & runReaderSem makeEnv
   & runFile
   & runError @HibetError
   & runResource
@@ -54,7 +53,7 @@ interpretHibet program isDebug = program
 
 hibet :: Members
   [
-    Input Env
+    Reader Env
   , FileIO
   , Error HibetError
   , Resource
@@ -67,3 +66,6 @@ hibet :: Members
 hibet = do
   com <- execParser parser
   runCommand com
+
+runReaderSem :: forall i r a. Sem r i -> Sem (Reader i ': r) a -> Sem r a
+runReaderSem env sem = env >>= flip runReader sem
