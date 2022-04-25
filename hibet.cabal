@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             0.9
+version:             1.0
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -26,8 +26,6 @@ common common-options
   build-depends:       base ^>= 4.14.3.0
                      , record-hasfield
                      , record-dot-preprocessor
-                     , polysemy ^>=1.7.1.0
-                     , polysemy-plugin ^>=0.4.3.0
 
   ghc-options:         -Wall
                        -Wcompat
@@ -44,7 +42,6 @@ common common-options
                        -hiedir=.hie
                        -Wunused-packages
                        -fplugin=RecordDotPreprocessor
-                       -fplugin=Polysemy.Plugin
                       --  -ddump-if-trace
 
   default-language:    Haskell2010
@@ -74,6 +71,8 @@ common common-options
 
 library
   import:              common-options
+  ghc-options:
+                       -fplugin=Polysemy.Plugin
   hs-source-dirs:      src
   exposed-modules:
                        App
@@ -85,6 +84,8 @@ library
                        Dictionary
                        Label
                        Parse
+                       Parse.Script
+                       Parse.Type
                        Pretty
                        Translator
                        Type
@@ -111,6 +112,8 @@ library
                      , parallel
                      , path
                      , path-io
+                     , polysemy ^>=1.7.1.0
+                     , polysemy-plugin ^>=0.4.3.0
                      , polysemy-path
                      , prettyprinter
                      , prettyprinter-ansi-terminal
@@ -188,7 +191,6 @@ test-suite hibet-env
                      , polysemy
                      , polysemy-path
                      , bimap
-                    --  , record-hasfield
                      , unordered-containers
 
   other-modules:       Paths_hibet

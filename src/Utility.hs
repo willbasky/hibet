@@ -10,7 +10,6 @@ module Utility
 import Data.Char (toLower, toUpper)
 import Data.List.Extra (takeWhileEnd)
 import Data.Map as Map (Map, fromList, lookup)
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import System.Directory (makeAbsolute)

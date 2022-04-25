@@ -6,19 +6,15 @@ module Type
     HibetError (..)
   ) where
 
-import Polysemy.Path (PathException)
-import Text.Megaparsec.Error (ParseErrorBundle)
 import Data.Text (Text)
 import Data.Void (Void)
-import Control.Exception (SomeException)
+import Polysemy.Path (PathException)
+import Text.Megaparsec.Error (ParseErrorBundle)
 
 
 data HibetError
   = PathError PathException
   | MegaError (ParseErrorBundle Text Void)
-  | BimapError SomeException
+  | BimapError Text
   | UnknownError Text
-  deriving stock (Show)
-  deriving anyclass (Eq)
-
--- deriving instance Eq SomeException
+  deriving stock (Eq, Show)

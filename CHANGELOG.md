@@ -6,12 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Compatible Versioning](https://github.com/staltz/comver).
 
-## Unreleased
+## [1.0] - 2022-04-25
 
 * Polysemy tracing added.
 * Polysemy input added.
-* Swap Hashmap with Bimap for syllables
+* Swap Hashmap with `Bimap` for syllables
 * Get rid of `parsers-megaparsec`
+* Restructure `Parse` module.
+* Update `stuff/tibetan-syllables`
+* Polisemy's Input was swapped with Reader.
 
 ## [0.9] - 2021-10-27
 
