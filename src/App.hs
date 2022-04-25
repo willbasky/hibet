@@ -16,7 +16,7 @@ import Polysemy.Error (Error, runError)
 import Polysemy.Input (Input, runInputSem)
 import Polysemy.Resource (Resource, runResource)
 import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
-
+import Polysemy.Reader (Reader, runReader, inputToReader)
 
 
 app :: IO ()
@@ -32,6 +32,7 @@ app = do
 interpretHibet :: Sem
   '[
       Input Env
+    , Reader Env
     , FileIO
     , Error HibetError
     , Resource
@@ -43,7 +44,7 @@ interpretHibet :: Sem
   -> Bool -- isDebug
   -> IO (Either HibetError ())
 interpretHibet program isDebug = program
-  & runInputSem makeEnv
+  & inputToReader (runInputSem makeEnv)
   & runFile
   & runError @HibetError
   & runResource
@@ -55,6 +56,7 @@ interpretHibet program isDebug = program
 hibet :: Members
   [
     Input Env
+  , Reader Env
   , FileIO
   , Error HibetError
   , Resource

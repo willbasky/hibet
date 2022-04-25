@@ -31,6 +31,7 @@ import Options.Applicative.Help.Chunk (stringChunk)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error)
 import Polysemy.Input (Input, input)
+import Polysemy.Reader (Reader, ask)
 import Polysemy.Resource (Resource)
 import Prelude hiding (lookup)
 
@@ -50,10 +51,10 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members [Input Env, Resource, PrettyPrint, Console, Error HibetError] r
+runCommand :: Members [Reader Env, Resource, PrettyPrint, Console, Error HibetError] r
   => Command -> Sem r ()
 runCommand com = do
-  env :: Env <- input
+  env :: Env <- ask
   case com of
     Shell selectedDicts -> do
       -- TODO: selection modify Env. It requires Reader.
@@ -64,10 +65,10 @@ runCommand com = do
     Debug -> do
       printDebug env.radixWylie
 
-runShow :: Members [Input Env, PrettyPrint] r
+runShow :: Members [Reader Env, PrettyPrint] r
   => Opt -> Sem r ()
 runShow opt = do
-  env :: Env <- input
+  env :: Env <- ask
   let Labels labels = env.labels
   let filteredLabels = filterAvailable labels
   case opt of
