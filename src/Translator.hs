@@ -21,7 +21,6 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither)
-import Polysemy.Input (Input, input)
 import Polysemy.Reader (Reader, ask)
 import Polysemy.Resource (Resource, bracketOnError)
 import Prettyprinter (Doc)

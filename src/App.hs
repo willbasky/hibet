@@ -7,17 +7,15 @@ import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
 import Env (Env, makeEnv)
-import Utility (debugEnabledEnvVar)
 import Type (HibetError (..))
+import Utility (debugEnabledEnvVar)
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
-import Polysemy.Input (Input, runInputSem)
+import Polysemy.Reader (Reader, runReader)
 import Polysemy.Resource (Resource, runResource)
-import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
-import Polysemy.Reader (Reader, runReader, inputToReader)
-
+import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
 
 app :: IO ()
 app = do
@@ -31,8 +29,7 @@ app = do
 
 interpretHibet :: Sem
   '[
-      Input Env
-    , Reader Env
+      Reader Env
     , FileIO
     , Error HibetError
     , Resource
@@ -44,7 +41,7 @@ interpretHibet :: Sem
   -> Bool -- isDebug
   -> IO (Either HibetError ())
 interpretHibet program isDebug = program
-  & inputToReader (runInputSem makeEnv)
+  & runReaderSem makeEnv
   & runFile
   & runError @HibetError
   & runResource
@@ -55,8 +52,7 @@ interpretHibet program isDebug = program
 
 hibet :: Members
   [
-    Input Env
-  , Reader Env
+    Reader Env
   , FileIO
   , Error HibetError
   , Resource
@@ -69,3 +65,6 @@ hibet :: Members
 hibet = do
   com <- execParser parser
   runCommand com
+
+runReaderSem :: forall i r a. Sem r i -> Sem (Reader i ': r) a -> Sem r a
+runReaderSem env sem = env >>= flip runReader sem
