@@ -7,16 +7,15 @@ import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
 import Env (Env, makeEnv)
-import Utility (debugEnabledEnvVar)
 import Type (HibetError (..))
+import Utility (debugEnabledEnvVar)
 
 import Data.Function ((&))
 import Polysemy (Embed, Members, Sem, runM)
 import Polysemy.Error (Error, runError)
 import Polysemy.Reader (Reader, runReader)
 import Polysemy.Resource (Resource, runResource)
-import Polysemy.Trace (Trace, traceToStdout, ignoreTrace)
-
+import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
 
 app :: IO ()
 app = do
