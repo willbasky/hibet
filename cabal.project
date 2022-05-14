@@ -17,5 +17,5 @@ source-repository-package
 
 source-repository-package
   type: git
-  location: git@gitlab.com:transportengineering/radixtree
-  tag: 94462dfdca5d01ea445642ced7aad136deab2c1a
+  location: git@gitlab.com:willbasky/radixtree
+  tag: e3e0b092be4b11cfeeb86e99b970f9737c2b0ed8
