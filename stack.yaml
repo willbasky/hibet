@@ -17,7 +17,7 @@ extra-deps:
   commit: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
 
 - git: https://gitlab.com/willbasky/radixtree
-  commit: e3e0b092be4b11cfeeb86e99b970f9737c2b0ed8
+  commit: ecb1c4f6d78869bd6c25e251ffbcd7a7b76fb179
 
 ghc-options:
   "$locals": -fhide-source-paths
