@@ -1,0 +1,21 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: git@gitlab.homotopic.tech:metaxis/polysemy-extra
+  tag: b3f53c7fd7385e2d2e6bcca07e92a1f2f28f8704
+
+source-repository-package
+  type: git
+  location: git@gitlab.homotopic.tech:metaxis/polysemy-kvstore
+  tag: 5e5e247fffc77aa67f03825dbfcc51f0dec2fb30
+
+source-repository-package
+  type: git
+  location: git@gitlab.homotopic.tech:metaxis/polysemy-path
+  tag: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
+
+source-repository-package
+  type: git
+  location: git@gitlab.com:transportengineering/radixtree
+  tag: 94462dfdca5d01ea445642ced7aad136deab2c1a
