@@ -98,6 +98,7 @@ library
 
   other-modules:       Paths_hibet
                      , Sandbox
+  autogen-modules:     Paths_hibet
 
   build-depends:
                        bytestring
