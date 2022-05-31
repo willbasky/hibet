@@ -21,9 +21,6 @@ extra-deps:
 - validation-selective-0.1.0.1
 - selective-0.4.2
 
-# - git: https://gitlab.com/willbasky/radixtree
-#   commit: ecb1c4f6d78869bd6c25e251ffbcd7a7b76fb179
-
 ghc-options:
   "$locals": -fhide-source-paths
 

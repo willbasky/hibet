@@ -209,16 +209,16 @@ test-suite hibet-env
 --   build-depends:
 --                        hibet
 --                      , async
---                     --  , criterion
---                     --  , weigh
+--                      , criterion
+--                      , weigh
 --                      , path
 --                      , path-io >= 1.4.0
 --                      , text
---                     --  , streamly
+--                      , streamly
 --                      , unordered-containers
 --                      , bytestring
 --                      , conduit
---                     --  , file-embed
+--                      , file-embed
 
 --   other-modules:       Paths_hibet
 --                        Assets

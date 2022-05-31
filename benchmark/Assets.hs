@@ -7,7 +7,7 @@ module Assets
        , dictinaries
        ) where
 
--- import Data.FileEmbed (embedFile, embedDir)
+import Data.FileEmbed (embedFile, embedDir)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Text (Text)
 import Data.ByteString (ByteString)
