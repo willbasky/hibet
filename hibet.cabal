@@ -115,14 +115,13 @@ library
                      , optparse-applicative
                      , pager
                      , parallel
-                     , path
                      , path-io
                      , polysemy ^>=1.7.1.0
                      , polysemy-plugin ^>=0.4.3.0
                      , polysemy-path ^>=0.2.1.0
                      , prettyprinter
                      , prettyprinter-ansi-terminal
-                     , radixtree ^>=0.5.1.0
+                     , radixtree ^>=0.6.0.0
                      , terminal-size
                      , text
                      , tomland

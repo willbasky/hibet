@@ -15,7 +15,3 @@ source-repository-package
   location: git@gitlab.homotopic.tech:metaxis/polysemy-path
   tag: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
 
-source-repository-package
-  type: git
-  location: git@gitlab.com:willbasky/radixtree
-  tag: ecb1c4f6d78869bd6c25e251ffbcd7a7b76fb179
