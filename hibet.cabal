@@ -18,7 +18,6 @@ data-files:          dicts/*.txt
                    , stuff/titles.toml
                    , stuff/tibetan-syllables
 tested-with:
-  , GHC==8.6.5
   , GHC==8.8.4
   , GHC==8.10.7
   , GHC==9.0.2
