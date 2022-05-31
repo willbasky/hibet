@@ -20,7 +20,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Streamly.Prelude as S
 
-import Translate (Dictionary, Source, Target, makeDictionary)
+import Dictionary (Dictionary, Source, Target, makeDictionary)
 import Assets (dictinaries)
 
 

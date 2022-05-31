@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             1.0
+version:             1.1
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -17,13 +17,17 @@ extra-doc-files:     README.md
 data-files:          dicts/*.txt
                    , stuff/titles.toml
                    , stuff/tibetan-syllables
+tested-with:
+  , GHC==8.8.4
+  , GHC==8.10.7
+  , GHC==9.0.2
 
 source-repository head
   type:               git
   location:           https://github.com/willbasky/Hibet.git
 
 common common-options
-  build-depends:       base ^>= 4.14.3.0
+  build-depends:       base >= 4.11 && < 5
                      , record-hasfield
                      , record-dot-preprocessor
 
@@ -93,6 +97,7 @@ library
 
   other-modules:       Paths_hibet
                      , Sandbox
+  autogen-modules:     Paths_hibet
 
   build-depends:
                        bytestring
@@ -110,14 +115,13 @@ library
                      , optparse-applicative
                      , pager
                      , parallel
-                     , path
                      , path-io
                      , polysemy ^>=1.7.1.0
                      , polysemy-plugin ^>=0.4.3.0
-                     , polysemy-path
+                     , polysemy-path ^>=0.2.1.0
                      , prettyprinter
                      , prettyprinter-ansi-terminal
-                     , radixtree
+                     , radixtree ^>=0.6.0.0
                      , terminal-size
                      , text
                      , tomland
@@ -196,31 +200,31 @@ test-suite hibet-env
   other-modules:       Paths_hibet
                        Paths
 
-benchmark hibet-benchmark
-  import:              common-options
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      benchmark
-  main-is:             Main.hs
+-- benchmark hibet-benchmark
+--   import:              common-options
+--   type:                exitcode-stdio-1.0
+--   hs-source-dirs:      benchmark
+--   main-is:             Main.hs
 
-  build-depends:
-                       hibet
-                     , async
-                    --  , criterion
-                    --  , weigh
-                     , path
-                     , path-io >= 1.4.0
-                     , text
-                    --  , streamly
-                     , unordered-containers
-                     , bytestring
-                     , conduit
-                    --  , file-embed
+--   build-depends:
+--                        hibet
+--                      , async
+--                      , criterion
+--                      , weigh
+--                      , path
+--                      , path-io >= 1.4.0
+--                      , text
+--                      , streamly
+--                      , unordered-containers
+--                      , bytestring
+--                      , conduit
+--                      , file-embed
 
-  other-modules:       Paths_hibet
-                       Assets
+--   other-modules:       Paths_hibet
+--                        Assets
 
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+--   ghc-options:         -threaded
+--                        -rtsopts
+--                        -with-rtsopts=-N
 
 

@@ -1,11 +1,11 @@
-resolver: lts-18.28
+resolver: lts-19.8
 
 packages:
 - .
 
 extra-deps:
-- polysemy-1.7.1.0@sha256:3ead7a332abd70b202920ed3bf2e36866de163f821e643adfdcc9d39867b8033,5977
-- polysemy-plugin-0.4.3.0@sha256:f209949af8e70175add9998d8343020fff78e01ea8d70f4e0bda1eaac132acce,3154
+- polysemy-1.7.1.0
+- polysemy-plugin-0.4.3.0
 
 - git: https://gitlab.homotopic.tech/metaxis/polysemy-extra
   commit: b3f53c7fd7385e2d2e6bcca07e92a1f2f28f8704
@@ -16,8 +16,10 @@ extra-deps:
 - git: https://gitlab.homotopic.tech/metaxis/polysemy-path
   commit: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
 
-- git: https://gitlab.com/transportengineering/radixtree
-  commit: 94462dfdca5d01ea445642ced7aad136deab2c1a
+- radixtree-0.6.0.0
+- tomland-1.3.3.1
+- validation-selective-0.1.0.1
+- selective-0.4.2
 
 ghc-options:
   "$locals": -fhide-source-paths

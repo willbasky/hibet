@@ -1,5 +1,6 @@
 # Tibetan-English translator for CLI
 
+[![Haskell-CI](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml/badge.svg)](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml)
 [![BSD3 license](https://img.shields.io/badge/license-bsd3-brightgreen)](LICENSE)
 
 ![Bod](bod.png)
