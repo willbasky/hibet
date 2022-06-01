@@ -12,7 +12,7 @@ import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (BimapWylieTibet, WylieSyllable(WylieSyllable), makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
+import Parse (BimapWylieTibet, makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
 import Type (HibetError (..))
 
 import Control.Monad.Except (runExcept)
@@ -26,7 +26,10 @@ import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace, trace)
-import qualified Data.Bimap as Bi
+
+-- fo debug
+-- import qualified Data.Bimap as Bi
+-- import Parse (WylieSyllable(WylieSyllable))
 
 
 -- | Environment fot translator

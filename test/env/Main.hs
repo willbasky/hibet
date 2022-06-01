@@ -1,94 +1,119 @@
 module Main where
 
 import Dictionary
-import Effects.File (FileIO (..))
+import Effects.File (FileIO (..), mapErr, runFile)
 import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
-import Parse (BimapWylieTibet, TibetSyllable(..), WylieSyllable(..))
+import Parse (BimapWylieTibet, TibetSyllable (..), WylieSyllable (..), splitSyllables)
 import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
-import Utility (filename, mkAbsolute, pack)
 import Type (HibetError (..))
+import Utility (filename, mkAbsolute, pack)
 
+import Control.Monad.Except (runExcept)
+import qualified Data.Bimap as Bi
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
 import qualified Data.HashMap.Strict as HM (fromList)
+import Data.List (sort)
 import qualified Data.Set as Set
-import Polysemy (Member, Sem)
+import qualified Data.Text.Encoding as TE
+import Path.IO (listDir)
+import Polysemy (Embed, Members, Sem)
 import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
 import qualified Polysemy.Path as PP
 import Polysemy.Trace (Trace, runTraceList)
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
-import qualified Data.Bimap as Bi
+
 
 main :: IO ()
 main = hspec $ do
   mockMakeEnvSpec
+  syllabi
 
 mockMakeEnvSpec ::Spec
 mockMakeEnvSpec =
   describe "FileIO: " $ do
     it "GetPath syllabies" $ do
-      let res = snd $ runFileMock (EF.getPath "stuff/tibetan-syllables")
+      res <- snd <$> runFileMock (EF.getPath "stuff/tibetan-syllables")
       res `shouldBe` Right sylPath
     it "GetPath titles" $ do
-      let res = snd $ runFileMock (EF.getPath "stuff/titles.toml")
+      res <- snd <$> runFileMock (EF.getPath "stuff/titles.toml")
       res `shouldBe` Right titlePath
     it "GetPath dicts" $ do
-      let res = snd $ runFileMock (EF.getPath "dicts/")
+      res <- snd <$> runFileMock (EF.getPath "dicts/")
       res `shouldBe` Right dictDir
 
     it "Read file syllabies" $ do
-      let res = snd $ runFileMock (EF.readFile sylPath)
-      res `shouldBe` Right syllabies
+      res <- snd <$> runFileMock (EF.readFile sylPath)
+      print res
+      print sylPath
+      res `shouldBe` Right syllables
     it "Read file titles" $ do
-      let res = snd $ runFileMock (EF.readFile titlePath)
+      res <- snd <$> runFileMock (EF.readFile titlePath)
       res `shouldBe` Right toml
     it "Read file lazy dict 1" $ do
-      let res = snd $ runFileMock (EF.readFileLazy dictPath1)
+      res <- snd <$> runFileMock (EF.readFileLazy dictPath1)
       res `shouldBe` Right dict1
     it "Read file lazy dict 2" $ do
-      let res = snd $ runFileMock (EF.readFileLazy dictPath2)
+      res <- snd <$> runFileMock (EF.readFileLazy dictPath2)
       res `shouldBe` Right dict2
 
     it "Make env. Meta" $ do
-      case snd $ runFileMock makeEnv of
+      res <- snd <$> runFileMock makeEnv
+      case res of
         Left err  -> expectationFailure $ show err
         Right env -> env.dictionaryMeta `shouldBe` [meta1,meta2]
     it "Make env. Labels" $ do
-      case snd $ runFileMock makeEnv of
+      res <- snd <$> runFileMock makeEnv
+      case res of
         Left err  -> expectationFailure $ show err
         Right env -> env.labels `shouldBe` labels
     it "Make env. BimapWylieTibet" $ do
-      case snd $ runFileMock makeEnv of
+      res <- snd <$> runFileMock makeEnv
+      case res of
         Left err  -> expectationFailure $ show err
-        Right env -> env.bimapWylieTibet `shouldBe` biWylieTibet
+        Right env -> env.bimapWylieTibet `shouldBe` biWylieTibet -- Todo: fix expected
+
+syllabi ::Spec
+syllabi =
+  describe "Syllables" $ do
+    it "Split syllables" $ do
+      case runExcept $ splitSyllables $ TE.decodeUtf8 syllables of
+        Left err  -> expectationFailure $ show err
+        Right res -> res `shouldBe` wylieTibetSyl
+    it "Map and list of syllables" $ do
+      res <- snd <$> runFileMock makeEnv
+      case res of
+        Left err  -> expectationFailure $ show err
+        Right env -> sort (Bi.toList env.bimapWylieTibet) `shouldBe` sort wylieTibetSyl
+
 
 runFileMock :: Sem
   '[  FileIO
     , Error HibetError
     , Trace
+    , Embed IO
     ] a
-  -> ([String], Either HibetError a)
+  -> IO ([String], Either HibetError a)
 runFileMock program = program
   & interpretFileMock
   & runError @HibetError
   & runTraceList
-  & P.run
+  & P.runM
 
-interpretFileMock :: Member (Error HibetError) r => Sem (FileIO : r) a -> Sem r a
+interpretFileMock :: Members [Embed IO, Error HibetError] r => Sem (FileIO : r) a -> Sem r a
 interpretFileMock = P.interpret $ \case
-  ReadFile path -> case path of
-    "test/env/data/stuff/tibetan-syllables" -> pure syllabies
-    "test/env/data/stuff/titles.toml" -> pure toml
-    fp -> throw $ UnknownError $ "Unknown path for readfile: " <> pack fp
+  ReadFile path -> P.embed $ BS.readFile path
+  ReadFileLazy path -> P.embed $ BSL.readFile path
 
-  ReadFileLazy path
-    | filename path == "Berzin-T|E.txt" -> pure dict1
-    | filename path == "RichardBarron-T|E.txt" -> pure dict2
-    | otherwise -> throw $ UnknownError "Unknown read lazy path"
+  GetPath path -> case path of
+    "stuff/tibetan-syllables" -> pure sylPath
+    "stuff/titles.toml"       -> pure titlePath
+    "dicts/"                  -> pure dictDir
+    p                         -> throw $ UnknownError $ "Unknown get path: " <> pack  p
 
   GetPath path -> case path of
     "stuff/tibetan-syllables" -> pure sylPath
@@ -104,12 +129,11 @@ interpretFileMock = P.interpret $ \case
   ParseAbsDir _ -> EF.mapErr $ PP.parseAbsDir $ mkAbsolute dictDir
 
 
-
 -- Data for mocking
 
 
-syllabies :: BS.ByteString
-syllabies = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\n"
+syllables :: BS.ByteString
+syllables = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\n"
 
 toml :: BS.ByteString
 toml = "[[titles]]\n    path = \"Berzin-T|E\"\n    id = 8\n    label = \"Berzin\"\n    mergeLines = true\n    about = \"Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n\n[[titles]]\n    path = \"RichardBarron-T|E\"\n    id = 18\n    label = \"Richard Barron\"\n    about = \"Richard Barron's glossary. \194\169 Copyright 2002 by Turquoise Dragon Media Services. Source: Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 (2003)|online version: http://rywiki.tsadra.org\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
@@ -170,4 +194,27 @@ biWylieTibet = Bi.fromList
   , (WylieSyllable "blad"  , TibetSyllable "\3926\4019\3921")
   , (WylieSyllable "blags" , TibetSyllable "\3926\4019\3906\3942")
   , (WylieSyllable "bla'i" , TibetSyllable "\3926\4019\3936\3954")
+  , (WylieSyllable {unWylie = "mANa"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "mAna"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
+  , (WylieSyllable {unWylie = "mana"},TibetSyllable {unTibet = "\3928\3923"})
+  ]
+
+wylieTibetSyl :: [(WylieSyllable,TibetSyllable)]
+wylieTibetSyl =
+  [ (WylieSyllable {unWylie = "bla"},TibetSyllable {unTibet = "\3926\4019"})
+  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
+  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
+  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
+  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
+  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
+  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
+  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
+  , (WylieSyllable {unWylie = "man"},TibetSyllable {unTibet = "\3928\3923"})
+  , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
+  , (WylieSyllable {unWylie = "mAn"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  , (WylieSyllable {unWylie = "mAN"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "mana"},TibetSyllable {unTibet = "\3928\3923"})
+  , (WylieSyllable {unWylie = "mAna"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  , (WylieSyllable {unWylie = "mANa"},TibetSyllable {unTibet = "\3928\3953\3918"})
   ]

@@ -190,12 +190,15 @@ test-suite hibet-env
                        -with-rtsopts=-N
   build-depends:
                        hibet
+                     , bimap
                      , bytestring
                      , hspec
                      , containers
+                     , mtl
+                     , path-io
                      , polysemy
                      , polysemy-path
-                     , bimap
+                     , text
                      , unordered-containers
 
   other-modules:       Paths_hibet
