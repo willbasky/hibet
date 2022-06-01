@@ -12,7 +12,7 @@ import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (BimapWylieTibet, makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
+import Parse (BimapWylieTibet, WylieSyllable(WylieSyllable), makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
 import Type (HibetError (..))
 
 import Control.Monad.Except (runExcept)
@@ -26,6 +26,7 @@ import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace, trace)
+import qualified Data.Bimap as Bi
 
 
 -- | Environment fot translator
@@ -55,17 +56,20 @@ makeEnv = do
 
     let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
     sylList <- fromEither $ runExcept $ splitSyllables syls
-    pure $ runEval $ do
-      wtSyllables <- rparWith rdeepseq $ makeBi sylList
-      wRadix <- rparWith rdeepseq $ makeWylieRadexTree syls
-      tRadix <- rparWith rdeepseq $ makeTibetanRadexTree syls
-      pure Env
+    let env = runEval $ do
+          wtSyllables <- rparWith rdeepseq $ makeBi sylList
+          wRadix <- rparWith rdeepseq $ makeWylieRadexTree syls
+          tRadix <- rparWith rdeepseq $ makeTibetanRadexTree syls
+          pure Env
               { dictionaryMeta = dictsMeta
               , bimapWylieTibet = wtSyllables
               , radixWylie = wRadix
               , radixTibet = tRadix
               , labels     = labels
               }
+    -- let bi = env.bimapWylieTibet
+    -- trace $ show $ Bi.member (WylieSyllable "maN") bi
+    pure env
 
 getFilesTexts :: Members
   [ FileIO

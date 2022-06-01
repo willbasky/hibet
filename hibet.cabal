@@ -124,6 +124,7 @@ library
                      , radixtree ^>=0.6.0.0
                      , terminal-size
                      , text
+                     , text-rope
                      , tomland
                      , unordered-containers
 
@@ -200,31 +201,33 @@ test-suite hibet-env
   other-modules:       Paths_hibet
                        Paths
 
--- benchmark hibet-benchmark
---   import:              common-options
---   type:                exitcode-stdio-1.0
---   hs-source-dirs:      benchmark
---   main-is:             Main.hs
+benchmark hibet-benchmark
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      benchmark
+  main-is:             Main.hs
 
---   build-depends:
---                        hibet
---                      , async
---                      , criterion
---                      , weigh
---                      , path
---                      , path-io >= 1.4.0
---                      , text
---                      , streamly
---                      , unordered-containers
---                      , bytestring
---                      , conduit
---                      , file-embed
+  build-depends:
+                       hibet
+                    --  , async
+                     , criterion
+                    --  , weigh
+                     , path
+                     , path-io >= 1.4.0
+                     , text
+                    --  , streamly
+                    --  , unordered-containers
+                     , bytestring
+                    --  , conduit
+                     , file-embed
+                     , text-rope
 
---   other-modules:       Paths_hibet
---                        Assets
+  other-modules:       Paths_hibet
+                       Lines
+                       Common
 
---   ghc-options:         -threaded
---                        -rtsopts
---                        -with-rtsopts=-N
+  ghc-options:         -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
 
 
