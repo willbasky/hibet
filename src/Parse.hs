@@ -11,8 +11,8 @@ module Parse
        , parseWylieInput
        , parseTibetanInput
        -- * Radix trees
-       , makeWylieRadexTree
-       , makeTibetanRadexTree
+       , mkWylieRadex
+       , mkTibetanRadex
        -- * splitter
        , splitSyllables
        -- * Data types
@@ -76,6 +76,8 @@ toWylie bi ts = do
       NonScriptTibet t -> Right $ NonScriptWylie t
       ) txt
 
+-- Radix stuff
+-- Radix structure used just to check query's validity.
 
 lookupWylieScript :: RadixTree a -> Text -> WylieScript
 lookupWylieScript radix t = case lookup radix t of
@@ -97,7 +99,7 @@ ExceptT (Identity (Right [([],[["balka"]])]))
 it reads radixed words and drops non-radixed in anyway.
 Therefore dirty wylie text should parsed better beforehand.
 There are two approaches
-1. Add non-wylie chars and strings to sillabies
+1. Add non-wylie chars and strings to sillables
 and then parse (1.balka) -> ["(", "1", "." "balka", ")"]
 and then it become "(1.བལྐ)" or "(༡.བལྐ)", etc...
 2. Parse dirty text by separating non-wylie stuff from wylie
@@ -108,11 +110,11 @@ and convert wylie to tibetan script.
 ["(","balka",")"]
 @
 In both 1 and 2 a dirty text must be separated roughly,
-hence it is better to keep syllabies non-wylie-free
+hence it is better to keep syllables non-wylie-free
 therefore second approach is better.
 
 At first, current transforming will be reduced (broken) to flat list.
-Something won't be consumed, and droped.
+Something won't be consumed, and dropped.
 At second, current parsers will be refactored to more and more correct result against flat list.
 
 -}
@@ -128,15 +130,15 @@ parseTibetanInput radix txt  = do
     pure $ map (lookupTibetScript radix) ts
 
 -- | Make wylie radix tree from syllables.
-makeWylieRadexTree :: Text -> RadixTree ()
-makeWylieRadexTree syls =
+mkWylieRadex :: Text -> RadixTree ()
+mkWylieRadex syls =
     let linedSyls = Line.lines $ Line.fromText syls
         headPart = map (T.takeWhile (/= '|')) linedSyls
     in  fromFoldable_ headPart
 
 -- | Make tibetan radix tree from syllables.
-makeTibetanRadexTree :: Text -> RadixTree ()
-makeTibetanRadexTree syls =
+mkTibetanRadex :: Text -> RadixTree ()
+mkTibetanRadex syls =
     let linedSyls = Line.lines $ Line.fromText syls
         lastPart = map (T.takeWhileEnd (/= '|')) linedSyls
     in  fromFoldable_ lastPart

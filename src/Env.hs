@@ -12,7 +12,7 @@ import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (BimapWylieTibet, makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
+import Parse (BimapWylieTibet, makeBi, mkTibetanRadex, mkWylieRadex, splitSyllables)
 import Type (HibetError (..))
 
 import Control.Monad.Except (runExcept)
@@ -47,7 +47,7 @@ data Env = Env
 makeEnv :: Members [FileIO, Error HibetError, Trace] r => Sem r Env
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
-    trace sylsPath
+    -- trace sylsPath
 
     syls <- TE.decodeUtf8 <$> File.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
@@ -61,8 +61,8 @@ makeEnv = do
     sylList <- fromEither $ runExcept $ splitSyllables syls
     let env = runEval $ do
           wtSyllables <- rparWith rdeepseq $ makeBi sylList
-          wRadix <- rparWith rdeepseq $ makeWylieRadexTree syls
-          tRadix <- rparWith rdeepseq $ makeTibetanRadexTree syls
+          wRadix <- rparWith rdeepseq $ mkWylieRadex syls
+          tRadix <- rparWith rdeepseq $ mkTibetanRadex syls
           pure Env
               { dictionaryMeta = dictsMeta
               , bimapWylieTibet = wtSyllables

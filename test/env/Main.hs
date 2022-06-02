@@ -32,7 +32,7 @@ import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
 main :: IO ()
 main = hspec $ do
-  -- mockMakeEnvSpec
+  mockMakeEnvSpec
   -- syllabi
   translate
 
@@ -51,8 +51,8 @@ mockMakeEnvSpec =
 
     it "Read file syllabies" $ do
       res <- snd <$> runFileMock (EF.readFile sylPath)
-      print res
-      print sylPath
+      -- print res
+      -- print sylPath
       res `shouldBe` Right syllables
     it "Read file titles" $ do
       res <- snd <$> runFileMock (EF.readFile titlePath)
@@ -164,7 +164,7 @@ interpretFileMock = P.interpret $ \case
 
 
 syllables :: BS.ByteString
-syllables = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\n"
+syllables = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\nme|\224\189\152\224\189\186\n"
 
 toml :: BS.ByteString
 toml = "[[titles]]\n    path = \"Berzin-T|E\"\n    id = 8\n    label = \"Berzin\"\n    mergeLines = true\n    about = \"Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n\n[[titles]]\n    path = \"RichardBarron-T|E\"\n    id = 18\n    label = \"Richard Barron\"\n    about = \"Richard Barron's glossary. \194\169 Copyright 2002 by Turquoise Dragon Media Services. Source: Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 (2003)|online version: http://rywiki.tsadra.org\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
@@ -173,7 +173,7 @@ dict1 :: BSL.ByteString
 dict1 = "bla|life spirit\nbla|Sublime\n"
 
 dict2 :: BSL.ByteString
-dict2 = "bla|spirit (of a deceased person)\n"
+dict2 = "re ba|hope; expectation\n"
 
 meta1 :: DictionaryMeta
 meta1 = DictionaryMeta
@@ -185,7 +185,7 @@ meta1 = DictionaryMeta
 meta2 :: DictionaryMeta
 meta2 = DictionaryMeta
   { dictionary =
-      HM.fromList [("bla", [Target "spirit (of a deceased person)"])]
+      HM.fromList [("re ba",[Target "hope; expectation"])]
   , title      = Title "Richard Barron"
   , number     = 18
   }
@@ -217,20 +217,20 @@ labels = Labels
 
 biWylieTibet :: BimapWylieTibet
 biWylieTibet = Bi.fromList
-  [ (WylieSyllable "blag"  , TibetSyllable "\3926\4019\3906")
-  , (WylieSyllable "blabs" , TibetSyllable "\3926\4019\3926\3942")
-  , (WylieSyllable "bla'am", TibetSyllable "\3926\4019\3936\3928")
-  , (WylieSyllable "bla"   , TibetSyllable "\3926\4019")
-  , (WylieSyllable "blab"  , TibetSyllable "\3926\4019\3926")
-  , (WylieSyllable "blad"  , TibetSyllable "\3926\4019\3921")
-  , (WylieSyllable "blags" , TibetSyllable "\3926\4019\3906\3942")
-  , (WylieSyllable "bla'i" , TibetSyllable "\3926\4019\3936\3954")
-  , (WylieSyllable {unWylie = "mANa"},TibetSyllable {unTibet = "\3928\3953\3918"})
-  , (WylieSyllable {unWylie = "mAna"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  [ (WylieSyllable {unWylie = "bla"},TibetSyllable {unTibet = "\3926\4019"})
+  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
+  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
+  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
+  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
+  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
+  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
+  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
+  , (WylieSyllable {unWylie = "mAN"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "mAn"},TibetSyllable {unTibet = "\3928\3953\3923"})
   , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
-  , (WylieSyllable {unWylie = "mana"},TibetSyllable {unTibet = "\3928\3923"})
-  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
+  , (WylieSyllable {unWylie = "man"},TibetSyllable {unTibet = "\3928\3923"})
   , (WylieSyllable {unWylie = "me"},TibetSyllable {unTibet = "\3928\3962"})
+  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
   ]
 
 wylieTibetSyl :: [(WylieSyllable,TibetSyllable)]

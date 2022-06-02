@@ -71,7 +71,9 @@ fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
 getAnswer :: Text -> Env -> Except HibetError (Doc AnsiStyle, Bool)
 getAnswer query env = do
   let toWylie' = toWylie env.bimapWylieTibet . parseTibetanInput env.radixTibet
-      -- ^ Parse text to tibetan script, check tibetan script is valid, convert to Wylie.
+      -- ^ 1. Parse text to tibetan script,
+      -- 2. check tibetan script is valid,
+      -- 3. convert to Wylie.
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
         Right wylie -> if null wylie then query else T.intercalate " " $ map fromWylieScript wylie
