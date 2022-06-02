@@ -26,10 +26,11 @@ import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
-import Polysemy.Trace (Trace, trace)
+import Polysemy.Trace (Trace)
 import Data.Tuple (swap)
 
 -- fo debug
+-- import Polysemy.Trace (trace)
 -- import qualified Data.Bimap as Bi
 -- import Parse (WylieSyllable(WylieSyllable))
 

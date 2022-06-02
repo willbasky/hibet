@@ -1,27 +1,26 @@
 module Main where
 
 import Dictionary
-import Effects.File (FileIO (..), mapErr, runFile)
+import Effects.File (FileIO (..))
 import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
-import Parse (WylieTibetMap, TibetSyllable (..), WylieSyllable (..), splitSyllables, fromWylieScript, parseTibetanInput, toWylie)
+import Parse (TibetSyllable (..), WylieSyllable (..), WylieTibetMap, splitSyllables)
 import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
 import Type (HibetError (..))
-import Utility (filename, mkAbsolute, pack)
+import Utility (mkAbsolute, pack)
 
 import Control.Monad.Except (runExcept)
-import qualified Data.Bimap as Bi
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
-import qualified Data.HashMap.Strict as HM (fromList)
+import qualified Data.HashMap.Strict as HM
 import Data.List (sort)
 import Data.Maybe (mapMaybe)
 import qualified Data.Set as Set
+-- import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.Text as T
-import Path.IO (listDir)
+-- import Path.IO (listDir)
 import Polysemy (Embed, Members, Sem)
 import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
@@ -78,7 +77,7 @@ mockMakeEnvSpec =
       res <- snd <$> runFileMock makeEnv
       case res of
         Left err  -> expectationFailure $ show err
-        Right env -> env.bimapWylieTibet `shouldBe` biWylieTibet -- Todo: fix expected
+        Right env -> env.wylieTibetMap `shouldBe` wylieTibetHM -- Todo: fix expected
 
 syllabi :: Spec
 syllabi =
@@ -91,7 +90,7 @@ syllabi =
       res <- snd <$> runFileMock makeEnv
       case res of
         Left err  -> expectationFailure $ show err
-        Right env -> sort (Bi.toList env.bimapWylieTibet) `shouldBe` sort wylieTibetSyl
+        Right env -> sort (HM.toList env.wylieTibetMap) `shouldBe` sort wylieTibetSyl
 
 translate :: Spec
 translate =
@@ -102,14 +101,6 @@ translate =
         Left err  -> expectationFailure $ show err
         Right env -> do
           let query = "མེ"
-          -- print query
-          let toWylie' = toWylie env.bimapWylieTibet . parseTibetanInput env.radixTibet
-          -- print env.bimapWylieTibet
-
-          let queryWylie = case runExcept $ toWylie' query  of
-                Left _      -> query
-                Right wylie -> if null wylie then query else T.concat $ map fromWylieScript wylie
-          -- print queryWylie
           let reply = mapMaybe (searchTranslation query) env.dictionaryMeta
           reply `shouldBe` []
     it "Search ར་" $ do
@@ -118,6 +109,14 @@ translate =
         Left err  -> expectationFailure $ show err
         Right env -> do
           let reply = mapMaybe (searchTranslation "ར་") env.dictionaryMeta
+          -- print rep.ly
+          reply `shouldBe` []
+    it "Search རེ་པ་" $ do
+      res <- snd <$> runFileMock makeEnv
+      case res of
+        Left err  -> expectationFailure $ show err
+        Right env -> do
+          let reply = mapMaybe (searchTranslation "རེ་པ་") env.dictionaryMeta
           -- print rep.ly
           reply `shouldBe` []
 
@@ -139,12 +138,6 @@ interpretFileMock :: Members [Embed IO, Error HibetError] r => Sem (FileIO : r) 
 interpretFileMock = P.interpret $ \case
   ReadFile path -> P.embed $ BS.readFile path
   ReadFileLazy path -> P.embed $ BSL.readFile path
-
-  GetPath path -> case path of
-    "stuff/tibetan-syllables" -> pure sylPath
-    "stuff/titles.toml"       -> pure titlePath
-    "dicts/"                  -> pure dictDir
-    p                         -> throw $ UnknownError $ "Unknown get path: " <> pack  p
 
   GetPath path -> case path of
     "stuff/tibetan-syllables" -> pure sylPath
@@ -215,41 +208,44 @@ labels = Labels
     ]
   }
 
-biWylieTibet :: WylieTibetMap
-biWylieTibet = HM.fromList
+wylieTibetHM :: WylieTibetMap
+wylieTibetHM = HM.fromList
   [ (WylieSyllable {unWylie = "bla"},TibetSyllable {unTibet = "\3926\4019"})
-  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
-  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
-  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
-  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
-  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
-  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
-  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
-  , (WylieSyllable {unWylie = "mAN"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
   , (WylieSyllable {unWylie = "mAn"},TibetSyllable {unTibet = "\3928\3953\3923"})
   , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
+  , (WylieSyllable {unWylie = "mAN"},TibetSyllable {unTibet = "\3928\3953\3918"})
   , (WylieSyllable {unWylie = "man"},TibetSyllable {unTibet = "\3928\3923"})
   , (WylieSyllable {unWylie = "me"},TibetSyllable {unTibet = "\3928\3962"})
-  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
+  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
+  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
+  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
+  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
+  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
+  , (WylieSyllable {unWylie = "mana"},TibetSyllable {unTibet = "\3928\3923"})
+  , (WylieSyllable {unWylie = "mAna"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  , (WylieSyllable {unWylie = "mANa"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
+  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
   ]
 
 wylieTibetSyl :: [(WylieSyllable,TibetSyllable)]
 wylieTibetSyl =
   [ (WylieSyllable {unWylie = "bla"},TibetSyllable {unTibet = "\3926\4019"})
-  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
-  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
-  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
-  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
-  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
-  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
-  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
-  , (WylieSyllable {unWylie = "man"},TibetSyllable {unTibet = "\3928\3923"})
-  , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
+  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
   , (WylieSyllable {unWylie = "mAn"},TibetSyllable {unTibet = "\3928\3953\3923"})
+  , (WylieSyllable {unWylie = "maN"},TibetSyllable {unTibet = "\3928\3918"})
   , (WylieSyllable {unWylie = "mAN"},TibetSyllable {unTibet = "\3928\3953\3918"})
+  , (WylieSyllable {unWylie = "man"},TibetSyllable {unTibet = "\3928\3923"})
+  , (WylieSyllable {unWylie = "me"},TibetSyllable {unTibet = "\3928\3962"})
+  , (WylieSyllable {unWylie = "blad"},TibetSyllable {unTibet = "\3926\4019\3921"})
+  , (WylieSyllable {unWylie = "blabs"},TibetSyllable {unTibet = "\3926\4019\3926\3942"})
+  , (WylieSyllable {unWylie = "blab"},TibetSyllable {unTibet = "\3926\4019\3926"})
+  , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
+  , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
   , (WylieSyllable {unWylie = "mana"},TibetSyllable {unTibet = "\3928\3923"})
   , (WylieSyllable {unWylie = "mAna"},TibetSyllable {unTibet = "\3928\3953\3923"})
   , (WylieSyllable {unWylie = "mANa"},TibetSyllable {unTibet = "\3928\3953\3918"})
-  , (WylieSyllable {unWylie = "re"},TibetSyllable {unTibet = "\3938\3962"})
-  , (WylieSyllable {unWylie = "me"},TibetSyllable {unTibet = "\3928\3962"})
+  , (WylieSyllable {unWylie = "blags"},TibetSyllable {unTibet = "\3926\4019\3906\3942"})
+  , (WylieSyllable {unWylie = "blag"},TibetSyllable {unTibet = "\3926\4019\3906"})
   ]
