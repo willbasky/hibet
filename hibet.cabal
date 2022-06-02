@@ -204,6 +204,26 @@ test-suite hibet-env
   other-modules:       Paths_hibet
                        Paths
 
+test-suite hibet-parse
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test/parse
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+  build-depends:
+                       hibet
+                     , bytestring
+                     , hspec
+                     , mtl
+                     , text
+                     , megaparsec
+
+  other-modules:       Paths_hibet
+
+
 benchmark hibet-benchmark
   import:              common-options
   type:                exitcode-stdio-1.0
