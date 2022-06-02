@@ -12,11 +12,12 @@ import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (BimapWylieTibet, makeBi, mkTibetanRadex, mkWylieRadex, splitSyllables)
+import Parse (TibetWylieMap, WylieTibetMap, mkTibetanRadex, mkWylieRadex, splitSyllables)
 import Type (HibetError (..))
 
 import Control.Monad.Except (runExcept)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq, rparWith, runEval)
+import qualified Data.HashMap.Strict as HM
 import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
@@ -26,6 +27,7 @@ import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace, trace)
+import Data.Tuple (swap)
 
 -- fo debug
 -- import qualified Data.Bimap as Bi
@@ -34,11 +36,12 @@ import Polysemy.Trace (Trace, trace)
 
 -- | Environment fot translator
 data Env = Env
-  { dictionaryMeta  :: ![DictionaryMeta]
-  , bimapWylieTibet :: !BimapWylieTibet
-  , radixWylie      :: !(RadixTree ())
-  , radixTibet      :: !(RadixTree ())
-  , labels          :: !Labels
+  { dictionaryMeta :: ![DictionaryMeta]
+  , wylieTibetMap  :: !WylieTibetMap
+  , tibetWylieMap  :: !TibetWylieMap
+  , radixWylie     :: !(RadixTree ())
+  , radixTibet     :: !(RadixTree ())
+  , labels         :: !Labels
   }
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
@@ -57,22 +60,22 @@ makeEnv = do
     (_, files) <- File.listDirectory absDir
     filesAndTexts <- getFilesTexts files
 
-    let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
+    let dictsMeta = parMap (rparWith rdeepseq)
+          (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
     sylList <- fromEither $ runExcept $ splitSyllables syls
-    let env = runEval $ do
-          wtSyllables <- rparWith rdeepseq $ makeBi sylList
+    pure $ runEval $ do
+          wtMap <- rparWith rdeepseq $ HM.fromList sylList
+          twMap <- rparWith rdeepseq $ HM.fromList $ map swap sylList
           wRadix <- rparWith rdeepseq $ mkWylieRadex syls
           tRadix <- rparWith rdeepseq $ mkTibetanRadex syls
           pure Env
               { dictionaryMeta = dictsMeta
-              , bimapWylieTibet = wtSyllables
+              , wylieTibetMap = wtMap
+              , tibetWylieMap = twMap
               , radixWylie = wRadix
               , radixTibet = tRadix
               , labels     = labels
               }
-    -- let bi = env.bimapWylieTibet
-    -- trace $ show $ Bi.member (WylieSyllable "maN") bi
-    pure env
 
 getFilesTexts :: Members
   [ FileIO

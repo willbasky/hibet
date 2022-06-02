@@ -70,7 +70,7 @@ fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
 
 getAnswer :: Text -> Env -> Except HibetError (Doc AnsiStyle, Bool)
 getAnswer query env = do
-  let toWylie' = toWylie env.bimapWylieTibet . parseTibetanInput env.radixTibet
+  let toWylie' = toWylie env.tibetWylieMap . parseTibetanInput env.radixTibet
       -- ^ 1. Parse text to tibetan script,
       -- 2. check tibetan script is valid,
       -- 3. convert to Wylie.
@@ -79,7 +79,7 @@ getAnswer query env = do
         Right wylie -> if null wylie then query else T.intercalate " " $ map fromWylieScript wylie
       dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
   let list = sortOutput dscValues
-  let toTibetan' = toTibetan env.bimapWylieTibet . parseWylieInput env.radixWylie
+  let toTibetan' = toTibetan env.wylieTibetMap . parseWylieInput env.radixWylie
   -- list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)
   query' <- if query == queryWylie

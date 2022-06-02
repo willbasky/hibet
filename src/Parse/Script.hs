@@ -6,14 +6,13 @@ import Type (HibetError (..))
 
 import Control.Applicative (Alternative (many, some, (<|>)))
 import Control.Monad.Except (Except)
-import qualified Data.Bimap as Bi
+import Data.Char (isMark)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
-import Data.Char (isMark)
 
 
 ---------------------------------------------------------------------
@@ -255,19 +254,16 @@ tibetanScript = (:[]) <$> M.try tibetanScriptEnd
 
 
 ---------------------------------------------------------------------
--- Bimap from syllables
+-- Hashmaps from syllables
 ---------------------------------------------------------------------
-
-makeBi :: [(WylieSyllable,TibetSyllable)] -> Bi.Bimap WylieSyllable TibetSyllable
-makeBi = Bi.fromAList
 
 splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
 splitSyllables
-    = traverse (parseT syllableParserWT "")
+    = traverse (parseT parseSyllables "")
     . T.lines
 
-syllableParserWT :: Parser (WylieSyllable,TibetSyllable)
-syllableParserWT = do
+parseSyllables :: Parser (WylieSyllable,TibetSyllable)
+parseSyllables = do
     w <- some $ M.anySingleBut '|'
     _ <- MC.char '|'
     t <- some M.anySingle

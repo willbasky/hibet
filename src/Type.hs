@@ -13,6 +13,6 @@ import Text.Megaparsec.Error (ParseErrorBundle)
 data HibetError
   = PathError PathException
   | MegaError (ParseErrorBundle Text Void)
-  | BimapError Text
+  | NotFound
   | UnknownError Text
   deriving stock (Eq, Show)

@@ -6,8 +6,9 @@ import Type (HibetError (..))
 
 import Control.Monad.Except (Except, liftEither)
 import Control.Parallel.Strategies (NFData)
-import Data.Bimap (Bimap)
 import Data.Either.Extra (mapLeft)
+import Data.Hashable
+import Data.HashMap.Strict (HashMap)
 import Data.Text (Text)
 import Data.Void (Void)
 import GHC.Generics (Generic)
@@ -37,16 +38,19 @@ fromTibetScript (NonScriptTibet t) = t
 newtype WylieSyllable = WylieSyllable {unWylie :: Text}
   deriving stock (Show, Eq, Generic)
   deriving (Ord) via Text
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Hashable)
 
 newtype TibetSyllable = TibetSyllable {unTibet :: Text}
   deriving stock (Show, Eq, Generic)
   deriving (Ord) via Text
-  deriving anyclass (NFData)
+  deriving anyclass (NFData, Hashable)
 
 
--- | Syllable bimap.
-type BimapWylieTibet = Bimap WylieSyllable TibetSyllable
+-- | I refused a Bimap The reason is
+-- W -> T not isomorphic to T -> W therefore
+-- Bimap lost some pairs.
+type WylieTibetMap = HashMap WylieSyllable TibetSyllable
+type TibetWylieMap = HashMap TibetSyllable WylieSyllable
 
 
 type Parser a = M.Parsec Void Text a

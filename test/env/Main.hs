@@ -5,7 +5,7 @@ import Effects.File (FileIO (..), mapErr, runFile)
 import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
-import Parse (BimapWylieTibet, TibetSyllable (..), WylieSyllable (..), splitSyllables, fromWylieScript, parseTibetanInput, toWylie)
+import Parse (WylieTibetMap, TibetSyllable (..), WylieSyllable (..), splitSyllables, fromWylieScript, parseTibetanInput, toWylie)
 import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
 import Type (HibetError (..))
 import Utility (filename, mkAbsolute, pack)
@@ -74,7 +74,7 @@ mockMakeEnvSpec =
       case res of
         Left err  -> expectationFailure $ show err
         Right env -> env.labels `shouldBe` labels
-    it "Make env. BimapWylieTibet" $ do
+    it "Make env. WylieTibetMap" $ do
       res <- snd <$> runFileMock makeEnv
       case res of
         Left err  -> expectationFailure $ show err
@@ -215,8 +215,8 @@ labels = Labels
     ]
   }
 
-biWylieTibet :: BimapWylieTibet
-biWylieTibet = Bi.fromList
+biWylieTibet :: WylieTibetMap
+biWylieTibet = HM.fromList
   [ (WylieSyllable {unWylie = "bla"},TibetSyllable {unTibet = "\3926\4019"})
   , (WylieSyllable {unWylie = "bla'am"},TibetSyllable {unTibet = "\3926\4019\3936\3928"})
   , (WylieSyllable {unWylie = "bla'i"},TibetSyllable {unTibet = "\3926\4019\3936\3954"})
