@@ -39,6 +39,7 @@ import Data.RadixTree (RadixTree, fromFoldable_, lookup)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Prelude hiding (lookup)
+import qualified Data.Text.Lines as Line
 
 
 
@@ -129,13 +130,13 @@ parseTibetanInput radix txt  = do
 -- | Make wylie radix tree from syllables.
 makeWylieRadexTree :: Text -> RadixTree ()
 makeWylieRadexTree syls =
-    let linedSyls = T.lines syls
-        firstPart = map (T.takeWhile (/= '|')) linedSyls
-    in  fromFoldable_ firstPart
+    let linedSyls = Line.lines $ Line.fromText syls
+        headPart = map (T.takeWhile (/= '|')) linedSyls
+    in  fromFoldable_ headPart
 
 -- | Make tibetan radix tree from syllables.
 makeTibetanRadexTree :: Text -> RadixTree ()
 makeTibetanRadexTree syls =
-    let linedSyls = T.lines syls
-        firstPart = map (T.takeWhileEnd (/= '|')) linedSyls
-    in  fromFoldable_ firstPart
+    let linedSyls = Line.lines $ Line.fromText syls
+        lastPart = map (T.takeWhileEnd (/= '|')) linedSyls
+    in  fromFoldable_ lastPart
