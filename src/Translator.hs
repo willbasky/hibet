@@ -28,9 +28,12 @@ import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 
+import Polysemy.Trace (Trace)
+-- import qualified Debug.Trace as Debug
+-- import Polysemy.Trace (trace)
 
 -- | Load environment and start loop dialog
-translator :: Members [PrettyPrint, Resource, Console, Error HibetError, Reader Env ] r
+translator :: Members [PrettyPrint, Trace, Resource, Console, Error HibetError, Reader Env ] r
   => Sem r ()
 translator = bracketOnError
   initializeInput
@@ -40,7 +43,7 @@ translator = bracketOnError
 
 
 -- Looped dialog with user
-loopDialog :: Members [PrettyPrint, Console, Error HibetError, Reader Env ] r
+loopDialog :: Members [PrettyPrint, Trace, Console, Error HibetError, Reader Env ] r
   => InputState
   -> Sem r ()
 loopDialog inputState = forever $ do
@@ -70,7 +73,7 @@ getAnswer query env = do
   let toWylie' = toWylie env.bimapWylieTibet . parseTibetanInput env.radixTibet
       queryWylie = case runExcept $ toWylie' query  of
         Left _      -> query
-        Right wylie -> if null wylie then query else T.concat $ map fromWylieScript wylie
+        Right wylie -> if null wylie then query else T.intercalate " " $ map fromWylieScript wylie
       dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
   let list = sortOutput dscValues
   let toTibetan' = toTibetan env.bimapWylieTibet . parseWylieInput env.radixWylie
@@ -79,8 +82,8 @@ getAnswer query env = do
   query' <- if query == queryWylie
     then do
       tibetScript <- toTibetan' queryWylie
-      pure $ T.concat $ fromTibetScript <$> tibetScript
-    else pure queryWylie
+      pure $ T.intercalate "་" $ fromTibetScript <$> tibetScript
+    else pure query
   pure (withHeaderSpaces yellow query' translations, isEmpty)
 
 

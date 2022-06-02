@@ -27,7 +27,7 @@ module Parse
        , lookupTibetScript
        ) where
 
-import Parse.Script (makeBi, splitSyllables, tibLines, tibetanScript)
+import Parse.Script (makeBi, splitSyllables, walLines, tibetanScript)
 import Parse.Type
 import Type (HibetError (..))
 import Utility (toText)
@@ -117,7 +117,7 @@ At second, current parsers will be refactored to more and more correct result ag
 -}
 parseWylieInput :: RadixTree () -> Text -> Except HibetError [WylieScript]
 parseWylieInput radix txt  = do
-    ls <- parseT tibLines "" txt
+    ls <- parseT walLines "" txt
     pure $ map (lookupWylieScript radix) ls
 
 -- | Parse text to tibetan or fail.
