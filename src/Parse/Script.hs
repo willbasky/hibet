@@ -9,6 +9,7 @@ import Control.Monad.Except (Except)
 import Data.Char (isMark)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
@@ -260,7 +261,8 @@ tibetanScript = (:[]) <$> M.try tibetanScriptEnd
 splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
 splitSyllables
     = traverse (parseT parseSyllables "")
-    . T.lines
+    . Line.lines
+    . Line.fromText
 
 parseSyllables :: Parser (WylieSyllable,TibetSyllable)
 parseSyllables = do

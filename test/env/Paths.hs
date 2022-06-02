@@ -12,4 +12,4 @@ dictPath1 :: FilePath
 dictPath1 = dictDir <> "Berzin-T|E.txt"
 
 dictPath2 :: FilePath
-dictPath2 = dictDir <> "RichardBarron-T|E.txt"
+dictPath2 = dictDir <> "RangjungYeshe-T|E.txt"
