@@ -17,6 +17,10 @@ extra-doc-files:     README.md
 data-files:          dicts/*.txt
                    , stuff/titles.toml
                    , stuff/tibetan-syllables
+extra-source-files:
+  test/env/data/dicts/*.txt
+  test/env/data/stuff/tibetan-syllables
+  test/env/data/stuff/titles.toml
 tested-with:
   , GHC==8.8.4
   , GHC==8.10.7
@@ -101,7 +105,6 @@ library
 
   build-depends:
                        bytestring
-                     , bimap
                      , containers
                      , deepseq
                      , directory
@@ -191,12 +194,11 @@ test-suite hibet-env
                        -with-rtsopts=-N
   build-depends:
                        hibet
-                     , bimap
                      , bytestring
+                     , directory
                      , hspec
                      , containers
                      , mtl
-                     , path-io
                      , polysemy
                      , polysemy-path
                      , text
@@ -216,11 +218,11 @@ test-suite hibet-parse
                        -with-rtsopts=-N
   build-depends:
                        hibet
-                     , bytestring
+                    --  , bytestring
                      , hspec
                      , mtl
-                     , text
-                     , megaparsec
+                    --  , text
+                    --  , megaparsec
 
   other-modules:       Paths_hibet
 

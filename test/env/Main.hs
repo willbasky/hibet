@@ -6,7 +6,7 @@ import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
 import Parse (TibetSyllable (..), WylieSyllable (..), WylieTibetMap, splitSyllables)
-import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
+import Paths (dictDir, dictPath1, dictPath2, sylPath, testDir, titlePath)
 import Type (HibetError (..))
 import Utility (mkAbsolute, pack)
 
@@ -26,19 +26,22 @@ import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
 import qualified Polysemy.Path as PP
 import Polysemy.Trace (Trace, runTraceList)
+import System.Directory
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
+import System.IO
+import qualified Debug.Trace as Trace
 
 main :: IO ()
 main = hspec $ do
   mockMakeEnvSpec
-  -- syllabi
+  -- syllables
   translate
 
 mockMakeEnvSpec ::Spec
 mockMakeEnvSpec =
   describe "FileIO: " $ do
-    it "GetPath syllabies" $ do
+    it "GetPath syllables" $ do
       res <- snd <$> runFileMock (EF.getPath "stuff/tibetan-syllables")
       res `shouldBe` Right sylPath
     it "GetPath titles" $ do
@@ -48,11 +51,29 @@ mockMakeEnvSpec =
       res <- snd <$> runFileMock (EF.getPath "dicts/")
       res `shouldBe` Right dictDir
 
-    it "Read file syllabies" $ do
+    it "Read file syllables" $ do
+      hGetBuffering stdout >>= print
+      hSetBuffering stdout LineBuffering
+      print =<< getCurrentDirectory
+      print sylPath
+      -- print =<< listDirectory =<< getCurrentDirectory
+      -- print =<< (\list -> findFile list "tibetan-syllables") =<< listDirectory =<< getCurrentDirectory
+      -- Trace.trace "doesFileExist LICENSE" doesFileExist "LICENSE" >>= print
+      -- Trace.trace "doesFileExist sylPath" doesFileExist sylPath >>= print
+      Trace.trace "makeAbsolute sylPath >>= doesFileExis" makeAbsolute sylPath >>= doesFileExist >>= print
+      makeAbsolute sylPath >>= print
+      listDirectory "." >>= print
+      listDirectory "test" >>= print
+      listDirectory "test/env" >>= print
+      listDirectory "test/env/data" >>= print
+      listDirectory "test/env/data/stuff" >>= print
+      -- Trace.trace "doesDirectoryExist test" doesDirectoryExist "test" >>= print
+      -- Trace.trace "doesDirectoryExist test/env" doesDirectoryExist "test/env" >>= print
+      -- Trace.trace "doesDirectoryExist test/env/data" doesDirectoryExist "test/env/data" >>= print
+      -- Trace.trace "doesDirectoryExist testDir" doesDirectoryExist testDir >>= print
+      -- aPath <- makeAbsolute sylPath
       res <- snd <$> runFileMock (EF.readFile sylPath)
-      -- print res
-      -- print sylPath
-      res `shouldBe` Right syllables
+      res `shouldBe` Right syllablesRaw
     it "Read file titles" $ do
       res <- snd <$> runFileMock (EF.readFile titlePath)
       res `shouldBe` Right toml
@@ -79,11 +100,11 @@ mockMakeEnvSpec =
         Left err  -> expectationFailure $ show err
         Right env -> env.wylieTibetMap `shouldBe` wylieTibetHM -- Todo: fix expected
 
-syllabi :: Spec
-syllabi =
+syllables :: Spec
+syllables =
   describe "Syllables" $ do
     it "Split syllables" $ do
-      case runExcept $ splitSyllables $ TE.decodeUtf8 syllables of
+      case runExcept $ splitSyllables $ TE.decodeUtf8 syllablesRaw of
         Left err  -> expectationFailure $ show err
         Right res -> res `shouldBe` wylieTibetSyl
     it "Map and list of syllables" $ do
@@ -156,8 +177,8 @@ interpretFileMock = P.interpret $ \case
 -- Data for mocking
 
 
-syllables :: BS.ByteString
-syllables = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\nme|\224\189\152\224\189\186\n"
+syllablesRaw :: BS.ByteString
+syllablesRaw = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\nme|\224\189\152\224\189\186\n"
 
 toml :: BS.ByteString
 toml = "[[titles]]\n    path = \"Berzin-T|E\"\n    id = 8\n    label = \"Berzin\"\n    mergeLines = true\n    about = \"Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n\n[[titles]]\n    path = \"RangjungYeshe-T|E\"\n    id = 7\n    label = \"Rangjung Yeshe\"\n    about = \"Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org\"\n    abbreviations = \"RangjungYeshe\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
