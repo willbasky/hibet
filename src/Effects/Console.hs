@@ -1,5 +1,7 @@
 module Effects.Console where
 
+import Options.Applicative (ParserInfo)
+import qualified Options.Applicative as Opt
 import Polysemy (Embed, Member, Sem)
 import qualified Polysemy as P
 import qualified System.Console.Haskeline as Console
@@ -7,8 +9,6 @@ import System.Console.Haskeline.History (History)
 import System.Console.Haskeline.IO (InputState)
 import qualified System.Console.Haskeline.IO as Console
 import qualified System.Exit as Exit
-import Options.Applicative (ParserInfo)
-import qualified Options.Applicative as Opt
 
 
 data Console m a where

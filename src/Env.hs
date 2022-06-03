@@ -12,11 +12,12 @@ import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
-import Parse (BimapWylieTibet, makeBi, makeTibetanRadexTree, makeWylieRadexTree, splitSyllables)
+import Parse (TibetWylieMap, WylieTibetMap, mkTibetanRadex, mkWylieRadex, splitSyllables)
 import Type (HibetError (..))
 
 import Control.Monad.Except (runExcept)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq, rparWith, runEval)
+import qualified Data.HashMap.Strict as HM
 import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
@@ -25,16 +26,23 @@ import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
-import Polysemy.Trace (Trace, trace)
+import Polysemy.Trace (Trace)
+import Data.Tuple (swap)
+
+-- fo debug
+-- import Polysemy.Trace (trace)
+-- import qualified Data.Bimap as Bi
+-- import Parse (WylieSyllable(WylieSyllable))
 
 
 -- | Environment fot translator
 data Env = Env
-  { dictionaryMeta  :: ![DictionaryMeta]
-  , bimapWylieTibet :: !BimapWylieTibet
-  , radixWylie      :: !(RadixTree ())
-  , radixTibet      :: !(RadixTree ())
-  , labels          :: !Labels
+  { dictionaryMeta :: ![DictionaryMeta]
+  , wylieTibetMap  :: !WylieTibetMap
+  , tibetWylieMap  :: !TibetWylieMap
+  , radixWylie     :: !(RadixTree ())
+  , radixTibet     :: !(RadixTree ())
+  , labels         :: !Labels
   }
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
@@ -43,7 +51,7 @@ data Env = Env
 makeEnv :: Members [FileIO, Error HibetError, Trace] r => Sem r Env
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
-    trace sylsPath
+    -- trace sylsPath
 
     syls <- TE.decodeUtf8 <$> File.readFile sylsPath
     labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
@@ -53,15 +61,18 @@ makeEnv = do
     (_, files) <- File.listDirectory absDir
     filesAndTexts <- getFilesTexts files
 
-    let dictsMeta = parMap (rparWith rdeepseq) (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
+    let dictsMeta = parMap (rparWith rdeepseq)
+          (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
     sylList <- fromEither $ runExcept $ splitSyllables syls
     pure $ runEval $ do
-      wtSyllables <- rparWith rdeepseq $ makeBi sylList
-      wRadix <- rparWith rdeepseq $ makeWylieRadexTree syls
-      tRadix <- rparWith rdeepseq $ makeTibetanRadexTree syls
-      pure Env
+          wtMap <- rparWith rdeepseq $ HM.fromList sylList
+          twMap <- rparWith rdeepseq $ HM.fromList $ map swap sylList
+          wRadix <- rparWith rdeepseq $ mkWylieRadex syls
+          tRadix <- rparWith rdeepseq $ mkTibetanRadex syls
+          pure Env
               { dictionaryMeta = dictsMeta
-              , bimapWylieTibet = wtSyllables
+              , wylieTibetMap = wtMap
+              , tibetWylieMap = twMap
               , radixWylie = wRadix
               , radixTibet = tRadix
               , labels     = labels

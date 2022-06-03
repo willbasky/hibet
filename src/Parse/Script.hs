@@ -6,14 +6,14 @@ import Type (HibetError (..))
 
 import Control.Applicative (Alternative (many, some, (<|>)))
 import Control.Monad.Except (Except)
-import qualified Data.Bimap as Bi
+import Data.Char (isMark)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
 import qualified Text.Megaparsec.Char.Lexer as ML
-
 
 
 ---------------------------------------------------------------------
@@ -39,7 +39,7 @@ digitInParens = do
 
 letterInParens :: Parser Text
 letterInParens = do
-    d <- parensMNoSpace (some tibTextMP)
+    d <- parensMNoSpace (some walTextMP)
     -- It gives (bla ). With space that converted to tibetan dot
     pure $ T.concat ["(", T.pack d, ")"]
     -- It gives (bla).  Without space.
@@ -47,7 +47,7 @@ letterInParens = do
 
 letterInParensSen :: Parser Text
 letterInParensSen = do
-    d <- parensMNoSpace (some tibTextMP)
+    d <- parensMNoSpace (some walTextMP)
     pure $ T.concat ["(", T.pack d, ")"]
 
 digitAndDot :: Parser Text
@@ -67,75 +67,75 @@ chooseDigit = digitInParens <|> digitAndDot
 oneLine :: Parser Text
 oneLine = do
     d <- chooseDigit
-    b <- T.concat <$> some tibBase
+    b <- T.concat <$> some walBase
     pure $ d <> b
 
-tibBase :: Parser Text
-tibBase = M.try tibBaseSub
+walBase :: Parser Text
+walBase = M.try walBaseSub
     <|> M.try letterInParens
-    <|> T.singleton <$> M.try tibParens
+    <|> T.singleton <$> M.try walParens
     <|> M.try digits
 
 {-
-parseTest tibBaseSen "(sdf)sdf"
+parseTest walBaseSen "(sdf)sdf"
 "(sdf)"
-parseTest tibBaseSen "(sdf)"
+parseTest walBaseSen "(sdf)"
 "(sdf)"
 -}
-tibBaseSen :: Parser Text
-tibBaseSen = M.try tibBaseSub
+walBaseSen :: Parser Text
+walBaseSen = M.try walBaseSub
     <|> M.try letterInParensSen
-    <|> T.singleton <$> M.try tibParens
+    <|> T.singleton <$> M.try walParens
     <|> M.try digits
 
-tibBaseSub :: Parser Text
-tibBaseSub = do
-    t <- some tibTextMP
+walBaseSub :: Parser Text
+walBaseSub = do
+    t <- some walTextMP
     pure $ T.pack t
 
--- > parseTest tibLines "(sdf)sdf(1)sd1.sdf"
+-- > parseTest walLines "(sdf)sdf(1)sd1.sdf"
 -- ["(sdf)sdf","(1)sd","1.sdf"]
 
--- > parseT tibLines "" "(sdf)sdf(1)sd1.sdf"
+-- > parseT walLines "" "(sdf)sdf(1)sd1.sdf"
 -- Right ["(sdf)sdf","(1)sd","1.sdf"]
-tibLines :: Parser [Text]
-tibLines = do
-    first <- T.concat <$> many tibBase
+walLines :: Parser [Text]
+walLines = do
+    first <- T.concat <$> many walBase
     second <- many (M.try oneLine)
     pure $ if T.null first then second else first : second
 
--- > traverse (parseT tibSentences "") ["(sdf)sdf","1.df"]
+-- > traverse (parseT walSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
-tibList :: [Text] -> Except HibetError [(Text, Text)]
-tibList = traverse (parseT tibSentences "")
+walList :: [Text] -> Except HibetError [(Text, Text)]
+walList = traverse (parseT walSentences "")
 
-tibSentences :: Parser (Text, Text)
-tibSentences = M.try tibSen <|> M.try tibSenD <|> M.try tibSenDT
+walSentences :: Parser (Text, Text)
+walSentences = M.try walSen <|> M.try walSenD <|> M.try walSenDT
 
-tibSenDT :: Parser (Text,Text)
-tibSenDT = do
+walSenDT :: Parser (Text,Text)
+walSenDT = do
     d <- chooseDigit
-    sens <- T.concat <$> some tibBaseSen
+    sens <- T.concat <$> some walBaseSen
     pure (d, sens)
 
-tibSenD :: Parser (Text,Text)
-tibSenD = do
+walSenD :: Parser (Text,Text)
+walSenD = do
     d <- chooseDigit <* M.eof
     pure (d, "")
 
-tibSen :: Parser (Text,Text)
-tibSen = do
-    sens <- T.concat <$> some tibBaseSen
+walSen :: Parser (Text,Text)
+walSen = do
+    sens <- T.concat <$> some walBaseSen
     pure ("", sens)
 
-tibTextMP :: Parser Char
-tibTextMP = tibEnd <|> MC.letterChar <|> MC.spaceChar <|> tibChars
+walTextMP :: Parser Char
+walTextMP = walEnd <|> MC.letterChar <|> MC.spaceChar <|> walChars
 
-tibTextMPNoEnd :: Parser Char
-tibTextMPNoEnd = MC.letterChar <|> MC.spaceChar <|> tibChars <|> tibParens
+walTextMPNoEnd :: Parser Char
+walTextMPNoEnd = MC.letterChar <|> MC.spaceChar <|> walChars <|> walParens
 
-tibChars :: Parser Char
-tibChars
+walChars :: Parser Char
+walChars
     =   MC.char '+'
     <|> MC.char '\''
     <|> MC.char ':'
@@ -148,44 +148,44 @@ tibChars
     <|> MC.char '@'
     <|> MC.char '~'
 
-tibEnd :: Parser Char
-tibEnd = MC.char '/'
+walEnd :: Parser Char
+walEnd = MC.char '/'
 
-tibEndSpace :: Parser Text
-tibEndSpace = symbolM "/"
+walEndSpace :: Parser Text
+walEndSpace = symbolM "/"
 
-tibParens :: Parser Char
-tibParens = MC.char '(' <* M.notFollowedBy afterParen <|> MC.char ')'
+walParens :: Parser Char
+walParens = MC.char '(' <* M.notFollowedBy afterParen <|> MC.char ')'
 
 afterParen :: Parser Char
 afterParen = do
     _ <- ML.decimal :: Parser Int
     MC.char ')'
 
-tibSentEnd :: Parser Text
-tibSentEnd = do
-    t <- T.pack <$> some tibTextMPNoEnd <* M.eof
+walSentEnd :: Parser Text
+walSentEnd = do
+    t <- T.pack <$> some walTextMPNoEnd <* M.eof
     pure $ T.concat [T.stripEnd t]
 
-tibSentEndE :: Parser Text
-tibSentEndE = do
+walSentEndE :: Parser Text
+walSentEndE = do
     MC.space
-    t <- T.pack <$> some tibTextMPNoEnd
-    e2 <- tibEndSpace
+    t <- T.pack <$> some walTextMPNoEnd
+    e2 <- walEndSpace
     pure $ T.concat [T.stripEnd t, e2]
 
-tibSentEndFE :: Parser Text
-tibSentEndFE = do
+walSentEndFE :: Parser Text
+walSentEndFE = do
     MC.space
-    e1 <- tibEndSpace
-    t <- T.pack <$> some tibTextMPNoEnd
-    e2 <- tibEndSpace
+    e1 <- walEndSpace
+    t <- T.pack <$> some walTextMPNoEnd
+    e2 <- walEndSpace
     pure $ T.concat [e1, T.stripEnd t, e2]
 
--- > parseTest tibSentEndList "sdf / /sdf  / fgdg / /sdf/"
+-- > parseTest walSentEndList "sdf / /sdf  / fgdg / /sdf/"
 -- ["sdf/","/sdf/","fgdg/","/sdf/"]
-tibSentEndList :: Parser [Text]
-tibSentEndList = some $ M.try tibSentEndFE <|> M.try tibSentEndE <|> M.try tibSentEnd <|> M.try tibBase
+walSentEndList :: Parser [Text]
+walSentEndList = some $ M.try walSentEndFE <|> M.try walSentEndE <|> M.try walSentEnd <|> M.try walBase
 
 -- safeListCall :: Foldable t => (t a -> b) -> t a -> Maybe b
 -- safeListCall f xs
@@ -197,14 +197,17 @@ tibSentEndList = some $ M.try tibSentEndFE <|> M.try tibSentEndE <|> M.try tibSe
 -- Parse tibetan script
 ---------------------------------------------------------------------
 
-tibetanDotM :: Parser (M.Tokens Text)
+tibetanDotM :: Parser Text
 tibetanDotM = symbolM "་"
 
 tibetanEnd :: Parser Text
 tibetanEnd = symbolM "།"
 
+tibetanMarks :: Parser Char
+tibetanMarks = M.satisfy isMark
+
 tibetanWord :: Parser Text
-tibetanWord = T.pack <$> some MC.alphaNumChar
+tibetanWord =  T.pack <$> some (MC.alphaNumChar <|> tibetanMarks)
 
 tibetanScriptEnd :: Parser Text
 tibetanScriptEnd = tibetanWord <* tibetanEnd
@@ -252,19 +255,17 @@ tibetanScript = (:[]) <$> M.try tibetanScriptEnd
 
 
 ---------------------------------------------------------------------
--- Bimap from syllables
+-- Hashmaps from syllables
 ---------------------------------------------------------------------
-
-makeBi :: [(WylieSyllable,TibetSyllable)] -> Bi.Bimap WylieSyllable TibetSyllable
-makeBi = Bi.fromList
 
 splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
 splitSyllables
-    = traverse (parseT syllableParserWT "")
-    . T.lines
+    = traverse (parseT parseSyllables "")
+    . Line.lines
+    . Line.fromText
 
-syllableParserWT :: Parser (WylieSyllable,TibetSyllable)
-syllableParserWT = do
+parseSyllables :: Parser (WylieSyllable,TibetSyllable)
+parseSyllables = do
     w <- some $ M.anySingleBut '|'
     _ <- MC.char '|'
     t <- some M.anySingle

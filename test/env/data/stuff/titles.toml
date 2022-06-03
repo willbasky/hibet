@@ -11,10 +11,11 @@
     target = ["English"]
 
 [[titles]]
-    path = "RichardBarron-T|E"
-    id = 18
-    label = "Richard Barron"
-    about = "Richard Barron's glossary. © Copyright 2002 by Turquoise Dragon Media Services. Source: Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 (2003)|online version: http://rywiki.tsadra.org"
+    path = "RangjungYeshe-T|E"
+    id = 7
+    label = "Rangjung Yeshe"
+    about = "Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org"
+    abbreviations = "RangjungYeshe"
     public = true
     listCredits = true
     available = true

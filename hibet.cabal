@@ -17,6 +17,10 @@ extra-doc-files:     README.md
 data-files:          dicts/*.txt
                    , stuff/titles.toml
                    , stuff/tibetan-syllables
+extra-source-files:
+  test/env/data/dicts/*.txt
+  test/env/data/stuff/tibetan-syllables
+  test/env/data/stuff/titles.toml
 tested-with:
   , GHC==8.8.4
   , GHC==8.10.7
@@ -101,7 +105,6 @@ library
 
   build-depends:
                        bytestring
-                     , bimap
                      , containers
                      , deepseq
                      , directory
@@ -109,6 +112,7 @@ library
                      , filepath
                      , gitrev
                      , haskeline
+                     , hashable
                      , megaparsec
                      , mtl
                      , neat-interpolation
@@ -124,6 +128,7 @@ library
                      , radixtree ^>=0.6.0.0
                      , terminal-size
                      , text
+                     , text-rope
                      , tomland
                      , unordered-containers
 
@@ -192,39 +197,60 @@ test-suite hibet-env
                      , bytestring
                      , hspec
                      , containers
+                     , mtl
                      , polysemy
                      , polysemy-path
-                     , bimap
+                     , text
                      , unordered-containers
+                    --  , directory
 
   other-modules:       Paths_hibet
                        Paths
 
--- benchmark hibet-benchmark
---   import:              common-options
---   type:                exitcode-stdio-1.0
---   hs-source-dirs:      benchmark
---   main-is:             Main.hs
+test-suite hibet-parse
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test/parse
+  main-is:             Main.hs
+  ghc-options:         -Wall
+                       -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+  build-depends:
+                       hibet
+                     , hspec
+                     , mtl
 
---   build-depends:
---                        hibet
---                      , async
---                      , criterion
---                      , weigh
---                      , path
---                      , path-io >= 1.4.0
---                      , text
---                      , streamly
---                      , unordered-containers
---                      , bytestring
---                      , conduit
---                      , file-embed
+  other-modules:       Paths_hibet
 
---   other-modules:       Paths_hibet
---                        Assets
 
---   ghc-options:         -threaded
---                        -rtsopts
---                        -with-rtsopts=-N
+benchmark hibet-benchmark
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      benchmark
+  main-is:             Main.hs
+
+  build-depends:
+                       hibet
+                     , criterion
+                     , path
+                     , path-io >= 1.4.0
+                     , text
+                     , bytestring
+                     , file-embed
+                     , text-rope
+                    --  , weigh
+                    --  , streamly
+                    --  , unordered-containers
+                    --  , conduit
+                    --  , async
+
+  other-modules:       Paths_hibet
+                       Lines
+                       Common
+
+  ghc-options:         -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
 
 

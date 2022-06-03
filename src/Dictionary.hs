@@ -17,7 +17,7 @@ module Dictionary
        , toDictionaryMeta
        ) where
 
-import Label (Title(..), LabelFull(..))
+import Label (LabelFull (..), Title (..))
 import Type (HibetError (..))
 
 import Control.Monad.Except (Except)
@@ -30,6 +30,7 @@ import qualified Data.HashMap.Strict as HMS
 import Data.List (sortBy)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Lines as Line
 import GHC.Generics (Generic)
 import System.FilePath.Posix (takeBaseName)
 
@@ -63,7 +64,8 @@ makeDictionary :: Text -> Dictionary
 makeDictionary
     = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else a1 <> a2)
     . map (second ((:[]) . Target . T.drop 1) . T.span (<'|'))
-    . T.lines
+    . Line.lines
+    . Line.fromText
 
 -- | Select several dictionaries by id.
 selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]

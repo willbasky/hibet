@@ -1,48 +1,54 @@
 module Main where
 
-import Conduit ((.|))
-import Control.Concurrent.Async (mapConcurrently)
+
+import Common
+import Lines
+
+-- import Conduit ((.|))
+-- import Control.Concurrent.Async (mapConcurrently)
 import Criterion.Main
-import Data.Bifunctor (second)
-import Data.Conduit.Combinators (linesUnbounded)
-import Data.Text (Text)
-import Path
-import Path.IO
-import Paths_hibet (getDataFileName)
-import Streamly
-import Streamly.Prelude ((|:))
-import Weigh
+-- import Data.Bifunctor (second)
+-- import Data.Conduit.Combinators (linesUnbounded)
+-- import Data.Text (Text)
+-- import Path
+-- import Path.IO
+-- import Paths_hibet (getDataFileName)
+-- import Streamly
+-- import Streamly.Prelude ((|:))
+-- import Weigh
 
-import qualified Conduit as C
-import qualified Data.ByteString as BS
-import qualified Data.HashMap.Strict as HMS
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import qualified Streamly.Prelude as S
+-- import qualified Conduit as C
+-- import qualified Data.ByteString as BS
+-- import qualified Data.Text.Encoding as TE
+-- import qualified Data.HashMap.Strict as HMS
+-- import qualified Data.Text as T
+-- import qualified Streamly.Prelude as S
 
-import Dictionary (Dictionary, Source, Target, makeDictionary)
-import Assets (dictinaries)
+-- import Dictionary (Dictionary, Target, makeDictionary)
 
 
-main =
+main :: IO ()
+main = do
     -- memory
-    crit
+    -- crit
     -- memory2
-    -- pathOrEmbedB
+    pathOrEmbedB
+    linesDict
 
-makeTextMapS :: Text -> Maybe Dictionary
-makeTextMapS txt = HMS.fromListWith
-    (\ a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2]) <$> S.toList
-        (S.map ((\ (y, x) -> (y :: Source, T.drop 1 x)) . T.span (< '|')) $
-            S.fromList $ T.lines txt)
+-- makeTextMapS :: Text -> Maybe Dictionary
+-- makeTextMapS txt = HMS.fromListWith
+--     (\ a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2]) <$> S.toList
+--         (S.map ((\ (y, x) -> (y, T.drop 1 x)) . T.span (< '|')) $
+--             S.fromList $ T.lines txt)
 
-makeTextMapC :: Text -> Dictionary
-makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
-  (C.runConduitPure
-  $ C.yield txt
-  .| linesUnbounded
-  .| C.mapC (second (T.drop 1) . T.span (<'|'))
-  .| C.sinkList)
+
+-- makeTextMapC :: Text -> Dictionary
+-- makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
+--   (C.runConduitPure
+--   $ C.yield txt
+--   .| linesUnbounded
+--   .| C.mapC (second (T.drop 1) . T.span (<'|'))
+--   .| C.sinkList)
 
 
 {-
@@ -54,17 +60,17 @@ conduit + concurrent  440,960,104  341
 Benchmark tibet-benchmark: FINISH
 -}
 
-memory = do
-    dicts <- textLoad
-    let toDictMetaT = map makeDictionary
-    let toDictMetaC = mapConcurrently (pure . makeDictionary)
-    let toDictMetaConduitT = map makeTextMapC
-    let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
-    mainWith $ do
-        func "base + traverse" toDictMetaT dicts
-        io "base + concurrent" toDictMetaC dicts
-        func "conduit + traverse" toDictMetaConduitT dicts
-        io "conduit + concurrent" toDictMetaConduitC dicts
+-- memory = do
+--     dicts <- textLoad
+--     let toDictMetaT = map makeDictionary
+--     let toDictMetaC = mapConcurrently (pure . makeDictionary)
+--     let toDictMetaConduitT = map makeTextMapC
+--     let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
+--     mainWith $ do
+--         func "base + traverse" toDictMetaT dicts
+--         io "base + concurrent" toDictMetaC dicts
+--         func "conduit + traverse" toDictMetaConduitT dicts
+--         io "conduit + concurrent" toDictMetaConduitC dicts
 
 {-
 benchmarking base + traverse
@@ -96,18 +102,18 @@ std dev              14.79 ms   (7.177 ms .. 20.72 ms)
 variance introduced by outliers: 19% (moderately inflated)
 -}
 
-crit = do
-    dicts <- textLoad
-    let toDictMetaT = map makeDictionary
-    let toDictMetaC = mapConcurrently (pure . makeDictionary)
-    let toDictMetaConduitT = map makeTextMapC
-    let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
-    defaultMain
-        [ bench "base + traverse" $ nf toDictMetaT dicts
-        , bench "base + concurrent" $ nfIO $ toDictMetaC dicts
-        , bench "conduit + traverse" $ nf toDictMetaConduitT dicts
-        , bench "conduit + concurrent" $ nfIO $ toDictMetaConduitC dicts
-        ]
+-- crit = do
+--     dicts <- textLoad
+--     let toDictMetaT = map makeDictionary
+--     let toDictMetaC = mapConcurrently (pure . makeDictionary)
+--     let toDictMetaConduitT = map makeTextMapC
+--     let toDictMetaConduitC = mapConcurrently (pure . makeTextMapC)
+--     defaultMain
+--         [ bench "base + traverse" $ nf toDictMetaT dicts
+--         , bench "base + concurrent" $ nfIO $ toDictMetaC dicts
+--         , bench "conduit + traverse" $ nf toDictMetaConduitT dicts
+--         , bench "conduit + concurrent" $ nfIO $ toDictMetaConduitC dicts
+--         ]
 
 {-
 benchmarking embed
@@ -136,21 +142,7 @@ pathOrEmbedB = do
       , bench "path_hibet" $ nf id dictinaries
       ]
 
-pathLoad :: IO [(BS.ByteString, FilePath)]
-pathLoad = do
-  dir <- getDataFileName "dicts"
-  dirAbs <- parseAbsDir dir
-  files <- snd <$> listDir dirAbs
-  let paths = map fromAbsFile files
-  mapM (\p -> (,p) <$> BS.readFile p) paths
 
-textLoad :: IO [Text]
-textLoad = do
-  dir <- getDataFileName "dicts"
-  dirAbs <- parseAbsDir dir
-  files <- snd <$> listDir dirAbs
-  let paths = map fromAbsFile files
-  mapM (fmap TE.decodeUtf8 . BS.readFile) paths
 
 
 
