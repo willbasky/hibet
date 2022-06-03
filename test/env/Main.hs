@@ -6,7 +6,7 @@ import qualified Effects.File as EF
 import Env (makeEnv)
 import Label (LabelFull (..), Labels (..), Title (..))
 import Parse (TibetSyllable (..), WylieSyllable (..), WylieTibetMap, splitSyllables)
-import Paths (dictDir, dictPath1, dictPath2, sylPath, testDir, titlePath)
+import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
 import Type (HibetError (..))
 import Utility (mkAbsolute, pack)
 
@@ -26,16 +26,16 @@ import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
 import qualified Polysemy.Path as PP
 import Polysemy.Trace (Trace, runTraceList)
-import System.Directory
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
-import System.IO
-import qualified Debug.Trace as Trace
+-- import System.Directory
+-- import System.IO
+-- import qualified Debug.Trace as Trace
 
 main :: IO ()
 main = hspec $ do
   mockMakeEnvSpec
-  -- syllables
+  syllables
   translate
 
 mockMakeEnvSpec ::Spec
@@ -52,26 +52,6 @@ mockMakeEnvSpec =
       res `shouldBe` Right dictDir
 
     it "Read file syllables" $ do
-      hGetBuffering stdout >>= print
-      hSetBuffering stdout LineBuffering
-      print =<< getCurrentDirectory
-      print sylPath
-      -- print =<< listDirectory =<< getCurrentDirectory
-      -- print =<< (\list -> findFile list "tibetan-syllables") =<< listDirectory =<< getCurrentDirectory
-      -- Trace.trace "doesFileExist LICENSE" doesFileExist "LICENSE" >>= print
-      -- Trace.trace "doesFileExist sylPath" doesFileExist sylPath >>= print
-      Trace.trace "makeAbsolute sylPath >>= doesFileExis" makeAbsolute sylPath >>= doesFileExist >>= print
-      makeAbsolute sylPath >>= print
-      listDirectory "." >>= print
-      listDirectory "test" >>= print
-      listDirectory "test/env" >>= print
-      listDirectory "test/env/data" >>= print
-      listDirectory "test/env/data/stuff" >>= print
-      -- Trace.trace "doesDirectoryExist test" doesDirectoryExist "test" >>= print
-      -- Trace.trace "doesDirectoryExist test/env" doesDirectoryExist "test/env" >>= print
-      -- Trace.trace "doesDirectoryExist test/env/data" doesDirectoryExist "test/env/data" >>= print
-      -- Trace.trace "doesDirectoryExist testDir" doesDirectoryExist testDir >>= print
-      -- aPath <- makeAbsolute sylPath
       res <- snd <$> runFileMock (EF.readFile sylPath)
       res `shouldBe` Right syllablesRaw
     it "Read file titles" $ do
@@ -106,7 +86,7 @@ syllables =
     it "Split syllables" $ do
       case runExcept $ splitSyllables $ TE.decodeUtf8 syllablesRaw of
         Left err  -> expectationFailure $ show err
-        Right res -> res `shouldBe` wylieTibetSyl
+        Right res -> sort res `shouldBe` sort wylieTibetSyl
     it "Map and list of syllables" $ do
       res <- snd <$> runFileMock makeEnv
       case res of

@@ -195,7 +195,6 @@ test-suite hibet-env
   build-depends:
                        hibet
                      , bytestring
-                     , directory
                      , hspec
                      , containers
                      , mtl
@@ -203,6 +202,7 @@ test-suite hibet-env
                      , polysemy-path
                      , text
                      , unordered-containers
+                    --  , directory
 
   other-modules:       Paths_hibet
                        Paths
@@ -218,11 +218,8 @@ test-suite hibet-parse
                        -with-rtsopts=-N
   build-depends:
                        hibet
-                    --  , bytestring
                      , hspec
                      , mtl
-                    --  , text
-                    --  , megaparsec
 
   other-modules:       Paths_hibet
 
@@ -235,18 +232,18 @@ benchmark hibet-benchmark
 
   build-depends:
                        hibet
-                    --  , async
                      , criterion
-                    --  , weigh
                      , path
                      , path-io >= 1.4.0
                      , text
-                    --  , streamly
-                    --  , unordered-containers
                      , bytestring
-                    --  , conduit
                      , file-embed
                      , text-rope
+                    --  , weigh
+                    --  , streamly
+                    --  , unordered-containers
+                    --  , conduit
+                    --  , async
 
   other-modules:       Paths_hibet
                        Lines
