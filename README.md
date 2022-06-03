@@ -12,90 +12,108 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 ## Features
 
 1. Hibet uses about 40 dictionaries to translate Tibetan words to English or Tibetan.
-2. If translations have Tibetan texts it printed as wylie (and as tibetan script for dictionary №37 yet).
+2. If translations have Tibetan texts it printed as wylie.
 
 ## Installation
 
 1. Install [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
 
-2. Install Hibet
+2. Install hibet
 
-        git clone https://github.com/willbasky/Hibet.git
+        git clone https://github.com/willbasky/hibet.git
 
-        cd ./Hibet
+        cd ./hibet
 
-        stack install Hibet
+        stack install hibet
 
 ## Upgrade
 
         stack purge
 
-        stack install Hibet
+        stack install hibet
 
 ## Usage video
 
 [![asciicast](https://asciinema.org/a/271020.svg)](https://asciinema.org/a/271020)
 
-Help commands:
+## Help commands:
 
-$ tibet -h
+`$ hibet -h`
 
     Hibet is command line translator from Tibet to English language.
 
-    Usage: tibet [-v|--version] COMMAND
-      Translate from Tibetan to English
+    Usage: hibet [-v|--version] [[-s|--select DICT_ID] | COMMAND]
+
     Available options:
       -h,--help                Show this help text
       -v,--version             Show Hibet's version
+      -s,--select DICT_ID      Select id of dictionary
 
     Available commands:
       shell                    Start the translate shell
       om                       Print Om to a terminal
-      show                     Show titles or descriptions of dictionaries
+      show                     Show names or meta of dictionaries
+      debug                    Debug hibet
 
-$ tibet show -h
 
-    Usage: tibet show COMMAND
-      Show commands
+`$ hibet show -h`
+
+    Usage: hibet show COMMAND
+      Show names or meta of dictionaries
 
     Available options:
       -h,--help                Show this help text
 
     Available commands:
       names                    Show dictionary titles
-      meta                     Show dictionary description
+      meta                     Show dictionary descriptions
 
-$ tibet shell -h
+`$ hibet shell -h`
 
-    Usage: tibet shell [-s|--select ID_LIST]
+    Usage: hibet shell [-s|--select DICT_ID]
       Start the translate shell
 
     Available options:
       -h,--help                Show this help text
-      -s,--select ID_LIST      Select id list of dictionaries separeted by space or comma
+      -s,--select DICT_ID      Select id of dictionary
 
-Input `tibet shell` in terminal. And then write your `query` using _Wylie_ or _Tibet script_:
 
-    $ tibet shell -s{7,16}
+Input `hibet shell` in terminal. And then write your `query` using _Wylie_ (mo) or _Tibet script_ (མོ་):
+
+    $ hibet shell -s{7,16}
     Which a tibetan word to translate?
     > mo
-     མོ
+
+    མོ
+
     7. Rangjung Yeshe
-    ► the girl
-    lady, female, woman. 2) divination, prophecy
-    1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming    particle [R]; 5) is [don ci mo: what is the meaning]
+      the girl
+      lady, female, woman. 2) divination, prophecy
+      1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female,
+      woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5)
+      is [don ci mo: what is the meaning]
 
     16. Ives Waldo
-    ► 1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing    particle [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo, chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/    prophesy [R]; 2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5) is [don ci mo:    what is the meaning]. 1) auspicious, mo divination/ prophesy; 2) feminine particle, female, woman, she; 3) terminative after MA; 4) noun   forming particle; 5) is
+      1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden
+      pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing particle
+      [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo,
+      chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/ prophesy [R];
+      2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4)
+      noun forming particle [R]; 5) is [don ci mo: what is the meaning]. 1)
+      auspicious, mo divination/ prophesy; 2) feminine particle, female, woman,
+      she; 3) terminative after MA; 4) noun forming particle; 5) is
 
 
-To quit, just input:
+
+### To quit, just input:
 
     :q
 
-To get queries of the session, input:
+### To get queries of the session, input:
 
     :h
+
+or use arrows of keyboard.
 
 ## Contribution
 
