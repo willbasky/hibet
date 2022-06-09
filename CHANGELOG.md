@@ -12,6 +12,7 @@ and this project adheres to
 * Fix multi syllable word parsing
 * Fix parsing of a space in-between syllables
 * Add more parse tests
+* Refactor `getAnswer`
 
 ## [1.2.0] - 2022-06-03
 

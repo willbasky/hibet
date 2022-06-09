@@ -18,6 +18,14 @@ main = hspec $ do
 tibetan :: Spec
 tibetan = do
   describe "Parse tibetan words" $ do
+    it "empty query" $ do
+      let ma = ""
+      let res = parseEither tibetanWord ma
+      isLeft res `shouldBe` True
+    it "space query" $ do
+      let ma = " "
+      let res = parseEither tibetanWord ma
+      isLeft res `shouldBe` True
     it "མ་" $ do
       let ma = "མ་"
       let res = parseEither tibetanWord ma
@@ -79,6 +87,14 @@ tibetan = do
 wylie :: Spec
 wylie = do
   describe "Parse wylie words" $ do
+    it "empty query" $ do
+      let ma = ""
+      let res = parseEither wylieWord ma
+      isLeft res `shouldBe` True
+    it "space query" $ do
+      let ma = " "
+      let res = parseEither wylieWord ma
+      isLeft res `shouldBe` True
     it "ma rig pa" $ do
       let marigpa = "ma rig pa"
       let res = parseEither wylieWord marigpa
@@ -95,7 +111,7 @@ wylie = do
       let marigpa = "ma rig pa "
       let res = parseEither wylieWord marigpa
       res `shouldBe` Right ["ma","rig","pa"]
-    it "མ་མི་ངྼ། - parse tibetan" $ do
-      let mamigr = "མ་མི་ངྼ།"
+    it "རེ་བ་མེད་པ། - parse tibetan" $ do
+      let mamigr = "རེ་བ་མེད་པ།"
       let res = parseEither wylieWord mamigr
       isLeft res `shouldBe` True
