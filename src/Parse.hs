@@ -2,14 +2,18 @@
 
 module Parse
        (
-       -- * Convertors from parsed text
+       -- * Convertors
          toTibetan
        , toWylie
        -- * Make HashMap (W -> T) and (T -> W) from syllables
       --  , mkSyllablesMap
        -- * Parsers
+       , tibetanWord
+       , wylieWord
        , parseWylieInput
        , parseTibetanInput
+       , parseExcept
+       , parseEither
        -- * Radix trees
        , mkWylieRadex
        , mkTibetanRadex
@@ -28,8 +32,12 @@ module Parse
        , lookupTibetScript
        ) where
 
-import Parse.Script (splitSyllables, tibetanScript, walLines)
-import Parse.Type
+import Parse.SyllableLines (splitSyllables)
+import Parse.TibetanWord (tibetanWord)
+import Parse.Type (TibetScript (..), TibetSyllable (..), TibetWylieMap, WylieScript (..),
+                   WylieSyllable (..), WylieTibetMap, fromTibetScript, fromWylieScript, parseEither,
+                   parseExcept)
+import Parse.WylieWord (wylieWord)
 import Type (HibetError (..))
 
 import Control.Monad.Except (Except, liftEither)
@@ -39,6 +47,9 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
+
+-- import qualified Debug.Trace as Debug
+
 
 
 -- | Convert parsed wylie text to tibetan script.
@@ -116,13 +127,13 @@ At second, current parsers will be refactored to more and more correct result ag
 -}
 parseWylieInput :: RadixTree () -> Text -> Except HibetError [WylieScript]
 parseWylieInput radix txt  = do
-    ls <- parseT walLines "" txt
+    ls <- parseExcept wylieWord txt
     pure $ map (lookupWylieScript radix) ls
 
 -- | Parse text to tibetan or fail.
 parseTibetanInput :: RadixTree () -> Text -> Except HibetError [TibetScript]
 parseTibetanInput radix txt  = do
-    ts <- parseT tibetanScript "" txt
+    ts <- parseExcept tibetanWord txt
     pure $ map (lookupTibetScript radix) ts
 
 -- | Make wylie radix tree from syllables.

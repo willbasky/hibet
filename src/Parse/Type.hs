@@ -2,12 +2,13 @@
 {-# LANGUAGE DerivingVia    #-}
 
 module Parse.Type where
+
 import Type (HibetError (..))
 
 import Control.Monad.Except (Except, liftEither)
 import Control.Parallel.Strategies (NFData)
 import Data.Either.Extra (mapLeft)
-import Data.Hashable
+import Data.Hashable ( Hashable )
 import Data.HashMap.Strict (HashMap)
 import Data.Text (Text)
 import Data.Void (Void)
@@ -55,5 +56,8 @@ type TibetWylieMap = HashMap TibetSyllable WylieSyllable
 
 type Parser a = M.Parsec Void Text a
 
-parseT :: Parser a -> String -> Text -> Except HibetError a
-parseT p s t = liftEither $ mapLeft MegaError $ M.runParser p s t
+parseExcept :: Parser a -> Text -> Except HibetError a
+parseExcept p t = liftEither $ mapLeft MegaError $ M.runParser p "" t
+
+parseEither :: Parser a -> Text -> Either HibetError a
+parseEither p t = mapLeft MegaError $ M.runParser p "" t

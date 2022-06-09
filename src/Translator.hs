@@ -8,12 +8,12 @@ import Effects.Console (Console, cancelInput, closeInput, exitSuccess, getHistor
                         initializeInput)
 import Effects.PrettyPrint (Line (NewLine), PrettyPrint, pprint, putColorDoc)
 import Env (Env)
-import Parse (fromTibetScript, fromWylieScript, parseTibetanInput, parseWylieInput, toTibetan,
-              toWylie)
+import Parse (fromTibetScript, fromWylieScript, parseTibetanInput, parseWylieInput, toTibetan, parseEither,
+              toWylie, tibetanWord, wylieWord)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 
-import Control.Monad.Except (Except, forever, runExcept)
+import Control.Monad.Except (Except, forever, runExcept, liftEither)
 import Control.Parallel.Strategies (parList, rseq, using)
 import Data.List (foldl')
 import Data.Maybe (mapMaybe)
@@ -29,7 +29,7 @@ import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 
 import Polysemy.Trace (Trace)
--- import qualified Debug.Trace as Debug
+import qualified Debug.Trace as Debug
 -- import Polysemy.Trace (trace)
 
 -- | Load environment and start loop dialog
@@ -67,18 +67,36 @@ loopDialog inputState = forever $ do
 fromHistory :: History -> [Text]
 fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
 
+data Script = T | W
+  deriving stock Show
 
 getAnswer :: Text -> Env -> Except HibetError (Doc AnsiStyle, Bool)
 getAnswer query env = do
-  let toWylie' = toWylie env.tibetWylieMap . parseTibetanInput env.radixTibet
-      -- 1. Parse text to tibetan script,
-      -- 2. check tibetan script is valid,
-      -- 3. convert to Wylie.
-      queryWylie = case runExcept $ toWylie' query  of
-        Left _      -> query
-        Right wylie -> if null wylie then query else T.intercalate " " $ map fromWylieScript wylie
-      dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
-  let list = sortOutput dscValues
+  -- Debug.traceM ("query " <> T.unpack query)
+  let eWylie = parseEither wylieWord query
+  let eTibetan = parseEither tibetanWord query
+  script <- liftEither $ case (eWylie, eTibetan) of
+        (Left _, Right _) -> Right T -- likely tibetan
+        (Right _, Right _) -> Right W -- likely wylie
+        _ -> Left $ NotParsed query -- What is it?
+  Debug.traceM $ show script
+  -- TODO: fix partalal case "queryWylie re ba མེདརེ ba med pa pa"
+  let queryWylie = case script of
+        W -> query
+        T -> do
+          -- 1. Parse text to tibetan script,
+          -- 2. check tibetan script is valid,
+          -- 3. convert to Wylie.
+          let parsedT = parseTibetanInput env.radixTibet query
+          let convertedToWylie = Debug.trace ("parsedT " <> show parsedT) $
+                toWylie env.tibetWylieMap parsedT
+          case Debug.trace ("convertedToWylie " <> show convertedToWylie) $ runExcept convertedToWylie  of
+            Left _      -> query
+            Right wylie -> Debug.trace ("wylie" <> show wylie) $ if null wylie then query else T.intercalate " " $ map fromWylieScript wylie
+  let dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
+
+  Debug.traceM ("queryWylie " <> T.unpack queryWylie)
+  let list = sortOutput dscValues -- TODO: use Set
   let toTibetan' = toTibetan env.wylieTibetMap . parseWylieInput env.radixWylie
   -- list <- traverse (separator [37] toTibetan') dictMeta
   let (translations, isEmpty) = (viewTranslations list, list == mempty)

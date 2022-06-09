@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             1.2.0
+version:             1.3.0
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -92,7 +92,10 @@ library
                        Dictionary
                        Label
                        Parse
-                       Parse.Script
+                       Parse.SyllableLines
+                       Parse.TibetanWord
+                       Parse.WylieWord
+                       Parse.WylieText
                        Parse.Type
                        Pretty
                        Translator
@@ -220,6 +223,7 @@ test-suite hibet-parse
                        hibet
                      , hspec
                      , mtl
+                     , megaparsec
 
   other-modules:       Paths_hibet
 

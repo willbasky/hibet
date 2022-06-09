@@ -1,15 +1,13 @@
-module Parse.Script where
+module Parse.WylieText where
 
 
-import Parse.Type
+import Parse.Type ( Parser, parseExcept)
 import Type (HibetError (..))
 
 import Control.Applicative (Alternative (many, some, (<|>)))
 import Control.Monad.Except (Except)
-import Data.Char (isMark)
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as MC
@@ -107,7 +105,7 @@ walLines = do
 -- > traverse (parseT walSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
 walList :: [Text] -> Except HibetError [(Text, Text)]
-walList = traverse (parseT walSentences "")
+walList = traverse (parseExcept walSentences)
 
 walSentences :: Parser (Text, Text)
 walSentences = M.try walSen <|> M.try walSenD <|> M.try walSenDT
@@ -129,24 +127,25 @@ walSen = do
     pure ("", sens)
 
 walTextMP :: Parser Char
-walTextMP = walEnd <|> MC.letterChar <|> MC.spaceChar <|> walChars
+walTextMP = walEnd <|> MC.asciiChar <|> MC.spaceChar <|> walChars
 
 walTextMPNoEnd :: Parser Char
-walTextMPNoEnd = MC.letterChar <|> MC.spaceChar <|> walChars <|> walParens
+walTextMPNoEnd = MC.asciiChar <|> MC.spaceChar <|> walChars <|> walParens
 
 walChars :: Parser Char
 walChars
     =   MC.char '+'
-    <|> MC.char '\''
     <|> MC.char ':'
     <|> MC.char '-'
     <|> MC.char '.'
     <|> MC.char '%'
+    <|> MC.char '@'
+    <|> MC.char '~'
+    -- Not met in wylie syllables
+    <|> MC.char '\''
     <|> MC.char '_'
     <|> MC.char '”'
     <|> MC.char '“'
-    <|> MC.char '@'
-    <|> MC.char '~'
 
 walEnd :: Parser Char
 walEnd = MC.char '/'
@@ -187,98 +186,4 @@ walSentEndFE = do
 walSentEndList :: Parser [Text]
 walSentEndList = some $ M.try walSentEndFE <|> M.try walSentEndE <|> M.try walSentEnd <|> M.try walBase
 
--- safeListCall :: Foldable t => (t a -> b) -> t a -> Maybe b
--- safeListCall f xs
---     | null xs = Nothing
---     | otherwise = Just $ f xs
 
-
----------------------------------------------------------------------
--- Parse tibetan script
----------------------------------------------------------------------
-
-tibetanDotM :: Parser Text
-tibetanDotM = symbolM "་"
-
-tibetanEnd :: Parser Text
-tibetanEnd = symbolM "།"
-
-tibetanMarks :: Parser Char
-tibetanMarks = M.satisfy isMark
-
-tibetanWord :: Parser Text
-tibetanWord =  T.pack <$> some (MC.alphaNumChar <|> tibetanMarks)
-
-tibetanScriptEnd :: Parser Text
-tibetanScriptEnd = tibetanWord <* tibetanEnd
-
-tibetanScriptDot :: Parser Text
-tibetanScriptDot = tibetanWord <* tibetanDotM
-
-tibetanScriptDots :: Parser [Text]
-tibetanScriptDots = some (M.try tibetanScriptDot)
-
-tibetanScriptDotsNoDot :: Parser [Text]
-tibetanScriptDotsNoDot = do
-    tds <- tibetanScriptDots
-    t <- M.try tibetanWord
-    pure $ tds <> [t]
-
-tibetanScriptDotsEnd :: Parser [Text]
-tibetanScriptDotsEnd = do
-    tds <- tibetanScriptDots
-    te <- M.try tibetanScriptEnd
-    pure $ tds <> [te]
-
--- | Parse tibetan script. Order matters.
---
-{--
-*Parse> parseTest tibetanScript  "མ་མ་མ"
-"མ་མ་མ"
-*Parse> parseTest tibetanScript  "མ་མ་མ་"
-"མ་མ་མ"
-*Parse> parseTest tibetanScript  "མ་མ་མ།"
-"མ་མ་མ"
-*Parse> parseTest tibetanScript  "མ་"
-"མ"
-*Parse> parseTest tibetanScript  "མ།"
-"མ"
-*Parse> parseTest tibetanScript  "མ"
-"མ"
---}
-tibetanScript :: Parser [Text]
-tibetanScript = (:[]) <$> M.try tibetanScriptEnd
-    <|> M.try tibetanScriptDotsEnd
-    <|> M.try tibetanScriptDotsNoDot
-    <|> M.try tibetanScriptDots
-    <|> (:[]) <$> M.try tibetanWord
-
-
----------------------------------------------------------------------
--- Hashmaps from syllables
----------------------------------------------------------------------
-
-splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
-splitSyllables
-    = traverse (parseT parseSyllables "")
-    . Line.lines
-    . Line.fromText
-
-parseSyllables :: Parser (WylieSyllable,TibetSyllable)
-parseSyllables = do
-    w <- some $ M.anySingleBut '|'
-    _ <- MC.char '|'
-    t <- some M.anySingle
-    pure (WylieSyllable $ T.pack w, TibetSyllable $ T.pack t)
-
--------------
--- Sandbox --
--------------
-
--- All possible wylie chars and symbols from syllables file.
--- %'()+-./0123456789:@ADHIMNRSTUWXY_abcdefghijklmnoprstuvwyz~нсᨵ“”
-
--- sortWords :: Text -> IO ()
--- sortWords tibText = do
---     syls <- T.readFile "./tibetan-syllables"
---     T.putStrLn $ T.intercalate "\n" $ toTibet syls tibText

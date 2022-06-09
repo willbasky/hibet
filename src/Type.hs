@@ -15,4 +15,5 @@ data HibetError
   | MegaError (ParseErrorBundle Text Void)
   | NotFound
   | UnknownError Text
+  | NotParsed Text
   deriving stock (Eq, Show)
