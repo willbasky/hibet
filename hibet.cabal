@@ -142,6 +142,7 @@ executable hibet
   main-is:             Main.hs
   ghc-options:         -Wall
                       --  -O2 -eventlog
+                       -- ^ for threadscope
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N

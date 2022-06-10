@@ -27,17 +27,7 @@ app = do
       putStrLn "Hibet application failed with exception:"
       print err
 
-interpretHibet :: Sem
-  '[
-      Reader Env
-    , FileIO
-    , Error HibetError
-    , Resource
-    , Console
-    , PrettyPrint
-    , Trace
-    , Embed IO
-    ] ()
+interpretHibet :: Sem HibetEffects ()
   -> Bool -- isDebug
   -> IO (Either HibetError ())
 interpretHibet program isDebug = program
@@ -50,7 +40,12 @@ interpretHibet program isDebug = program
   & (if isDebug then traceToStdout else ignoreTrace)
   & runM
 
-hibet :: Members
+hibet :: Members HibetEffects r => Sem r ()
+hibet = do
+  com <- execParser parser
+  runCommand com
+
+type HibetEffects =
   [
     Reader Env
   , FileIO
@@ -60,11 +55,7 @@ hibet :: Members
   , PrettyPrint
   , Trace
   , Embed IO
-  ] r
-  => Sem r ()
-hibet = do
-  com <- execParser parser
-  runCommand com
+  ]
 
 runReaderSem :: forall i r a. Sem r i -> Sem (Reader i ': r) a -> Sem r a
 runReaderSem env sem = env >>= flip runReader sem
