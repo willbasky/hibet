@@ -2,14 +2,18 @@
 
 module Parse
        (
-       -- * Convertors from parsed text
+       -- * Convertors
          toTibetan
        , toWylie
        -- * Make HashMap (W -> T) and (T -> W) from syllables
       --  , mkSyllablesMap
        -- * Parsers
+       , tibetanWord
+       , wylieWord
        , parseWylieInput
        , parseTibetanInput
+       , parseExcept
+       , parseEither
        -- * Radix trees
        , mkWylieRadex
        , mkTibetanRadex
@@ -28,11 +32,15 @@ module Parse
        , lookupTibetScript
        ) where
 
-import Parse.Script (splitSyllables, tibetanScript, walLines)
-import Parse.Type
+import Parse.SyllableLines (splitSyllables)
+import Parse.TibetanWord (tibetanWord)
+import Parse.Type (TibetScript (..), TibetSyllable (..), TibetWylieMap, WylieScript (..),
+                   WylieSyllable (..), WylieTibetMap, fromTibetScript, fromWylieScript, parseEither,
+                   parseExcept)
+import Parse.WylieWord (wylieWord)
 import Type (HibetError (..))
 
-import Control.Monad.Except (Except, liftEither)
+-- import Control.Monad.Except (Except, liftEither)
 import qualified Data.HashMap.Strict as HM
 import Data.RadixTree (RadixTree, fromFoldable_, lookup)
 import Data.Text (Text)
@@ -40,18 +48,20 @@ import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
 
+-- import qualified Debug.Trace as Debug
+
+
 
 -- | Convert parsed wylie text to tibetan script.
 -- TODO: Check perfomance on big input
 toTibetan
     :: WylieTibetMap
-    -> Except HibetError [WylieScript]
-    -> Except HibetError [TibetScript]
-toTibetan bi ts = do
-    txt <- ts
+    -> [WylieScript]
+    -> Either HibetError [TibetScript]
+toTibetan wtMap wList = do
     let look :: WylieSyllable -> Maybe TibetSyllable
-        look = flip HM.lookup bi
-    liftEither $ flip traverse txt $ \case
+        look = flip HM.lookup wtMap
+    flip traverse wList $ \case
       ScriptWylie w -> case look w of
         Nothing  -> Left NotFound
         Just res -> Right $ ScriptTibet res
@@ -60,13 +70,12 @@ toTibetan bi ts = do
 -- | Convert parsed tibetan text to wylie.
 toWylie
     :: TibetWylieMap
-    -> Except HibetError [TibetScript]
-    -> Except HibetError [WylieScript]
-toWylie hm ets = do
-    ts <- ets
+    -> [TibetScript]
+    -> Either HibetError [WylieScript]
+toWylie twMap tList = do
     let look :: TibetSyllable -> Maybe WylieSyllable
-        look = flip HM.lookup hm
-    liftEither $ flip traverse ts $ \case
+        look = flip HM.lookup twMap
+    flip traverse tList $ \case
       ScriptTibet w -> case look w of
         Nothing  -> Left NotFound
         Just res -> Right $ ScriptWylie res
@@ -114,15 +123,15 @@ Something won't be consumed, and dropped.
 At second, current parsers will be refactored to more and more correct result against flat list.
 
 -}
-parseWylieInput :: RadixTree () -> Text -> Except HibetError [WylieScript]
+parseWylieInput :: RadixTree () -> Text -> Either HibetError [WylieScript]
 parseWylieInput radix txt  = do
-    ls <- parseT walLines "" txt
+    ls <- parseEither wylieWord txt
     pure $ map (lookupWylieScript radix) ls
 
 -- | Parse text to tibetan or fail.
-parseTibetanInput :: RadixTree () -> Text -> Except HibetError [TibetScript]
+parseTibetanInput :: RadixTree () -> Text -> Either HibetError [TibetScript]
 parseTibetanInput radix txt  = do
-    ts <- parseT tibetanScript "" txt
+    ts <- parseEither tibetanWord txt
     pure $ map (lookupTibetScript radix) ts
 
 -- | Make wylie radix tree from syllables.

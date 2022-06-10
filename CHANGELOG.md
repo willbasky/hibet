@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [1.3.0] - 2022-06-09
+
+* Fix hls launch
+* Fix multi syllable word parsing
+* Fix parsing of a space in-between syllables
+* Add more parse tests
+* Refactor `getAnswer`
+* Handle exceptions
+* Fix script detector
+* Parse `'a` symbole
+* Update tibetan query output
+
 ## [1.2.0] - 2022-06-03
 
 * Move versioning to Haskell PVP.

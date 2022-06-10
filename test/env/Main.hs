@@ -78,7 +78,7 @@ mockMakeEnvSpec =
       res <- snd <$> runFileMock makeEnv
       case res of
         Left err  -> expectationFailure $ show err
-        Right env -> env.wylieTibetMap `shouldBe` wylieTibetHM -- Todo: fix expected
+        Right env -> env.wylieTibetMap `shouldBe` wylieTibetHM
 
 syllables :: Spec
 syllables =
@@ -111,7 +111,7 @@ translate =
         Right env -> do
           let reply = mapMaybe (searchTranslation "re") env.dictionaryMeta
           -- print rep.ly
-          reply `shouldBe` [Answer {targets = [Target "noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]"], dictNumber = 7, dictTitle = Title "Rangjung Yeshe"}]
+          reply `shouldBe` [Answer {targets = [Target "each; every; single; hope"], dictNumber = 5, dictTitle = Title "Hopkins"}, Answer {targets = [Target "noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]"], dictNumber = 7, dictTitle = Title "Rangjung Yeshe"}]
     it "Search re ba" $ do
       res <- snd <$> runFileMock makeEnv
       case res of
@@ -119,8 +119,28 @@ translate =
         Right env -> do
           let reply = mapMaybe (searchTranslation "re ba") env.dictionaryMeta
           -- print rep.ly
-          reply `shouldBe` [Answer {targets = [Target "1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair"], dictNumber = 7, dictTitle = Title "Rangjung Yeshe"}]
+          reply `shouldBe` [Answer {targets = [Target "hope"], dictNumber = 5, dictTitle = Title "Hopkins"},Answer {targets = [Target "1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair"], dictNumber = 7, dictTitle = Title "Rangjung Yeshe"}]
+    it "Search re ba byed pa" $ do
+      res <- snd <$> runFileMock makeEnv
+      case res of
+        Left err  -> expectationFailure $ show err
+        Right env -> do
+          let reply = mapMaybe (searchTranslation "re ba byed pa") env.dictionaryMeta
+          -- print rep.ly
+          reply `shouldBe` [Answer {targets = [Target "to hope, wish, expect, demand, ask"], dictNumber = 7, dictTitle = Title "Rangjung Yeshe"}]
+    it "Search re ba med pa" $ do
+      res <- snd <$> runFileMock makeEnv
+      case res of
+        Left err  -> expectationFailure $ show err
+        Right env -> do
+          let reply = mapMaybe (searchTranslation "re ba med pa") env.dictionaryMeta
+          -- print rep.ly
+          reply `shouldBe` [Answer {targets = [Target "hopeless; no hope"], dictNumber = 5, dictTitle = Title "Hopkins"}]
 
+-- convert :: Spec
+-- convert =
+--   describe "Translate Wylie request" $ do
+--     it "Search me" $ do
 
 runFileMock :: Sem
   '[  FileIO
@@ -161,27 +181,23 @@ syllablesRaw :: BS.ByteString
 syllablesRaw = "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\nme|\224\189\152\224\189\186\n"
 
 toml :: BS.ByteString
-toml = "[[titles]]\n    path = \"Berzin-T|E\"\n    id = 8\n    label = \"Berzin\"\n    mergeLines = true\n    about = \"Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n\n[[titles]]\n    path = \"RangjungYeshe-T|E\"\n    id = 7\n    label = \"Rangjung Yeshe\"\n    about = \"Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org\"\n    abbreviations = \"RangjungYeshe\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
+toml = "[[titles]]\n    path = \"Hopkins-2015-T|E\"\n    id = 5\n    label = \"Hopkins\"\n    about = \"The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org\"\n    abbreviations = \"Hopkins\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n    year = 2015\n\n[[titles]]\n    path = \"RangjungYeshe-T|E\"\n    id = 7\n    label = \"Rangjung Yeshe\"\n    about = \"Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org\"\n    abbreviations = \"RangjungYeshe\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
 
 dict1 :: BSL.ByteString
-dict1 = "bla|life spirit\nbla|Sublime\n"
+dict1 = "re|each; every; single; hope\nre ba|hope\nre ba med pa|hopeless; no hope\n"
 
 dict2 :: BSL.ByteString
 dict2 = "re ba|1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair\nre ba byed pa|to hope, wish, expect, demand, ask\nre ba chad|give up hope\nme|fire, flame, ember, Anaka, [the 50th year, Male Fire Dragon]\nre|noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]\n"
 
 meta1 :: DictionaryMeta
-meta1 = DictionaryMeta
-  { dictionary = HM.fromList [("bla", [Target "Sublime", Target "life spirit"])]
-  , title      = Title "Berzin"
-  , number     = 8
-  }
+meta1 = DictionaryMeta {dictionary = HM.fromList [("re ba",[Target "hope"]),("re ba med pa",[Target "hopeless; no hope"]),("re",[Target "each; every; single; hope"])], title = Title "Hopkins", number = 5}
 
 meta2 :: DictionaryMeta
 meta2 = DictionaryMeta {dictionary = HM.fromList [("re ba",[Target "1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair"]),("re",[Target "noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]"]),("re ba byed pa",[Target "to hope, wish, expect, demand, ask"]),("me",[Target "fire, flame, ember, Anaka, [the 50th year, Male Fire Dragon]"]),("re ba chad",[Target "give up hope"])], title = Title "Rangjung Yeshe", number = 7}
 
 labels :: Labels
 labels = Labels
-  {labelTitles = [LabelFull {path = "RangjungYeshe-T|E", lfId = 7, label = Title "Rangjung Yeshe", about = "Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org", available = True, source = "Tibetan", target = Set.fromList ["English"], year = Nothing},LabelFull {path = "Berzin-T|E", lfId = 8, label = Title "Berzin", about = "Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com", available = True, source = "Tibetan", target = Set.fromList ["English"], year = Nothing}]}
+  {labelTitles = [LabelFull {path = "Hopkins-2015-T|E", lfId = 5, label = Title "Hopkins", about = "The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org", available = True, source = "Tibetan", target = Set.fromList ["English"], year = Just 2015},LabelFull {path = "RangjungYeshe-T|E", lfId = 7, label = Title "Rangjung Yeshe", about = "Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org", available = True, source = "Tibetan", target = Set.fromList ["English"], year = Nothing}]}
 
 wylieTibetHM :: WylieTibetMap
 wylieTibetHM = HM.fromList

@@ -1,6 +1,6 @@
 module Utility
   (
-    toText
+    showT
   , filename
   , mkAbsolute
   , T.pack
@@ -32,8 +32,8 @@ toTitle :: String -> String
 toTitle ""     = ""
 toTitle (x:xs) = toUpper x : map toLower xs
 
-toText :: Show a => a -> Text
-toText = T.pack . show
+showT :: Show a => a -> Text
+showT = T.pack . show
 
 filename :: FilePath -> FilePath
 filename = takeWhileEnd (/= '/')

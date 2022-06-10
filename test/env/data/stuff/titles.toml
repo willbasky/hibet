@@ -1,14 +1,15 @@
 [[titles]]
-    path = "Berzin-T|E"
-    id = 8
-    label = "Berzin"
-    mergeLines = true
-    about = "Dr. Alexander Berzin's English-Tibetan-Sanskrit Glossary|These entries are from the glossary of www.berzinarchives.com"
+    path = "Hopkins-2015-T|E"
+    id = 5
+    label = "Hopkins"
+    about = "The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org"
+    abbreviations = "Hopkins"
     public = true
     listCredits = true
     available = true
     source = "Tibetan"
     target = ["English"]
+    year = 2015
 
 [[titles]]
     path = "RangjungYeshe-T|E"

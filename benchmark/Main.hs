@@ -136,7 +136,7 @@ variance introduced by outliers: 14% (moderately inflated)
 
 pathOrEmbedB :: IO ()
 pathOrEmbedB = do
-  -- let toTextS = map (second TE.decodeUtf8)
+  -- let showTS = map (second TE.decodeUtf8)
   defaultMain
       [ bench "embed" $ nfIO pathLoad
       , bench "path_hibet" $ nf id dictinaries

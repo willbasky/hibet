@@ -17,7 +17,7 @@ module Pretty
 
 import Dictionary (Target(..), Answer(..))
 import Label (Title(..))
-import Utility (toText)
+import Utility (showT)
 
 import Data.Char (isSpace)
 import Data.List (intersperse)
@@ -85,7 +85,7 @@ viewTranslations = sparsedStack . map viewTranslation
       withHeader green (header dictNumber dictTitle) $ prettyTargets targets
     -- Compose header
     header :: Int -> Title -> Text
-    header number title = T.concat [toText number, ". ", unTitle title]
+    header number title = T.concat [showT number, ". ", unTitle title]
     -- Decode targets
     prettyTargets :: [Target] -> Doc AnsiStyle
     prettyTargets = vsep . map (wrapLines . fixNewLine . unTarget)

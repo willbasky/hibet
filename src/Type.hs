@@ -14,5 +14,6 @@ data HibetError
   = PathError PathException
   | MegaError (ParseErrorBundle Text Void)
   | NotFound
+  | NotSyllable Text
   | UnknownError Text
   deriving stock (Eq, Show)
