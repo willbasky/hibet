@@ -22,6 +22,7 @@ import Data.Char ( isAsciiLower, isAsciiUpper )
 wylieSpecial :: Parser Char
 wylieSpecial =
         MC.char '+'
+    <|> MC.char '\''
     <|> MC.char ':'
     <|> MC.char '-'
     <|> MC.char '.'

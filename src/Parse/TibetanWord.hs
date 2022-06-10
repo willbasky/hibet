@@ -4,7 +4,7 @@ module Parse.TibetanWord
   ) where
 
 
-import Parse.Type (Parser)
+import Parse.Type (Parser, end, dot)
 
 import Control.Applicative (Alternative (many, some, (<|>)))
 import Data.Char (isMark)
@@ -24,10 +24,10 @@ symbolM :: M.Tokens Text -> Parser (M.Tokens Text)
 symbolM = ML.symbol MC.space
 
 tibetanDotM :: Parser Text
-tibetanDotM = symbolM "་"
+tibetanDotM = symbolM dot
 
 tibetanEnd :: Parser Text
-tibetanEnd = symbolM "།"
+tibetanEnd = symbolM end
 
 tibetanEnds :: Parser Text
 tibetanEnds = M.try $ tibetanDotM <|> tibetanEnd

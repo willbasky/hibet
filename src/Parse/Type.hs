@@ -19,6 +19,12 @@ import Prelude hiding (lookup)
 import qualified Text.Megaparsec as M
 
 
+dot :: Text
+dot = "་"
+
+end :: Text
+end = "།"
+
 -- | For transcripton
 data WylieScript
   = ScriptWylie WylieSyllable
@@ -59,8 +65,8 @@ fromTibetScript tss = if null nst
     (st, nst) = foldl' foldHelp ([],[]) tss
     foldHelp (t,n) (ScriptTibet ts) = (unTibet ts : t, n)
     foldHelp (s,n) (NonScriptTibet txt) = (s, txt:n)
+    unST = T.intercalate dot $ reverse st
     unNST = T.intercalate " " $ reverse nst
-    unST = T.intercalate " " $ reverse st
 
 -- | I refused a Bimap.
 -- The reason is

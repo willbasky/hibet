@@ -26,6 +26,10 @@ tibetan = do
       let ma = " "
       let res = parseEither tibetanWord ma
       isLeft res `shouldBe` True
+    it "འང་དེ" $ do
+      let ma = "འང་དེ"
+      let res = parseEither tibetanWord ma
+      res `shouldBe` Right ["འང","དེ"]
     it "མ་" $ do
       let ma = "མ་"
       let res = parseEither tibetanWord ma
@@ -87,6 +91,10 @@ tibetan = do
 wylie :: Spec
 wylie = do
   describe "Parse wylie words" $ do
+    it "'ang de" $ do
+      let angde = "'ang de"
+      let res = parseEither wylieWord angde
+      res `shouldBe` Right ["'ang","de"]
     it "empty query" $ do
       let ma = ""
       let res = parseEither wylieWord ma
@@ -111,6 +119,7 @@ wylie = do
       let marigpa = "ma rig pa "
       let res = parseEither wylieWord marigpa
       res `shouldBe` Right ["ma","rig","pa"]
+
     it "རེ་བ་མེད་པ། - parse tibetan" $ do
       let mamigr = "རེ་བ་མེད་པ།"
       let res = parseEither wylieWord mamigr

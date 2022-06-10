@@ -86,19 +86,25 @@ getAnswer query env = do
   let eWylie = parseEither wylieWord query
   let eTibetan = parseEither tibetanWord query
   script <- liftEither $ case (eWylie, eTibetan) of
-        (Left _, Right _)  -> Right T -- likely tibetan
-        (Right _, Right _) -> Right W -- likely wylie
-        (Left ew, Left _)  -> Left ew -- What is it?
-        (Right _, Left et) -> Left et -- What is it?
-  Debug.traceM $ show script
+    (Left _, Right _)  -> Right T -- likely tibetan
+    (Right _, _) -> Right W -- likely wylie
+    (Left ew, Left et)  -> do
+      -- Debug.traceM ("Left ew: " <> show ew)
+      -- Debug.traceM ("Left et: " <> show et)
+      Left ew -- What is it?
+  -- Debug.traceM $ show script
 
   -- 2. Prepare wylie and tibetan scripts
   (queryWylie, queryTibet) <- liftEither $ case script of
     W -> do
       wList <- parseWylieInput env.radixWylie query
+      -- Debug.traceM ("wList " <> show wList)
       wylieText <- fromWylieScript wList
+      -- Debug.traceM ("wylieText " <> show wylieText)
       tList <- toTibetan env.wylieTibetMap wList
+      -- Debug.traceM ("tList " <> show tList)
       tibetanText <- fromTibetScript tList
+      -- Debug.traceM ("tibetanText " <> show tibetanText)
       Right (wylieText, tibetanText)
     T -> do
       -- 2.1. Parse text to tibetan script,
@@ -115,6 +121,7 @@ getAnswer query env = do
   -- 3. Translate
   let dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
   -- 5. Return
+  -- Debug.traceM ("queryTibet " <> T.unpack queryTibet)
   pure (queryTibet, dscValues)
 
 mkOutput :: Text -> [Answer] -> Doc AnsiStyle
