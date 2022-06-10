@@ -8,7 +8,8 @@ module Cli
 
 import Effects.Console
 import Effects.PrettyPrint
-import Env (Env, updateEnv)
+import Effects.Compact
+import Env (Env, EnvC, updateEnv)
 import Label (LabelFull (..), Labels (..))
 import Paths_hibet (version)
 import Pretty
@@ -23,6 +24,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Version (showVersion)
 import Development.GitRev (gitCommitDate, gitDirty, gitHash)
+import qualified GHC.Compact as C
 import NeatInterpolation (text)
 import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, helper, info,
                             infoHeader, infoOption, long, metavar, option, progDesc, short,
@@ -52,22 +54,25 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members [Reader Env, Trace, Resource, PrettyPrint, Console, Error HibetError] r
+runCommand :: Members [Reader EnvC, CompactData, Trace, Resource, PrettyPrint, Console, Error HibetError] r
   => Command -> Sem r ()
 runCommand com = do
-  env :: Env <- ask
+  env :: Env <- C.getCompact <$> ask
   case com of
-    Shell selectedDicts ->
-      local (updateEnv selectedDicts) translator
+    Shell selectedDicts -> do
+      let newEnv = updateEnv selectedDicts
+      compactEnv <- compactData newEnv
+      -- local (const compactEnv) translator
+      translator
     Om -> putColorDoc magenta NewLine om
     ShowOption opt -> runShow opt
     Debug -> do
       printDebug env.radixWylie
 
-runShow :: Members [Reader Env, PrettyPrint] r
+runShow :: Members [Reader EnvC, PrettyPrint] r
   => Opt -> Sem r ()
 runShow opt = do
-  env :: Env <- ask
+  env :: Env <- C.getCompact <$> ask
   let Labels labels = env.labels
   let filteredLabels = filterAvailable labels
   case opt of

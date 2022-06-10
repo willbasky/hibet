@@ -7,7 +7,7 @@ import Dictionary (Answer, searchTranslation, sortOutput)
 import Effects.Console (Console, cancelInput, closeInput, exitSuccess, getHistory, getInput,
                         initializeInput)
 import Effects.PrettyPrint (Line (NewLine), PrettyPrint, pprint, putColorDoc)
-import Env (Env)
+import Env (EnvC, Env)
 import Parse (fromTibetScript, fromWylieScript, parseEither, parseTibetanInput, parseWylieInput,
               tibetanWord, toTibetan, toWylie, wylieWord)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
@@ -20,6 +20,7 @@ import Data.List (foldl')
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified GHC.Compact as C
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error)
 import Polysemy.Reader (Reader, ask)
@@ -33,7 +34,7 @@ import System.Console.Haskeline.IO (InputState)
 import qualified Debug.Trace as Debug
 
 -- | Load environment and start loop dialog
-translator :: Members [PrettyPrint, Trace, Resource, Console, Error HibetError, Reader Env ] r
+translator :: Members [PrettyPrint, Trace, Resource, Console, Error HibetError, Reader EnvC ] r
   => Sem r ()
 translator = bracketOnError
   initializeInput
@@ -50,7 +51,7 @@ loopDialog :: Members
   , Trace
   , Console
   , Error HibetError
-  , Reader Env ] r
+  , Reader EnvC ] r
   => InputState
   -> Sem r ()
 loopDialog inputState = forever $ do
@@ -65,7 +66,7 @@ loopDialog inputState = forever $ do
             history <- fromHistory <$> getHistory inputState
             mapM_ (putColorDoc id NewLine) history
         Just input -> do
-            env :: Env <- ask
+            env :: Env <- C.getCompact <$> ask
             case runExcept $ getAnswer input env of
               Left err -> do
                 trace $ show err

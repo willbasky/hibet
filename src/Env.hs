@@ -4,11 +4,14 @@
 module Env
   ( makeEnv
   , Env(..)
+  , EnvC
   , updateEnv
   )
   where
 
 import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
+import Effects.Compact (CompactData)
+import qualified Effects.Compact as Compact
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
@@ -22,15 +25,16 @@ import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
+import Data.Tuple (swap)
+import qualified GHC.Compact as C
 import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace)
-import Data.Tuple (swap)
 
 -- fo debug
--- import Polysemy.Trace (trace)
+import Polysemy.Trace (trace)
 -- import qualified Data.Bimap as Bi
 -- import Parse (WylieSyllable(WylieSyllable))
 
@@ -47,8 +51,14 @@ data Env = Env
   deriving stock (Eq, Generic)
   deriving anyclass (NFData)
 
+type EnvC = C.Compact Env
 
-makeEnv :: Members [FileIO, Error HibetError, Trace] r => Sem r Env
+makeEnv :: Members
+  [ FileIO
+  , CompactData
+  , Error HibetError
+  , Trace] r
+  => Sem r EnvC
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
     -- trace sylsPath
@@ -64,7 +74,8 @@ makeEnv = do
     let dictsMeta = parMap (rparWith rdeepseq)
           (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
     sylList <- fromEither $ runExcept $ splitSyllables syls
-    pure $ runEval $ do
+    trace "before compact"
+    c <- Compact.compactData $ runEval $ do
           wtMap <- rparWith rdeepseq $ HM.fromList sylList
           twMap <- rparWith rdeepseq $ HM.fromList $ map swap sylList
           wRadix <- rparWith rdeepseq $ mkWylieRadex syls
@@ -77,6 +88,8 @@ makeEnv = do
               , radixTibet = tRadix
               , labels     = labels
               }
+    trace "After compact"
+    pure c
 
 getFilesTexts :: Members
   [ FileIO
@@ -93,6 +106,7 @@ getFilesTexts fp = do
 updateEnv :: [Int] -> Env -> Env
 updateEnv selectedDicts env =
   env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
+
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f

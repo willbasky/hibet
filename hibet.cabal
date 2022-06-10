@@ -86,6 +86,7 @@ library
                        App
                        Cli
                        Effects.File
+                       Effects.Compact
                        Effects.Console
                        Effects.PrettyPrint
                        Env
@@ -113,6 +114,7 @@ library
                      , directory
                      , extra
                      , filepath
+                     , ghc-compact
                      , gitrev
                      , haskeline
                      , hashable

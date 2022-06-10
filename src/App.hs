@@ -3,10 +3,11 @@ module App
        ) where
 
 import Cli (parser, runCommand)
+import Effects.Compact
 import Effects.Console
 import Effects.File
 import Effects.PrettyPrint
-import Env (Env, makeEnv)
+import Env (EnvC, makeEnv)
 import Type (HibetError (..))
 import Utility (debugEnabledEnvVar)
 
@@ -16,6 +17,7 @@ import Polysemy.Error (Error, runError)
 import Polysemy.Reader (Reader, runReader)
 import Polysemy.Resource (Resource, runResource)
 import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
+
 
 app :: IO ()
 app = do
@@ -29,10 +31,11 @@ app = do
 
 interpretHibet :: Sem
   '[
-      Reader Env
+      Reader EnvC
     , FileIO
     , Error HibetError
     , Resource
+    , CompactData
     , Console
     , PrettyPrint
     , Trace
@@ -45,6 +48,7 @@ interpretHibet program isDebug = program
   & runFile
   & runError @HibetError
   & runResource
+  & runCompactData
   & runConsole
   & runPrettyPrint
   & (if isDebug then traceToStdout else ignoreTrace)
@@ -52,10 +56,11 @@ interpretHibet program isDebug = program
 
 hibet :: Members
   [
-    Reader Env
+    Reader EnvC
   , FileIO
   , Error HibetError
   , Resource
+  , CompactData
   , Console
   , PrettyPrint
   , Trace
