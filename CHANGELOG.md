@@ -13,6 +13,10 @@ and this project adheres to
 * Fix parsing of a space in-between syllables
 * Add more parse tests
 * Refactor `getAnswer`
+* Handle exceptions
+* Fix script detector
+* Parse `'a` symbole
+* Update tibetan query output
 
 ## [1.2.0] - 2022-06-03
 
