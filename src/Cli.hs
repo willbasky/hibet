@@ -14,7 +14,7 @@ import Paths_hibet (version)
 import Pretty
 import Translator (translator)
 import Type (HibetError (..))
-import Utility (toText)
+import Utility (showT)
 
 import Control.Applicative (many, optional, (<|>))
 import Data.Foldable (find, toList)
@@ -75,10 +75,10 @@ runShow opt = do
         let titles = sortById filteredLabels
         mapM_ (\label-> do
           putColorList
-            [ (cyan, toText label.lfId <> ". ")
-            , (green, toText label.label <> ". ")
+            [ (cyan, showT label.lfId <> ". ")
+            , (green, showT label.label <> ". ")
             , (cyan, maybe "" (const "Year ") label.year)
-            , (green, maybe "" (flip T.append ". " . toText) label.year)
+            , (green, maybe "" (flip T.append ". " . showT) label.year)
             , (cyan, "From ")
             , (green, label.source <> " ")
             , (cyan, "to ")
@@ -89,10 +89,10 @@ runShow opt = do
     Meta Nothing -> do
         mapM_ (\label -> do
             putColorList
-              [ (cyan, toText label.lfId <> ". ")
-              , (green, toText label.label)
+              [ (cyan, showT label.lfId <> ". ")
+              , (green, showT label.label)
               , (cyan, maybe "" (const ". Year ") label.year)
-              , (green, maybe "" toText label.year)]
+              , (green, maybe "" showT label.year)]
             putColorDoc blue NewLine ""
             putColorDoc blue NewLine label.about
             putColorList
@@ -107,7 +107,7 @@ runShow opt = do
         case find (\label -> n == label.lfId) filteredLabels of
             Nothing -> putColorDoc red NewLine "No such number of dictionary!"
             Just label -> do
-              putColorDoc green NewLine $ toText label.lfId <> toText label.label
+              putColorDoc green NewLine $ showT label.lfId <> showT label.label
               putColorDoc blue NewLine label.about
   where
     sortById :: [LabelFull] -> [LabelFull]
