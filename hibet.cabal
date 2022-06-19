@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             1.3.0
+version:             1.3.1
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -142,6 +142,7 @@ executable hibet
   main-is:             Main.hs
   ghc-options:         -Wall
                       --  -O2 -eventlog
+                       -- ^ for threadscope
                        -threaded
                        -rtsopts
                        -with-rtsopts=-N

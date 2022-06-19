@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [1.3.1] - 2022-06-19
+
+* Add concurrent makeEnv. Now first reply immediately printed.
+* Remove `Your request:`
+
 ## [1.3.0] - 2022-06-09
 
 * Fix hls launch

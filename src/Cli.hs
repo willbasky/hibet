@@ -52,7 +52,14 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members [Reader Env, Trace, Resource, PrettyPrint, Console, Error HibetError] r
+runCommand :: Members
+  [ Reader Env
+  , Trace
+  , Resource
+  , PrettyPrint
+  , Console
+  , Error HibetError
+  ] r
   => Command -> Sem r ()
 runCommand com = do
   env :: Env <- ask
