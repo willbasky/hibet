@@ -39,7 +39,7 @@ translator = bracketOnError
   initializeInput
   cancelInput -- This will only be called if an exception such as a SigINT is received.
   $ \inputState -> do
-      putColorDoc blue NewLine "Please, input a word with tibetan script or wylie transcription!"
+      putColorDoc blue NewLine "Please, input any word with tibetan script or wylie transcription!\nWhat is your request?  "
       loopDialog inputState
       closeInput inputState
 
@@ -54,7 +54,6 @@ loopDialog :: Members
   => InputState
   -> Sem r ()
 loopDialog inputState = forever $ do
-    putColorDoc blue NewLine "Your request:"
     mQuery <- getInput inputState "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
