@@ -6,6 +6,11 @@ packages:
 extra-deps:
 - polysemy-1.7.1.0
 - polysemy-plugin-0.4.3.0
+- polysemy-conc-0.9.0.0
+- polysemy-resume-0.5.0.0
+- polysemy-time-0.5.0.0
+- incipit-base-0.3.0.0
+- incipit-core-0.3.0.0
 
 - git: https://gitlab.homotopic.tech/metaxis/polysemy-extra
   commit: b3f53c7fd7385e2d2e6bcca07e92a1f2f28f8704

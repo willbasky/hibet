@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [1.3.2] - 2022-06-20
+
+* Fix concurrent. Now `makeEnv` works concurrently.
+  Bug was: `makeEnv` worked before prompt.
+* Fix `show` command.
+  Bug was: it couldn't show unicode symbols.
+
 ## [1.3.1] - 2022-06-19
 
 * Add concurrent makeEnv. Now first reply immediately printed.

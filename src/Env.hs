@@ -4,11 +4,10 @@
 module Env
   ( makeEnv
   , Env(..)
-  , updateEnv
   )
   where
 
-import Dictionary (DictionaryMeta, makeDictionary, selectDict, toDictionaryMeta)
+import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
 import Effects.File (FileIO)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
@@ -90,9 +89,7 @@ getFilesTexts fp = do
     then pure $ zip paths txts
     else throw $ UnknownError "Not all dictionary files was read successfully"
 
-updateEnv :: [Int] -> Env -> Env
-updateEnv selectedDicts env =
-  env{dictionaryMeta = selectDict selectedDicts env.dictionaryMeta}
+
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f

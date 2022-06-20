@@ -12,12 +12,11 @@ import Env (Env, makeEnv)
 import Type (HibetError (..))
 import Utility (debugEnabledEnvVar)
 
-import Control.Concurrent
-import Control.Exception (SomeException)
 import Data.Function ((&))
-import Polysemy (Embed, Members, Member, Sem, embed, runM)
+import IncipitCore (Async, asyncToIOFinal)
+import Polysemy (Embed, Final, Members, Sem, embedToFinal, runFinal)
+import Polysemy.Conc (Race, Sync, interpretRace, interpretSync, withAsync_)
 import Polysemy.Error (Error, runError)
-import Polysemy.Reader (Reader, runReader)
 import Polysemy.Resource (Resource, runResource)
 import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
 
@@ -25,72 +24,55 @@ import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
 app :: IO ()
 app = do
   isDebug <- debugEnabledEnvVar
-  envVar <- newEmptyMVar
-  thread <- flip forkFinally handleForkError $
-    handleHibetError =<< interpretEnv (putEnv envVar) isDebug
-  handleHibetError =<< interpretHibet hibet isDebug envVar
-  killThread thread
+  handleHibetError =<< interpretHibet hibet isDebug
+
+type HibetEffects =
+  [
+    FileIO
+  , Error HibetError
+  , Resource
+  , Console
+  , PrettyPrint
+  , Trace
+  , Sync Env
+  , Race
+  , Async
+  , Embed IO
+  , Final IO
+  ]
 
 interpretHibet :: Sem HibetEffects ()
   -> Bool -- isDebug
-  -> MVar Env
   -> IO (Either HibetError ())
-interpretHibet program isDebug envVar = program
-  & runReaderSem envVar
+interpretHibet program isDebug = program
   & runFile
   & runError @HibetError
   & runResource
   & runConsole
   & runPrettyPrint
   & (if isDebug then traceToStdout else ignoreTrace)
-  & runM
+  & interpretSync @Env
+  & interpretRace
+  & asyncToIOFinal
+  & embedToFinal
+  & runFinal
 
 hibet :: Members HibetEffects r => Sem r ()
 hibet = do
-  com <- execParser parser
-  runCommand com
+  withAsync_ prepareEnv $ do
+    com <- execParser parser
+    runCommand com
 
-type HibetEffects =
-  [
-    Reader Env
-  , FileIO
+prepareEnv :: Members
+  [ FileIO
   , Error HibetError
-  , Resource
-  , Console
-  , PrettyPrint
   , Trace
+  , Sync Env
   , Embed IO
-  ]
-
-interpretEnv :: Sem EnvEffects ()
-  -> Bool -- isDebug
-  -> IO (Either HibetError ())
-interpretEnv program isDebug = program
-  & runFile
-  & runError @HibetError
-  & (if isDebug then traceToStdout else ignoreTrace)
-  & runM
-
-putEnv :: Members EnvEffects r => MVar Env -> Sem r ()
-putEnv envVar = do
+  ] r => Sem r ()
+prepareEnv = do
   !env <- makeEnv
-  embed $ putMVar envVar env
-
-type EnvEffects =
-  [
-    FileIO
-  , Error HibetError
-  , Trace
-  , Embed IO
-  ]
-
-runReaderSem :: forall r a. Member (Embed IO) r
-  => MVar Env
-  -> Sem (Reader Env ': r) a
-  -> Sem r a
-runReaderSem envVar sem = do
-  env <- embed $ takeMVar envVar
-  runReader env sem
+  putEnvMVar env
 
 handleHibetError :: Either HibetError a -> IO ()
 handleHibetError = \case
@@ -98,10 +80,3 @@ handleHibetError = \case
   Left err -> do
     putStrLn "Hibet application failed with exception:"
     print err
-
-handleForkError :: Either SomeException a -> IO ()
-handleForkError = \case
-  Left err -> putStrLn $ "Error in thread: " <> show err
-  Right _ -> do
-    pure ()
-    -- putStrLn "Env made"

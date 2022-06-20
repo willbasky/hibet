@@ -4,6 +4,8 @@ import Options.Applicative (ParserInfo)
 import qualified Options.Applicative as Opt
 import Polysemy (Embed, Member, Sem)
 import qualified Polysemy as P
+import Polysemy.Conc (Sync)
+import qualified Polysemy.Conc.Effect.Sync as Sync
 import qualified System.Console.Haskeline as Console
 import System.Console.Haskeline.History (History)
 import System.Console.Haskeline.IO (InputState)
@@ -35,7 +37,11 @@ runConsole = P.interpret $ \case
   ExitSuccess -> P.embed Exit.exitSuccess
   ExecParser info ->  P.embed $ Opt.execParser info
 
+-- Helpers
 
+readEnv :: Member (Sync a) r => Sem r a
+readEnv = Sync.block
 
-
+putEnvMVar :: Member (Sync a) r => a -> Sem r ()
+putEnvMVar env = Sync.putBlock env
 

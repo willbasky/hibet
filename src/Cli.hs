@@ -8,13 +8,14 @@ module Cli
 
 import Effects.Console
 import Effects.PrettyPrint
-import Env (Env, updateEnv)
-import Label (LabelFull (..), Labels (..))
+import Env (Env)
+import Label (LabelFull (..), Labels (..), Title(unTitle))
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)
 import Type (HibetError (..))
 import Utility (showT)
+import Dictionary (selectDict)
 
 import Control.Applicative (many, optional, (<|>))
 import Data.Foldable (find, toList)
@@ -28,9 +29,10 @@ import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, h
                             infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
-import Polysemy (Members, Sem)
+import Polysemy (Members, Member, Sem)
+import Polysemy.Conc (Sync)
+import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Error (Error)
-import Polysemy.Reader (Reader, ask, local)
 import Polysemy.Resource (Resource)
 import Prelude hiding (lookup)
 
@@ -53,7 +55,7 @@ data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
 runCommand :: Members
-  [ Reader Env
+  [ Sync Env
   , Trace
   , Resource
   , PrettyPrint
@@ -62,19 +64,29 @@ runCommand :: Members
   ] r
   => Command -> Sem r ()
 runCommand com = do
-  env :: Env <- ask
   case com of
-    Shell selectedDicts ->
-      local (updateEnv selectedDicts) translator
+    Shell selectedDicts -> do
+      updateEnv selectedDicts
+      translator
     Om -> putColorDoc magenta NewLine om
     ShowOption opt -> runShow opt
     Debug -> do
+      env <- readEnv
       printDebug env.radixWylie
 
-runShow :: Members [Reader Env, PrettyPrint] r
+updateEnv :: Member (Sync Env) r
+  => [Int]
+  -> Sem r ()
+updateEnv selectedDicts = do
+  env <- Sync.takeBlock
+  let selectedEnv = env{dictionaryMeta
+        = selectDict selectedDicts env.dictionaryMeta}
+  Sync.putBlock selectedEnv
+
+runShow :: Members [Sync Env, PrettyPrint] r
   => Opt -> Sem r ()
 runShow opt = do
-  env :: Env <- ask
+  env <- readEnv
   let Labels labels = env.labels
   let filteredLabels = filterAvailable labels
   case opt of
@@ -83,7 +95,7 @@ runShow opt = do
         mapM_ (\label-> do
           putColorList
             [ (cyan, showT label.lfId <> ". ")
-            , (green, showT label.label <> ". ")
+            , (green, unTitle label.label <> ". ")
             , (cyan, maybe "" (const "Year ") label.year)
             , (green, maybe "" (flip T.append ". " . showT) label.year)
             , (cyan, "From ")
@@ -97,7 +109,7 @@ runShow opt = do
         mapM_ (\label -> do
             putColorList
               [ (cyan, showT label.lfId <> ". ")
-              , (green, showT label.label)
+              , (green, unTitle label.label)
               , (cyan, maybe "" (const ". Year ") label.year)
               , (green, maybe "" showT label.year)]
             putColorDoc blue NewLine ""
@@ -114,7 +126,10 @@ runShow opt = do
         case find (\label -> n == label.lfId) filteredLabels of
             Nothing -> putColorDoc red NewLine "No such number of dictionary!"
             Just label -> do
-              putColorDoc green NewLine $ showT label.lfId <> showT label.label
+              putColorDoc green NewLine
+                $  showT label.lfId
+                <> ". "
+                <> unTitle label.label
               putColorDoc blue NewLine label.about
   where
     sortById :: [LabelFull] -> [LabelFull]
