@@ -5,7 +5,8 @@ module Utility
   , mkAbsolute
   , T.pack
   , debugEnabledEnvVar
-  ,toTitle) where
+  , toTitle
+  ) where
 
 import Data.Char (toLower, toUpper)
 import Data.List.Extra (takeWhileEnd)

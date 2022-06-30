@@ -19,6 +19,8 @@ import GHC.Generics (Generic)
 import Toml (TomlCodec, (.=))
 import qualified Toml
 
+-- import qualified Debug.Trace as Debug
+
 
 newtype Title = Title {unTitle :: Text}
   deriving stock (Eq, Ord, Generic)
@@ -45,9 +47,9 @@ newtype Labels = Labels
     deriving anyclass (NFData)
 
 getLabels :: BS.ByteString -> Labels
-getLabels fileContent = do
+getLabels fileContent =
     let meta = TE.decodeUtf8 fileContent
-    case Toml.decode labelsCodec meta of
+    in case Toml.decode labelsCodec meta of
         Left err           -> error $ show err
         Right (Labels lbs) -> Labels $ sortOn lfId lbs
 

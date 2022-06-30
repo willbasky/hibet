@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             1.3.1
+version:             1.3.2
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -116,6 +116,7 @@ library
                      , gitrev
                      , haskeline
                      , hashable
+                     , incipit-core
                      , megaparsec
                      , mtl
                      , neat-interpolation
@@ -124,6 +125,7 @@ library
                      , parallel
                      , path-io
                      , polysemy ^>=1.7.1.0
+                     , polysemy-conc
                      , polysemy-plugin ^>=0.4.3.0
                      , polysemy-path ^>=0.2.1.0
                      , prettyprinter
