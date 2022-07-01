@@ -1,11 +1,9 @@
 module Parse.WylieText where
 
-
-import Parse.Type ( Parser, parseExcept)
+import Parse.Type (Parser, parseEither)
 import Type (HibetError (..))
 
 import Control.Applicative (Alternative (many, some, (<|>)))
-import Control.Monad.Except (Except)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Prelude hiding (lookup)
@@ -104,8 +102,8 @@ walLines = do
 
 -- > traverse (parseT walSentences "") ["(sdf)sdf","1.df"]
 -- Right [("","(sdf)sdf"),("1.","df")]
-walList :: [Text] -> Except HibetError [(Text, Text)]
-walList = traverse (parseExcept walSentences)
+walList :: [Text] -> Either HibetError [(Text, Text)]
+walList = traverse (parseEither walSentences)
 
 walSentences :: Parser (Text, Text)
 walSentences = M.try walSen <|> M.try walSenD <|> M.try walSenDT
