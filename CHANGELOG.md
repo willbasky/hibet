@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
-## [1.3.3] - 2022-06-20
+## [1.3.3] - 2022-07-01
 
 * Make Script types stricter with DataKinds approach.
 * Get rid of `Except` stuff and `mtl` dependency. `Either` is enough.
