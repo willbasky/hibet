@@ -8,8 +8,8 @@ import Effects.Console (Console, cancelInput, closeInput, exitSuccess, getHistor
                         initializeInput, readEnv)
 import Effects.PrettyPrint (Line (NewLine), PrettyPrint, pprint, putColorDoc)
 import Env (Env)
-import Parse (fromTibetScript, fromWylieScript, parseEither, parseTibetanInput, parseWylieInput,
-              tibetanWord, toTibetan, toWylie, wylieWord)
+import Parse (ScriptType (Tibet, Wylie), fromScripts, parseEither, parseTibetanInput,
+              parseWylieInput, tibetanWord, toTibetan, toWylie, wylieWord)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 import Utility (showT)
@@ -99,43 +99,44 @@ getAnswer query env = do
 fromHistory :: History -> [Text]
 fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
 
-data Script = T | W
-  deriving stock Show
 
-detectScript :: Text -> Except HibetError Script
+detectScript :: Text -> Except HibetError ScriptType
 detectScript query = do
   let eWylie = parseEither wylieWord query
   let eTibetan = parseEither tibetanWord query
   liftEither $ case (eWylie, eTibetan) of
-    (Left _, Right _)  -> Right T -- likely tibetan
-    (Right _, _) -> Right W -- likely wylie
+    (Left _, Right _)  -> Right Tibet -- likely tibetan
+    (Right _, _) -> Right Wylie -- likely wylie
     (Left ew, Left et)  -> do
       Debug.traceM ("Left ew: " <> show ew)
       Debug.traceM ("Left et: " <> show et)
       Left $ UnknownError (showT et <> "\n" <> showT ew)
 
-boilQuery :: Script -> Text -> Env -> Except HibetError (Text, Text)
+boilQuery :: ScriptType
+  -> Text
+  -> Env
+  -> Except HibetError (Text, Text)
 boilQuery script query env = liftEither $ case script of
-  W -> do
+  Wylie -> do
     wList <- parseWylieInput env.radixWylie query
     -- Debug.traceM ("wList " <> show wList)
-    wylieText <- fromWylieScript wList
+    let wylieText = fromScripts wList
     -- Debug.traceM ("wylieText " <> show wylieText)
     tList <- toTibetan env.wylieTibetMap wList
     -- Debug.traceM ("tList " <> show tList)
-    tibetanText <- fromTibetScript tList
+    let tibetanText = fromScripts tList
     -- Debug.traceM ("tibetanText " <> show tibetanText)
     Right (wylieText, tibetanText)
-  T -> do
+  Tibet -> do
     -- 2.1. Parse text to tibetan script,
     -- 2.2. check tibetan script is valid,
     -- 2.3. convert to Wylie.
     tList <- parseTibetanInput env.radixTibet query
-    tibetanText <- fromTibetScript tList
+    let tibetanText = fromScripts tList
     -- Debug.traceM ("tList " <> show tList)
     wList <- toWylie env.tibetWylieMap tList
     -- Debug.traceM ("wList " <> show wList)
-    wylieText <- fromWylieScript wList
+    let wylieText = fromScripts wList
     -- Debug.traceM ("wylieText " <> show wylieText)
     Right (wylieText, tibetanText)
 

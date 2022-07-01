@@ -2,8 +2,8 @@ module Parse.SyllableLines where
 
 import Parse.Type
     ( parseExcept,
-      TibetSyllable(TibetSyllable),
-      WylieSyllable(WylieSyllable),
+      Script(..),
+      ScriptType(..),
       Parser )
 import Type ( HibetError(..) )
 
@@ -21,15 +21,15 @@ import qualified Text.Megaparsec.Char as MC
 -- Hashmaps from syllables
 ---------------------------------------------------------------------
 
-splitSyllables :: Text -> Except HibetError [(WylieSyllable,TibetSyllable)]
+splitSyllables :: Text -> Except HibetError [(Script 'Wylie,Script 'Tibet)]
 splitSyllables
     = traverse (parseExcept parseSyllables)
     . Line.lines
     . Line.fromText
 
-parseSyllables :: Parser (WylieSyllable,TibetSyllable)
+parseSyllables :: Parser (Script 'Wylie, Script 'Tibet)
 parseSyllables = do
     w <- some $ M.anySingleBut '|'
     _ <- MC.char '|'
     t <- some M.anySingle
-    pure (WylieSyllable $ T.pack w, TibetSyllable $ T.pack t)
+    pure (Script $ T.pack w, Script $ T.pack t)
