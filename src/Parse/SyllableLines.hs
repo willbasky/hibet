@@ -1,14 +1,13 @@
 module Parse.SyllableLines where
 
 import Parse.Type
-    ( parseExcept,
+    ( parseEither,
       Script(..),
       ScriptType(..),
       Parser )
 import Type ( HibetError(..) )
 
 import Control.Applicative (Alternative (some))
-import Control.Monad.Except (Except)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
@@ -21,9 +20,9 @@ import qualified Text.Megaparsec.Char as MC
 -- Hashmaps from syllables
 ---------------------------------------------------------------------
 
-splitSyllables :: Text -> Except HibetError [(Script 'Wylie,Script 'Tibet)]
+splitSyllables :: Text -> Either HibetError [(Script Wylie,Script 'Tibet)]
 splitSyllables
-    = traverse (parseExcept parseSyllables)
+    = traverse (parseEither parseSyllables)
     . Line.lines
     . Line.fromText
 

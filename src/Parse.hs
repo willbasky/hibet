@@ -10,7 +10,6 @@ module Parse
        , wylieWord
        , parseWylieInput
        , parseTibetanInput
-       , parseExcept
        , parseEither
        -- * Radix trees
        , mkWylieRadex
@@ -27,8 +26,8 @@ module Parse
 
 import Parse.SyllableLines (splitSyllables)
 import Parse.TibetanWord (tibetanWord)
-import Parse.Type (Script(..), ScriptType (..), TibetWylieMap, WylieTibetMap, fromScripts,
-                   parseEither, parseExcept)
+import Parse.Type (Script (..), ScriptType (..), TibetWylieMap, WylieTibetMap, fromScripts,
+                   parseEither)
 import Parse.WylieWord (wylieWord)
 import Type (HibetError (..))
 
@@ -88,7 +87,7 @@ lookupTibetScript radix txt = case lookup radix txt of
 @
 > parseWylieInput radix "(balka)"
 > parseWylieInput radix "(balkana)"
-ExceptT (Identity (Right [([],[["balka"]])]))
+Right [([],[["balka"]])])
 @
 it reads radixed words and drops non-radixed in anyway.
 Therefore dirty wylie text should parsed better beforehand.

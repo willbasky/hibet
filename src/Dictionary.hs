@@ -20,7 +20,6 @@ module Dictionary
 import Label (LabelFull (..), Title (..))
 import Type (HibetError (..))
 
-import Control.Monad.Except (Except)
 import Control.Parallel.Strategies (NFData)
 import Data.Bifunctor (second)
 import Data.Bitraversable (Bitraversable (..))
@@ -101,13 +100,13 @@ type Wylie = Text
 -- Convert dictionaries from list to tibetan and pass others.
 separator
   :: [Int]
-  -> (Text -> Except HibetError [Tibet])
+  -> (Text -> Either HibetError [Tibet])
   -> ([Text], (Title, Int))
-  -> Except HibetError ([Tibet], (Title, Int))
+  -> Either HibetError ([Tibet], (Title, Int))
 separator dictNumbers toTibetan' d@(_, (_,i)) =
   if i `elem` dictNumbers then bitraverse (listToTibet toTibetan') pure d else pure d
 
-listToTibet :: (Text -> Except HibetError [Tibet]) -> [Wylie] -> Except HibetError [Tibet]
+listToTibet :: (Text -> Either HibetError [Tibet]) -> [Wylie] -> Either HibetError [Tibet]
 listToTibet toTibetan' list = do
   tibets <- traverse toTibetan' list
   pure $ map (T.intercalate "\n" ) tibets

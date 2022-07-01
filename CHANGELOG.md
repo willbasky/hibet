@@ -9,6 +9,7 @@ and this project adheres to
 ## [1.3.3] - 2022-06-20
 
 * Make Script types stricter with DataKinds approach.
+* Get rid of `Except` stuff and `mtl` dependency. `Either` is enough.
 
 ## [1.3.2] - 2022-06-20
 

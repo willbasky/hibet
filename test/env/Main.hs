@@ -10,7 +10,6 @@ import Paths (dictDir, dictPath1, dictPath2, sylPath, titlePath)
 import Type (HibetError (..))
 import Utility (mkAbsolute, pack)
 
-import Control.Monad.Except (runExcept)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
@@ -84,7 +83,7 @@ syllables :: Spec
 syllables =
   describe "Syllables" $ do
     it "Split syllables" $ do
-      case runExcept $ splitSyllables $ TE.decodeUtf8 syllablesRaw of
+      case splitSyllables $ TE.decodeUtf8 syllablesRaw of
         Left err  -> expectationFailure $ show err
         Right res -> sort res `shouldBe` sort wylieTibetSyl
     it "Map and list of syllables" $ do

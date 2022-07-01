@@ -7,7 +7,6 @@ module Parse.Type where
 
 import Type (HibetError (..))
 
-import Control.Monad.Except (Except, liftEither)
 import Control.Parallel.Strategies (NFData)
 import Data.Coerce (coerce)
 import Data.Either.Extra (mapLeft)
@@ -57,9 +56,6 @@ type TibetWylieMap = HashMap (Script 'Tibet) (Script 'Wylie)
 
 
 type Parser a = M.Parsec Void Text a
-
-parseExcept :: Parser a -> Text -> Except HibetError a
-parseExcept p t = liftEither $ mapLeft MegaError $ M.runParser p "" t
 
 parseEither :: Parser a -> Text -> Either HibetError a
 parseEither p t = mapLeft MegaError $ M.runParser p "" t

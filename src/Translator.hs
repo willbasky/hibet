@@ -14,12 +14,13 @@ import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 import Utility (showT)
 
-import Control.Monad.Except (Except, forever, liftEither, runExcept)
+import Control.Monad (forever)
 import Control.Parallel.Strategies (parList, rseq, using)
 import Data.List (foldl')
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Debug.Trace as Debug
 import Polysemy (Members, Sem)
 import Polysemy.Conc (Sync)
 import Polysemy.Error (Error)
@@ -29,8 +30,6 @@ import Prettyprinter (Doc)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
-
-import qualified Debug.Trace as Debug
 
 -- | Load environment and start loop dialog
 translator :: Members
@@ -73,7 +72,7 @@ loopDialog inputState = forever $ do
             mapM_ (putColorDoc id NewLine) history
         Just input -> do
             env <- readEnv
-            case runExcept $ getAnswer input env of
+            case getAnswer input env of
               Left err -> do
                 trace $ show err
                 putColorDoc red NewLine "Nothing found"
@@ -82,7 +81,7 @@ loopDialog inputState = forever $ do
                 else pprint $ mkOutput query answer
 
 
-getAnswer :: Text -> Env -> Except HibetError (Text, [Answer])
+getAnswer :: Text -> Env -> Either HibetError (Text, [Answer])
 getAnswer query env = do
   -- 1. Detect script of input
   script <- detectScript query
@@ -97,14 +96,16 @@ getAnswer query env = do
 
 
 fromHistory :: History -> [Text]
-fromHistory = foldl' (\ a x -> T.pack x : a) [] . filter (/=":h") . historyLines
+fromHistory
+  = foldl' (\ a x -> T.pack x : a) []
+  . filter (/=":h") . historyLines
 
 
-detectScript :: Text -> Except HibetError ScriptType
+detectScript :: Text -> Either HibetError ScriptType
 detectScript query = do
   let eWylie = parseEither wylieWord query
   let eTibetan = parseEither tibetanWord query
-  liftEither $ case (eWylie, eTibetan) of
+  case (eWylie, eTibetan) of
     (Left _, Right _)  -> Right Tibet -- likely tibetan
     (Right _, _) -> Right Wylie -- likely wylie
     (Left ew, Left et)  -> do
@@ -115,8 +116,8 @@ detectScript query = do
 boilQuery :: ScriptType
   -> Text
   -> Env
-  -> Except HibetError (Text, Text)
-boilQuery script query env = liftEither $ case script of
+  -> Either HibetError (Text, Text)
+boilQuery script query env = case script of
   Wylie -> do
     wList <- parseWylieInput env.radixWylie query
     -- Debug.traceM ("wList " <> show wList)

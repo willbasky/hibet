@@ -14,19 +14,18 @@ import Label (Labels (..), getLabels)
 import Parse (TibetWylieMap, WylieTibetMap, mkTibetanRadex, mkWylieRadex, splitSyllables)
 import Type (HibetError (..))
 
-import Control.Monad.Except (runExcept)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq, rparWith, runEval)
 import qualified Data.HashMap.Strict as HM
 import Data.RadixTree (RadixTree)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
+import Data.Tuple (swap)
 import GHC.Generics (Generic)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace)
-import Data.Tuple (swap)
 
 -- fo debug
 -- import Polysemy.Trace (trace)
@@ -62,7 +61,7 @@ makeEnv = do
 
     let dictsMeta = parMap (rparWith rdeepseq)
           (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
-    sylList <- fromEither $ runExcept $ splitSyllables syls
+    sylList <- fromEither $ splitSyllables syls
     pure $ runEval $ do
           wtMap <- rparWith rdeepseq $ HM.fromList sylList
           twMap <- rparWith rdeepseq $ HM.fromList $ map swap sylList
