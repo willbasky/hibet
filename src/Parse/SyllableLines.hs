@@ -20,7 +20,7 @@ import qualified Text.Megaparsec.Char as MC
 -- Hashmaps from syllables
 ---------------------------------------------------------------------
 
-splitSyllables :: Text -> Either HibetError [(Script Wylie,Script 'Tibet)]
+splitSyllables :: Text -> Either HibetError [(Script 'Wylie,Script 'Tibet)]
 splitSyllables
     = traverse (parseEither parseSyllables)
     . Line.lines

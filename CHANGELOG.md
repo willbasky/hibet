@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [1.3.4] - 2022-10-02
+
+* Remove `Polysemy-path` and its outdated dependencies.
+
 ## [1.3.3] - 2022-07-01
 
 * Make Script types stricter with DataKinds approach.

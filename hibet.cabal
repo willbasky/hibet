@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                hibet
-version:             1.3.3
+version:             1.3.4
 description:         tibetan-english translator
 synopsis:            translator
 homepage:            https://github.com/willbasky/Hibet
@@ -30,10 +30,17 @@ source-repository head
   type:               git
   location:           https://github.com/willbasky/Hibet.git
 
+common common-rdp
+  build-depends:
+      record-dot-preprocessor
+    , record-hasfield
+
+  ghc-options:
+    -fplugin=RecordDotPreprocessor
+
+
 common common-options
   build-depends:       base >= 4.11 && < 5
-                     , record-hasfield
-                     , record-dot-preprocessor
 
   ghc-options:         -Wall
                        -Wcompat
@@ -49,7 +56,6 @@ common common-options
                        -fwrite-ide-info
                        -hiedir=.hie
                        -Wunused-packages
-                       -fplugin=RecordDotPreprocessor
                       --  -ddump-if-trace
 
   default-language:    Haskell2010
@@ -78,7 +84,9 @@ common common-options
                        UndecidableInstances
 
 library
-  import:              common-options
+  import:
+      common-options
+    , common-rdp
   ghc-options:
                        -fplugin=Polysemy.Plugin
   hs-source-dirs:      src
@@ -122,11 +130,11 @@ library
                      , optparse-applicative
                      , pager
                      , parallel
+                     , path
                      , path-io
                      , polysemy ^>=1.7.1.0
                      , polysemy-conc
                      , polysemy-plugin ^>=0.4.3.0
-                     , polysemy-path ^>=0.2.1.0
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree ^>=0.6.0.0
@@ -203,7 +211,6 @@ test-suite hibet-env
                      , hspec
                      , containers
                      , polysemy
-                     , polysemy-path
                      , text
                      , unordered-containers
                     --  , directory
@@ -223,7 +230,7 @@ test-suite hibet-parse
   build-depends:
                        hibet
                      , hspec
-                     , megaparsec
+                    --  , megaparsec
 
   other-modules:       Paths_hibet
 

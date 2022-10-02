@@ -22,9 +22,9 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Tuple (swap)
 import GHC.Generics (Generic)
+import Path (Abs, File, Path, fromAbsFile)
 import Polysemy (Members, Sem)
 import Polysemy.Error (Error, fromEither, throw)
-import Polysemy.Path (Abs, File, Path, fromAbsFile)
 import Polysemy.Trace (Trace)
 
 -- fo debug
