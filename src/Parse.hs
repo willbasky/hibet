@@ -37,6 +37,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
 import Prelude hiding (lookup)
+import Data.Traversable (for)
 
 -- import qualified Debug.Trace as Debug
 
@@ -51,7 +52,7 @@ toTibetan
 toTibetan wtMap wList = do
     let look :: Script 'Wylie -> Maybe (Script 'Tibet)
         look = flip HM.lookup wtMap
-    flip traverse wList $ \w ->
+    for wList $ \w ->
       case look w of
         Nothing  -> Left NotFound
         Just res -> Right res
@@ -64,7 +65,7 @@ toWylie
 toWylie twMap tList = do
     let look :: Script 'Tibet -> Maybe (Script 'Wylie)
         look = flip HM.lookup twMap
-    flip traverse tList $ \t ->
+    for tList $ \t ->
       case look t of
         Nothing  -> Left NotFound
         Just res -> Right res

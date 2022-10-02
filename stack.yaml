@@ -1,25 +1,16 @@
-resolver: lts-19.11
+resolver: lts-19.25
 
 packages:
 - .
 
 extra-deps:
 - polysemy-1.7.1.0
-- polysemy-plugin-0.4.3.0
+- polysemy-plugin-0.4.3.1
 - polysemy-conc-0.9.0.0
 - polysemy-resume-0.5.0.0
-- polysemy-time-0.5.0.0
+- polysemy-time-0.5.1.0
 - incipit-base-0.3.0.0
 - incipit-core-0.3.0.0
-
-- git: https://gitlab.homotopic.tech/metaxis/polysemy-extra
-  commit: b3f53c7fd7385e2d2e6bcca07e92a1f2f28f8704
-
-- git: https://gitlab.homotopic.tech/metaxis/polysemy-kvstore
-  commit: 5e5e247fffc77aa67f03825dbfcc51f0dec2fb30
-
-- git: https://gitlab.homotopic.tech/metaxis/polysemy-path
-  commit: 3bfdc69b9a96055b07427f29f6b246ef0a71cea8
 
 - radixtree-0.6.0.0
 - tomland-1.3.3.1

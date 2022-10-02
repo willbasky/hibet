@@ -6,7 +6,7 @@ module Type
 
 import Data.Text (Text)
 import Data.Void (Void)
-import Polysemy.Path (PathException)
+import Path (PathException)
 import Text.Megaparsec.Error (ParseErrorBundle)
 
 

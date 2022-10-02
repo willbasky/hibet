@@ -23,7 +23,6 @@ import qualified Data.Text.Encoding as TE
 import Polysemy (Embed, Members, Sem)
 import qualified Polysemy as P
 import Polysemy.Error (Error, runError, throw)
-import qualified Polysemy.Path as PP
 import Polysemy.Trace (Trace, runTraceList)
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
@@ -166,11 +165,11 @@ interpretFileMock = P.interpret $ \case
     p                         -> throw $ UnknownError $ "Unknown get path: " <> pack  p
 
   ListDirectory _ -> do
-    f1' <- EF.mapErr $ PP.parseAbsFile $ mkAbsolute dictPath1
-    f2' <- EF.mapErr $ PP.parseAbsFile $ mkAbsolute dictPath2
+    f1' <- EF.parseAbsFileS $ mkAbsolute dictPath1
+    f2' <- EF.parseAbsFileS $ mkAbsolute dictPath2
     pure ([], [f1', f2'])
 
-  ParseAbsDir _ -> EF.mapErr $ PP.parseAbsDir $ mkAbsolute dictDir
+  ParseAbsDir _ -> EF.parseAbsDirS $ mkAbsolute dictDir
 
 
 -- Data for mocking

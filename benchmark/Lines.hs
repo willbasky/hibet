@@ -4,7 +4,7 @@ module Lines
 import Common ( textLoad )
 
 -- import Data.Text (Text)
-import qualified Data.Text as Text
+import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
 import Criterion.Main ( defaultMain, bench, nf )
 
@@ -14,7 +14,7 @@ linesDict = do
     let tl = map Line.fromText dicts
     -- let
     defaultMain
-        [ bench "Text.lines dicts" $ nf (map Text.lines) dicts
+        [ bench "T.lines dicts" $ nf (map T.lines) dicts
         , bench "Lines.Lines dicts " $
             nf (map (Line.lines . Line.fromText)) dicts
         , bench "Lines.Lines text lined dicts " $ nf (map Line.lines ) tl
@@ -22,7 +22,7 @@ linesDict = do
 
 {-
 Benchmark hibet-benchmark: RUNNING...
-benchmarking Text.lines dicts
+benchmarking T.lines dicts
 time                 88.18 ms   (40.90 ms .. 120.7 ms)
                      0.798 R²   (0.416 R² .. 0.985 R²)
 mean                 112.7 ms   (98.90 ms .. 145.9 ms)
