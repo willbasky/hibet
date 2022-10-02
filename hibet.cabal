@@ -197,7 +197,9 @@ test-suite hibet-labels
                      , hspec
 
 test-suite hibet-env
-  import:              common-options
+  import:
+      common-options
+    , common-rdp
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test/env
   main-is:             Main.hs

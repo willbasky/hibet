@@ -43,5 +43,5 @@ readEnv :: Member (Sync a) r => Sem r a
 readEnv = Sync.block
 
 putEnvMVar :: Member (Sync a) r => a -> Sem r ()
-putEnvMVar env = Sync.putBlock env
+putEnvMVar = Sync.putBlock
 
