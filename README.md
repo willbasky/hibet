@@ -26,11 +26,11 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
         stack install hibet
 
-## Upgrade
+or
 
-        stack purge
+    cabal new-install exe:hibet --overwrite-policy=always
 
-        stack install hibet
+
 
 ## Usage video
 
