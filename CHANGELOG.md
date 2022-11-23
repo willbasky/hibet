@@ -7,6 +7,10 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [1.3.6] - 2022-11-23
+
+* Bump stack version to lts-20.1
+
 ## [1.3.5] - 2022-10-02
 
 * Add building support of `ghc-9.2.4`
