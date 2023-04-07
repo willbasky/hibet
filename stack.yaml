@@ -1,16 +1,15 @@
-resolver: lts-20.1
+resolver: lts-20.17
 
 packages:
 - .
 
 extra-deps:
-- polysemy-1.7.1.0
-- polysemy-plugin-0.4.3.1
-- polysemy-conc-0.9.0.0
-- polysemy-resume-0.5.0.0
-- polysemy-time-0.5.1.0
-- incipit-base-0.3.0.0
-- incipit-core-0.3.0.0
+- polysemy-1.9.0.0
+- polysemy-conc-0.12.1.0
+- polysemy-resume-0.7.0.0
+- polysemy-time-0.6.0.0
+- incipit-base-0.5.1.0
+- incipit-core-0.5.1.0
 
 - radixtree-0.6.0.0
 
@@ -19,6 +18,8 @@ extra-deps:
 
 ghc-options:
   "$locals": -fhide-source-paths
+
+system-ghc: true
 
 # build:
 #   library-profiling: true

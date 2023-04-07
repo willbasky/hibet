@@ -7,6 +7,10 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [1.3.7] - 2023-04-06
+
+* Bump stack version to lts-20.17 and GHC-9.2.7
+
 ## [1.3.6] - 2022-11-23
 
 * Bump stack version to lts-20.1
