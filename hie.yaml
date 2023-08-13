@@ -1,0 +1,31 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "hibet:lib"
+
+    - path: "./app/Main.hs"
+      component: "hibet:exe:hibet"
+
+    - path: "./test/pretty"
+      component: "hibet:test:hibet-pretty"
+
+    - path: "./test/labels"
+      component: "hibet:test:hibet-labels"
+
+    - path: "./test/env"
+      component: "hibet:test:hibet-env"
+
+    - path: "./test/parse"
+      component: "hibet:test:hibet-parse"
+
+    - path: "./benchmark/Main.hs"
+      component: "hibet:bench:hibet-benchmark"
+
+    - path: "./benchmark/Paths_hibet.hs"
+      component: "hibet:bench:hibet-benchmark"
+
+    - path: "./benchmark/Lines.hs"
+      component: "hibet:bench:hibet-benchmark"
+
+    - path: "./benchmark/Common.hs"
+      component: "hibet:bench:hibet-benchmark"
