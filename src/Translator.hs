@@ -51,7 +51,7 @@ translator = bracketOnError
   (Haskeline.initializeInput Haskeline.defaultSettings)
   Haskeline.cancelInput -- This will only be called if an exception such as a SigINT is received.
   $ \inputState -> do
-      putColorDoc blue NewLine "Please, input any word with tibetan script or wylie transcription!\nWhat is your request?  "
+      putColorDoc blue NewLine "Input a word in the tibetan script or wylie transcription:"
       loopDialog inputState
       closeInput inputState
 
@@ -71,7 +71,7 @@ loopDialog inputState = forever $ do
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
         Just ":q" -> do
-            putColorDoc yellow NewLine "Bye-bye!"
+            putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
             exitSuccess
         Just ":h" -> do
             history <- fromHistory <$> getHistory inputState

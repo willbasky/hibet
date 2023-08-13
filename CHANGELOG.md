@@ -7,6 +7,11 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [1.3.8] - 2023-08-13
+
+* Land on `effectful` effect system. Remove polysemy
+* Bump stack version to lts-20.26 and GHC-9.2.8
+
 ## [1.3.7] - 2023-04-06
 
 * Bump stack version to lts-20.17 and GHC-9.2.7

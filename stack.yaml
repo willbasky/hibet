@@ -4,9 +4,6 @@ packages:
 - .
 
 extra-deps:
-- incipit-base-0.5.1.0
-- incipit-core-0.5.1.0
-
 - radixtree-0.6.0.0
 
 - tomland-1.3.3.2
