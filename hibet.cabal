@@ -24,20 +24,15 @@ extra-source-files:
 tested-with:
   , GHC==8.10.7
   , GHC==9.0.2
-  , GHC==9.2.7
+  , GHC==9.2.8
 
 source-repository head
   type:               git
   location:           https://github.com/willbasky/Hibet.git
 
-common common-rdp
-  build-depends:
-      record-dot-preprocessor
-    , record-hasfield
-
-  ghc-options:
-    -fplugin=RecordDotPreprocessor
-
+common common-dot
+  default-extensions:
+    OverloadedRecordDot
 
 common common-options
   build-depends:       base >= 4.11 && < 5
@@ -86,9 +81,9 @@ common common-options
 library
   import:
       common-options
-    , common-rdp
+    , common-dot
   ghc-options:
-                       -fplugin=Polysemy.Plugin
+                       -fplugin=Effectful.Plugin
   hs-source-dirs:      src
   exposed-modules:
                        App
@@ -119,6 +114,12 @@ library
                      , containers
                      , deepseq
                      , directory
+                     , effectful-th
+                     , effectful
+                     , effectful-core
+                     , effectful-plugin
+                     , log-effectful
+                     , resourcet-effectful
                      , extra
                      , filepath
                      , gitrev
@@ -132,9 +133,6 @@ library
                      , parallel
                      , path
                      , path-io
-                     , polysemy
-                     , polysemy-conc
-                     , polysemy-plugin
                      , prettyprinter
                      , prettyprinter-ansi-terminal
                      , radixtree ^>=0.6.0.0
@@ -199,7 +197,7 @@ test-suite hibet-labels
 test-suite hibet-env
   import:
       common-options
-    , common-rdp
+    , common-dot
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test/env
   main-is:             Main.hs
@@ -212,7 +210,6 @@ test-suite hibet-env
                      , bytestring
                      , hspec
                      , containers
-                     , polysemy
                      , text
                      , unordered-containers
                     --  , directory

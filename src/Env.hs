@@ -4,11 +4,14 @@
 module Env
   ( makeEnv
   , Env(..)
+  , readEnv
+  , putEnvMVar
+  , modifyEnv
   )
   where
 
 import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
-import Effects.File (FileIO)
+import Effects.File (FileSystem)
 import qualified Effects.File as File
 import Label (Labels (..), getLabels)
 import Parse (TibetWylieMap, WylieTibetMap, mkTibetanRadex, mkWylieRadex, splitSyllables)
@@ -23,12 +26,15 @@ import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Tuple (swap)
 import GHC.Generics (Generic)
 import Path (Abs, File, Path, fromAbsFile)
-import Polysemy (Members, Sem)
-import Polysemy.Error (Error, fromEither, throw)
-import Polysemy.Trace (Trace)
+
+import Effectful ( type (:>), Eff )
+import Effectful.Error.Static ( Error, throwError )
+import Effectful.Concurrent (Concurrent)
+import Effectful.Reader.Dynamic (Reader)
+import Effectful.Concurrent.MVar.Strict (MVar, modifyMVar_, readMVar, putMVar)
+import Effectful.Reader.Dynamic (ask)
 
 -- fo debug
--- import Polysemy.Trace (trace)
 -- import qualified Data.Bimap as Bi
 -- import Parse (WylieSyllable(WylieSyllable))
 
@@ -46,13 +52,17 @@ data Env = Env
   deriving anyclass (NFData)
 
 
-makeEnv :: Members [FileIO, Error HibetError, Trace] r => Sem r Env
+makeEnv ::
+  (  FileSystem :> es
+  ,  Error HibetError :> es
+  )
+  => Eff es Env
 makeEnv = do
     sylsPath <- File.getPath "stuff/tibetan-syllables"
     -- trace sylsPath
 
-    syls <- TE.decodeUtf8 <$> File.readFile sylsPath
-    labels@(Labels ls) <- getLabels <$> (File.readFile =<< File.getPath "stuff/titles.toml")
+    syls <- TE.decodeUtf8 <$> File.readFileBS sylsPath
+    labels@(Labels ls) <- getLabels <$> (File.readFileBS =<< File.getPath "stuff/titles.toml")
 
     dir <- File.getPath "dicts/"
     absDir <- File.parseAbsDir dir
@@ -76,19 +86,40 @@ makeEnv = do
               , labels     = labels
               }
 
-getFilesTexts :: Members
-  [ FileIO
-  , Error HibetError] r
-  => [Path Abs File] -> Sem r [(FilePath, TL.Text)]
+getFilesTexts ::
+  (  FileSystem :> es
+  ,  Error HibetError :> es
+  )
+  => [Path Abs File]
+  -> Eff es [(FilePath, TL.Text)]
 getFilesTexts fp = do
   let paths = map fromAbsFile fp
-  let contents = map (fmap TLE.decodeUtf8 . File.readFileLazy) paths
+  let contents = map (fmap TLE.decodeUtf8 . File.readFileLazyBS) paths
   txts <- sequenceA contents
   if length paths == length txts
     then pure $ zip paths txts
-    else throw $ UnknownError "Not all dictionary files was read successfully"
+    else throwError $ UnknownError "Not all dictionary files was read successfully"
 
+fromEither :: (Error HibetError :> es)
+  => Either HibetError a
+  -> Eff es a
+fromEither (Left err) = throwError err
+fromEither (Right res) = pure res
 
+readEnv :: (Reader (MVar Env) :> es, Concurrent :> es) => Eff es Env
+readEnv = do
+  env <- ask
+  readMVar env
+
+modifyEnv :: (Reader (MVar Env) :> es, Concurrent :> es) => (Env -> Eff es Env) -> Eff es ()
+modifyEnv f = do
+  env <- ask
+  modifyMVar_ env f
+
+putEnvMVar :: (Reader (MVar a) :> es, Concurrent :> es) => a -> Eff es ()
+putEnvMVar value = do
+  env <- ask
+  putMVar env value
 
     -- getFilesTextsPar fs = mapM (\f -> do
     --   let path = fromAbsFile f
@@ -108,3 +139,4 @@ getFilesTexts fp = do
 -- parTraverseC strat f = withStrategy (parTraversable strat) . traverse f
 -- traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
 -- mapM :: Monad m => (a -> m b) -> t a -> m (t b)
+

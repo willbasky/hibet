@@ -8,12 +8,12 @@ module Cli
 
 import Effects.Console
 import Effects.PrettyPrint
-import Env (Env)
+import Env (Env(..), modifyEnv, readEnv)
 import Label (LabelFull (..), Labels (..), Title(unTitle))
 import Paths_hibet (version)
 import Pretty
 import Translator (translator)
-import Type (HibetError (..))
+-- import Type (HibetError (..))
 import Utility (showT)
 import Dictionary (selectDict)
 
@@ -29,14 +29,15 @@ import Options.Applicative (Parser, ParserInfo, auto, command, fullDesc, help, h
                             infoHeader, infoOption, long, metavar, option, progDesc, short,
                             subparser)
 import Options.Applicative.Help.Chunk (stringChunk)
-import Polysemy (Members, Member, Sem)
-import Polysemy.Conc (Sync)
-import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Error (Error)
-import Polysemy.Resource (Resource)
 import Prelude hiding (lookup)
 
-import Polysemy.Trace (Trace)
+import Effectful ( type (:>), Eff, IOE )
+import Effectful.Resource ( Resource )
+import Effectful.Log ( Log )
+import Effectful.Reader.Dynamic (Reader)
+import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
+
+-- import Polysemy.Trace (Trace)
 
 ---------------------------------------------------------------------------
 -- CLI
@@ -54,15 +55,16 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand :: Members
-  [ Sync Env
-  , Trace
-  , Resource
-  , PrettyPrint
-  , Console
-  , Error HibetError
-  ] r
-  => Command -> Sem r ()
+runCommand ::
+  ( IOE :> es
+  , Reader (MVar Env) :> es
+  , Concurrent :> es
+  , Log :> es
+  , Resource :> es
+  , PrettyPrint :> es
+  , Console :> es
+  )
+  => Command -> Eff es ()
 runCommand com = do
   case com of
     Shell selectedDicts -> do
@@ -74,17 +76,22 @@ runCommand com = do
       env <- readEnv
       printDebug env.radixWylie
 
-updateEnv :: Member (Sync Env) r
+updateEnv ::
+     ( Reader (MVar Env) :> es
+     , Concurrent :> es
+     )
   => [Int]
-  -> Sem r ()
+  -> Eff es ()
 updateEnv selectedDicts = do
-  env <- Sync.takeBlock
-  let selectedEnv = env{dictionaryMeta
+  modifyEnv $ \env ->
+    pure $ env{dictionaryMeta
         = selectDict selectedDicts env.dictionaryMeta}
-  Sync.putBlock selectedEnv
 
-runShow :: Members [Sync Env, PrettyPrint] r
-  => Opt -> Sem r ()
+runShow ::
+     ( Reader (MVar Env) :> es
+     , Concurrent :> es
+     , PrettyPrint :> es)
+  => Opt -> Eff es ()
 runShow opt = do
   env <- readEnv
   let Labels labels = env.labels
