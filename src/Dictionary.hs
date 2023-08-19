@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE BangPatterns #-}
 
 
 module Dictionary
@@ -76,7 +77,7 @@ selectDict selected dicts = case selected of
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
 toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
   where
-    (title, number) = findTitle $ T.pack $ takeBaseName filepath
+    (!title, !number) = findTitle $ T.pack $ takeBaseName filepath
     -- Match filpath with labels
     findTitle :: Text -> (Title, Int)
     findTitle path = maybe (Title "Invalid title",0) (\lf -> (lf.label, lf.lfId))

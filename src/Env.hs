@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE BangPatterns #-}
 
 module Env
   ( makeEnv
@@ -71,6 +72,7 @@ makeEnv = do
 
     let dictsMeta = parMap (rparWith rdeepseq)
           (\(f,t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t) filesAndTexts
+
     sylList <- fromEither $ splitSyllables syls
     pure $ runEval $ do
           wtMap <- rparWith rdeepseq $ HM.fromList sylList

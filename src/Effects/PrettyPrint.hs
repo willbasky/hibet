@@ -15,6 +15,7 @@ import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv, setEnv)
 import System.Pager (printOrPage)
 import Data.Foldable (traverse_)
+import qualified Data.ByteString.Char8 as BSC8
 
 import Effectful.TH ( makeEffect )
 import Effectful ( type (:>), Effect, Eff, IOE )
@@ -51,7 +52,7 @@ runPrettyPrint = interpret $ \env -> \case
     let layoutOptions =
           defaultLayoutOptions {layoutPageWidth = AvailablePerLine width' 1}
     printOrPage . (`T.snoc` '\n') . renderStrict $ layoutSmart layoutOptions doc
-  PrintDebug str -> adapt $ print str
+  PrintDebug str -> adapt $ BSC8.putStrLn $ BSC8.pack $ show str
 
 putColorList :: (PrettyPrint:> es)
   => [(Colorize, Text)]
