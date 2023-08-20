@@ -33,7 +33,7 @@ import Prelude hiding (lookup)
 
 import Effectful ( type (:>), Eff, IOE )
 import Effectful.Resource ( Resource )
-import Effectful.Log ( Log )
+-- import Effectful.Log ( Log )
 import Effectful.Reader.Dynamic (Reader)
 import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
 
@@ -59,7 +59,7 @@ runCommand ::
   ( IOE :> es
   , Reader (MVar Env) :> es
   , Concurrent :> es
-  , Log :> es
+  -- , Log :> es
   , Resource :> es
   , PrettyPrint :> es
   , Console :> es

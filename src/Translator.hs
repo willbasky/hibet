@@ -31,7 +31,7 @@ import qualified System.Console.Haskeline as Haskeline
 
 import Effectful ( type (:>), Eff, IOE )
 import Effectful.Resource ( allocate, release, Resource )
-import Effectful.Log ( logInfo_, Log )
+-- import Effectful.Log ( logInfo_, Log )
 import Effectful.Reader.Dynamic (Reader)
 import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
 
@@ -40,7 +40,7 @@ import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
 translator ::
   ( IOE :> es
   , PrettyPrint :> es
-  , Log :> es
+  -- , Log :> es
   , Resource :> es
   , Console :> es
   , Reader (MVar Env) :> es
@@ -59,7 +59,6 @@ translator = bracketOnError
 -- Looped dialog with user
 loopDialog ::
   ( PrettyPrint :> es
-  , Log :> es
   , Console :> es
   , Reader (MVar Env) :> es
   , Concurrent :> es
@@ -79,8 +78,8 @@ loopDialog inputState = forever $ do
         Just input -> do
             env <- readEnv
             case getAnswer input env of
-              Left err -> do
-                logInfo_ $ showT err
+              Left _ -> do
+                -- logInfo_ $ showT err
                 putColorDoc red NewLine "Nothing found"
               Right (query, answer) -> if null answer
                 then putColorDoc red NewLine "Nothing found"
