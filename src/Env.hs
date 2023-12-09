@@ -100,7 +100,7 @@ getFilesTexts fp = do
   txts <- sequenceA contents
   if length paths == length txts
     then pure $ zip paths txts
-    else throwError $ UnknownError "Not all dictionary files was read successfully"
+    else throwError $ UnknownError "Some dictionary files fails to be read"
 
 fromEither :: (Error HibetError :> es)
   => Either HibetError a

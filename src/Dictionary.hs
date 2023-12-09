@@ -88,9 +88,9 @@ searchTranslation :: Text -> DictionaryMeta -> Maybe Answer
 searchTranslation query dm =
   if null ts then Nothing else Just $ Answer ts dm.number dm.title
   where
-    ts = HMS.foldrWithKey search [] dm.dictionary
-    search :: Text -> [Target] -> [Target] -> [Target]
-    search q v acc = if q == query then v <> acc else acc
+    ts = HMS.foldlWithKey' search [] dm.dictionary
+    search :: [Target] -> Text -> [Target] -> [Target]
+    search acc q v = if q == query then v <> acc else acc
 
 sortOutput :: [Answer] -> [Answer]
 sortOutput = sortBy (\a1 a2-> compare a1.dictNumber a2.dictNumber)
