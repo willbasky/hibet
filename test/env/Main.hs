@@ -9,7 +9,7 @@ import Effectful.Error.Static
 import Effects.File (FileSystem (..))
 import qualified Effects.File as EF
 import Env (Env (..), makeEnv)
-import Label (LabelFull (..), Labels (..), Title (..))
+import Label (Title (..))
 import Parse (Script (Script), ScriptType (..), WylieTibetMap, splitSyllables)
 import Paths (dictPath1, dictPath2, sylPath, titlePath)
 import Type (HibetError (..))
@@ -18,9 +18,8 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
 import qualified Data.HashMap.Strict as HM
-import Data.List (sort)
+import Data.List (sort, sortOn)
 import Data.Maybe (mapMaybe)
-import qualified Data.Set as Set
 import qualified Data.Text.Encoding as TE
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
@@ -64,16 +63,16 @@ translate =
                 Right env -> do
                     let query = "mir"
                     let reply = mapMaybe (searchTranslation query) env.dictionaryMeta
-                    reply
+                    sortOn dictNumber reply
                         `shouldBe` [ Answer
-                                        { targets = [Target "as/for/ to a human being"]
-                                        , dictNumber = 16
-                                        , dictTitle = Title "Ives Waldo"
-                                        }
-                                   , Answer
                                         { targets = [Target "termin. case of mi"]
                                         , dictNumber = 15
                                         , dictTitle = Title "James Valby"
+                                        }
+                                   , Answer
+                                        { targets = [Target "as/for/ to a human being"]
+                                        , dictNumber = 16
+                                        , dictTitle = Title "Ives Waldo"
                                         }
                                    , Answer
                                         { targets =
@@ -103,16 +102,16 @@ translate =
                 Left err -> expectationFailure $ show err
                 Right env -> do
                     let reply = mapMaybe (searchTranslation "re ba byed pa") env.dictionaryMeta
-                    reply
+                    sortOn dictNumber  reply
                         `shouldBe` [ Answer
-                                        { targets = [Target "demand, ask, hope, wish, expect"]
-                                        , dictNumber = 15
-                                        , dictTitle = Title "James Valby"
-                                        }
-                                   , Answer
                                         { targets = [Target "to hope, wish, expect, demand, ask"]
                                         , dictNumber = 7
                                         , dictTitle = Title "Rangjung Yeshe"
+                                        }
+                                   , Answer
+                                        { targets = [Target "demand, ask, hope, wish, expect"]
+                                        , dictNumber = 15
+                                        , dictTitle = Title "James Valby"
                                         }
                                    ]
         it "Search re ba med pa" $ do
@@ -121,16 +120,16 @@ translate =
                 Left err -> expectationFailure $ show err
                 Right env -> do
                     let reply = mapMaybe (searchTranslation "re ba med pa") env.dictionaryMeta
-                    reply
+                    sortOn dictNumber  reply
                         `shouldBe` [ Answer
                                         { targets = [Target "hopeless; no hope"]
                                         , dictNumber = 5
                                         , dictTitle = Title "Hopkins"
                                         }
                                    , Answer
-                                        { targets = [Target "{MSA}nirapekṣa; {MSA}niṣpratikāṅkṣa"]
-                                        , dictNumber = 41
-                                        , dictTitle = Title "Hopkins Sanskrit"
+                                        { targets = [Target "hopeless, despairing"]
+                                        , dictNumber = 15
+                                        , dictTitle = Title "James Valby"
                                         }
                                    , Answer
                                         { targets = [Target "hopeless, no hope of --"]
@@ -138,9 +137,9 @@ translate =
                                         , dictTitle = Title "Ives Waldo"
                                         }
                                    , Answer
-                                        { targets = [Target "hopeless, despairing"]
-                                        , dictNumber = 15
-                                        , dictTitle = Title "James Valby"
+                                        { targets = [Target "{MSA}nirapekṣa; {MSA}niṣpratikāṅkṣa"]
+                                        , dictNumber = 41
+                                        , dictTitle = Title "Hopkins Sanskrit"
                                         }
                                    ]
 

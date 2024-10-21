@@ -217,7 +217,6 @@ test-suite hibet-env
                        hibet
                      , bytestring
                      , hspec
-                     , containers
                      , text
                      , unordered-containers
                      , effectful-core
@@ -237,7 +236,6 @@ test-suite hibet-parse
   build-depends:
                        hibet
                      , hspec
-                    --  , megaparsec
 
   other-modules:       Paths_hibet
 
