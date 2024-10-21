@@ -25,6 +25,7 @@ tested-with:
   , GHC==8.10.7
   , GHC==9.0.2
   , GHC==9.2.8
+  , GHC==9.4.8
 
 source-repository head
   type:               git
@@ -222,7 +223,7 @@ test-suite hibet-env
                      , containers
                      , text
                      , unordered-containers
-                    --  , directory
+                     , effectful-core
 
   other-modules:       Paths_hibet
                        Paths

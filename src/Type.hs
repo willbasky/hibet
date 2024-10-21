@@ -7,13 +7,12 @@ module Type
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec.Error (ParseErrorBundle)
-import GHC.Stack ( CallStack )
 
 
 data HibetError
-  = EffectError Text CallStack
+  = EffectError Text Text
   | MegaError (ParseErrorBundle Text Void)
   | NotFound
   | NotSyllable Text
   | UnknownError Text
-  deriving stock Show
+  deriving stock (Eq, Show)

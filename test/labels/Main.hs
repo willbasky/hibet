@@ -7,7 +7,6 @@ import qualified Data.Set as Set
 import Test.Hspec (Spec, describe, hspec, it, shouldBe)
 
 
-
 main :: IO ()
 main = hspec $ do
   getLabelsSpec

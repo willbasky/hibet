@@ -9,14 +9,6 @@ import Prettyprinter.Render.Text (renderStrict)
 
 import Test.Hspec (Spec, describe, hspec, it, shouldBe)
 
--- import Hedgehog (Gen, PropertyT, forAll, (===))
--- import Hedgehog.Gen (alphaNum, choice, element, frequency, sample, text)
--- import qualified Hedgehog.Gen as G
--- import Hedgehog.Range (constant)
--- import Test.Hspec.Hedgehog (hedgehog)
-
-
-
 main :: IO ()
 main = hspec $ do
   viewTranslationsSpec
