@@ -32,7 +32,7 @@ import Effectful ( type (:>), Eff )
 import Effectful.Error.Static ( Error, throwError )
 import Effectful.Concurrent (Concurrent)
 import Effectful.Reader.Dynamic (Reader)
-import Effectful.Concurrent.MVar.Strict (MVar, modifyMVar_, readMVar, putMVar)
+import Effectful.Concurrent.MVar (MVar, modifyMVar_, readMVar, putMVar)
 import Effectful.Reader.Dynamic (ask)
 
 -- fo debug

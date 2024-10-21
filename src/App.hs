@@ -20,7 +20,7 @@ import Effectful.Error.Static
     ( CallStack, prettyCallStack, Error, runError )
 import Effectful.Concurrent ( runConcurrent, Concurrent )
 import Effectful.Concurrent.Async (withAsync)
-import Effectful.Concurrent.MVar.Strict ( MVar, newEmptyMVar, putMVar )
+import Effectful.Concurrent.MVar ( MVar, newEmptyMVar, putMVar )
 import Effectful.Reader.Dynamic ( runReader )
 import Effectful.Resource ( runResource, Resource )
 import Effectful.Log

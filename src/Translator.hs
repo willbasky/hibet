@@ -33,7 +33,7 @@ import Effectful ( type (:>), Eff, IOE )
 import Effectful.Resource ( allocate, release, Resource )
 -- import Effectful.Log ( logInfo_, Log )
 import Effectful.Reader.Dynamic (Reader)
-import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
+import Effectful.Concurrent.MVar (MVar, Concurrent)
 
 
 -- | Load environment and start loop dialog

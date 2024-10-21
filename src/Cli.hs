@@ -35,7 +35,7 @@ import Effectful ( type (:>), Eff, IOE )
 import Effectful.Resource ( Resource )
 -- import Effectful.Log ( Log )
 import Effectful.Reader.Dynamic (Reader)
-import Effectful.Concurrent.MVar.Strict (MVar, Concurrent)
+import Effectful.Concurrent.MVar (MVar, Concurrent)
 
 -- import Polysemy.Trace (Trace)
 

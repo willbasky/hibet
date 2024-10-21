@@ -1,0 +1,1289 @@
+using '/home/metaxis/source/haskell/hibet' as project root
+
+Tree
+~~~~
+
+aeson-pretty-0.8.10
+ [aeson-pretty-0.8.10:exe:"aeson-pretty"]
+ ├─ aeson-2.2.3.0
+ │   ├─ OneTuple-0.4.2
+ │   │   ├─ base-4.17.2.1
+ │   │   │   ├─ ghc-bignum-1.3
+ │   │   │   │   └─ ghc-prim-0.9.1
+ │   │   │   │       └─ rts-1.0.2
+ │   │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   │   └─ rts-1.0.2 ┄┄
+ │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   └─ template-haskell-2.19.0.0
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       ├─ ghc-boot-th-9.4.8
+ │   │       │   └─ base-4.17.2.1 ┄┄
+ │   │       ├─ ghc-prim-0.9.1 ┄┄
+ │   │       └─ pretty-1.1.3.6
+ │   │           ├─ base-4.17.2.1 ┄┄
+ │   │           ├─ deepseq-1.4.8.0
+ │   │           │   ├─ array-0.5.4.0
+ │   │           │   │   └─ base-4.17.2.1 ┄┄
+ │   │           │   ├─ base-4.17.2.1 ┄┄
+ │   │           │   └─ ghc-prim-0.9.1 ┄┄
+ │   │           └─ ghc-prim-0.9.1 ┄┄
+ │   ├─ QuickCheck-2.15.0.1
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ containers-0.6.7
+ │   │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   └─ template-haskell-2.19.0.0 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ random-1.2.1.2
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ bytestring-0.11.5.3
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   │   │   └─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   ├─ mtl-2.2.2
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   └─ transformers-0.5.6.2
+ │   │   │   │       └─ base-4.17.2.1 ┄┄
+ │   │   │   └─ splitmix-0.1.0.5
+ │   │   │       ├─ base-4.17.2.1 ┄┄
+ │   │   │       └─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ splitmix-0.1.0.5 ┄┄
+ │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   └─ transformers-0.5.6.2 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ character-ps-0.1
+ │   │   └─ base-4.17.2.1 ┄┄
+ │   ├─ containers-0.6.7 ┄┄
+ │   ├─ data-fix-0.3.4
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   └─ hashable-1.4.7.0
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       ├─ bytestring-0.11.5.3 ┄┄
+ │   │       ├─ containers-0.6.7 ┄┄
+ │   │       ├─ deepseq-1.4.8.0 ┄┄
+ │   │       ├─ filepath-1.4.2.2
+ │   │       │   └─ base-4.17.2.1 ┄┄
+ │   │       ├─ ghc-bignum-1.3 ┄┄
+ │   │       ├─ ghc-prim-0.9.1 ┄┄
+ │   │       ├─ os-string-2.0.6
+ │   │       │   ├─ base-4.17.2.1 ┄┄
+ │   │       │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │       │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │       │   ├─ exceptions-0.10.5
+ │   │       │   │   ├─ base-4.17.2.1 ┄┄
+ │   │       │   │   ├─ mtl-2.2.2 ┄┄
+ │   │       │   │   ├─ stm-2.5.1.0
+ │   │       │   │   │   ├─ array-0.5.4.0 ┄┄
+ │   │       │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │       │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │       │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │       │   └─ template-haskell-2.19.0.0 ┄┄
+ │   │       └─ text-2.0.2
+ │   │           ├─ array-0.5.4.0 ┄┄
+ │   │           ├─ base-4.17.2.1 ┄┄
+ │   │           ├─ binary-0.8.9.1
+ │   │           │   ├─ array-0.5.4.0 ┄┄
+ │   │           │   ├─ base-4.17.2.1 ┄┄
+ │   │           │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │           │   └─ containers-0.6.7 ┄┄
+ │   │           ├─ bytestring-0.11.5.3 ┄┄
+ │   │           ├─ deepseq-1.4.8.0 ┄┄
+ │   │           ├─ ghc-prim-0.9.1 ┄┄
+ │   │           └─ template-haskell-2.19.0.0 ┄┄
+ │   ├─ deepseq-1.4.8.0 ┄┄
+ │   ├─ dlist-1.0
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   └─ deepseq-1.4.8.0 ┄┄
+ │   ├─ exceptions-0.10.5 ┄┄
+ │   ├─ generically-0.1.1
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   └─ base-orphans-0.9.2
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       └─ ghc-prim-0.9.1 ┄┄
+ │   ├─ ghc-prim-0.9.1 ┄┄
+ │   ├─ hashable-1.4.7.0 ┄┄
+ │   ├─ indexed-traversable-0.1.4
+ │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ foldable1-classes-compat-0.1
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   │   ├─ tagged-0.8.8
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   └─ transformers-0.5.6.2 ┄┄
+ │   ├─ integer-conversion-0.1.1
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ primitive-0.9.0.0
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   └─ text-2.0.2 ┄┄
+ │   ├─ integer-logarithms-1.0.3.1
+ │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ ghc-bignum-1.3 ┄┄
+ │   │   └─ ghc-prim-0.9.1 ┄┄
+ │   ├─ network-uri-2.6.4.2
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ parsec-3.1.16.1
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   │   ├─ mtl-2.2.2 ┄┄
+ │   │   │   └─ text-2.0.2 ┄┄
+ │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   └─ th-compat-0.1.5
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       └─ template-haskell-2.19.0.0 ┄┄
+ │   ├─ primitive-0.9.0.0 ┄┄
+ │   ├─ scientific-0.3.8.0
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ integer-logarithms-1.0.3.1 ┄┄
+ │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   └─ text-2.0.2 ┄┄
+ │   ├─ semialign-1.3.1
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ indexed-traversable-0.1.4 ┄┄
+ │   │   ├─ indexed-traversable-instances-0.1.2
+ │   │   │   ├─ OneTuple-0.4.2 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ indexed-traversable-0.1.4 ┄┄
+ │   │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   │   ├─ unordered-containers-0.2.20
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   │   │   └─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   └─ vector-0.13.1.0
+ │   │   │       ├─ base-4.17.2.1 ┄┄
+ │   │   │       ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │       ├─ primitive-0.9.0.0 ┄┄
+ │   │   │       └─ vector-stream-0.1.0.1
+ │   │   │           ├─ base-4.17.2.1 ┄┄
+ │   │   │           └─ ghc-prim-0.9.1 ┄┄
+ │   │   ├─ semigroupoids-6.0.1
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ base-orphans-0.9.2 ┄┄
+ │   │   │   ├─ bifunctors-5.6.2
+ │   │   │   │   ├─ assoc-1.1.1
+ │   │   │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ comonad-5.0.8
+ │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   │   │   ├─ distributive-0.6.2.1
+ │   │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   │   ├─ base-orphans-0.9.2 ┄┄
+ │   │   │   │   │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   │   │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   │   │   │   ├─ indexed-traversable-0.1.4 ┄┄
+ │   │   │   │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   │   │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   │   │   │   └─ transformers-compat-0.7.2
+ │   │   │   │   │       ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │       ├─ ghc-prim-0.9.1 ┄┄
+ │   │   │   │   │       └─ transformers-0.5.6.2 ┄┄
+ │   │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   │   ├─ foldable1-classes-compat-0.1 ┄┄
+ │   │   │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   │   ├─ th-abstraction-0.7.0.0
+ │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   │   │   │   └─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   │   ├─ comonad-5.0.8 ┄┄
+ │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   ├─ contravariant-1.5.5
+ │   │   │   │   ├─ StateVar-1.2.2
+ │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   ├─ stm-2.5.1.0 ┄┄
+ │   │   │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   └─ transformers-0.5.6.2 ┄┄
+ │   │   │   ├─ distributive-0.6.2.1 ┄┄
+ │   │   │   ├─ foldable1-classes-compat-0.1 ┄┄
+ │   │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   │   ├─ transformers-compat-0.7.2 ┄┄
+ │   │   │   └─ unordered-containers-0.2.20 ┄┄
+ │   │   ├─ tagged-0.8.8 ┄┄
+ │   │   ├─ these-1.2.1
+ │   │   │   ├─ assoc-1.1.1 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   ├─ foldable1-classes-compat-0.1 ┄┄
+ │   │   │   └─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   ├─ unordered-containers-0.2.20 ┄┄
+ │   │   └─ vector-0.13.1.0 ┄┄
+ │   ├─ strict-0.5.1
+ │   │   ├─ assoc-1.1.1 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ text-2.0.2 ┄┄
+ │   │   ├─ these-1.2.1 ┄┄
+ │   │   └─ transformers-0.5.6.2 ┄┄
+ │   ├─ tagged-0.8.8 ┄┄
+ │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   ├─ text-2.0.2 ┄┄
+ │   ├─ text-iso8601-0.1.1
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ integer-conversion-0.1.1 ┄┄
+ │   │   ├─ text-2.0.2 ┄┄
+ │   │   ├─ time-1.12.2
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   └─ deepseq-1.4.8.0 ┄┄
+ │   │   └─ time-compat-1.9.7
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       ├─ base-orphans-0.9.2 ┄┄
+ │   │       ├─ deepseq-1.4.8.0 ┄┄
+ │   │       ├─ hashable-1.4.7.0 ┄┄
+ │   │       └─ time-1.12.2 ┄┄
+ │   ├─ text-short-0.1.6
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   └─ text-2.0.2 ┄┄
+ │   ├─ th-abstraction-0.7.0.0 ┄┄
+ │   ├─ these-1.2.1 ┄┄
+ │   ├─ time-1.12.2 ┄┄
+ │   ├─ time-compat-1.9.7 ┄┄
+ │   ├─ unordered-containers-0.2.20 ┄┄
+ │   ├─ uuid-types-1.0.6
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ random-1.2.1.2 ┄┄
+ │   │   ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   └─ text-2.0.2 ┄┄
+ │   ├─ vector-0.13.1.0 ┄┄
+ │   └─ witherable-0.5
+ │       ├─ base-4.17.2.1 ┄┄
+ │       ├─ base-orphans-0.9.2 ┄┄
+ │       ├─ containers-0.6.7 ┄┄
+ │       ├─ hashable-1.4.7.0 ┄┄
+ │       ├─ indexed-traversable-0.1.4 ┄┄
+ │       ├─ indexed-traversable-instances-0.1.2 ┄┄
+ │       ├─ transformers-0.5.6.2 ┄┄
+ │       ├─ unordered-containers-0.2.20 ┄┄
+ │       └─ vector-0.13.1.0 ┄┄
+ ├─ aeson-pretty-0.8.10
+ │   ├─ aeson-2.2.3.0 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ base-compat-0.14.0
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   └─ unix-2.7.3
+ │   │       ├─ base-4.17.2.1 ┄┄
+ │   │       ├─ bytestring-0.11.5.3 ┄┄
+ │   │       └─ time-1.12.2 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ scientific-0.3.8.0 ┄┄
+ │   ├─ text-2.0.2 ┄┄
+ │   ├─ unordered-containers-0.2.20 ┄┄
+ │   └─ vector-0.13.1.0 ┄┄
+ ├─ attoparsec-0.14.4
+ │   ├─ array-0.5.4.0 ┄┄
+ │   ├─ attoparsec-0.14.4
+ │   │   [attoparsec-0.14.4:lib:"attoparsec-internal"]
+ │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   └─ text-2.0.2 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ containers-0.6.7 ┄┄
+ │   ├─ deepseq-1.4.8.0 ┄┄
+ │   ├─ ghc-prim-0.9.1 ┄┄
+ │   ├─ scientific-0.3.8.0 ┄┄
+ │   ├─ text-2.0.2 ┄┄
+ │   └─ transformers-0.5.6.2 ┄┄
+ ├─ attoparsec-aeson-2.2.2.0
+ │   ├─ aeson-2.2.3.0 ┄┄
+ │   ├─ attoparsec-0.14.4 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ character-ps-0.1 ┄┄
+ │   ├─ integer-conversion-0.1.1 ┄┄
+ │   ├─ primitive-0.9.0.0 ┄┄
+ │   ├─ scientific-0.3.8.0 ┄┄
+ │   ├─ text-2.0.2 ┄┄
+ │   └─ vector-0.13.1.0 ┄┄
+ ├─ base-4.17.2.1 ┄┄
+ ├─ bytestring-0.11.5.3 ┄┄
+ └─ cmdargs-0.10.22
+     ├─ base-4.17.2.1 ┄┄
+     ├─ filepath-1.4.2.2 ┄┄
+     ├─ process-1.6.18.0
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ directory-1.3.7.1
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ filepath-1.4.2.2 ┄┄
+     │   │   ├─ time-1.12.2 ┄┄
+     │   │   └─ unix-2.7.3 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   └─ unix-2.7.3 ┄┄
+     ├─ template-haskell-2.19.0.0 ┄┄
+     └─ transformers-0.5.6.2 ┄┄
+criterion-1.6.3.0
+ [criterion-1.6.3.0:exe:"criterion-report"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ base-compat-batteries-0.14.0
+ │   ├─ OneTuple-0.4.2 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ base-compat-0.14.0 ┄┄
+ │   ├─ foldable1-classes-compat-0.1 ┄┄
+ │   └─ ghc-prim-0.9.1 ┄┄
+ ├─ criterion-1.6.3.0
+ │   ├─ Glob-0.10.2
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ directory-1.3.7.1 ┄┄
+ │   │   ├─ dlist-1.0 ┄┄
+ │   │   ├─ filepath-1.4.2.2 ┄┄
+ │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   └─ transformers-compat-0.7.2 ┄┄
+ │   ├─ aeson-2.2.3.0 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ base-compat-batteries-0.14.0 ┄┄
+ │   ├─ binary-0.8.9.1 ┄┄
+ │   ├─ binary-orphans-1.0.5
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   └─ binary-0.8.9.1 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ cassava-0.5.3.2
+ │   │   ├─ Only-0.1
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   └─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   ├─ attoparsec-0.14.4 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   ├─ scientific-0.3.8.0 ┄┄
+ │   │   ├─ text-2.0.2 ┄┄
+ │   │   ├─ text-short-0.1.6 ┄┄
+ │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   ├─ unordered-containers-0.2.20 ┄┄
+ │   │   └─ vector-0.13.1.0 ┄┄
+ │   ├─ code-page-0.2.1
+ │   │   └─ base-4.17.2.1 ┄┄
+ │   ├─ containers-0.6.7 ┄┄
+ │   ├─ criterion-measurement-0.2.2.0
+ │   │   ├─ aeson-2.2.3.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ base-compat-0.14.0 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ ghc-prim-0.9.1 ┄┄
+ │   │   └─ vector-0.13.1.0 ┄┄
+ │   ├─ deepseq-1.4.8.0 ┄┄
+ │   ├─ directory-1.3.7.1 ┄┄
+ │   ├─ exceptions-0.10.5 ┄┄
+ │   ├─ filepath-1.4.2.2 ┄┄
+ │   ├─ js-chart-2.9.4.1
+ │   │   └─ base-4.17.2.1 ┄┄
+ │   ├─ microstache-1.0.3
+ │   │   ├─ aeson-2.2.3.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ containers-0.6.7 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ directory-1.3.7.1 ┄┄
+ │   │   ├─ filepath-1.4.2.2 ┄┄
+ │   │   ├─ parsec-3.1.16.1 ┄┄
+ │   │   ├─ text-2.0.2 ┄┄
+ │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   ├─ unordered-containers-0.2.20 ┄┄
+ │   │   └─ vector-0.13.1.0 ┄┄
+ │   ├─ mtl-2.2.2 ┄┄
+ │   ├─ mwc-random-0.15.1.0
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ math-functions-0.3.4.4
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ data-default-class-0.1.2.2
+ │   │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   │   └─ vector-0.13.1.0 ┄┄
+ │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   ├─ random-1.2.1.2 ┄┄
+ │   │   ├─ time-1.12.2 ┄┄
+ │   │   └─ vector-0.13.1.0 ┄┄
+ │   ├─ optparse-applicative-0.18.1.0
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ prettyprinter-1.7.1
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   └─ text-2.0.2 ┄┄
+ │   │   ├─ prettyprinter-ansi-terminal-1.1.3
+ │   │   │   ├─ ansi-terminal-1.1.1
+ │   │   │   │   ├─ ansi-terminal-types-1.1
+ │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   └─ colour-2.3.6
+ │   │   │   │   │       └─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   └─ colour-2.3.6 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ prettyprinter-1.7.1 ┄┄
+ │   │   │   └─ text-2.0.2 ┄┄
+ │   │   ├─ process-1.6.18.0 ┄┄
+ │   │   ├─ text-2.0.2 ┄┄
+ │   │   ├─ transformers-0.5.6.2 ┄┄
+ │   │   └─ transformers-compat-0.7.2 ┄┄
+ │   ├─ parsec-3.1.16.1 ┄┄
+ │   ├─ prettyprinter-1.7.1 ┄┄
+ │   ├─ prettyprinter-ansi-terminal-1.1.3 ┄┄
+ │   ├─ statistics-0.16.2.1
+ │   │   ├─ aeson-2.2.3.0 ┄┄
+ │   │   ├─ async-2.2.5
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ hashable-1.4.7.0 ┄┄
+ │   │   │   └─ stm-2.5.1.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   ├─ data-default-class-0.1.2.2 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ dense-linear-algebra-0.1.0.0
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   ├─ math-functions-0.3.4.4 ┄┄
+ │   │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   │   ├─ vector-0.13.1.0 ┄┄
+ │   │   │   ├─ vector-algorithms-0.9.0.2
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ bitvec-1.1.5.0
+ │   │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   │   │   ├─ ghc-bignum-1.3 ┄┄
+ │   │   │   │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   │   │   │   └─ vector-0.13.1.0 ┄┄
+ │   │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+ │   │   │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   │   │   └─ vector-0.13.1.0 ┄┄
+ │   │   │   ├─ vector-binary-instances-0.2.5.2
+ │   │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   │   ├─ binary-0.8.9.1 ┄┄
+ │   │   │   │   └─ vector-0.13.1.0 ┄┄
+ │   │   │   └─ vector-th-unbox-0.2.2
+ │   │   │       ├─ base-4.17.2.1 ┄┄
+ │   │   │       ├─ template-haskell-2.19.0.0 ┄┄
+ │   │   │       └─ vector-0.13.1.0 ┄┄
+ │   │   ├─ math-functions-0.3.4.4 ┄┄
+ │   │   ├─ mwc-random-0.15.1.0 ┄┄
+ │   │   ├─ parallel-3.2.2.0
+ │   │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ containers-0.6.7 ┄┄
+ │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   │   └─ ghc-prim-0.9.1 ┄┄
+ │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   ├─ random-1.2.1.2 ┄┄
+ │   │   ├─ vector-0.13.1.0 ┄┄
+ │   │   ├─ vector-algorithms-0.9.0.2 ┄┄
+ │   │   ├─ vector-binary-instances-0.2.5.2 ┄┄
+ │   │   └─ vector-th-unbox-0.2.2 ┄┄
+ │   ├─ text-2.0.2 ┄┄
+ │   ├─ time-1.12.2 ┄┄
+ │   ├─ transformers-0.5.6.2 ┄┄
+ │   ├─ transformers-compat-0.7.2 ┄┄
+ │   ├─ vector-0.13.1.0 ┄┄
+ │   └─ vector-algorithms-0.9.0.2 ┄┄
+ └─ optparse-applicative-0.18.1.0 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:exe:"hibet"]
+ ├─ base-4.17.2.1 ┄┄
+ └─ hibet-1.4.0
+     ├─ base-4.17.2.1 ┄┄
+     ├─ bytestring-0.11.5.3 ┄┄
+     ├─ containers-0.6.7 ┄┄
+     ├─ deepseq-1.4.8.0 ┄┄
+     ├─ directory-1.3.7.1 ┄┄
+     ├─ effectful-2.4.0.0
+     │   ├─ async-2.2.5 ┄┄
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ bytestring-0.11.5.3 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ effectful-core-2.4.0.0
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ containers-0.6.7 ┄┄
+     │   │   ├─ deepseq-1.4.8.0 ┄┄
+     │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   ├─ monad-control-1.0.3.1
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   ├─ transformers-base-0.4.6
+     │   │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   │   ├─ base-orphans-0.9.2 ┄┄
+     │   │   │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   │   └─ transformers-compat-0.7.2 ┄┄
+     │   │   │   └─ transformers-compat-0.7.2 ┄┄
+     │   │   ├─ primitive-0.9.0.0 ┄┄
+     │   │   ├─ safe-exceptions-0.1.7.4
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+     │   │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   │   └─ transformers-0.5.6.2 ┄┄
+     │   │   ├─ strict-mutable-base-1.1.0.0
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   └─ deepseq-1.4.8.0 ┄┄
+     │   │   ├─ transformers-base-0.4.6 ┄┄
+     │   │   └─ unliftio-core-0.2.1.0
+     │   │       ├─ base-4.17.2.1 ┄┄
+     │   │       └─ transformers-0.5.6.2 ┄┄
+     │   ├─ process-1.6.18.0 ┄┄
+     │   ├─ stm-2.5.1.0 ┄┄
+     │   ├─ strict-mutable-base-1.1.0.0 ┄┄
+     │   ├─ time-1.12.2 ┄┄
+     │   └─ unliftio-0.2.25.0
+     │       ├─ async-2.2.5 ┄┄
+     │       ├─ base-4.17.2.1 ┄┄
+     │       ├─ bytestring-0.11.5.3 ┄┄
+     │       ├─ deepseq-1.4.8.0 ┄┄
+     │       ├─ directory-1.3.7.1 ┄┄
+     │       ├─ filepath-1.4.2.2 ┄┄
+     │       ├─ process-1.6.18.0 ┄┄
+     │       ├─ safe-exceptions-0.1.7.4 ┄┄
+     │       ├─ stm-2.5.1.0 ┄┄
+     │       ├─ time-1.12.2 ┄┄
+     │       ├─ transformers-0.5.6.2 ┄┄
+     │       ├─ unix-2.7.3 ┄┄
+     │       └─ unliftio-core-0.2.1.0 ┄┄
+     ├─ effectful-core-2.4.0.0 ┄┄
+     ├─ effectful-plugin-1.1.0.4
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ effectful-core-2.4.0.0 ┄┄
+     │   └─ ghc-9.4.8
+     │       ├─ array-0.5.4.0 ┄┄
+     │       ├─ base-4.17.2.1 ┄┄
+     │       ├─ binary-0.8.9.1 ┄┄
+     │       ├─ bytestring-0.11.5.3 ┄┄
+     │       ├─ containers-0.6.7 ┄┄
+     │       ├─ deepseq-1.4.8.0 ┄┄
+     │       ├─ directory-1.3.7.1 ┄┄
+     │       ├─ exceptions-0.10.5 ┄┄
+     │       ├─ filepath-1.4.2.2 ┄┄
+     │       ├─ ghc-boot-9.4.8
+     │       │   ├─ base-4.17.2.1 ┄┄
+     │       │   ├─ binary-0.8.9.1 ┄┄
+     │       │   ├─ bytestring-0.11.5.3 ┄┄
+     │       │   ├─ containers-0.6.7 ┄┄
+     │       │   ├─ deepseq-1.4.8.0 ┄┄
+     │       │   ├─ directory-1.3.7.1 ┄┄
+     │       │   ├─ filepath-1.4.2.2 ┄┄
+     │       │   ├─ ghc-boot-th-9.4.8 ┄┄
+     │       │   └─ unix-2.7.3 ┄┄
+     │       ├─ ghc-heap-9.4.8
+     │       │   ├─ base-4.17.2.1 ┄┄
+     │       │   ├─ containers-0.6.7 ┄┄
+     │       │   ├─ ghc-prim-0.9.1 ┄┄
+     │       │   └─ rts-1.0.2 ┄┄
+     │       ├─ ghci-9.4.8
+     │       │   ├─ array-0.5.4.0 ┄┄
+     │       │   ├─ base-4.17.2.1 ┄┄
+     │       │   ├─ binary-0.8.9.1 ┄┄
+     │       │   ├─ bytestring-0.11.5.3 ┄┄
+     │       │   ├─ containers-0.6.7 ┄┄
+     │       │   ├─ deepseq-1.4.8.0 ┄┄
+     │       │   ├─ filepath-1.4.2.2 ┄┄
+     │       │   ├─ ghc-boot-9.4.8 ┄┄
+     │       │   ├─ ghc-heap-9.4.8 ┄┄
+     │       │   ├─ ghc-prim-0.9.1 ┄┄
+     │       │   ├─ rts-1.0.2 ┄┄
+     │       │   ├─ template-haskell-2.19.0.0 ┄┄
+     │       │   ├─ transformers-0.5.6.2 ┄┄
+     │       │   └─ unix-2.7.3 ┄┄
+     │       ├─ hpc-0.6.1.0
+     │       │   ├─ base-4.17.2.1 ┄┄
+     │       │   ├─ containers-0.6.7 ┄┄
+     │       │   ├─ deepseq-1.4.8.0 ┄┄
+     │       │   ├─ directory-1.3.7.1 ┄┄
+     │       │   ├─ filepath-1.4.2.2 ┄┄
+     │       │   └─ time-1.12.2 ┄┄
+     │       ├─ process-1.6.18.0 ┄┄
+     │       ├─ stm-2.5.1.0 ┄┄
+     │       ├─ template-haskell-2.19.0.0 ┄┄
+     │       ├─ terminfo-0.4.1.5
+     │       │   └─ base-4.17.2.1 ┄┄
+     │       ├─ time-1.12.2 ┄┄
+     │       ├─ transformers-0.5.6.2 ┄┄
+     │       └─ unix-2.7.3 ┄┄
+     ├─ effectful-th-1.0.0.3
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ effectful-core-2.4.0.0 ┄┄
+     │   ├─ exceptions-0.10.5 ┄┄
+     │   ├─ template-haskell-2.19.0.0 ┄┄
+     │   └─ th-abstraction-0.7.0.0 ┄┄
+     ├─ extra-1.8
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ clock-0.8.4
+     │   │   └─ base-4.17.2.1 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   ├─ process-1.6.18.0 ┄┄
+     │   ├─ time-1.12.2 ┄┄
+     │   └─ unix-2.7.3 ┄┄
+     ├─ filepath-1.4.2.2 ┄┄
+     ├─ gitrev-1.3.1
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ base-compat-0.14.0 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   ├─ process-1.6.18.0 ┄┄
+     │   └─ template-haskell-2.19.0.0 ┄┄
+     ├─ hashable-1.4.7.0 ┄┄
+     ├─ haskeline-0.8.2
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ bytestring-0.11.5.3 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ exceptions-0.10.5 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   ├─ process-1.6.18.0 ┄┄
+     │   ├─ stm-2.5.1.0 ┄┄
+     │   ├─ terminfo-0.4.1.5 ┄┄
+     │   ├─ transformers-0.5.6.2 ┄┄
+     │   └─ unix-2.7.3 ┄┄
+     ├─ log-effectful-1.0.0.0
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ effectful-core-2.4.0.0 ┄┄
+     │   ├─ log-base-0.12.0.1
+     │   │   ├─ aeson-2.2.3.0 ┄┄
+     │   │   ├─ aeson-pretty-0.8.10 ┄┄
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   ├─ deepseq-1.4.8.0 ┄┄
+     │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   ├─ mmorph-1.2.0
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ mtl-2.2.2 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   └─ transformers-compat-0.7.2 ┄┄
+     │   │   ├─ monad-control-1.0.3.1 ┄┄
+     │   │   ├─ mtl-2.2.2 ┄┄
+     │   │   ├─ semigroups-0.20
+     │   │   │   └─ base-4.17.2.1 ┄┄
+     │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   ├─ text-2.0.2 ┄┄
+     │   │   ├─ time-1.12.2 ┄┄
+     │   │   ├─ transformers-base-0.4.6 ┄┄
+     │   │   ├─ unliftio-core-0.2.1.0 ┄┄
+     │   │   └─ unordered-containers-0.2.20 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   └─ time-1.12.2 ┄┄
+     ├─ megaparsec-9.6.1
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ bytestring-0.11.5.3 ┄┄
+     │   ├─ case-insensitive-1.2.1.0
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   ├─ deepseq-1.4.8.0 ┄┄
+     │   │   ├─ hashable-1.4.7.0 ┄┄
+     │   │   └─ text-2.0.2 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ mtl-2.2.2 ┄┄
+     │   ├─ parser-combinators-1.3.0
+     │   │   └─ base-4.17.2.1 ┄┄
+     │   ├─ scientific-0.3.8.0 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   └─ transformers-0.5.6.2 ┄┄
+     ├─ neat-interpolation-0.5.1.4
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ megaparsec-9.6.1 ┄┄
+     │   ├─ template-haskell-2.19.0.0 ┄┄
+     │   └─ text-2.0.2 ┄┄
+     ├─ optparse-applicative-0.18.1.0 ┄┄
+     ├─ pager-0.1.1.0
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ bytestring-0.11.5.3 ┄┄
+     │   ├─ conduit-1.3.6
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   ├─ directory-1.3.7.1 ┄┄
+     │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   ├─ filepath-1.4.2.2 ┄┄
+     │   │   ├─ mono-traversable-1.0.20.0
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   │   ├─ containers-0.6.7 ┄┄
+     │   │   │   ├─ hashable-1.4.7.0 ┄┄
+     │   │   │   ├─ split-0.2.5
+     │   │   │   │   └─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ text-2.0.2 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   ├─ unordered-containers-0.2.20 ┄┄
+     │   │   │   ├─ vector-0.13.1.0 ┄┄
+     │   │   │   └─ vector-algorithms-0.9.0.2 ┄┄
+     │   │   ├─ mtl-2.2.2 ┄┄
+     │   │   ├─ primitive-0.9.0.0 ┄┄
+     │   │   ├─ resourcet-1.3.0
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ containers-0.6.7 ┄┄
+     │   │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   │   ├─ mtl-2.2.2 ┄┄
+     │   │   │   ├─ primitive-0.9.0.0 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   └─ unliftio-core-0.2.1.0 ┄┄
+     │   │   ├─ text-2.0.2 ┄┄
+     │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   ├─ unix-2.7.3 ┄┄
+     │   │   ├─ unliftio-core-0.2.1.0 ┄┄
+     │   │   └─ vector-0.13.1.0 ┄┄
+     │   ├─ conduit-extra-1.3.6
+     │   │   ├─ async-2.2.5 ┄┄
+     │   │   ├─ attoparsec-0.14.4 ┄┄
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   ├─ conduit-1.3.6 ┄┄
+     │   │   ├─ directory-1.3.7.1 ┄┄
+     │   │   ├─ filepath-1.4.2.2 ┄┄
+     │   │   ├─ network-3.2.4.0
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   │   ├─ deepseq-1.4.8.0 ┄┄
+     │   │   │   ├─ directory-1.3.7.1 ┄┄
+     │   │   │   └─ stm-2.5.1.0 ┄┄
+     │   │   ├─ primitive-0.9.0.0 ┄┄
+     │   │   ├─ process-1.6.18.0 ┄┄
+     │   │   ├─ resourcet-1.3.0 ┄┄
+     │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   ├─ streaming-commons-0.2.2.6
+     │   │   │   ├─ array-0.5.4.0 ┄┄
+     │   │   │   ├─ async-2.2.5 ┄┄
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   │   ├─ directory-1.3.7.1 ┄┄
+     │   │   │   ├─ network-3.2.4.0 ┄┄
+     │   │   │   ├─ process-1.6.18.0 ┄┄
+     │   │   │   ├─ random-1.2.1.2 ┄┄
+     │   │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   │   ├─ text-2.0.2 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   ├─ unix-2.7.3 ┄┄
+     │   │   │   └─ zlib-0.7.1.0
+     │   │   │       ├─ base-4.17.2.1 ┄┄
+     │   │   │       └─ bytestring-0.11.5.3 ┄┄
+     │   │   ├─ text-2.0.2 ┄┄
+     │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   ├─ typed-process-0.2.12.0
+     │   │   │   ├─ async-2.2.5 ┄┄
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   │   ├─ process-1.6.18.0 ┄┄
+     │   │   │   ├─ stm-2.5.1.0 ┄┄
+     │   │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   │   └─ unliftio-core-0.2.1.0 ┄┄
+     │   │   └─ unliftio-core-0.2.1.0 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ process-1.6.18.0 ┄┄
+     │   ├─ resourcet-1.3.0 ┄┄
+     │   ├─ safe-0.3.21
+     │   │   └─ base-4.17.2.1 ┄┄
+     │   ├─ terminfo-0.4.1.5 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   ├─ transformers-0.5.6.2 ┄┄
+     │   └─ unix-2.7.3 ┄┄
+     ├─ parallel-3.2.2.0 ┄┄
+     ├─ path-0.9.5
+     │   ├─ aeson-2.2.3.0 ┄┄
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ exceptions-0.10.5 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   ├─ hashable-1.4.7.0 ┄┄
+     │   ├─ template-haskell-2.19.0.0 ┄┄
+     │   └─ text-2.0.2 ┄┄
+     ├─ path-io-1.8.2
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ directory-1.3.7.1 ┄┄
+     │   ├─ dlist-1.0 ┄┄
+     │   ├─ exceptions-0.10.5 ┄┄
+     │   ├─ filepath-1.4.2.2 ┄┄
+     │   ├─ path-0.9.5 ┄┄
+     │   ├─ temporary-1.3
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ directory-1.3.7.1 ┄┄
+     │   │   ├─ exceptions-0.10.5 ┄┄
+     │   │   ├─ filepath-1.4.2.2 ┄┄
+     │   │   ├─ random-1.2.1.2 ┄┄
+     │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   └─ unix-2.7.3 ┄┄
+     │   ├─ time-1.12.2 ┄┄
+     │   ├─ transformers-0.5.6.2 ┄┄
+     │   └─ unix-compat-0.7.3
+     │       ├─ base-4.17.2.1 ┄┄
+     │       └─ unix-2.7.3 ┄┄
+     ├─ prettyprinter-1.7.1 ┄┄
+     ├─ prettyprinter-ansi-terminal-1.1.3 ┄┄
+     ├─ radixtree-0.6.0.0
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ microlens-0.4.13.1
+     │   │   └─ base-4.17.2.1 ┄┄
+     │   ├─ mtl-2.2.2 ┄┄
+     │   ├─ parsers-0.12.11
+     │   │   ├─ attoparsec-0.14.4 ┄┄
+     │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   ├─ base-orphans-0.9.2 ┄┄
+     │   │   ├─ binary-0.8.9.1 ┄┄
+     │   │   ├─ charset-0.3.10
+     │   │   │   ├─ array-0.5.4.0 ┄┄
+     │   │   │   ├─ base-4.17.2.1 ┄┄
+     │   │   │   ├─ bytestring-0.11.5.3 ┄┄
+     │   │   │   ├─ containers-0.6.7 ┄┄
+     │   │   │   └─ unordered-containers-0.2.20 ┄┄
+     │   │   ├─ containers-0.6.7 ┄┄
+     │   │   ├─ mtl-2.2.2 ┄┄
+     │   │   ├─ parsec-3.1.16.1 ┄┄
+     │   │   ├─ scientific-0.3.8.0 ┄┄
+     │   │   ├─ text-2.0.2 ┄┄
+     │   │   ├─ transformers-0.5.6.2 ┄┄
+     │   │   └─ unordered-containers-0.2.20 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   └─ vector-0.13.1.0 ┄┄
+     ├─ resourcet-effectful-1.0.1.0
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ effectful-core-2.4.0.0 ┄┄
+     │   └─ resourcet-1.3.0 ┄┄
+     ├─ terminal-size-0.3.4
+     │   └─ base-4.17.2.1 ┄┄
+     ├─ text-2.0.2 ┄┄
+     ├─ text-rope-0.3
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   └─ vector-0.13.1.0 ┄┄
+     ├─ tomland-1.3.3.3
+     │   ├─ base-4.17.2.1 ┄┄
+     │   ├─ bytestring-0.11.5.3 ┄┄
+     │   ├─ containers-0.6.7 ┄┄
+     │   ├─ deepseq-1.4.8.0 ┄┄
+     │   ├─ hashable-1.4.7.0 ┄┄
+     │   ├─ megaparsec-9.6.1 ┄┄
+     │   ├─ mtl-2.2.2 ┄┄
+     │   ├─ parser-combinators-1.3.0 ┄┄
+     │   ├─ text-2.0.2 ┄┄
+     │   ├─ time-1.12.2 ┄┄
+     │   ├─ unordered-containers-0.2.20 ┄┄
+     │   └─ validation-selective-0.2.0.0
+     │       ├─ base-4.17.2.1 ┄┄
+     │       ├─ deepseq-1.4.8.0 ┄┄
+     │       └─ selective-0.7.0.1
+     │           ├─ base-4.17.2.1 ┄┄
+     │           └─ transformers-0.5.6.2 ┄┄
+     └─ unordered-containers-0.2.20 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:bench:"hibet-benchmark"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ bytestring-0.11.5.3 ┄┄
+ ├─ criterion-1.6.3.0 ┄┄
+ ├─ file-embed-0.0.16.0
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ bytestring-0.11.5.3 ┄┄
+ │   ├─ directory-1.3.7.1 ┄┄
+ │   ├─ filepath-1.4.2.2 ┄┄
+ │   └─ template-haskell-2.19.0.0 ┄┄
+ ├─ hibet-1.4.0 ┄┄
+ ├─ path-0.9.5 ┄┄
+ ├─ path-io-1.8.2 ┄┄
+ ├─ text-2.0.2 ┄┄
+ └─ text-rope-0.3 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:test:"hibet-env"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ bytestring-0.11.5.3 ┄┄
+ ├─ containers-0.6.7 ┄┄
+ ├─ effectful-core-2.4.0.0 ┄┄
+ ├─ hibet-1.4.0 ┄┄
+ ├─ hspec-2.11.9
+ │   ├─ QuickCheck-2.15.0.1 ┄┄
+ │   ├─ base-4.17.2.1 ┄┄
+ │   ├─ hspec-core-2.11.9
+ │   │   ├─ HUnit-1.6.2.0
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ call-stack-0.4.0
+ │   │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │   │   └─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ QuickCheck-2.15.0.1 ┄┄
+ │   │   ├─ ansi-terminal-1.1.1 ┄┄
+ │   │   ├─ array-0.5.4.0 ┄┄
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ call-stack-0.4.0 ┄┄
+ │   │   ├─ deepseq-1.4.8.0 ┄┄
+ │   │   ├─ directory-1.3.7.1 ┄┄
+ │   │   ├─ filepath-1.4.2.2 ┄┄
+ │   │   ├─ haskell-lexer-1.1.1
+ │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │   ├─ hspec-expectations-0.8.4
+ │   │   │   ├─ HUnit-1.6.2.0 ┄┄
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   └─ call-stack-0.4.0 ┄┄
+ │   │   ├─ process-1.6.18.0 ┄┄
+ │   │   ├─ quickcheck-io-0.2.0
+ │   │   │   ├─ HUnit-1.6.2.0 ┄┄
+ │   │   │   ├─ QuickCheck-2.15.0.1 ┄┄
+ │   │   │   └─ base-4.17.2.1 ┄┄
+ │   │   ├─ random-1.2.1.2 ┄┄
+ │   │   ├─ stm-2.5.1.0 ┄┄
+ │   │   ├─ tf-random-0.5
+ │   │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   │   ├─ primitive-0.9.0.0 ┄┄
+ │   │   │   ├─ random-1.2.1.2 ┄┄
+ │   │   │   └─ time-1.12.2 ┄┄
+ │   │   ├─ time-1.12.2 ┄┄
+ │   │   └─ transformers-0.5.6.2 ┄┄
+ │   ├─ hspec-discover-2.11.9
+ │   │   ├─ base-4.17.2.1 ┄┄
+ │   │   ├─ directory-1.3.7.1 ┄┄
+ │   │   └─ filepath-1.4.2.2 ┄┄
+ │   └─ hspec-expectations-0.8.4 ┄┄
+ ├─ text-2.0.2 ┄┄
+ └─ unordered-containers-0.2.20 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:test:"hibet-labels"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ bytestring-0.11.5.3 ┄┄
+ ├─ containers-0.6.7 ┄┄
+ ├─ hibet-1.4.0 ┄┄
+ └─ hspec-2.11.9 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:test:"hibet-parse"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ hibet-1.4.0 ┄┄
+ └─ hspec-2.11.9 ┄┄
+hibet-1.4.0
+ [hibet-1.4.0:test:"hibet-pretty"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ hibet-1.4.0 ┄┄
+ ├─ hspec-2.11.9 ┄┄
+ └─ prettyprinter-1.7.1 ┄┄
+hsc2hs-0.68.10
+ [hsc2hs-0.68.10:exe:"hsc2hs"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ containers-0.6.7 ┄┄
+ ├─ directory-1.3.7.1 ┄┄
+ ├─ filepath-1.4.2.2 ┄┄
+ └─ process-1.6.18.0 ┄┄
+hspec-discover-2.11.9
+ [hspec-discover-2.11.9:exe:"hspec-discover"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ directory-1.3.7.1 ┄┄
+ ├─ filepath-1.4.2.2 ┄┄
+ └─ hspec-discover-2.11.9 ┄┄
+pager-0.1.1.0
+ [pager-0.1.1.0:exe:"hs-pager-test-pager"]
+ ├─ base-4.17.2.1 ┄┄
+ ├─ bytestring-0.11.5.3 ┄┄
+ ├─ conduit-extra-1.3.6 ┄┄
+ ├─ pager-0.1.1.0 ┄┄
+ └─ text-2.0.2 ┄┄
+
+Top-sorted
+~~~~~~~~~~
+
+UnitId "rts-1.0.2"
+UnitId "ghc-prim-0.9.1"
+UnitId "ghc-bignum-1.3"
+UnitId "base-4.17.2.1"
+UnitId "array-0.5.4.0"
+UnitId "deepseq-1.4.8.0"
+UnitId "ghc-boot-th-9.4.8"
+UnitId "pretty-1.1.3.6"
+UnitId "template-haskell-2.19.0.0"
+UnitId "containers-0.6.7"
+UnitId "filepath-1.4.2.2"
+UnitId "time-1.12.2"
+UnitId "bytestring-0.11.5.3"
+UnitId "unix-2.7.3"
+UnitId "directory-1.3.7.1"
+UnitId "dlist-1.0-a33e5a7f21dad55513d80ffb06f20c2ff9a02682175b739ebc182ca2e2ba9508"
+UnitId "transformers-0.5.6.2"
+UnitId "transformers-compat-0.7.2-07807f6a916fed9cec5ac85ad002b56765f520681b2bbe9a3eb8b85bf077eafe"
+UnitId "Glob-0.10.2-0adca46b32ac4956360a311e257658751e5fced3b74560cea74ed0dad8f2068c"
+UnitId "call-stack-0.4.0-ef00e2167e83fb3355138aa96af1a70586e142f51a7b8330cf284129747e54a2"
+UnitId "HUnit-1.6.2.0-81b4dc237915cc9d8f527716e205cd06628ff22d41ad3bc2ddbc155e19abb115"
+UnitId "OneTuple-0.4.2-6e48a5a19ac27c7595d4a46dd031470e496b7f4dfada40e2cdf255c120b8b82e"
+UnitId "Only-0.1-588a84422107567fe3e1b9b0c57f651cf082a7604c671377fb32a9ba34597a92"
+UnitId "mtl-2.2.2"
+UnitId "splitmix-0.1.0.5-4b143f483b5c4b68de945ccc15fa9370952f4fb7bd1e652c89a5928edc61b8e6"
+UnitId "random-1.2.1.2-bcc926197c32f4db989238c5ad865acee4ac5050d11236d68e7af0232def6b43"
+UnitId "QuickCheck-2.15.0.1-972dc976edb56b14d43453aea439900256117d54d75561c0c6bdb59e1b145b65"
+UnitId "stm-2.5.1.0"
+UnitId "StateVar-1.2.2-6c6f2d2fb12d62ce79fbf55097def1b8d77de556076d2fc8c77b411230bf4711"
+UnitId "character-ps-0.1-06ba824204450a7d75a6b5a69c46c9406f5b6cf26ecfcc7c643c22dac4fe5fb0"
+UnitId "exceptions-0.10.5"
+UnitId "os-string-2.0.6-cf1b6058be6ec02ee665e6c0f59d1a630aeebaf5a699ebefdd08a0c3202d55f2"
+UnitId "binary-0.8.9.1"
+UnitId "text-2.0.2"
+UnitId "hashable-1.4.7.0-a3f848b51d3df7052cbed116a7f829ada74559e2dd374afc89e06fde8aff204f"
+UnitId "data-fix-0.3.4-4265fb7b5977cc6f163f052782769db9e0f98c62defa957f0ca22adfb1ea753c"
+UnitId "base-orphans-0.9.2-7d503c32a334b2638e893e36b022c722bf894e3a74efa923c34eecc4f8ded6a0"
+UnitId "generically-0.1.1-8f35505db6974335818517e8950dbf70e0dd5d9708f58e5a504ef1664fcf78c3"
+UnitId "tagged-0.8.8-624b214960ff455bd482541a3c1e8bb3f35211ff82b756b79d5e450f98504a31"
+UnitId "foldable1-classes-compat-0.1-103edd132976bd4a0e84499965ad0a5acf05bf23c9ccbbc5b79481c3014de3a3"
+UnitId "indexed-traversable-0.1.4-c813b8aa61317a7149a92b8dc88844032c92406800ce2daf603f143059d27ddf"
+UnitId "primitive-0.9.0.0-c17bfbc8573696bac8dd2ab2fd37a6595b395851b9dacccaf9812eafc03386b4"
+UnitId "integer-conversion-0.1.1-f8ca56537e919e8545730b167b3626f9466d44cce0716055c3f70fba5e5cd187"
+UnitId "integer-logarithms-1.0.3.1-f507db5eefcca9e02639c7fe32e341eabef3f2cd3213abf71e52f4346676a682"
+UnitId "parsec-3.1.16.1"
+UnitId "th-compat-0.1.5-d430812e254ef1713c60f9abd970ca4eda63a18350cd1d066b09dcebdcafa3ae"
+UnitId "network-uri-2.6.4.2-f40d21da8706a6b7452a1c3f0654daf2d3e5bcb709547f666db1ff73b405b19d"
+UnitId "scientific-0.3.8.0-9052163982295f3479b2460669123aa22f39e8ea28c9e10399845c425bf1ff26"
+UnitId "unordered-containers-0.2.20-efcbf6df023ae02f2e1871036ac5d6975b6e1500121ccc3aa22e285f17b29891"
+UnitId "vector-stream-0.1.0.1-f1d79872e7d79a09fd296306cd5dfb6c0221d55fc2f68a9711e495945aca48ad"
+UnitId "vector-0.13.1.0-a342e5f0ce133bf9ec0ca8b6a47c80616ae79f7110aeae8394957472013236f5"
+UnitId "indexed-traversable-instances-0.1.2-5dded62ed3d931993a8a99b1359449ff5e36dec313770271748d53d312df05c0"
+UnitId "assoc-1.1.1-9e811843201b30cbef6987433580f967a3b752c8d46b6589aa9958541d181df2"
+UnitId "distributive-0.6.2.1-285005ac57a7911dc3dbaab7b67315951c7b9ac3d7337c7bb81e11b86f7817a0"
+UnitId "comonad-5.0.8-c6b48e0dbf30c925f1e792482ea9d4c97729493ccf7e76e3243c0c61df0b42bd"
+UnitId "th-abstraction-0.7.0.0-562e7270faddda2f9fbe3f4fd9bb8d9203b7679ccbe13c5f16c40ca8058116a2"
+UnitId "bifunctors-5.6.2-a7a06bbdbd7c6b866678e439ae28b310f527629610ff6010cdba7faa553d08e3"
+UnitId "contravariant-1.5.5-a20fe5ca314e5b5686dbb79b903d0150095d3c61a4c6738ed1f85388648d9801"
+UnitId "semigroupoids-6.0.1-9f3a8e0f08c130261c06673731219bf16f745a01a78e6a2ecc157ba3ef3083ba"
+UnitId "these-1.2.1-f4f66c9501ab6821c772aec8f39ce00c2ad1ed025841124a19e4028c18110cc3"
+UnitId "semialign-1.3.1-86ca68b007f33eed2072b7f2e270045806e2133aea75ff69a19fa00f3e3cd39c"
+UnitId "strict-0.5.1-35dc86c70785609eabfcb6bddfecda432802d1bc80c8c936e09b908174de55b2"
+UnitId "time-compat-1.9.7-a1d6136dacb9065c6b24e087e3aba59255c9aeb5d4a1b7fa17dd03e8846b5c0c"
+UnitId "text-iso8601-0.1.1-edd04b8b2f7f9d08698584b88223ebaf2f0e562a0eb156b491a9d58b79631cd8"
+UnitId "text-short-0.1.6-b39cf6f3ed71a27bf96da9b4631bb71e645591162103083879f8792ef5149344"
+UnitId "uuid-types-1.0.6-ee2e5a6c4d0ee00c14aadac46507f84c9e28db947a33470d56c4b35151eba96e"
+UnitId "witherable-0.5-bf0c2fe06347134e341b760889037e7c9840808499c0114a0a602dbcb8d12231"
+UnitId "aeson-2.2.3.0-f18b1721c51142786e715fe204ab8163388ddacca1b3ba145c77ff93b0ef2923"
+UnitId "base-compat-0.14.0-095e05fe1857649a2325f5795a1754e1153ec188b5bcb7efd282b0d4b8676477"
+UnitId "aeson-pretty-0.8.10-b6be571c3a9e9e2b10b0921cecedca4ea99e74930adbbc6b939a5b8930e3f626"
+UnitId "attoparsec-0.14.4-l-attoparsec-internal-0c8890450f0c579acd356ab408d800df04e2dd0824e4996b6c5bfadcf67947a4"
+UnitId "attoparsec-0.14.4-08498dc37dfa13e1fef27d0a99956f89da9d4ed48d090fa2fc36f61f4483c236"
+UnitId "attoparsec-aeson-2.2.2.0-f7f38ec1c76875a16f5c69bd480d45d5e9e572d2b746426140e132bc86e6af6c"
+UnitId "process-1.6.18.0"
+UnitId "cmdargs-0.10.22-58faeb4494cce0a5bccb94b4731d9db6dc0f954d85dec375e3a8ba8222430c46"
+UnitId "aeson-pretty-0.8.10-e-aeson-pretty-593c5942194de3fc3a653f2485d5d59ec98367560a9576729a2b37fdd73e822a"
+UnitId "colour-2.3.6-101a30bf97e485340c2f8c4965d7a09c45f53ec9a0681956d60a295961f45156"
+UnitId "ansi-terminal-types-1.1-6d303a0fcc5112274788c758aaccf72e202bb06412e506879a622118dc4a6efe"
+UnitId "ansi-terminal-1.1.1-9a0832138b85587e564b731f3eb8544cfac3f1b09c25035e0c255ff5defabbc9"
+UnitId "async-2.2.5-ee1c1688744aac44514d29eb273b4b6ba90bf2122fbbf8754a4fd855cf01b6d7"
+UnitId "base-compat-batteries-0.14.0-4559e1ce7b10f33eb8f8a68fc3faf98c5b77a02a70a49e94c7fe12d566258d75"
+UnitId "binary-orphans-1.0.5-1ac470cecdbbf08c25070c27b14612ba0bf2a9c970249cd3f9873f7c5621a401"
+UnitId "bitvec-1.1.5.0-9bbed18052bda9065b11af488da12e89f024db0a8a2f3bafe0c7c5b1fb0cf7f3"
+UnitId "case-insensitive-1.2.1.0-599c25a76aae9c87830e4315fc13188b41c065228ff3ffe29c4861890d00fb95"
+UnitId "cassava-0.5.3.2-9ecb7cb818664c09fc62ef577326ce7343b402e22e0ef979be79145a1ec64400"
+UnitId "charset-0.3.10-1a8de4d84dad54957a2ffbfa55d58a7c7ae84b9262921dbcc3c6b1096339cc8a"
+UnitId "clock-0.8.4-2292d6cf553e98720aade4be17251554883619d3886e13a1c3f5352321468bae"
+UnitId "hsc2hs-0.68.10-e-hsc2hs-3c26ce6e00190495fef7423e6443d58e968627872aa222223bffb4b0ff941572"
+UnitId "code-page-0.2.1-a2c681b3ce689b280e3a0d5677f4762f06a7f3615907b61ad81f9fefc42458ab"
+UnitId "split-0.2.5-fab53f63a5abbb9e714ec5de37b8818a9b7d1b464c6861b9c6a190a49e3c76d8"
+UnitId "vector-algorithms-0.9.0.2-878faad0a12be07267c2d611f73c329fa9e5538ae662595348491d4c985b5241"
+UnitId "mono-traversable-1.0.20.0-bf9e5f4a089b178bdfb32a578f05875467f7ce80bdc485a3fc3f700cbc829548"
+UnitId "unliftio-core-0.2.1.0-cc06b481863300209bec0bfe4d84fb4b81231588c3e0b1bb95e26ca6105660d8"
+UnitId "resourcet-1.3.0-e07d6f5c7723d30c8dc8f55250b19e0714d338737adca6d902a33084f1b04ea6"
+UnitId "conduit-1.3.6-f066b03b7df8ad1aca4ce67fcccc2ec0786bb0c941a481f3b6717a2841b3e6aa"
+UnitId "network-3.2.4.0-c689708a3979f0107aae1de6fe4da63574adfe6f7d0137fd06ebbd2e880985ed"
+UnitId "zlib-0.7.1.0-bf96f10a29146bf94fd15780c570a690bea5eb338569455f6586422043b7aeb3"
+UnitId "streaming-commons-0.2.2.6-d2d1e9d25c1552360c4a350aae16900896181c919a31e816b74c20bd2cfdaa3e"
+UnitId "typed-process-0.2.12.0-67c36c449e51cf156879000f7fd73161db69ed6355f053beae1ae18c237d54a1"
+UnitId "conduit-extra-1.3.6-9b0d18dc823ce95f43977e747c2c0e3aa2c754d580676e5539d292315231ce44"
+UnitId "criterion-measurement-0.2.2.0-6cc3570be46a6c116998c381050b3c9042b8709bf12357cd8b378c71af744193"
+UnitId "js-chart-2.9.4.1-86c56bc81047dc731ff9cc2fe1943695355df67319c6ecd2d429a1f1226b7557"
+UnitId "microstache-1.0.3-1f9bcf5ac6301bc8f3cb48e24e511dc597f06431f128a782601d8b1099a84a59"
+UnitId "data-default-class-0.1.2.2-2cf5c1ba4834182d489730b5e9f115f39b02884e581129fdc727ca23cfd851f7"
+UnitId "math-functions-0.3.4.4-6b83870c201b5cbdfa40753d9ea91fcf78e084c540b35ded220708275be47d04"
+UnitId "mwc-random-0.15.1.0-e4fffe0385459bb9ed1b67776f394793a3a9a33c86e030f429e317d0765014e2"
+UnitId "prettyprinter-1.7.1-a2952acf3277904adfc9f81216975cb21318656a97e53d37904afdcac59e616b"
+UnitId "prettyprinter-ansi-terminal-1.1.3-b92410ab6527aa9d3f2e514e15dc6d9e7fbc36d96ca11bce0deaeeea8d0bb898"
+UnitId "optparse-applicative-0.18.1.0-523f53e9bdd4161ae7f9881991180767a933c2ec89edacc35245aa60ca1041d1"
+UnitId "vector-binary-instances-0.2.5.2-cb3c049701a7837cac2e52549eb0eb3cc2ab021cc9081eedcc97c545ed050aec"
+UnitId "vector-th-unbox-0.2.2-b8b975c4cdd6b6a4273db4362bd60e846b8277c914fff5ae6e09d2ec7b7930ad"
+UnitId "dense-linear-algebra-0.1.0.0-a956709472fcf5f3e037415bbe47376f67b3d48a1cd71511224e8c1f5ec5628f"
+UnitId "parallel-3.2.2.0-364aed93072c964b4e0511400336588134b34df10253608f37ea9c5831374463"
+UnitId "statistics-0.16.2.1-12687f28633858c96f19394660d2d8bc2911dbec1f39ea8a7523ed5b33b497c8"
+UnitId "criterion-1.6.3.0-e446ad49c8fe63c8b5dec3771fef0994c473d7aa272d73290a32ea2eddde966b"
+UnitId "criterion-1.6.3.0-e-criterion-report-3dcb04787888cd7471e1c26e6353b49b5455524f970b4cea7f99cca185b47979"
+UnitId "transformers-base-0.4.6-a75b623afb29f9b462d935e7d25d008a6002a9c4edcf92ab2c17fb7a0c569dd7"
+UnitId "monad-control-1.0.3.1-66790eec955cd825a2bd55d84baef2a84918f590531b6779702c93b6b393ff90"
+UnitId "safe-exceptions-0.1.7.4-f07efcd486b7f0bb86d7fc2ced3c662998633ad5093c29150253f9725f2114c9"
+UnitId "strict-mutable-base-1.1.0.0-69fc58f5df44bacf4d0526ca3ab732b430356c1dd62392e9d7931f5a89d1cbc1"
+UnitId "effectful-core-2.4.0.0-95e97d33981dba6ac271fee73cdb3d92b0e8f6d1b947aa5360dcae3a686d23dc"
+UnitId "unliftio-0.2.25.0-2889934ffdd4aba6529610127833bf1ad735712981ac91c879748bf50fe437b1"
+UnitId "effectful-2.4.0.0-c5d9f86654ce4d3a54dc5a6303725b234b0544a7fdbde3d0bad7118bb584e9da"
+UnitId "ghc-boot-9.4.8"
+UnitId "ghc-heap-9.4.8"
+UnitId "ghci-9.4.8"
+UnitId "hpc-0.6.1.0"
+UnitId "terminfo-0.4.1.5"
+UnitId "ghc-9.4.8"
+UnitId "effectful-plugin-1.1.0.4-8b0295846c35d62bb8e71f91cc77e18dd11f4a7075037031e628ebfe49ae42fc"
+UnitId "effectful-th-1.0.0.3-0c0821739ba9fa177d632c095106cc0891b1a37ed8bbfec94502e45e093bae0e"
+UnitId "extra-1.8-7422f8ec2eaa18266573784c243a393b6182395d5820a373e38fcd69eb34e31c"
+UnitId "file-embed-0.0.16.0-6613e4eb8a47080105976fe2b81a42b0d9fd08b15f6ec50f2f461a5b056e8a43"
+UnitId "gitrev-1.3.1-7c995fe6220594860b1959319fa4d9eecc370436c257bbf7924333088009d522"
+UnitId "haskeline-0.8.2"
+UnitId "haskell-lexer-1.1.1-40e9b4768cacabd45f70a98932d218392048d92e0022a9168a0440910c5683b7"
+UnitId "mmorph-1.2.0-3dfdfc92dee08f081e43884ee7314e7d5ab0afbd96369761deaf67584ab2fafc"
+UnitId "semigroups-0.20-a463de7bb2be24e7b9e686e5cd8133bb28aefa7a8eb4eb3d249bb753286ebb39"
+UnitId "log-base-0.12.0.1-623fe096c2c045e5aff1cfe0bbe7699b8b6a84d2f9ffa9f207d26400294413d5"
+UnitId "log-effectful-1.0.0.0-3abeed6a27610fe0c8372b0e3d6bbd73455b2df59c02efc74e2d7c593fd34264"
+UnitId "parser-combinators-1.3.0-1952f16d594dbe94dfbf901b1bc1ac212d3e1bc2beb45813855f21c09a66323f"
+UnitId "megaparsec-9.6.1-658bb65843e158f936ffbf5c1c6cf97a54f2978633e8d4499ed220f588e200a1"
+UnitId "neat-interpolation-0.5.1.4-47bb24bb2ed2c51f7cb8214a73602ec66f7bc49ea0d9622a26499e3e76be1d5f"
+UnitId "safe-0.3.21-f381d8ee822c09d490211eff2e73b9c366126c0efb34873f37bf370dba1dfc88"
+UnitId "pager-0.1.1.0-d1792f434a9c0b740d8b2c7c24243047af131eedcfdce499d2eff0e4a7f3c27f"
+UnitId "path-0.9.5-bbf366f7f1445d2a9f9c73c13fafcd3ee3bf1f846a287ebf1e76ae2da7a10973"
+UnitId "temporary-1.3-3dac72ec2334f77ab98ed4e09a78dc0972e303556f455c8812cd74573d7c7bc0"
+UnitId "unix-compat-0.7.3-8689bbe43cbf6e2386335eef214a5d7d99af3e35a678dc1b5beafacb03bc836e"
+UnitId "path-io-1.8.2-adb910b421dd5754dc2c717a791ebc9dd85ff583076a386b66425a309ed760e1"
+UnitId "microlens-0.4.13.1-6b11272fafed215cba7fb88000aa50643abc97dcbf5448d13b7b7d25b744d472"
+UnitId "parsers-0.12.11-6f5c8fdde76e8cafb2819c384b6f16ea9baa65ed62108f5ac609b3c0434d6f2e"
+UnitId "radixtree-0.6.0.0-70f2e43d23ea34bb7995630a7022ed3e42756d11a88a70e409accfb201c81315"
+UnitId "resourcet-effectful-1.0.1.0-219c20775d266746711cd173d4866401ffb39287952627b305b56083db015ef5"
+UnitId "terminal-size-0.3.4-d3d731a69995590de5e573de4c4b26a3f86b1785463e683e2ef206fc86744d0e"
+UnitId "text-rope-0.3-d6209138333196f7c0093924eca9cf7073581bcd4f07af5ad8df0a1595922aa1"
+UnitId "selective-0.7.0.1-572557e30f79d97b1c884f826cfe75937cbff8e16ffd6e76d451a70293c4a0d5"
+UnitId "validation-selective-0.2.0.0-23f79e25a9da8e5a6649a81b449c8c0357cf390b7705fc9cc7522a7515c7cf27"
+UnitId "tomland-1.3.3.3-2a74e99e8de98327d72d4ba488bb1285b676522183c07095ca8f88a6756cc409"
+UnitId "hibet-1.4.0-inplace"
+UnitId "hibet-1.4.0-inplace-hibet"
+UnitId "hibet-1.4.0-inplace-hibet-benchmark"
+UnitId "hspec-expectations-0.8.4-fb37f9e911b287e4b22bcdcc0420d058150de2338ab517c7a5f3843c64dba5ed"
+UnitId "quickcheck-io-0.2.0-6a2a99069c10315fe637054647568f4d7fb1af45de8c9dae1b783a7e33724463"
+UnitId "tf-random-0.5-68231bf16ee72d6c90671b0af3556b7a25ae7195e9ce9519b06d0cfa017441a3"
+UnitId "hspec-core-2.11.9-8dcff20c5003014fbf27f66277526c9273181595a704c24581f531584a6d203b"
+UnitId "hspec-discover-2.11.9-e3c412fcca6379fdf744da966055b22e3ca5e325cf81172a809fca11b4462637"
+UnitId "hspec-2.11.9-e4e50bcfa1893d3ed7bb8b99c1fa4ae6cdf67b699bf74181a44e2c252af11611"
+UnitId "hibet-1.4.0-inplace-hibet-env"
+UnitId "hibet-1.4.0-inplace-hibet-labels"
+UnitId "hibet-1.4.0-inplace-hibet-parse"
+UnitId "hibet-1.4.0-inplace-hibet-pretty"
+UnitId "hspec-discover-2.11.9-e-hspec-discover-30dd77a765061f7d963f021ced47cf487ea350fb89c45fdc1a6161a74379cace"
+UnitId "pager-0.1.1.0-e-hs-pager-test-pager-d49ceb562f84f7be8d5416deb24bb16b2f0b2f6f287dc9df742bd25feb83b90a"
+
+Direct deps
+~~~~~~~~~~~
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameLib
+  base-4.17.2.1
+  bytestring-0.11.5.3
+  containers-0.6.7
+  deepseq-1.4.8.0
+  directory-1.3.7.1
+  effectful-2.4.0.0
+  effectful-core-2.4.0.0
+  effectful-plugin-1.1.0.4
+  effectful-th-1.0.0.3
+  extra-1.8
+  filepath-1.4.2.2
+  gitrev-1.3.1
+  hashable-1.4.7.0
+  haskeline-0.8.2
+  log-effectful-1.0.0.0
+  megaparsec-9.6.1
+  neat-interpolation-0.5.1.4
+  optparse-applicative-0.18.1.0
+  pager-0.1.1.0
+  parallel-3.2.2.0
+  path-0.9.5
+  path-io-1.8.2
+  prettyprinter-1.7.1
+  prettyprinter-ansi-terminal-1.1.3
+  radixtree-0.6.0.0
+  resourcet-effectful-1.0.1.0
+  terminal-size-0.3.4
+  text-2.0.2
+  text-rope-0.3
+  tomland-1.3.3.3
+  unordered-containers-0.2.20
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameExe "hibet"
+  base-4.17.2.1
+  hibet-1.4.0
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameBench "hibet-benchmark"
+  base-4.17.2.1
+  bytestring-0.11.5.3
+  criterion-1.6.3.0
+  file-embed-0.0.16.0
+  hibet-1.4.0
+  path-0.9.5
+  path-io-1.8.2
+  text-2.0.2
+  text-rope-0.3
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameTest "hibet-env"
+  base-4.17.2.1
+  bytestring-0.11.5.3
+  containers-0.6.7
+  effectful-core-2.4.0.0
+  hibet-1.4.0
+  hspec-2.11.9
+  text-2.0.2
+  unordered-containers-0.2.20
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameTest "hibet-labels"
+  base-4.17.2.1
+  bytestring-0.11.5.3
+  containers-0.6.7
+  hibet-1.4.0
+  hspec-2.11.9
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameTest "hibet-parse"
+  base-4.17.2.1
+  hibet-1.4.0
+  hspec-2.11.9
+
+PkgId (PkgName "hibet") (Ver [1,4,0])
+CompNameTest "hibet-pretty"
+  base-4.17.2.1
+  hibet-1.4.0
+  hspec-2.11.9
+  prettyprinter-1.7.1
+
