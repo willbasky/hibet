@@ -117,4 +117,4 @@ or use arrows of keyboard.
 
 ## Contribution
 
-Contribution is welcome!
+Contributions are welcoming!
