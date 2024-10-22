@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE BangPatterns #-}
 
 
 module Dictionary
@@ -76,7 +77,7 @@ selectDict selected dicts = case selected of
 toDictionaryMeta :: [LabelFull] -> FilePath -> Dictionary -> DictionaryMeta
 toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
   where
-    (title, number) = findTitle $ T.pack $ takeBaseName filepath
+    (!title, !number) = findTitle $ T.pack $ takeBaseName filepath
     -- Match filpath with labels
     findTitle :: Text -> (Title, Int)
     findTitle path = maybe (Title "Invalid title",0) (\lf -> (lf.label, lf.lfId))
@@ -87,9 +88,9 @@ searchTranslation :: Text -> DictionaryMeta -> Maybe Answer
 searchTranslation query dm =
   if null ts then Nothing else Just $ Answer ts dm.number dm.title
   where
-    ts = HMS.foldrWithKey search [] dm.dictionary
-    search :: Text -> [Target] -> [Target] -> [Target]
-    search q v acc = if q == query then v <> acc else acc
+    ts = HMS.foldlWithKey' search [] dm.dictionary
+    search :: [Target] -> Text -> [Target] -> [Target]
+    search acc q v = if q == query then v <> acc else acc
 
 sortOutput :: [Answer] -> [Answer]
 sortOutput = sortBy (\a1 a2-> compare a1.dictNumber a2.dictNumber)

@@ -6,10 +6,6 @@ import Parse.Type ( parseEither )
 import Test.Hspec (Spec, describe, hspec, it, shouldBe)
 import Data.Either ( isLeft )
 
--- import Text.Megaparsec (parseTest)
--- import qualified Text.Megaparsec.Char as MC
-
-
 main :: IO ()
 main = hspec $ do
   tibetan

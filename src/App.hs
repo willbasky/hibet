@@ -1,82 +1,111 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 module App
        ( app
        ) where
 
 import Cli (parser, runCommand)
-import Effects.Console
-import Effects.File
-import Effects.PrettyPrint
 import Env (Env, makeEnv)
 import Type (HibetError (..))
-import Utility (debugEnabledEnvVar)
-
+import qualified Data.Text.IO as TIO
 import Data.Function ((&))
-import IncipitCore (Async, asyncToIOFinal)
-import Polysemy (Embed, Final, Members, Sem, embedToFinal, runFinal)
-import Polysemy.Conc (Race, Sync, interpretRace, interpretSync, withAsync_)
-import Polysemy.Error (Error, runError)
-import Polysemy.Resource (Resource, runResource)
-import Polysemy.Trace (Trace, ignoreTrace, traceToStdout)
+import System.IO ( hFlush, stdout, putStrLn )
+
+import Effects.Console ( Console, execParser, runConsole )
+import Effects.File ( FileSystem, runFileSystemIO )
+import Effects.PrettyPrint ( PrettyPrint, runPrettyPrint )
+import Effectful ( runEff, type (:>), Eff, IOE )
+import Effectful.Error.Static
+    ( CallStack, prettyCallStack, Error, runError )
+import Effectful.Concurrent ( runConcurrent, Concurrent )
+import Effectful.Concurrent.Async (withAsync)
+import Effectful.Concurrent.MVar ( MVar, newEmptyMVar, putMVar )
+import Effectful.Reader.Dynamic ( runReader )
+import Effectful.Resource ( runResource, Resource )
+import Effectful.Log
+    ( defaultLogLevel,
+      showLogMessage,
+      shutdownLogger,
+      waitForLogger,
+      mkLogger,
+      runLog,
+      Logger,
+      Log )
+import Control.Exception (finally)
 
 
 app :: IO ()
 app = do
-  isDebug <- debugEnabledEnvVar
-  handleHibetError =<< interpretHibet hibet isDebug
+  errs <- withStdOutLogger $ \logger -> do
+    interpretHibet hibet logger
+  handleHibetError errs
 
 type HibetEffects =
-  [
-    FileIO
-  , Error HibetError
-  , Resource
-  , Console
-  , PrettyPrint
-  , Trace
-  , Sync Env
-  , Race
-  , Async
-  , Embed IO
-  , Final IO
-  ]
+   '[
+      Concurrent
+    , Resource
+    , Console
+    , FileSystem
+    , PrettyPrint
+    , Error HibetError
+    , Log
+    , IOE
+    ]
 
-interpretHibet :: Sem HibetEffects ()
-  -> Bool -- isDebug
-  -> IO (Either HibetError ())
-interpretHibet program isDebug = program
-  & runFile
-  & runError @HibetError
-  & runResource
-  & runConsole
-  & runPrettyPrint
-  & (if isDebug then traceToStdout else ignoreTrace)
-  & interpretSync @Env
-  & interpretRace
-  & asyncToIOFinal
-  & embedToFinal
-  & runFinal
 
-hibet :: Members HibetEffects r => Sem r ()
+interpretHibet :: Eff HibetEffects a
+  -> Logger
+  -> IO (Either (CallStack, HibetError) a)
+interpretHibet program logger =
+  program
+    & runConcurrent
+    & runResource
+    & runConsole
+    & runFileSystemIO
+    & runPrettyPrint
+    & runError @HibetError
+    & runLog "hibet" logger defaultLogLevel
+    & runEff
+
+hibet :: Eff HibetEffects ()
 hibet = do
-  withAsync_ prepareEnv $ do
-    com <- execParser parser
-    runCommand com
+  mv <- newEmptyMVar
+  withAsync (prepareEnv mv) $ \_ ->
+    runReader mv $ do
+      com <- execParser parser
+      runCommand com
 
-prepareEnv :: Members
-  [ FileIO
-  , Error HibetError
-  , Trace
-  , Sync Env
-  , Embed IO
-  ] r => Sem r ()
-prepareEnv = do
+prepareEnv ::
+  ( FileSystem :> es
+  , Error HibetError :> es
+  , Concurrent :> es
+  ) => MVar Env -> Eff es ()
+prepareEnv mv = do
   !env <- makeEnv
-  putEnvMVar env
+  putMVar mv env
 
-handleHibetError :: Either HibetError a -> IO ()
+handleHibetError ::
+     Either (CallStack, HibetError) a
+  -> IO ()
 handleHibetError = \case
   Right _ -> pure ()
-  Left err -> do
-    putStrLn "Hibet application failed with exception:"
+  Left (stack, err) -> do
+    TIO.putStrLn "Hibet application failed with exception:"
     print err
+    TIO.putStrLn "The stack is:"
+    System.IO.putStrLn $ prettyCallStack stack
+
+withStdOutLogger :: (Logger -> IO r) -> IO r
+withStdOutLogger act = do
+  logger <- mkLogger "stdout" $ \msg -> do
+    TIO.putStrLn $ showLogMessage Nothing msg
+    hFlush stdout
+  withLogger logger act
+
+withLogger :: Logger -> (Logger -> IO r) -> IO r
+withLogger logger act = act logger `finally` cleanup
+  where
+    cleanup = waitForLogger logger >> shutdownLogger logger
+-- Prevent GHC from inlining this function so its callers are
+-- {-# NOINLINE withLogger #-}

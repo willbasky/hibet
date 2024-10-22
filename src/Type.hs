@@ -6,12 +6,11 @@ module Type
 
 import Data.Text (Text)
 import Data.Void (Void)
-import Path (PathException)
 import Text.Megaparsec.Error (ParseErrorBundle)
 
 
 data HibetError
-  = PathError PathException
+  = EffectError Text Text
   | MegaError (ParseErrorBundle Text Void)
   | NotFound
   | NotSyllable Text

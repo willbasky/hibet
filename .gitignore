@@ -54,6 +54,7 @@ TAGS
 # other
 .DS_Store
 .gitignore
+*.html
 
 # custom
 thinking.txt
@@ -67,3 +68,4 @@ PKGBUILD
 hibet/
 pkg/
 .hie/
+

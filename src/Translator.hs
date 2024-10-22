@@ -1,13 +1,14 @@
+
+
 module Translator
   ( translator
   )
   where
 
 import Dictionary (Answer, searchTranslation, sortOutput)
-import Effects.Console (Console, cancelInput, closeInput, exitSuccess, getHistory, getInput,
-                        initializeInput, readEnv)
+import Effects.Console (Console, closeInput, exitSuccess, getHistory, getInput)
 import Effects.PrettyPrint (Line (NewLine), PrettyPrint, pprint, putColorDoc)
-import Env (Env)
+import Env (Env(..), readEnv)
 import Parse (ScriptType (Tibet, Wylie), fromScripts, parseEither, parseTibetanInput,
               parseWylieInput, tibetanWord, toTibetan, toWylie, wylieWord)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
@@ -21,51 +22,55 @@ import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Debug.Trace as Debug
-import Polysemy (Members, Sem)
-import Polysemy.Conc (Sync)
-import Polysemy.Error (Error)
-import Polysemy.Resource (Resource, bracketOnError)
-import Polysemy.Trace (Trace, trace)
 import Prettyprinter (Doc)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
+import qualified System.Console.Haskeline.IO as Haskeline
+import qualified System.Console.Haskeline as Haskeline
+
+import Effectful ( type (:>), Eff, IOE )
+import Effectful.Resource ( allocate, release, Resource )
+-- import Effectful.Log ( logInfo_, Log )
+import Effectful.Reader.Dynamic (Reader)
+import Effectful.Concurrent.MVar (MVar, Concurrent)
+
 
 -- | Load environment and start loop dialog
-translator :: Members
-  [ PrettyPrint
-  , Trace
-  , Resource
-  , Console
-  , Error HibetError
-  , Sync Env
-  ] r
-  => Sem r ()
+translator ::
+  ( IOE :> es
+  , PrettyPrint :> es
+  -- , Log :> es
+  , Resource :> es
+  , Console :> es
+  , Reader (MVar Env) :> es
+  , Concurrent :> es
+  )
+  => Eff es ()
 translator = bracketOnError
-  initializeInput
-  cancelInput -- This will only be called if an exception such as a SigINT is received.
+  (Haskeline.initializeInput Haskeline.defaultSettings)
+  Haskeline.cancelInput -- This will only be called if an exception such as a SigINT is received.
   $ \inputState -> do
-      putColorDoc blue NewLine "Please, input any word with tibetan script or wylie transcription!\nWhat is your request?  "
+      putColorDoc blue NewLine "Input a word in the tibetan script or wylie transcription:"
       loopDialog inputState
       closeInput inputState
 
 
 -- Looped dialog with user
-loopDialog :: Members
-  [ PrettyPrint
-  , Trace
-  , Console
-  , Error HibetError
-  , Sync Env
-  ] r
+loopDialog ::
+  ( PrettyPrint :> es
+  , Console :> es
+  , Reader (MVar Env) :> es
+  , Concurrent :> es
+  )
   => InputState
-  -> Sem r ()
+  -> Eff es ()
 loopDialog inputState = forever $ do
     mQuery <- getInput inputState "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
         Just ":q" -> do
-            putColorDoc yellow NewLine "Bye-bye!"
+            putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
             exitSuccess
         Just ":h" -> do
             history <- fromHistory <$> getHistory inputState
@@ -73,13 +78,12 @@ loopDialog inputState = forever $ do
         Just input -> do
             env <- readEnv
             case getAnswer input env of
-              Left err -> do
-                trace $ show err
+              Left _ -> do
+                -- logInfo_ $ showT err
                 putColorDoc red NewLine "Nothing found"
               Right (query, answer) -> if null answer
                 then putColorDoc red NewLine "Nothing found"
                 else pprint $ mkOutput query answer
-
 
 getAnswer :: Text -> Env -> Either HibetError (Text, [Answer])
 getAnswer query env = do
@@ -146,3 +150,12 @@ mkOutput query answers
   = withHeaderSpaces yellow query
   $ viewTranslations
   $ sortOutput answers
+
+bracketOnError :: (IOE :> es, Resource :> es)
+  => IO a
+  -> (a -> IO ())
+  -> (a -> Eff es ()) -> Eff es ()
+bracketOnError alloc free inside = do
+  (releaseKey, resource) <- allocate alloc free
+  inside resource
+  release releaseKey
