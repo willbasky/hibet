@@ -107,37 +107,38 @@ library
     Paths_hibet
     Sandbox
 
-  autogen-modules: 
-    Paths_hibet
+  autogen-modules: Paths_hibet
   build-depends:
-    , bytestring                   >=0.11.5 && <0.12
-    , containers                   >=0.6.7  && <0.7
-    , deepseq                      >=1.4.8  && <1.5
-    , directory                    >=1.3.7  && <1.4
-    , effectful                    >=2.4.0  && <2.5
-    , effectful-core               >=2.4.0  && <2.5
-    , effectful-plugin             >=1.1.0  && <1.2
-    , effectful-th                 >=1.0.0  && <1.1
-    , extra                        >=1.8    && <1.9
-    , filepath                     >=1.4.2  && <1.5
-    , gitrev                       >=1.3.1  && <1.4
-    , hashable                     >=1.4.7  && <1.5
-    , haskeline                    >=0.8.2  && <0.9
-    , log-effectful                >=1.0.0  && <1.1
-    , megaparsec                   >=9.6.1  && <9.7
-    , neat-interpolation           >=0.5.1  && <0.6
-    , optparse-applicative         >=0.18.1 && <0.19
-    , pager                        >=0.1.1  && <0.2
-    , parallel                     >=3.2.2  && <3.3
-    , path                         >=0.9.5  && <0.10
-    , path-io                      >=1.8.2  && <1.9
-    , prettyprinter                >=1.7.1  && <1.8
-    , prettyprinter-ansi-terminal  >=1.1.3  && <1.2
-    , resourcet-effectful          >=1.0.1  && <1.1
-    , terminal-size                >=0.3.4  && <0.4
-    , text                         >=2.0.2  && <2.1
-    , text-rope                    >=0.3    && <0.4
-    , unordered-containers         >=0.2.20 && <0.3
+    , bytestring                   ^>=0.11.5   
+    , containers                   ^>=0.6.7   
+    , deepseq                      ^>=1.4.8   
+    , directory                    ^>=1.3.7   
+    , effectful                    ^>=2.4.0   
+    , effectful-core               ^>=2.4.0   
+    , effectful-plugin             ^>=1.1.0   
+    , effectful-th                 ^>=1.0.0   
+    , extra                        ^>=1.8     
+    , filepath                     ^>=1.4.2   
+    , gitrev                       ^>=1.3.1   
+    , hashable                     ^>=1.4.7   
+    , haskeline                    ^>=0.8.2   
+    , log-effectful                ^>=1.0.0   
+    , megaparsec                   ^>=9.6.1   
+    , neat-interpolation           ^>=0.5.1   
+    , optparse-applicative         ^>=0.18.1   
+    , pager                        ^>=0.1.1   
+    , parallel                     ^>=3.2.2   
+    , path                         ^>=0.9.5    
+    , path-io                      ^>=1.8.2   
+    , prettyprinter                ^>=1.7.1   
+    , prettyprinter-ansi-terminal  ^>=1.1.3   
+    , radixtree                    ^>=0.6.0.0
+    , resourcet-effectful          ^>=1.0.1    
+    , terminal-size                ^>=0.3.4    
+    , text                         ^>=2.0.2    
+    , text-rope                    ^>=0.3      
+    , tomland                      ^>=1.3.3.2
+    , unordered-containers         ^>=0.2.20   
 
 executable hibet
   import:         common-options
@@ -198,8 +199,7 @@ test-suite hibet-env
   other-modules:
     Paths
     Paths_hibet
-  autogen-modules: 
-    Paths_hibet
+  autogen-modules: Paths_hibet
 
 test-suite hibet-parse
   import:         common-options
@@ -211,10 +211,8 @@ test-suite hibet-parse
     , hibet
     , hspec
 
-  other-modules:  
-    Paths_hibet
-  autogen-modules: 
-    Paths_hibet
+  other-modules:  Paths_hibet
+  autogen-modules: Paths_hibet
 
 benchmark hibet-benchmark
   import:         common-options
@@ -241,7 +239,6 @@ benchmark hibet-benchmark
     Common
     Lines
     Paths_hibet
-  autogen-modules: 
-    Paths_hibet
+  autogen-modules: Paths_hibet
 
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
