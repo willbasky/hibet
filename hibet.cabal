@@ -1,272 +1,247 @@
-cabal-version:       3.0
-name:                hibet
-version:             1.4.0
-description:         tibetan-english translator
-synopsis:            translator
-homepage:            https://github.com/willbasky/Hibet
-bug-reports:         https://github.com/willbasky/Hibet/issues
-license:             BSD-3-Clause
-license-file:        LICENSE
-author:              willbasky
-maintainer:          willgame(at)mail(dot)ru
-copyright:           2023 willbasky
-category:            Utility
-build-type:          Simple
-extra-doc-files:     README.md
-                   , CHANGELOG.md
-data-files:          dicts/*.txt
-                   , stuff/titles.toml
-                   , stuff/tibetan-syllables
+cabal-version:      3.0
+name:               hibet
+version:            1.4.0
+description:        tibetan-english translator
+synopsis:           translator
+homepage:           https://github.com/willbasky/Hibet
+bug-reports:        https://github.com/willbasky/Hibet/issues
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             willbasky
+maintainer:         willgame(at)mail(dot)ru
+copyright:          2023 willbasky
+category:           Utility
+build-type:         Simple
+extra-doc-files:
+  CHANGELOG.md
+  README.md
+
+data-files:
+  dicts/*.txt
+  stuff/tibetan-syllables
+  stuff/titles.toml
+
 extra-source-files:
   test/env/data/dicts/*.txt
   test/env/data/stuff/tibetan-syllables
   test/env/data/stuff/titles.toml
-tested-with:
-  GHC==9.4.8
+
+tested-with:        GHC ==9.4.8
 
 source-repository head
-  type:               git
-  location:           https://github.com/willbasky/Hibet.git
+  type:     git
+  location: https://github.com/willbasky/Hibet.git
 
 common common-dot
-  default-extensions:
-    OverloadedRecordDot
+  default-extensions: OverloadedRecordDot
 
 common common-options
-  build-depends:       base >= 4.11 && < 5
+  build-depends:      base >=4.11 && <5
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wredundant-constraints
+    -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+    -fwrite-ide-info -hiedir=.hie -Wunused-packages
 
-  ghc-options:         -Wall
-                       -Wcompat
-                       -Widentities
-                       -Wincomplete-uni-patterns
-                       -Wincomplete-record-updates
-                       -Wredundant-constraints
-                      --  -split-sections
-                       -fhide-source-paths
-                      --  -Wmissing-export-lists
-                       -Wpartial-fields
-                       -Wmissing-deriving-strategies
-                       -fwrite-ide-info
-                       -hiedir=.hie
-                       -Wunused-packages
-                      --  -ddump-if-trace
-                      --  -O2
-                      --  -eventlog
-                      --  -finfo-table-map
-                      --  -fdistinct-constructor-tables
+  --  -split-sections
+  --  -Wmissing-export-lists
+  --  -ddump-if-trace
+  --  -O2
+  --  -eventlog
+  --  -finfo-table-map
+  --  -fdistinct-constructor-tables
 
-  default-language:    Haskell2010
-
+  default-language:   Haskell2010
   default-extensions:
-                       DataKinds
-                       DeriveGeneric
-                       DerivingStrategies
-                       DuplicateRecordFields
-                       FlexibleContexts
-                       FlexibleInstances
-                       GADTs
-                       LambdaCase
-                       MultiParamTypeClasses
-                       OverloadedStrings
-                       RankNTypes
-                       RecordWildCards
-                       PolyKinds
-                       ScopedTypeVariables
-                       TemplateHaskell
-                       TupleSections
-                       TypeApplications
-                       TypeFamilies
-                       TypeOperators
-                       TypeSynonymInstances
-                       UndecidableInstances
+    DataKinds
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedStrings
+    PolyKinds
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    UndecidableInstances
 
 library
   import:
-      common-options
+    common-options
     , common-dot
-  ghc-options:
-                       -fplugin=Effectful.Plugin
-  hs-source-dirs:      src
+
+  ghc-options:     -fplugin=Effectful.Plugin
+  hs-source-dirs:  src
   exposed-modules:
-                       App
-                       Cli
-                       Effects.Common
-                       Effects.File
-                       Effects.Console
-                       Effects.PrettyPrint
-                       Env
-                       Dictionary
-                       Label
-                       Parse
-                       Parse.SyllableLines
-                       Parse.TibetanWord
-                       Parse.WylieWord
-                       Parse.WylieText
-                       Parse.Type
-                       Pretty
-                       Translator
-                       Type
-                       Utility
+    App
+    Cli
+    Dictionary
+    Effects.Common
+    Effects.Console
+    Effects.File
+    Effects.PrettyPrint
+    Env
+    Label
+    Parse
+    Parse.SyllableLines
+    Parse.TibetanWord
+    Parse.Type
+    Parse.WylieText
+    Parse.WylieWord
+    Pretty
+    Translator
+    Type
+    Utility
 
-  other-modules:       Paths_hibet
-                     , Sandbox
-  autogen-modules:     Paths_hibet
+  other-modules:
+    Paths_hibet
+    Sandbox
 
+  autogen-modules: 
+    Paths_hibet
   build-depends:
-                       bytestring
-                     , containers
-                     , deepseq
-                     , directory
-                     , effectful-th
-                     , effectful
-                     , effectful-core
-                     , effectful-plugin
-                     , log-effectful
-                     , resourcet-effectful
-                     , extra
-                     , filepath
-                     , gitrev
-                     , haskeline
-                     , hashable
-                     , megaparsec
-                     , neat-interpolation
-                     , optparse-applicative
-                     , pager
-                     , parallel
-                     , path
-                     , path-io
-                     , prettyprinter
-                     , prettyprinter-ansi-terminal
-                     , radixtree ^>=0.6.0.0
-                     , terminal-size
-                     , text
-                     , text-rope
-                     , tomland ^>=1.3.3.2
-                     , unordered-containers
-
+    , bytestring                   >=0.11.5 && <0.12
+    , containers                   >=0.6.7  && <0.7
+    , deepseq                      >=1.4.8  && <1.5
+    , directory                    >=1.3.7  && <1.4
+    , effectful                    >=2.4.0  && <2.5
+    , effectful-core               >=2.4.0  && <2.5
+    , effectful-plugin             >=1.1.0  && <1.2
+    , effectful-th                 >=1.0.0  && <1.1
+    , extra                        >=1.8    && <1.9
+    , filepath                     >=1.4.2  && <1.5
+    , gitrev                       >=1.3.1  && <1.4
+    , hashable                     >=1.4.7  && <1.5
+    , haskeline                    >=0.8.2  && <0.9
+    , log-effectful                >=1.0.0  && <1.1
+    , megaparsec                   >=9.6.1  && <9.7
+    , neat-interpolation           >=0.5.1  && <0.6
+    , optparse-applicative         >=0.18.1 && <0.19
+    , pager                        >=0.1.1  && <0.2
+    , parallel                     >=3.2.2  && <3.3
+    , path                         >=0.9.5  && <0.10
+    , path-io                      >=1.8.2  && <1.9
+    , prettyprinter                >=1.7.1  && <1.8
+    , prettyprinter-ansi-terminal  >=1.1.3  && <1.2
+    , resourcet-effectful          >=1.0.1  && <1.1
+    , terminal-size                >=0.3.4  && <0.4
+    , text                         >=2.0.2  && <2.1
+    , text-rope                    >=0.3    && <0.4
+    , unordered-containers         >=0.2.20 && <0.3
 
 executable hibet
-  import:              common-options
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -Wall
-                      --  -O2 -eventlog
-                       -- ^ for threadscope
-                       -threaded
-                       -rtsopts
-                       -Wincomplete-uni-patterns
-                       -Wincomplete-record-updates
-                       -Wcompat
-                       -Widentities
-                       -Wredundant-constraints
-                       -fhide-source-paths
-                       -Wmissing-export-lists
-                       -Wpartial-fields
+  import:         common-options
+  hs-source-dirs: app
+  main-is:        Main.hs
+  ghc-options:
+    -Wall -threaded -rtsopts -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wcompat -Widentities
+    -Wredundant-constraints -fhide-source-paths -Wmissing-export-lists
+    -Wpartial-fields -with-rtsopts=-N16 -with-rtsopts=-qn8
+    -with-rtsopts=-A64m -with-rtsopts=-AL128m -with-rtsopts=-I0
+    -with-rtsopts=-T
 
-                       -with-rtsopts=-N16
-                       -with-rtsopts=-qn8
-                       -with-rtsopts=-A64m
-                       -with-rtsopts=-AL128m
-                       -with-rtsopts=-I0
-                       -with-rtsopts=-T
-  build-depends:
-                       hibet
-
+  --  -O2 -eventlog
+  -- ^ for threadscope
+  build-depends:  hibet
 
 test-suite hibet-pretty
-  import:              common-options
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test/pretty
-  main-is:             Main.hs
-  ghc-options:         -Wall
-                       -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+  import:         common-options
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test/pretty
+  main-is:        Main.hs
+  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-                       hibet
-                     , hspec
-                     , prettyprinter
+    , hibet
+    , hspec
+    , prettyprinter
 
 test-suite hibet-labels
-  import:              common-options
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test/labels
-  main-is:             Main.hs
-  ghc-options:         -Wall
-                       -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+  import:         common-options
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test/labels
+  main-is:        Main.hs
+  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-                       hibet
-                     , bytestring
-                     , containers
-                     , hspec
+    , bytestring
+    , containers
+    , hibet
+    , hspec
 
 test-suite hibet-env
   import:
-      common-options
+    common-options
     , common-dot
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test/env
-  main-is:             Main.hs
-  ghc-options:         -Wall
-                       -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
-  build-depends:
-                       hibet
-                     , bytestring
-                     , hspec
-                     , text
-                     , unordered-containers
-                     , effectful-core
 
-  other-modules:       Paths_hibet
-                       Paths
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test/env
+  main-is:        Main.hs
+  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+    , bytestring
+    , effectful-core
+    , hibet
+    , hspec
+    , text
+    , unordered-containers
+
+  other-modules:
+    Paths
+    Paths_hibet
+  autogen-modules: 
+    Paths_hibet
 
 test-suite hibet-parse
-  import:              common-options
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test/parse
-  main-is:             Main.hs
-  ghc-options:         -Wall
-                       -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+  import:         common-options
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test/parse
+  main-is:        Main.hs
+  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-                       hibet
-                     , hspec
+    , hibet
+    , hspec
 
-  other-modules:       Paths_hibet
-
+  other-modules:  
+    Paths_hibet
+  autogen-modules: 
+    Paths_hibet
 
 benchmark hibet-benchmark
-  import:              common-options
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      benchmark
-  main-is:             Main.hs
-
+  import:         common-options
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: benchmark
+  main-is:        Main.hs
   build-depends:
-                       hibet
-                     , criterion
-                     , path
-                     , path-io >= 1.4.0
-                     , text
-                     , bytestring
-                     , file-embed
-                     , text-rope
-                    --  , weigh
-                    --  , streamly
-                    --  , unordered-containers
-                    --  , conduit
-                    --  , async
+    , bytestring
+    , criterion
+    , file-embed
+    , hibet
+    , path
+    , path-io     >=1.4.0
+    , text
+    , text-rope
 
-  other-modules:       Paths_hibet
-                       Lines
-                       Common
+  --  , weigh
+  --  , streamly
+  --  , unordered-containers
+  --  , conduit
+  --  , async
 
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N
+  other-modules:
+    Common
+    Lines
+    Paths_hibet
+  autogen-modules: 
+    Paths_hibet
 
-
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
