@@ -1,244 +1,287 @@
 cabal-version:      3.0
 name:               hibet
-version:            1.4.0
-description:        tibetan-english translator
-synopsis:           translator
-homepage:           https://github.com/willbasky/Hibet
-bug-reports:        https://github.com/willbasky/Hibet/issues
+version:            1.4.1
 license:            BSD-3-Clause
 license-file:       LICENSE
-author:             willbasky
-maintainer:         willgame(at)mail(dot)ru
 copyright:          2023 willbasky
+maintainer:         willgame(at)mail(dot)ru
+author:             willbasky
+tested-with:        ghc ==9.6.7
+homepage:           https://github.com/willbasky/Hibet
+bug-reports:        https://github.com/willbasky/Hibet/issues
+synopsis:           translator
+description:        tibetan-english translator
 category:           Utility
 build-type:         Simple
-extra-doc-files:
-  CHANGELOG.md
-  README.md
-
 data-files:
-  dicts/*.txt
-  stuff/tibetan-syllables
-  stuff/titles.toml
+    dicts/*.txt
+    stuff/tibetan-syllables
+    stuff/titles.toml
 
 extra-source-files:
-  test/env/data/dicts/*.txt
-  test/env/data/stuff/tibetan-syllables
-  test/env/data/stuff/titles.toml
+    test/env/data/dicts/*.txt
+    test/env/data/stuff/tibetan-syllables
+    test/env/data/stuff/titles.toml
 
-tested-with:        GHC ==9.4.8
+extra-doc-files:
+    CHANGELOG.md
+    README.md
 
 source-repository head
-  type:     git
-  location: https://github.com/willbasky/Hibet.git
-
-common common-dot
-  default-extensions: OverloadedRecordDot
-
-common common-options
-  build-depends:      base >=4.11 && <5
-  ghc-options:
-    -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
-    -Wincomplete-record-updates -Wredundant-constraints
-    -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
-    -fwrite-ide-info -hiedir=.hie -Wunused-packages
-
-  --  -split-sections
-  --  -Wmissing-export-lists
-  --  -ddump-if-trace
-  --  -O2
-  --  -eventlog
-  --  -finfo-table-map
-  --  -fdistinct-constructor-tables
-
-  default-language:   Haskell2010
-  default-extensions:
-    DataKinds
-    DeriveGeneric
-    DerivingStrategies
-    DuplicateRecordFields
-    FlexibleContexts
-    FlexibleInstances
-    GADTs
-    LambdaCase
-    MultiParamTypeClasses
-    OverloadedStrings
-    PolyKinds
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    TemplateHaskell
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    TypeSynonymInstances
-    UndecidableInstances
+    type:     git
+    location: https://github.com/willbasky/Hibet.git
 
 library
-  import:
-    common-options
-    , common-dot
+    exposed-modules:
+        App
+        Cli
+        Dictionary
+        Effects.Common
+        Effects.Console
+        Effects.File
+        Effects.PrettyPrint
+        Env
+        Label
+        Parse
+        Parse.SyllableLines
+        Parse.TibetanWord
+        Parse.Type
+        Parse.WylieText
+        Parse.WylieWord
+        Pretty
+        Translator
+        Type
+        Utility
 
-  ghc-options:     -fplugin=Effectful.Plugin
-  hs-source-dirs:  src
-  exposed-modules:
-    App
-    Cli
-    Dictionary
-    Effects.Common
-    Effects.Console
-    Effects.File
-    Effects.PrettyPrint
-    Env
-    Label
-    Parse
-    Parse.SyllableLines
-    Parse.TibetanWord
-    Parse.Type
-    Parse.WylieText
-    Parse.WylieWord
-    Pretty
-    Translator
-    Type
-    Utility
+    hs-source-dirs:     src
+    other-modules:
+        Paths_hibet
+        Sandbox
 
-  other-modules:
-    Paths_hibet
-    Sandbox
+    autogen-modules:    Paths_hibet
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances OverloadedRecordDot
 
-  autogen-modules: Paths_hibet
-  build-depends:
-    , bytestring                   ^>=0.11.5   
-    , containers                   ^>=0.6.7   
-    , deepseq                      ^>=1.4.8   
-    , directory                    ^>=1.3.7   
-    , effectful                    ^>=2.4.0   
-    , effectful-core               ^>=2.4.0   
-    , effectful-plugin             ^>=1.1.0   
-    , effectful-th                 ^>=1.0.0   
-    , extra                        ^>=1.8     
-    , filepath                     ^>=1.4.2   
-    , gitrev                       ^>=1.3.1   
-    , hashable                     ^>=1.4.7   
-    , haskeline                    ^>=0.8.2   
-    , log-effectful                ^>=1.0.0   
-    , megaparsec                   ^>=9.6.1   
-    , neat-interpolation           ^>=0.5.1   
-    , optparse-applicative         ^>=0.18.1   
-    , pager                        ^>=0.1.1   
-    , parallel                     ^>=3.2.2   
-    , path                         ^>=0.9.5    
-    , path-io                      ^>=1.8.2   
-    , prettyprinter                ^>=1.7.1   
-    , prettyprinter-ansi-terminal  ^>=1.1.3   
-    , radixtree                    ^>=0.6.0.0
-    , resourcet-effectful          ^>=1.0.1    
-    , terminal-size                ^>=0.3.4    
-    , text                         ^>=2.0.2    
-    , text-rope                    ^>=0.3      
-    , tomland                      ^>=1.3.3.2
-    , unordered-containers         ^>=0.2.20   
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages
+        -fplugin=Effectful.Plugin
+
+    build-depends:
+        base >=4.11 && <5,
+        bytestring >=0.11.5.4 && <0.12,
+        containers >=0.6.7 && <0.7,
+        deepseq >=1.4.8 && <1.5,
+        directory >=1.3.7 && <1.4,
+        effectful >=2.4.0 && <2.5,
+        effectful-core >=2.4.0 && <2.5,
+        effectful-plugin >=1.1.0 && <1.2,
+        effectful-th >=1.0.0 && <1.1,
+        extra >=1.8 && <1.9,
+        filepath >=1.4.2 && <1.5,
+        gitrev >=1.3.1 && <1.4,
+        hashable >=1.4.7 && <1.5,
+        haskeline >=0.8.2 && <0.9,
+        log-effectful >=1.0.0 && <1.1,
+        megaparsec >=9.6.1 && <9.7,
+        neat-interpolation >=0.5.1 && <0.6,
+        optparse-applicative >=0.18.1 && <0.19,
+        pager >=0.1.1 && <0.2,
+        parallel >=3.2.2 && <3.3,
+        path >=0.9.5 && <0.10,
+        path-io >=1.8.2 && <1.9,
+        prettyprinter >=1.7.1 && <1.8,
+        prettyprinter-ansi-terminal >=1.1.3 && <1.2,
+        radixtree >=0.6.0.0 && <0.7,
+        resourcet-effectful >=1.0.1 && <1.1,
+        terminal-size >=0.3.4 && <0.4,
+        text >=2.0.2 && <2.1,
+        text-rope >=0.3 && <0.4,
+        tomland >=1.3.3.2 && <1.4,
+        unordered-containers >=0.2.20 && <0.3
 
 executable hibet
-  import:         common-options
-  hs-source-dirs: app
-  main-is:        Main.hs
-  ghc-options:
-    -Wall -threaded -rtsopts -Wincomplete-uni-patterns
-    -Wincomplete-record-updates -Wcompat -Widentities
-    -Wredundant-constraints -fhide-source-paths -Wmissing-export-lists
-    -Wpartial-fields -with-rtsopts=-N16 -with-rtsopts=-qn8
-    -with-rtsopts=-A64m -with-rtsopts=-AL128m -with-rtsopts=-I0
-    -with-rtsopts=-T
+    main-is:            Main.hs
+    hs-source-dirs:     app
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances
 
-  --  -O2 -eventlog
-  -- ^ for threadscope
-  build-depends:  hibet
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
+        -rtsopts -Wincomplete-uni-patterns -Wincomplete-record-updates
+        -Wcompat -Widentities -Wredundant-constraints -fhide-source-paths
+        -Wmissing-export-lists -Wpartial-fields -with-rtsopts=-N16
+        -with-rtsopts=-qn8 -with-rtsopts=-A64m -with-rtsopts=-AL128m
+        -with-rtsopts=-I0 -with-rtsopts=-T
+
+    build-depends:
+        base >=4.11 && <5,
+        hibet
 
 test-suite hibet-pretty
-  import:         common-options
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: test/pretty
-  main-is:        Main.hs
-  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-    , hibet
-    , hspec
-    , prettyprinter
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     test/pretty
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances
+
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
+        -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        base >=4.11 && <5,
+        hibet,
+        hspec >=2.11.12,
+        prettyprinter >=1.7.1 && <1.8
 
 test-suite hibet-labels
-  import:         common-options
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: test/labels
-  main-is:        Main.hs
-  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-    , bytestring
-    , containers
-    , hibet
-    , hspec
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     test/labels
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances
+
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
+        -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        base >=4.11 && <5,
+        bytestring >=0.11.5.3 && <0.12,
+        containers >=0.6.7 && <0.7,
+        hibet,
+        hspec >=2.11.12
 
 test-suite hibet-env
-  import:
-    common-options
-    , common-dot
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     test/env
+    other-modules:
+        Paths
+        Paths_hibet
 
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: test/env
-  main-is:        Main.hs
-  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-    , bytestring
-    , effectful-core
-    , hibet
-    , hspec
-    , text
-    , unordered-containers
+    autogen-modules:    Paths_hibet
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances OverloadedRecordDot
 
-  other-modules:
-    Paths
-    Paths_hibet
-  autogen-modules: Paths_hibet
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
+        -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        base >=4.11 && <5,
+        bytestring >=0.11.5.3 && <0.12,
+        effectful-core >=2.4.0.0 && <2.5,
+        hibet,
+        hspec >=2.11.12,
+        text >=2.0.2 && <2.1,
+        unordered-containers >=0.2.20 && <0.3
 
 test-suite hibet-parse
-  import:         common-options
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: test/parse
-  main-is:        Main.hs
-  ghc-options:    -Wall -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-    , hibet
-    , hspec
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     test/parse
+    other-modules:      Paths_hibet
+    autogen-modules:    Paths_hibet
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances
 
-  other-modules:  Paths_hibet
-  autogen-modules: Paths_hibet
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
+        -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        base >=4.11 && <5,
+        hibet,
+        hspec >=2.11.12
 
 benchmark hibet-benchmark
-  import:         common-options
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: benchmark
-  main-is:        Main.hs
-  build-depends:
-    , bytestring
-    , criterion
-    , file-embed
-    , hibet
-    , path
-    , path-io     >=1.4.0
-    , text
-    , text-rope
+    type:               exitcode-stdio-1.0
+    main-is:            Main.hs
+    hs-source-dirs:     benchmark
+    other-modules:
+        Common
+        Lines
+        Paths_hibet
 
-  --  , weigh
-  --  , streamly
-  --  , unordered-containers
-  --  , conduit
-  --  , async
+    autogen-modules:    Paths_hibet
+    default-language:   Haskell2010
+    default-extensions:
+        DataKinds DeriveGeneric DerivingStrategies DuplicateRecordFields
+        FlexibleContexts FlexibleInstances GADTs LambdaCase
+        MultiParamTypeClasses OverloadedStrings PolyKinds RankNTypes
+        RecordWildCards ScopedTypeVariables TemplateHaskell TupleSections
+        TypeApplications TypeFamilies TypeOperators TypeSynonymInstances
+        UndecidableInstances
 
-  other-modules:
-    Common
-    Lines
-    Paths_hibet
-  autogen-modules: Paths_hibet
+    ghc-options:
+        -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+        -Wincomplete-record-updates -Wredundant-constraints
+        -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
+        -fwrite-ide-info -hiedir=.hie -Wunused-packages -threaded -rtsopts
+        -with-rtsopts=-N
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+    build-depends:
+        base >=4.11 && <5,
+        bytestring >=0.11.5.3 && <0.12,
+        criterion >=1.6.4.0,
+        file-embed >=0.0.16.0,
+        hibet,
+        path >=0.9.5 && <0.10,
+        path-io >=1.4.0 && <1.9,
+        text >=2.0.2 && <2.1,
+        text-rope >=0.3 && <0.4

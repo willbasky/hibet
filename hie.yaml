@@ -1,7 +1,7 @@
 cradle:
-  stack:
+  cabal:
     - path: "./src"
-      component: "hibet:lib"
+      component: "lib:hibet"
 
     - path: "./app/Main.hs"
       component: "hibet:exe:hibet"
@@ -21,11 +21,8 @@ cradle:
     - path: "./benchmark/Main.hs"
       component: "hibet:bench:hibet-benchmark"
 
-    - path: "./benchmark/Paths_hibet.hs"
+    - path: "./benchmark/Common.hs"
       component: "hibet:bench:hibet-benchmark"
 
     - path: "./benchmark/Lines.hs"
-      component: "hibet:bench:hibet-benchmark"
-
-    - path: "./benchmark/Common.hs"
       component: "hibet:bench:hibet-benchmark"

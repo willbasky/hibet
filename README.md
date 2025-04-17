@@ -16,21 +16,17 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
 ## Installation
 
-1. Install [stack](https://docs.haskellstack.org/en/stable/README/#how-to-install)
+1. To install `hibet` you want to have `cabal` and `ghc` installed. The easiest way to grab it is using [ghcup](https://www.haskell.org/ghcup/). Once the `ghcup` is installed run command to install `ghc` and `cabal`:
+
+    ghcup install ghc 9.6.7 && ghcup install cabal 3.12.1.0
 
 2. Install hibet
 
-        git clone https://github.com/willbasky/hibet.git
+    git clone https://github.com/willbasky/hibet.git
 
-        cd ./hibet
+    cd ./hibet
 
-        stack install hibet
-
-or
-
-    cabal new-install exe:hibet --overwrite-policy=always
-
-
+    cabal install exe:hibet --overwrite-policy=always 
 
 ## Usage video
 
