@@ -14,6 +14,7 @@ and this project adheres to
 * Update `hie` stuff
 * Update deps versions in cabal file
 * Update README
+* Update github actions
 
 ## [1.4.0] - 2024-10-21
 
