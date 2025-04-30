@@ -1,0 +1,19 @@
+services:
+  cache-server:
+    image: ghcr.io/falcondev-oss/github-actions-cache-server:latest
+    ports:
+      - '3000:3000'
+    environment:
+      API_BASE_URL: http://cache-server:3000
+      ACT_CACHE_AUTH_KEY: foo
+    volumes:
+      - cache-data:/app/.data
+    networks:
+      - act-network
+
+volumes:
+  cache-data:
+
+networks:
+  act-network:
+    name: act-network
