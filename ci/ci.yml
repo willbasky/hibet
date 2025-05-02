@@ -130,6 +130,10 @@ jobs:
         run: |
           rm -f cabal.project.local
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
+      - name: Build binary
+        run: |
+          mkdir -p dist
+          $CABAL v2-install hibet --installdir=dist --overwrite-policy=always --install-method=copy
       - name: save cache
         if: always()
         uses: actions/cache/save@v4
