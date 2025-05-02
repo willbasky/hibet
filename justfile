@@ -1,5 +1,6 @@
-CI_DIR := "./ci"
+CI_DIR := "ci"
 CI_CONFIG := "ci.yml"
+# CI_CONFIG := "haskell.yml"
 GHC_VERSION := "9.6.7"
 
 # prepare the environment for the project
@@ -33,8 +34,13 @@ build_ci_image:
 
 # run cache server for local ci
 ci_cache_server:
-    docker compose up --build {{CI_DIR}}/docker-compose.yml
+    docker compose -f {{CI_DIR}}/docker-compose.yml up --build 
 
 # run the project in ci with act tool
-ci: build_ci_image
+ci_act: build_ci_image
     act -W {{CI_DIR}}/{{CI_CONFIG}}
+
+# run ci-related stuff in one shot
+ci: 
+    zellij d ci || true
+    zellij -l {{CI_DIR}}/ci_layout.kdl attach -c ci 

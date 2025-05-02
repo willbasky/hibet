@@ -1,0 +1,12 @@
+layout {
+    pane split_direction="vertical" {
+        pane {
+            command "just"
+            args "ci_cache_server"
+        }
+        pane {
+            command "just"
+            args "ci_act"
+        }
+    }
+}
