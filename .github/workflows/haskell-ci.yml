@@ -8,14 +8,18 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.19.20250330
+# version: 0.19.20250411
 #
-# REGENDATA ("0.19.20250330",["github","hibet.cabal"])
+# REGENDATA ("0.19.20250411",["github","hibet.cabal"])
 #
 name: Haskell-CI
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   linux:
     name: Haskell-CI - Linux - ${{ matrix.compiler }}
@@ -23,7 +27,7 @@ jobs:
     timeout-minutes:
       60
     container:
-      image: buildpack-deps:jammy
+      image: buildpack-deps:noble
     continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
@@ -181,9 +185,6 @@ jobs:
         run: |
           cd ${PKGDIR_hibet} || false
           ${CABAL} -vnormal check
-      - name: haddock
-        run: |
-          $CABAL v2-haddock --disable-documentation --haddock-all $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
       - name: unconstrained build
         run: |
           rm -f cabal.project.local

@@ -7,7 +7,6 @@ GHC_VERSION := "9.6.7"
 prepare: 
     cabal update
     gen-hie > hie.yaml
-    haskell-ci regenerate
 
 install: 
     cabal new-install exe:hibet --overwrite-policy=always
@@ -44,3 +43,7 @@ ci_act: build_ci_image
 ci: 
     zellij d ci || true
     zellij -l {{CI_DIR}}/ci_layout.kdl attach -c ci 
+
+# generate ci actions for master branch
+gen-ci:
+    haskell-ci regenerate --no-haddock --distribution noble --cabal-install-version 3.14.2.0 --branches master
