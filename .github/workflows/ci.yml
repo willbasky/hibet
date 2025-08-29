@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up GHC ${{ matrix.ghc-version }}
+      - name: Set up GHC
         uses: haskell-actions/setup@v2
         id: setup
         with:
@@ -37,9 +37,9 @@ jobs:
       - name: restore cache
         uses: actions/cache/restore@v4
         with:
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.ghc-version }}-${{ github.sha }}
           path: ~/.cabal/store
-          restore-keys: ${{ runner.os }}-${{ matrix.compiler }}-
+          restore-keys: ${{ runner.os }}-${{ matrix.ghc-version }}-
 
       - name: Install dependencies
         # If we had an exact cache hit, the dependencies will be up to date.
@@ -50,7 +50,7 @@ jobs:
         if: always()
         uses: actions/cache/save@v4
         with:
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.ghc-version }}-${{ github.sha }}
           path: ~/.cabal/store
 
       - name: Build dependencies
