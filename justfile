@@ -1,8 +1,7 @@
-
+# prepare the environment for the project
 prepare: 
     cabal update
     gen-hie > hie.yaml
-    haskell-ci regenerate
 
 install: 
     cabal new-install exe:hibet --overwrite-policy=always
