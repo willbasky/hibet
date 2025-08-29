@@ -90,7 +90,7 @@ lookupTibetScript radix txt = case lookup radix txt of
 > parseWylieInput radix "(balkana)"
 Right [([],[["balka"]])])
 @
-it reads radixed words and drops non-radixed in anyway.
+it reads radixed words and drops non-radixed anyway.
 Therefore dirty wylie text should parsed better beforehand.
 There are two approaches
 1. Add non-wylie chars and strings to sillables
