@@ -69,3 +69,7 @@ hibet/
 pkg/
 .hie/
 
+# Nix/direnv
+result
+.direnv
+.env

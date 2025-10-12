@@ -26,7 +26,43 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
     cd ./hibet
 
-    cabal install exe:hibet --overwrite-policy=always 
+    cabal install exe:hibet --overwrite-policy=always
+
+## Using Nix and direnv (Alternative)
+
+If you have [Nix](https://nixos.org/download.html) and [direnv](https://direnv.net/) installed, you can use them for a reproducible development environment:
+
+1. Clone the repository:
+
+    git clone https://github.com/willbasky/hibet.git
+    cd ./hibet
+
+2. Allow direnv to load the environment:
+
+    direnv allow
+
+This will automatically set up a development shell with all necessary dependencies (GHC, Cabal, HLS, ghcid) using the Nix flake configuration.
+
+### Building with Nix
+
+You can also build the project directly with Nix:
+
+    nix build
+
+Or enter a development shell manually:
+
+    nix develop
+
+### Running with Nix
+
+You can run hibet directly without cloning or installing:
+
+    nix run github:willbasky/hibet -- shell
+
+Or run any other hibet command:
+
+    nix run github:willbasky/hibet -- show names
+    nix run github:willbasky/hibet -- -h
 
 ## Usage video
 
