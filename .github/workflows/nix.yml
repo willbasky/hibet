@@ -8,9 +8,6 @@ on:
     branches:
       - master
 
-on:
-  - push
-  - pull_request
 jobs:
   check_nix:
     name: Check nix build
