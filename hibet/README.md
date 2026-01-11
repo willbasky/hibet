@@ -53,6 +53,11 @@ Or enter a development shell manually:
 
     nix develop
 
+Build specific package:
+
+    nix build .#hibet
+    nix build .#hewts
+
 ### Running with Nix
 
 You can run hibet directly without cloning or installing:
