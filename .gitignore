@@ -65,7 +65,6 @@ src/Sandbox.hs
 # Build_files
 PKGBUILD
 *.pkg.tar.xz
-hibet/
 pkg/
 .hie/
 

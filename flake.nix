@@ -1,5 +1,5 @@
 {
-  description = "hibet";
+  description = "hibet and hewts";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -9,17 +9,24 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {inherit system;};
+        pkgs = import nixpkgs { inherit system; };
 
-        haskellPackages = pkgs.haskellPackages;
+        haskellPackages = pkgs.haskellPackages.override {
+          overrides = hself: hsuper: {
+            hibet = hself.callCabal2nix "hibet" ./hibet {};
+            hewts = hself.callCabal2nix "hewts" ./hewts {};
+          };
+        };
       in
       {
-        packages.hibet = haskellPackages.callCabal2nix "hibet" ./. {};
+        packages = {
+          hibet = haskellPackages.hibet;
+          hewts = haskellPackages.hewts;
+          default = haskellPackages.hibet;
+        };
 
-        defaultPackage = self.packages.${system}.hibet;
-
-        devShell = pkgs.mkShell {
-          buildInputs = with haskellPackages; [
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs.haskellPackages; [
             haskell-language-server
             ghcid
             cabal-install

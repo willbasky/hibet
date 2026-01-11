@@ -1,0 +1,24 @@
+[[titles]]
+    path = "Hopkins-2015-T|E"
+    id = 5
+    label = "Hopkins"
+    about = "The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org"
+    abbreviations = "Hopkins"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+    year = 2015
+
+[[titles]]
+    path = "RangjungYeshe-T|E"
+    id = 7
+    label = "Rangjung Yeshe"
+    about = "Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org"
+    abbreviations = "RangjungYeshe"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
