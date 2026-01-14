@@ -18,13 +18,13 @@ extra-doc-files:
 
 tested-with:     GHC ==9.6.7
 
+common exec-options
+  ghc-options:
+    -with-rtsopts=-N1 -with-rtsopts=-qn8 -with-rtsopts=-A64m
+    -with-rtsopts=-AL256m -with-rtsopts=-I0 -with-rtsopts=-T
+
 common common-options
   build-depends:      base >=4.11 && <5
-  ghc-options:
-    -split-sections -with-rtsopts=-N1 -with-rtsopts=-qn8
-    -with-rtsopts=-A64m -with-rtsopts=-AL256m -with-rtsopts=-I0
-    -with-rtsopts=-T
-
   default-language:   Haskell2010
   default-extensions:
     ConstraintKinds
@@ -35,6 +35,7 @@ common common-options
     KindSignatures
     LambdaCase
     OverloadedStrings
+    PatternSynonyms
     RecordWildCards
     ScopedTypeVariables
     StandaloneDeriving
@@ -45,7 +46,26 @@ common common-options
 library
   import:          common-options
   hs-source-dirs:  src
-  exposed-modules: Hewts
+  exposed-modules:
+    Convert
+    Convert.WylieUnicode
+    Parser
+    Parser.Common
+    Parser.Structure
+    Parser.Structure.Structure1
+    Parser.Structure.Structure2
+    Parser.Structure.Structure3
+    Syllables
+
+  build-depends:
+    , bytestring
+    , containers
+    , extra
+    , massiv
+    , megaparsec
+    , pretty-simple
+    , text
+    , unordered-containers
 
 executable hewts
   import:         common-options
@@ -59,7 +79,8 @@ test-suite hewts-test
   type:           exitcode-stdio-1.0
   hs-source-dirs: test
   main-is:        Spec.hs
-  build-depends:  hewts
+
+  -- build-depends:  hewts
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
 
 benchmark hewts-benchmark
@@ -67,5 +88,6 @@ benchmark hewts-benchmark
   type:           exitcode-stdio-1.0
   hs-source-dirs: benchmark
   main-is:        Main.hs
-  build-depends:  hewts
+
+  -- build-depends:  hewts
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N

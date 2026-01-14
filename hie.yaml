@@ -1,28 +1,40 @@
 cradle:
   cabal:
-    - path: "./src"
+    - path: "hewts/src"
+      component: "lib:hewts"
+
+    - path: "hewts/app/Main.hs"
+      component: "hewts:exe:hewts"
+
+    - path: "hewts/test"
+      component: "hewts:test:hewts-test"
+
+    - path: "hewts/benchmark/Main.hs"
+      component: "hewts:bench:hewts-benchmark"
+
+    - path: "hibet/src"
       component: "lib:hibet"
 
-    - path: "./app/Main.hs"
+    - path: "hibet/app/Main.hs"
       component: "hibet:exe:hibet"
 
-    - path: "./test/pretty"
+    - path: "hibet/test/pretty"
       component: "hibet:test:hibet-pretty"
 
-    - path: "./test/labels"
+    - path: "hibet/test/labels"
       component: "hibet:test:hibet-labels"
 
-    - path: "./test/env"
+    - path: "hibet/test/env"
       component: "hibet:test:hibet-env"
 
-    - path: "./test/parse"
+    - path: "hibet/test/parse"
       component: "hibet:test:hibet-parse"
 
-    - path: "./benchmark/Main.hs"
+    - path: "hibet/benchmark/Main.hs"
       component: "hibet:bench:hibet-benchmark"
 
-    - path: "./benchmark/Common.hs"
+    - path: "hibet/benchmark/Common.hs"
       component: "hibet:bench:hibet-benchmark"
 
-    - path: "./benchmark/Lines.hs"
+    - path: "hibet/benchmark/Lines.hs"
       component: "hibet:bench:hibet-benchmark"

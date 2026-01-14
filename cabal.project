@@ -8,3 +8,6 @@ benchmarks: True
 index-state:
   -- Bump this if you need newer packages from Hackage
   , hackage.haskell.org 2026-01-11T13:45:38Z
+
+constraints: 
+  text >= 2.1.2

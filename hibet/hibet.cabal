@@ -389,5 +389,5 @@ benchmark hibet-benchmark
     , file-embed  >=0.0.16.0
     , path        >=0.9.5    && <0.10
     , path-io     >=1.4.0    && <1.9
-    , text        >=2.0.2    && <2.1
+    , text        
     , text-rope   >=0.3      && <0.4
