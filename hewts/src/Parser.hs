@@ -25,4 +25,5 @@ allRules =
         , S.pStructure15
         , S.pStructure16
         , S.pStructure17
+        , S.pStructure18
         ]

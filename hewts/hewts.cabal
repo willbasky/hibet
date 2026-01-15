@@ -52,6 +52,7 @@ library
     Parser
     Parser.Common
     Parser.Structure
+    Parser.Structure.Grammar08
     Parser.Structure.Grammar11
     Parser.Structure.Grammar12
     Parser.Structure.Grammar13
@@ -75,6 +76,7 @@ library
     Parser.Structure.Structure15
     Parser.Structure.Structure16
     Parser.Structure.Structure17
+    Parser.Structure.Structure18
     Syllables
 
   build-depends:
