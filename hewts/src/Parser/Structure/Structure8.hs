@@ -6,7 +6,6 @@ On the basis of the Tibetan spelling grammar 4.14
 module Parser.Structure.Structure8
     ( pStructure8
     , pStructure14
-    , pStructureConsonants14
     ) where
 
 import Parser.Common
@@ -27,30 +26,27 @@ pStructure8 = do
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure8 "བག"
--- Right "བག"
+-- >>> prettyPrint $ parseEither pStructure8 "བཏ"
+-- Right "བཏ"
 
+-- Tibetan spelling grammar 4.14
 pStructure14 :: Parser Text
-pStructure14 = do
-    consT <- pStructureConsonants14
-    vowel <- optional pVowel
-    pure $ maybe consT (consT :>) vowel
-
-pStructureConsonants14 :: Parser Text
-pStructureConsonants14 =
+pStructure14 =
     choice
-        [ try $ parseConsonants14 pPrefixGa pRoot1
-        , try $ parseConsonants14 pPrefixDa pRoot2
-        , try $ parseConsonants14 pPrefixBa pRoot3
-        , try $ parseConsonants14 pPrefixMa pRoot4
-        , try $ parseConsonants14 pPrefixA pRoot5
+        [ parse14 pPrefixGa pRoot1
+        , parse14 pPrefixDa pRoot2
+        , parse14 pPrefixBa pRoot3
+        , parse14 pPrefixMa pRoot4
+        , parse14 pPrefixA pRoot5
         ]
 
-parseConsonants14 :: Parser Char -> Parser Char -> Parser Text
-parseConsonants14 parsePrefix parseRoot = do
+parse14 :: Parser Char -> Parser Char -> Parser Text
+parse14 parsePrefix parseRoot = do
     prefix <- parsePrefix
     root <- parseRoot
-    pure $ T.empty :> prefix :> root
+    vowel <- optional pVowel
+    let consT = T.empty :> prefix :> root
+    pure $ maybe consT (consT :>) vowel
 
 --
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག.

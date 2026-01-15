@@ -17,9 +17,15 @@ import Text.Megaparsec.Char
 pStructure7 :: Parser Text
 pStructure7 =
     choice
-        [ parse_7_1
-        , parse_7_2
+        [ try parse_7_1
+        , try parse_7_2
         ]
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure7 "བརྒྱ"
+-- Right "བརྒྱ"
 
 --
 -- root group [ 'ཀ', 'ག' ]

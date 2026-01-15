@@ -17,15 +17,21 @@ import Text.Megaparsec.Char
 pStructure6 :: Parser Text
 pStructure6 =
     choice
-        [ parse_6_1
-        , parse_6_2
-        , parse_6_3
-        , parse_6_4
-        , parse_6_5
-        , parse_6_6
-        , parse_6_7
-        , parse_6_8
+        [ try parse_6_1
+        , try parse_6_2
+        , try parse_6_3
+        , try parse_6_4
+        , try parse_6_5
+        , try parse_6_6
+        , try parse_6_7
+        , try parse_6_8
         ]
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure6 "འདྲ"
+-- Right "འདྲ"
 
 --
 -- (1) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] with prefix ད under subfix ཡ.

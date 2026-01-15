@@ -9,7 +9,7 @@ module Parser.Structure.Structure9
     ) where
 
 import Parser.Common
-import Parser.Structure.Structure8 (pStructure14, pStructureConsonants14)
+import Parser.Structure.Structure8 (pStructure14)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -20,9 +20,21 @@ import Text.Megaparsec.Char
 
 pStructure9 :: Parser Text
 pStructure9 = do
-    struct <- pStructureConsonants14 <|> pStructure14
+    struct <- pStructure14
     suffix <- pSuffix15
     pure $ struct :> suffix
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure9 "བཏག"
+-- Right "བཏག"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure9 "བཏིག"
+-- Right "བཏིག"
 
 --
 -- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ] .

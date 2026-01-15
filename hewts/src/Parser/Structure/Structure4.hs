@@ -14,10 +14,28 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 
 pStructure4 :: Parser Text
-pStructure4 = choice [parse_4_1, parse_4_2, parse_4_3, parse_4_4]
+pStructure4 =
+    choice
+        [ try parse_4_1
+        , try parse_4_2
+        , try parse_4_3
+        , try parse_4_4
+        ]
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure4 "སྒྲ"
+-- Right "སྒྲ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure4 "སྣྲ"
+-- Right "སྣྲ"
 
 --
--- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ. 
+-- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ.
 roots1 :: HashSet Char
 roots1 = fetchChars subConsonants [1, 3, 16]
 
@@ -35,7 +53,7 @@ parse_4_1 = do
     pure $ maybe consT (consT :>) vowel
 
 --
--- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ or ར. 
+-- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ or ར.
 roots2 :: HashSet Char
 roots2 = fetchChars subConsonants [1, 3, 13, 15, 16]
 
@@ -61,8 +79,8 @@ parse_4_2 = do
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither parse_4_2 "སྤྲ"
--- Right "སྤྲ"
+-- >>> prettyPrint $ parseEither parse_4_2 "སྤྱ"
+-- Right "སྤྱ"
 
 parse_4_3 :: Parser Text
 parse_4_3 = do
@@ -83,5 +101,3 @@ parse_4_4 = do
     eof
     let consT = T.empty :> superfix :> root :> subfix
     pure $ maybe consT (consT :>) vowel
-
-

@@ -14,7 +14,19 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 
 pStructure3 :: Parser Text
-pStructure3 = choice [parse_3_wa, parse_3_ya, parse_3_ra, parse_3_la]
+pStructure3 =
+    choice
+        [ try parse_3_wa
+        , try parse_3_ya
+        , try parse_3_ra
+        , try parse_3_la
+        ]
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure3 "སླ"
+-- Right "སླ"
 
 --
 -- Roots above subfix 'ཝ' are [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]
@@ -95,11 +107,5 @@ parse_3_la = do
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither parse_3_la "ཕླ"
--- Left "1:1:
---     |
---   1 | ཕླ
---     | ^
---   unexpected 'ཕ'
---   expecting Subfix ལ should be placed below the root [ 'ཀ', 'ག', 'བ', 'ཟ', 'ར', 'ས' ]
---   "
+-- >>> prettyPrint $ parseEither parse_3_la "སླ"
+-- Right "སླ"
