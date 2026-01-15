@@ -14,6 +14,7 @@ module Parser.Structure
     , S.pStructure13
     , S.pStructure14
     , S.pStructure15
+    , S.pStructure16
     ) where
 
 
@@ -32,3 +33,4 @@ import qualified Parser.Structure.Structure12 as S
 import qualified Parser.Structure.Structure13 as S
 import qualified Parser.Structure.Structure14 as S
 import qualified Parser.Structure.Structure15 as S
+import qualified Parser.Structure.Structure16 as S
