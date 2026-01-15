@@ -2,7 +2,7 @@
 Tibetan spelling structure 4
 On the basis of the Tibetan spelling grammar 4.10
 -}
-module Parser.Structure.Structure4 (pStructure4) where
+module Parser.Structure.Structure04 (pStructure4) where
 
 import Parser.Common
 

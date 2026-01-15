@@ -3,7 +3,7 @@ Tibetan spelling structure 3
 On the basis of the Tibetan spelling grammar 4.9
 -}
 
-module Parser.Structure.Structure3 (pStructure3) where
+module Parser.Structure.Structure03 (pStructure3) where
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

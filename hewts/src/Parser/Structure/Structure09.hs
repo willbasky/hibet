@@ -3,13 +3,13 @@ Tibetan spelling structure 9
 On the basis of the Tibetan spelling grammar 4.14 and 4.15
 -}
 
-module Parser.Structure.Structure9
+module Parser.Structure.Structure09
     ( pStructure9
-    , pSuffixGrammar15
     ) where
 
 import Parser.Common
-import Parser.Structure.Structure8 (pGrammar14)
+import Parser.Structure.Grammar14 (pGrammar14)
+import Parser.Structure.Grammar15 (pGrammar15)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -21,7 +21,7 @@ import Text.Megaparsec.Char
 pStructure9 :: Parser Text
 pStructure9 = do
     struct <- pGrammar14
-    suffix <- pSuffixGrammar15
+    suffix <- pGrammar15
     pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -36,12 +36,4 @@ pStructure9 = do
 -- >>> prettyPrint $ parseEither pStructure9 "བཏིག"
 -- Right "བཏིག"
 
---
--- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ] .
-suffix15 :: HashSet Char
-suffix15 = fetchChars consonants [3, 4, 11, 12, 15, 16, 23, 25, 26, 28]
 
-pSuffixGrammar15 :: Parser Char
-pSuffixGrammar15 =
-    satisfy (`member` suffix15)
-        <?> "A suffix from [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ]"

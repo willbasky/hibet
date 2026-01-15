@@ -1,13 +1,14 @@
 {-
-Tibetan spelling structure 10
-On the basis of the Tibetan spelling grammar 4.11 and 4.15
+Tibetan spelling structure 8
+On the basis of the Tibetan spelling grammar 4.14
 -}
 
-module Parser.Structure.Structure10 (pStructure10) where
+module Parser.Structure.Structure08
+    ( pStructure8
+    ) where
 
 import Parser.Common
-import Parser.Structure.Grammar11 (pGrammar11)
-import Parser.Structure.Grammar15 (pGrammar15)
+import Parser.Structure.Grammar14
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -16,21 +17,22 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-pStructure10 :: Parser Text
-pStructure10 = do 
-    structure8 <- pGrammar11
-    suffix <- pGrammar15
+pStructure8 :: Parser Text
+pStructure8 = do
+    struct <- pGrammar14
     eof
-    pure $ structure8 :> suffix
+    pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure10 "བརྒན"
--- Right "བརྒན"
+-- >>> prettyPrint $ parseEither pStructure8 "བཏ"
+-- Right "བཏ"
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure10 "བརྒིག"
--- Right "བརྒིག"
+-- >>> prettyPrint $ parseEither pStructure8 "གཏ"
+-- Right "གཏ"
+
+

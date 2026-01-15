@@ -16,15 +16,15 @@ module Parser.Structure
     ) where
 
 
-import qualified Parser.Structure.Structure1 as S
-import qualified Parser.Structure.Structure2 as S
-import qualified Parser.Structure.Structure3 as S
-import qualified Parser.Structure.Structure4 as S
-import qualified Parser.Structure.Structure5 as S
-import qualified Parser.Structure.Structure6 as S
-import qualified Parser.Structure.Structure7 as S
-import qualified Parser.Structure.Structure8 as S
-import qualified Parser.Structure.Structure9 as S
+import qualified Parser.Structure.Structure01 as S
+import qualified Parser.Structure.Structure02 as S
+import qualified Parser.Structure.Structure03 as S
+import qualified Parser.Structure.Structure04 as S
+import qualified Parser.Structure.Structure05 as S
+import qualified Parser.Structure.Structure06 as S
+import qualified Parser.Structure.Structure07 as S
+import qualified Parser.Structure.Structure08 as S
+import qualified Parser.Structure.Structure09 as S
 import qualified Parser.Structure.Structure10 as S
 import qualified Parser.Structure.Structure11 as S
 import qualified Parser.Structure.Structure12 as S

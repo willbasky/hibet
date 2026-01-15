@@ -6,8 +6,8 @@ On the basis of the Tibetan spelling grammar 4.12 and 4.15
 module Parser.Structure.Structure11 (pStructure11) where
 
 import Parser.Common
-import Parser.Structure.Structure6 (pGrammar12)
-import Parser.Structure.Structure9 (pSuffixGrammar15)
+import Parser.Structure.Grammar12 (pGrammar12)
+import Parser.Structure.Grammar15 (pGrammar15)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -19,7 +19,7 @@ import Text.Megaparsec.Char
 pStructure11 :: Parser Text
 pStructure11 = do 
     structure8 <- pGrammar12
-    suffix <- pSuffixGrammar15
+    suffix <- pGrammar15
     pure $ structure8 :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL

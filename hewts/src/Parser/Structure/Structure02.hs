@@ -3,7 +3,7 @@ Tibetan spelling structure 2
 On the basis of the Tibetan spelling grammar 4.8
 -}
 
-module Parser.Structure.Structure2 
+module Parser.Structure.Structure02 
     ( pStructure2
     ) where
 

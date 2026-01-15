@@ -1,12 +1,8 @@
 {-
-Tibetan spelling structure 8
-On the basis of the Tibetan spelling grammar 4.14
+Tibetan spelling grammar 4.14
 -}
 
-module Parser.Structure.Structure8
-    ( pStructure8
-    , pGrammar14
-    ) where
+module Parser.Structure.Grammar14 (pGrammar14) where
 
 import Parser.Common
 
@@ -16,24 +12,6 @@ import Data.Text (Text, pattern (:<), pattern (:>))
 import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
-
-pStructure8 :: Parser Text
-pStructure8 = do
-    struct <- pGrammar14
-    eof
-    pure struct
-
--- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure8 "བཏ"
--- Right "བཏ"
-
--- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure8 "གཏ"
--- Right "གཏ"
 
 -- Tibetan spelling grammar 4.14
 pGrammar14 :: Parser Text

@@ -6,8 +6,11 @@ On the basis of the Tibetan spelling grammar 4.11, 4.15, 4.16
 module Parser.Structure.Structure14 (pStructure14) where
 
 import Parser.Common
-import Parser.Structure.Structure5 (pGrammar11)
-import Parser.Structure.Structure13 (pSuffixPostfixDaGrammar16, pSuffixPostfixSaGrammar16)
+import Parser.Structure.Grammar11 (pGrammar11)
+import Parser.Structure.Grammar16
+    ( pGrammar16Da
+    , pGrammar16Sa
+    )
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -18,10 +21,11 @@ import Text.Megaparsec.Char
 
 pStructure14 :: Parser Text
 pStructure14 = do
-    struct <- choice
-        [ try $ parse14 pSuffixPostfixDaGrammar16 pPostfixDa
-        , try $ parse14 pSuffixPostfixSaGrammar16 pPostfixSa
-        ]
+    struct <-
+        choice
+            [ try $ parse14 pGrammar16Da pPostfixDa
+            , try $ parse14 pGrammar16Sa pPostfixSa
+            ]
     eof
     pure struct
 

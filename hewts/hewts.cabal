@@ -52,20 +52,26 @@ library
     Parser
     Parser.Common
     Parser.Structure
-    Parser.Structure.Structure1
-    Parser.Structure.Structure2
-    Parser.Structure.Structure3
-    Parser.Structure.Structure4
-    Parser.Structure.Structure5
-    Parser.Structure.Structure6
-    Parser.Structure.Structure7
-    Parser.Structure.Structure8
-    Parser.Structure.Structure9
+    Parser.Structure.Grammar11
+    Parser.Structure.Grammar12
+    Parser.Structure.Grammar13
+    Parser.Structure.Grammar14
+    Parser.Structure.Grammar15
+    Parser.Structure.Grammar16
+    Parser.Structure.Structure01
     Parser.Structure.Structure10
     Parser.Structure.Structure11
     Parser.Structure.Structure12
     Parser.Structure.Structure13
     Parser.Structure.Structure14
+    Parser.Structure.Structure02
+    Parser.Structure.Structure03
+    Parser.Structure.Structure04
+    Parser.Structure.Structure05
+    Parser.Structure.Structure06
+    Parser.Structure.Structure07
+    Parser.Structure.Structure08
+    Parser.Structure.Structure09
     Syllables
 
   build-depends:
