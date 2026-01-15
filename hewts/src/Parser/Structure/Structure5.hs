@@ -3,7 +3,11 @@ Tibetan spelling structure 5
 On the basis of the Tibetan spelling grammar 4.11
 -}
 
-module Parser.Structure.Structure5 (pStructure5) where
+module Parser.Structure.Structure5
+    ( pStructure5
+    , pStructure11
+    , pStructureConsonants11
+    ) where
 
 import Parser.Common
 
@@ -15,7 +19,37 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 
 pStructure5 :: Parser Text
-pStructure5 = choice [parse_5_1, parse_5_2, parse_5_3]
+pStructure5 = do
+    struct <- pStructure11
+    eof
+    pure struct
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure5 "བལྟ"
+-- Right "བལྟ"
+
+pStructure11 :: Parser Text
+pStructure11 = do
+    consT <- pStructureConsonants11
+    vowel <- optional pVowel
+    pure $ maybe consT (consT :>) vowel
+
+pStructureConsonants11 :: Parser Text
+pStructureConsonants11 =
+        choice
+            [ try $ parseConsonants11 pPrefixBa pSuperfixRa pRoot1
+            , try $ parseConsonants11 pPrefixBa pSuperfixLa pRoot2
+            , try $ parseConsonants11 pPrefixBa pSuperfixSa pRoot3
+            ]
+
+parseConsonants11 :: Parser Char -> Parser Char -> Parser Char -> Parser Text
+parseConsonants11 parsePrefix parseSuperfix parseRoot = do
+    prefix <- parsePrefix
+    superfix <- parseSuperfix
+    root <- parseRoot
+    pure $ T.empty :> prefix :> superfix :> root
 
 --
 -- (1) root group [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཛ' ] with prefix བ under superfix ར.
@@ -27,16 +61,6 @@ pRoot1 =
     satisfy (`member` roots1)
         <?> "A root from [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཛ' ]"
 
-parse_5_1 :: Parser Text
-parse_5_1 = do
-    prefix <- pPrefixBa
-    superfix <- pSuperfixRa
-    root <- pRoot1
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> superfix :> root
-    pure $ maybe consT (consT :>) vowel
-
 --
 -- (2) root group [ 'ཏ', 'ད' ] with prefix བ under superfix ལ.
 roots2 :: HashSet Char
@@ -44,16 +68,6 @@ roots2 = fetchChars subConsonants [9, 11]
 
 pRoot2 :: Parser Char
 pRoot2 = satisfy (`member` roots2) <?> "A root from [ 'ཏ', 'ད' ]"
-
-parse_5_2 :: Parser Text
-parse_5_2 = do
-    prefix <- pPrefixBa
-    superfix <- pSuperfixLa
-    root <- pRoot2
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> superfix :> root
-    pure $ maybe consT (consT :>) vowel
 
 --
 -- (3) root group [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ' ] with prefix བ under superfix ས.
@@ -64,19 +78,3 @@ pRoot3 :: Parser Char
 pRoot3 =
     satisfy (`member` roots3)
         <?> "A root from [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ' ]"
-
-parse_5_3 :: Parser Text
-parse_5_3 = do
-    prefix <- pPrefixBa
-    superfix <- pSuperfixSa
-    root <- pRoot3
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> superfix :> root
-    pure $ maybe consT (consT :>) vowel
-
--- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither parse_5_3 "བསྒ"
--- Right "བསྒ"

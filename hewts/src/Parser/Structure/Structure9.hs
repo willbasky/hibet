@@ -3,10 +3,13 @@ Tibetan spelling structure 9
 On the basis of the Tibetan spelling grammar 4.14 and 4.15
 -}
 
-module Parser.Structure.Structure9 (pStructure9) where
+module Parser.Structure.Structure9
+    ( pStructure9
+    , pSuffix15
+    ) where
 
 import Parser.Common
-import Parser.Structure.Structure8 (pStructure8)
+import Parser.Structure.Structure8 (pStructure14, pStructureConsonants14)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -16,18 +19,17 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 
 pStructure9 :: Parser Text
-pStructure9 = do 
-    structure8 <- pStructure8
-    suffix <- pSuffix9
-    pure $ structure8 :> suffix
+pStructure9 = do
+    struct <- pStructureConsonants14 <|> pStructure14
+    suffix <- pSuffix15
+    pure $ struct :> suffix
 
 --
--- suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ] .
-suffix9 :: HashSet Char
-suffix9 = fetchChars consonants [3, 4, 11, 12, 15, 16, 23, 25, 26, 28]
+-- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ] .
+suffix15 :: HashSet Char
+suffix15 = fetchChars consonants [3, 4, 11, 12, 15, 16, 23, 25, 26, 28]
 
-pSuffix9 :: Parser Char
-pSuffix9 =
-    satisfy (`member` suffix9)
+pSuffix15 :: Parser Char
+pSuffix15 =
+    satisfy (`member` suffix15)
         <?> "A suffix from [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ]"
-

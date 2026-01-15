@@ -17,6 +17,12 @@ import Text.Megaparsec.Char
 pStructure2 :: Parser Text
 pStructure2 = choice [parse_2_ra, parse_2_la, parse_2_sa]
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure2 "སྒ"
+-- Right "སྒ"
+
 --
 -- Roots under superfix 'ར' are [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]
 raSuperfixRoot :: HashSet Char

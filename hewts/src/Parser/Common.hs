@@ -161,23 +161,23 @@ pPrefix = satisfy (`HS.member` prefix) <?> "Prefix character"
 
 -- Prefix 'ག' - 3
 pPrefixGa :: Parser Char 
-pPrefixGa = char $ fetchChar consonants 3
+pPrefixGa = char (fetchChar consonants 3) <?> "Prefix ག"
 
 -- Prefix 'ད' - 11
 pPrefixDa :: Parser Char 
-pPrefixDa = char $ fetchChar consonants 11
+pPrefixDa = char (fetchChar consonants 11) <?> "Prefix ད"
 
 -- Prefix 'བ' - 15
 pPrefixBa :: Parser Char 
-pPrefixBa = char $ fetchChar consonants 15
+pPrefixBa = char (fetchChar consonants 15) <?> "Prefix བ"
 
 -- Prefix 'མ' - 16
 pPrefixMa :: Parser Char 
-pPrefixMa = char $ fetchChar consonants 16
+pPrefixMa = char (fetchChar consonants 16) <?> "Prefix མ"
 
 -- Prefix 'འ' - 23
 pPrefixA :: Parser Char 
-pPrefixA = char $ fetchChar consonants 23
+pPrefixA = char (fetchChar consonants 23) <?> "Prefix འ"
 
 --
 -- Superfix
