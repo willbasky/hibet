@@ -5,7 +5,7 @@ On the basis of the Tibetan spelling grammar 4.11
 
 module Parser.Structure.Structure5
     ( pStructure5
-    , pStructure11
+    , pGrammar11
     ) where
 
 import Parser.Common
@@ -19,7 +19,7 @@ import Text.Megaparsec.Char
 
 pStructure5 :: Parser Text
 pStructure5 = do
-    struct <- pStructure11
+    struct <- pGrammar11
     eof
     pure struct
 
@@ -36,8 +36,8 @@ pStructure5 = do
 -- Right "བརྒ"
 
 -- Tibetan spelling grammar 4.11
-pStructure11 :: Parser Text
-pStructure11 =
+pGrammar11 :: Parser Text
+pGrammar11 =
         choice
             [ try $ parse11 pPrefixBa pSuperfixRa pRoot1
             , try $ parse11 pPrefixBa pSuperfixLa pRoot2

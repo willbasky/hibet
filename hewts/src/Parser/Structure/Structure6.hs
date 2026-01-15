@@ -3,7 +3,10 @@ Tibetan spelling structure 6
 On the basis of the Tibetan spelling grammar 4.12
 -}
 
-module Parser.Structure.Structure6 where
+module Parser.Structure.Structure6
+    ( pGrammar12
+    , pStructure6
+    ) where
 
 import Parser.Common
 
@@ -15,23 +18,51 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 
 pStructure6 :: Parser Text
-pStructure6 =
-    choice
-        [ try parse_6_1
-        , try parse_6_2
-        , try parse_6_3
-        , try parse_6_4
-        , try parse_6_5
-        , try parse_6_6
-        , try parse_6_7
-        , try parse_6_8
-        ]
+pStructure6 = do
+    struct <- pGrammar12
+    eof
+    pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pStructure6 "འདྲ"
 -- Right "འདྲ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure6 "མགྱ"
+-- Right "མགྱ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure6 "མགྲ"
+-- Right "མགྲ"
+
+-- Tibetan spelling grammar 4.12
+pGrammar12 :: Parser Text
+pGrammar12 =
+    choice
+        [ try $ parse12 pPrefixDa pRoot1 pSubfixYa
+        , try $ parse12 pPrefixDa pRoot2 pSubfixRa
+        , try $ parse12 pPrefixBa pRoot3 pSubfixYa
+        , try $ parse12 pPrefixBa pRoot4 pSubfixRa
+        , try $ parse12 pPrefixBa pRoot5 pSubfixLa
+        , try $ parse12 pPrefixMa pRoot6 (pSubfixYa <|> pSubfixRa)
+        , try $ parse12 pPrefixA pRoot7 pSubfixYa
+        , try $ parse12 pPrefixA pRoot8 pSubfixRa
+        ]
+
+parse12 :: Parser Char -> Parser Char -> Parser Char -> Parser Text
+parse12 parsePrefix parseRoot parseSubfix = do
+    prefix <- parsePrefix
+    root <- parseRoot
+    subfix <- parseSubfix
+    vowel <- optional pVowel
+    let consT = T.empty :> prefix :> root :> subfix
+    pure $ maybe consT (consT :>) vowel
 
 --
 -- (1) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] with prefix ད under subfix ཡ.
@@ -43,16 +74,6 @@ pRoot1 =
     satisfy (`member` roots1)
         <?> "A root from [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ]"
 
-parse_6_1 :: Parser Text
-parse_6_1 = do
-    prefix <- pPrefixDa
-    root <- pRoot1
-    subfix <- pSubfixYa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
-
 --
 -- (2) root group [ 'ཀ', 'ག', 'པ', 'བ' ] with prefix ད under subfix ཡ.
 roots2 :: HashSet Char
@@ -62,16 +83,6 @@ pRoot2 :: Parser Char
 pRoot2 =
     satisfy (`member` roots2)
         <?> "A root from [ 'ཀ', 'ག', 'པ', 'བ' ]"
-
-parse_6_2 :: Parser Text
-parse_6_2 = do
-    prefix <- pPrefixDa
-    root <- pRoot2
-    subfix <- pSubfixRa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
 
 --
 -- (3) root group [ 'ཀ', 'ག' ] with prefix བ under subfix ཡ.
@@ -83,16 +94,6 @@ pRoot3 =
     satisfy (`member` roots3)
         <?> "A root from [ 'ཀ', 'ག' ]"
 
-parse_6_3 :: Parser Text
-parse_6_3 = do
-    prefix <- pPrefixBa
-    root <- pRoot3
-    subfix <- pSubfixYa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
-
 --
 -- (4) root group [ 'ཀ', 'ག', 'ས' ] with prefix བ under subfix ར.
 roots4 :: HashSet Char
@@ -102,16 +103,6 @@ pRoot4 :: Parser Char
 pRoot4 =
     satisfy (`member` roots4)
         <?> "A root from [ 'ཀ', 'ག', 'ས' ]"
-
-parse_6_4 :: Parser Text
-parse_6_4 = do
-    prefix <- pPrefixBa
-    root <- pRoot4
-    subfix <- pSubfixRa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
 
 --
 -- (5) root group [ 'ཀ', 'ཟ', 'ར', 'ས' ] with prefix བ under subfix ལ.
@@ -123,16 +114,6 @@ pRoot5 =
     satisfy (`member` roots5)
         <?> "A root from [ 'ཀ', 'ཟ', 'ར', 'ས' ]"
 
-parse_6_5 :: Parser Text
-parse_6_5 = do
-    prefix <- pPrefixBa
-    root <- pRoot5
-    subfix <- pSubfixLa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
-
 --
 -- (6) root group [ 'ཁ', 'ག' ] with prefix མ under subfix ཡ or ར.
 roots6 :: HashSet Char
@@ -142,16 +123,6 @@ pRoot6 :: Parser Char
 pRoot6 =
     satisfy (`member` roots6)
         <?> "A root from [ 'ཁ', 'ག' ]"
-
-parse_6_6 :: Parser Text
-parse_6_6 = do
-    prefix <- pPrefixMa
-    root <- pRoot6
-    subfix <- pSubfixYa <|> pSubfixRa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
 
 --
 -- (7) root group [ 'ཁ', 'ག', 'ཕ', 'བ' ] with prefix འ under subfix ཡ.
@@ -163,16 +134,6 @@ pRoot7 =
     satisfy (`member` roots7)
         <?> "A root from [ 'ཁ', 'ག', 'ཕ', 'བ' ]"
 
-parse_6_7 :: Parser Text
-parse_6_7 = do
-    prefix <- pPrefixA
-    root <- pRoot7
-    subfix <- pSubfixYa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
-
 --
 -- (8) root group [ 'ཁ', 'ག', 'ད', 'ཕ', 'བ' ] with prefix འ under subfix ར.
 roots8 :: HashSet Char
@@ -182,19 +143,3 @@ pRoot8 :: Parser Char
 pRoot8 =
     satisfy (`member` roots8)
         <?> "A root from [ 'ཁ', 'ག', 'ད', 'ཕ', 'བ' ]"
-
-parse_6_8 :: Parser Text
-parse_6_8 = do
-    prefix <- pPrefixA
-    root <- pRoot8
-    subfix <- pSubfixRa
-    vowel <- optional pVowel
-    eof
-    let consT = T.empty :> prefix :> root :> subfix
-    pure $ maybe consT (consT :>) vowel
-
--- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither parse_6_8 "འདྲ"
--- Right "འདྲ"
