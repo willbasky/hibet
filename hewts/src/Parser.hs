@@ -26,4 +26,6 @@ allRules =
         , S.pStructure16
         , S.pStructure17
         , S.pStructure18
+        , S.pStructure19
+        , S.pStructure20
         ]

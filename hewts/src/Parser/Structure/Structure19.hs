@@ -1,11 +1,12 @@
 {-
-Tibetan spelling structure 3
-On the basis of the Tibetan spelling grammar 4.9
+Tibetan spelling structure 19
+On the basis of the Tibetan spelling grammar 4.9 and 4.15
 -}
 
-module Parser.Structure.Structure03 (pStructure3) where
+module Parser.Structure.Structure19 (pStructure19) where
 
 import Parser.Common
+import Parser.Structure.Grammar15 (pGrammar15)
 import Parser.Structure.Grammar09 (pGrammar9)
 
 import Data.Char (chr)
@@ -15,21 +16,21 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-pStructure3 :: Parser Text
-pStructure3 = do
+pStructure19 :: Parser Text
+pStructure19 = do
     struct <- pGrammar9
-    eof 
-    pure struct
+    suffix <- pGrammar15
+    eof
+    pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure3 "སྲོ"
--- Right "སྲོ"
+-- >>> prettyPrint $ parseEither pStructure19 "ཁྱོའ"
+-- Right "ཁྱོའ"
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither pStructure3 "སླ"
--- Right "སླ"
-
+-- >>> prettyPrint $ parseEither pStructure19 "བླིན"
+-- Right "བླིན"
