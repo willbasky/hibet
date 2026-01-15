@@ -14,4 +14,5 @@ allRules =
         , S.structure4
         , S.structure5
         , S.structure6
+        , S.structure7
         ]
