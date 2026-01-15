@@ -23,7 +23,7 @@ raSuperfixRoot :: HashSet Char
 raSuperfixRoot = fetchChars subConsonants [1, 3, 4, 7, 8, 9, 11, 12, 15, 16, 17, 19]
 
 pRaSuperfixRoot :: Parser Char
-pRaSuperfixRoot = satisfy (`member` raSuperfixRoot) <?> "<<Superfix ར should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]>>"
+pRaSuperfixRoot = satisfy (`member` raSuperfixRoot) <?> "Superfix ར should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]"
 
 parse_2_ra :: Parser Text
 parse_2_ra = do
@@ -40,7 +40,7 @@ laSuperfixRoot :: HashSet Char
 laSuperfixRoot = fetchChars subConsonants [1, 3, 4, 5, 7, 9, 11, 13, 15, 29]
 
 pLaSuperfixRoot :: Parser Char
-pLaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superfix ལ should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]>>"
+pLaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "Superfix ལ should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]"
 
 parse_2_la :: Parser Text
 parse_2_la = do
@@ -57,7 +57,7 @@ saSuperfixRoot :: HashSet Char
 saSuperfixRoot = fetchChars subConsonants [1, 3, 4, 8, 9, 11, 12, 13, 15, 16, 17]
 
 pSaSuperfixRoot :: Parser Char
-pSaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superfix ས should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]>>"
+pSaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "Superfix ས should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]"
 
 parse_2_sa :: Parser Text
 parse_2_sa = do
@@ -68,8 +68,8 @@ parse_2_sa = do
     let consT = T.empty :> superfix :> root
     pure $ maybe consT (consT :>) vowel
 
--- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
--- >>> prettyPrint $ parseEither parse_2_sa "སྒ"
+-- > import qualified Data.Text.Lazy as TL
+-- > import Text.Pretty.Simple
+-- > prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- > prettyPrint $ parseEither parse_2_sa "སྒ"
 -- Right "སྒ"

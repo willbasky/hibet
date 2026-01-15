@@ -33,6 +33,7 @@ parse_1sanskrit :: Parser Text
 parse_1sanskrit = do
     root <- pSanskrit
     vowel <- optional pVowel
+    eof
     let consT = T.empty :> root
     pure $ maybe consT (consT :>) vowel
 
@@ -45,5 +46,5 @@ parse_1sanskrit = do
 --   1 | ཊཱ
 --     |  ^
 --   unexpected 'ཱ'
---   expecting <<explicit vowel character>> or end of input
+--   expecting Vowel character or end of input
 --   "

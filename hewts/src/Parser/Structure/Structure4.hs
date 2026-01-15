@@ -22,7 +22,7 @@ roots1 :: HashSet Char
 roots1 = fetchChars subConsonants [1, 3, 16]
 
 pRoot1 :: Parser Char
-pRoot1 = satisfy (`member` roots1) <?> "<<roots [ 'ཀ', 'ག', 'མ' ]>>"
+pRoot1 = satisfy (`member` roots1) <?> "A root from [ 'ཀ', 'ག', 'མ' ]"
 
 parse_4_1 :: Parser Text
 parse_4_1 = do
@@ -40,7 +40,7 @@ roots2 :: HashSet Char
 roots2 = fetchChars subConsonants [1, 3, 13, 15, 16]
 
 pRoots2 :: Parser Char
-pRoots2 = satisfy (`member` roots2) <?> "<<roots [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ]>>"
+pRoots2 = satisfy (`member` roots2) <?> "A roots from [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ]"
 
 parse_4_2 :: Parser Text
 parse_4_2 = do
