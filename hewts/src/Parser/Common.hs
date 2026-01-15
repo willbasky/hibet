@@ -242,3 +242,11 @@ postfix = fetchChars consonants [11, 28]
 
 pPostfix :: Parser Char
 pPostfix = satisfy (`HS.member` postfix) <?> "Postfix character"
+
+-- Subfix 'ད' - 11
+pPostfixDa :: Parser Char
+pPostfixDa = char $ fetchChar consonants 11
+
+-- Subfix 'ས' - 28
+pPostfixSa :: Parser Char
+pPostfixSa = char $ fetchChar consonants 28

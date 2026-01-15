@@ -17,4 +17,9 @@ allRules =
         , S.pStructure7
         , S.pStructure8
         , S.pStructure9
+        , S.pStructure10
+        , S.pStructure11
+        , S.pStructure12
+        , S.pStructure13
+        , S.pStructure14
         ]

@@ -63,6 +63,9 @@ library
     Parser.Structure.Structure9
     Parser.Structure.Structure10
     Parser.Structure.Structure11
+    Parser.Structure.Structure12
+    Parser.Structure.Structure13
+    Parser.Structure.Structure14
     Syllables
 
   build-depends:

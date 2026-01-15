@@ -29,6 +29,12 @@ pStructure8 = do
 -- >>> prettyPrint $ parseEither pStructure8 "བཏ"
 -- Right "བཏ"
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure8 "གཏ"
+-- Right "གཏ"
+
 -- Tibetan spelling grammar 4.14
 pGrammar14 :: Parser Text
 pGrammar14 =
