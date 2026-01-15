@@ -7,5 +7,5 @@ import qualified Parser.Structure as S
 
 
 allRules :: Parser Text
-allRules = choice [S.structure1, S.structure2]
+allRules = choice [S.structure1, S.structure2, S.structure3, S.structure4]
 

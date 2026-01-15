@@ -62,8 +62,8 @@ consonants =
         ]
 
 -- Root consonants under superfix
-consonantsInSubPosition :: Vector P Char
-consonantsInSubPosition =
+subConsonants :: Vector P Char
+subConsonants =
     V.fromList
         Seq
         [ chr 0x0F90 --'ཀ' -- 1 
@@ -115,8 +115,8 @@ formatConstants txt = "[ '" `T.append` T.replace "," "', '" comma `T.append` "' 
     where
         comma = T.intersperse ',' txt
 
-fetchChar :: Int -> Char
-fetchChar i = consonants V.! i - 1
+fetchChar :: Vector P Char -> Int -> Char
+fetchChar consonants i = consonants V.! i - 1
 
 fetchChars :: Vector P Char -> [Int] -> HashSet Char
 fetchChars consonants = HS.fromList . foldl' helper []
@@ -149,22 +149,6 @@ pPrefix :: Parser Char
 pPrefix = satisfy (`HS.member` prefix) <?> "<<prefix character>>"
 
 --
--- Superfix characters (3: ['ར', 'ལ', 'ས'])
-superfix :: HashSet Char
-superfix = fetchChars consonants [25, 26, 28]
-
-pSuperfix :: Parser Char
-pSuperfix = satisfy (`HS.member` superfix) <?> "<<superfix character>>"
-
---
--- Subfix characters (4: ཝ, ཡ, ར, ལ)
-subfix :: HashSet Char
-subfix = fetchChars consonants [20, 24, 25, 26] 
-
-pSubfix :: Parser Char
-pSubfix = satisfy (`HS.member` subfix) <?> "<<subfix character>>"
-
---
 -- Vowels (4: ི, ེ , ོ , ུ , plus achung for inherent 'a')
 vowel :: HashSet Char
 vowel = HS.fromList [chr 0x0F72, chr 0x0F7A, chr 0x0F74, chr 0x0F7C]
@@ -190,3 +174,51 @@ postfix = fetchChars consonants [11, 28]
 
 pPostfix :: Parser Char
 pPostfix = satisfy (`HS.member` postfix) <?> "<<postfix character>>"
+
+--
+-- Superfix
+
+-- Superfix characters (3: ['ར', 'ལ', 'ས'])
+superfix :: HashSet Char
+superfix = fetchChars consonants [25, 26, 28]
+
+pSuperfix :: Parser Char
+pSuperfix = satisfy (`HS.member` superfix) <?> "<<superfix character>>"
+
+-- Superfix 'ར' - 25
+pSuperfixRa :: Parser Char 
+pSuperfixRa = char $ fetchChar consonants 25
+
+-- Superfix 'ལ' - 26
+pSuperfixLa :: Parser Char 
+pSuperfixLa = char $ fetchChar consonants 26
+
+-- Superfix 'ས' - 28
+pSuperfixSa :: Parser Char 
+pSuperfixSa = char $ fetchChar consonants 28
+
+--
+-- Subfix
+
+-- Subfix characters (4: ཝ, ཡ, ར, ལ)
+subfix :: HashSet Char
+subfix = fetchChars consonants [20, 24, 25, 26] 
+
+pSubfix :: Parser Char
+pSubfix = satisfy (`HS.member` subfix) <?> "<<subfix character>>"
+
+-- Subfix 'ཝ' - 20
+pSubfixWa :: Parser Char
+pSubfixWa = char $ chr 0x0FAD
+
+-- Subfix 'ཡ' - 24
+pSubfixYa :: Parser Char
+pSubfixYa = char $ chr 0x0FB1
+
+-- Subfix 'ར' - 25
+pSubfixRa :: Parser Char
+pSubfixRa = char $ chr 0x0FB2
+
+-- Subfix 'ལ' - 26
+pSubfixLa :: Parser Char
+pSubfixLa = char $ chr 0x0FB3

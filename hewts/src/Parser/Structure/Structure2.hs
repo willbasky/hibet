@@ -1,3 +1,8 @@
+{-
+Tibetan spelling structure 2
+On the basis of the Tibetan spelling grammar 4.8
+-}
+
 module Parser.Structure.Structure2 
     ( structure2
     ) where
@@ -13,64 +18,55 @@ structure2 :: Parser Text
 structure2 = choice [parse_2_ra, parse_2_la, parse_2_sa]
 
 --
--- Roots superfix 'ར' [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]
+-- Roots under superfix 'ར' are [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]
 raSuperfixRoot :: HashSet Char
-raSuperfixRoot = fetchChars consonantsInSubPosition [1, 3, 4, 7, 8, 9, 11, 12, 15, 16, 17, 19]
-
-pRa :: Parser Char 
-pRa = char $ fetchChar 25
+raSuperfixRoot = fetchChars subConsonants [1, 3, 4, 7, 8, 9, 11, 12, 15, 16, 17, 19]
 
 pRaSuperfixRoot :: Parser Char
-pRaSuperfixRoot = satisfy (`member` raSuperfixRoot) <?> "<<Superscript ར must be followed by a valid root consonant [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]>>"
+pRaSuperfixRoot = satisfy (`member` raSuperfixRoot) <?> "<<Superfix ར should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]>>"
 
 parse_2_ra :: Parser Text
 parse_2_ra = do
-    prefix <- pRa
+    superfix <- pSuperfixRa
     root <- pRaSuperfixRoot
     vowel <- optional pVowel
     eof
-    let pref = T.empty :> prefix
-    pure $ maybe (pref :> root) (\c -> pref :> root :> c) vowel
+    let consT = T.empty :> superfix :> root
+    pure $ maybe consT (consT :>) vowel
 
 --
--- Roots after superfix 'ལ' [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]
+-- Roots under superfix 'ལ' are [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]
 laSuperfixRoot :: HashSet Char
-laSuperfixRoot = fetchChars consonantsInSubPosition [1, 3, 4, 5, 7, 9, 11, 13, 15, 29]
-
-pLa :: Parser Char 
-pLa = char $ fetchChar 26
+laSuperfixRoot = fetchChars subConsonants [1, 3, 4, 5, 7, 9, 11, 13, 15, 29]
 
 pLaSuperfixRoot :: Parser Char
-pLaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superscript ལ must be followed by a valid root consonant [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]>>"
+pLaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superfix ལ should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]>>"
 
 parse_2_la :: Parser Text
 parse_2_la = do
-    prefix <- pLa
+    superfix <- pSuperfixLa
     root <- pLaSuperfixRoot
     vowel <- optional pVowel
     eof
-    let pref = T.empty :> prefix
-    pure $ maybe (pref :> root) (\c -> pref :> root :> c) vowel
+    let consT = T.empty :> superfix :> root
+    pure $ maybe consT (consT :>) vowel
     
 -- 
--- Roots after superfix 'ས' [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]
+-- Roots under superfix 'ས' are [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]
 saSuperfixRoot :: HashSet Char
-saSuperfixRoot = fetchChars consonantsInSubPosition [1, 3, 4, 8, 9, 11, 12, 13, 15, 16, 17]
-
-pSa :: Parser Char 
-pSa = char $ fetchChar 28
+saSuperfixRoot = fetchChars subConsonants [1, 3, 4, 8, 9, 11, 12, 13, 15, 16, 17]
 
 pSaSuperfixRoot :: Parser Char
-pSaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superscript ས must be followed by a valid root consonant [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]>>"
+pSaSuperfixRoot = satisfy (`member` laSuperfixRoot) <?> "<<Superfix ས should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]>>"
 
 parse_2_sa :: Parser Text
 parse_2_sa = do
-    prefix <- pSa
+    superfix <- pSuperfixSa
     root <- pSaSuperfixRoot
     vowel <- optional pVowel
     eof
-    let pref = T.empty :> prefix
-    pure $ maybe (pref :> root) (\c -> pref :> root :> c) vowel
+    let consT = T.empty :> superfix :> root
+    pure $ maybe consT (consT :>) vowel
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple

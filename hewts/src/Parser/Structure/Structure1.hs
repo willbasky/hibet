@@ -1,3 +1,8 @@
+{-
+Tibetan spelling structure 1
+On the basis of the Tibetan spelling grammar 4.1
+-}
+
 module Parser.Structure.Structure1
     ( structure1
     ) where
@@ -15,7 +20,8 @@ parse_1 = do
     root <- pRootConsonant
     vowel <- optional $ choice [pVowel, vowelLongA]
     eof -- TODO: update syllable ending
-    pure $ maybe (T.empty :> root) (\c -> T.empty :> root :> c) vowel
+    let consT = T.empty :> root
+    pure $ maybe consT (consT :>) vowel
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
@@ -27,8 +33,8 @@ parse_1sanskrit :: Parser Text
 parse_1sanskrit = do
     root <- pSanskrit
     vowel <- optional pVowel
-    eof -- TODO: update syllable ending
-    pure $ maybe (T.empty :> root) (\c -> T.empty :> root :> c) vowel
+    let consT = T.empty :> root
+    pure $ maybe consT (consT :>) vowel
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple

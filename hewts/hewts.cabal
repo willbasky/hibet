@@ -55,6 +55,8 @@ library
     Parser.Structure.Structure1
     Parser.Structure.Structure2
     Parser.Structure.Structure3
+    Parser.Structure.Structure4
+    Parser.Structure.Structure5
     Syllables
 
   build-depends:
