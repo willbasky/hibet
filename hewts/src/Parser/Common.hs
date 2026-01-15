@@ -146,7 +146,7 @@ vowel :: HashSet Char
 vowel = HS.fromList [chr 0x0F72, chr 0x0F7A, chr 0x0F74, chr 0x0F7C] 
 
 vowelLongA :: Parser Char
-vowelLongA = char 'ཱ'
+vowelLongA = char 'ཱ' <?> "Long vowel འ"
 
 pVowel :: Parser Char
 pVowel = satisfy (`HS.member` vowel) <?> "Vowel character"
@@ -191,15 +191,15 @@ pSuperfix = satisfy (`HS.member` superfix) <?> "Superfix character"
 
 -- Superfix 'ར' - 25
 pSuperfixRa :: Parser Char 
-pSuperfixRa = char $ fetchChar consonants 25
+pSuperfixRa = char (fetchChar consonants 25) <?> "Superfix ར"
 
 -- Superfix 'ལ' - 26
 pSuperfixLa :: Parser Char 
-pSuperfixLa = char $ fetchChar consonants 26
+pSuperfixLa = char (fetchChar consonants 26) <?> "Superfix ལ"
 
 -- Superfix 'ས' - 28
 pSuperfixSa :: Parser Char 
-pSuperfixSa = char $ fetchChar consonants 28
+pSuperfixSa = char (fetchChar consonants 28) <?> "Superfix ས"
 
 --
 -- Subfix
@@ -213,19 +213,19 @@ pSubfix = satisfy (`HS.member` subfix) <?> "Subfix character"
 
 -- Subfix 'ཝ' - 20
 pSubfixWa :: Parser Char
-pSubfixWa = char $ chr 0x0FAD
+pSubfixWa = char (chr 0x0FAD) <?> "Subfix ཝ"
 
 -- Subfix 'ཡ' - 24
 pSubfixYa :: Parser Char
-pSubfixYa = char $ chr 0x0FB1
+pSubfixYa = char (chr 0x0FB1) <?> "Subfix ཡ"
 
 -- Subfix 'ར' - 25
 pSubfixRa :: Parser Char
-pSubfixRa = char $ chr 0x0FB2
+pSubfixRa = char (chr 0x0FB2) <?> "Subfix ར" 
 
 -- Subfix 'ལ' - 26
 pSubfixLa :: Parser Char
-pSubfixLa = char $ chr 0x0FB3
+pSubfixLa = char (chr 0x0FB3) <?> "Subfix ལ"
 
 --
 -- Suffix characters (10: ['འ', 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'ར', 'ལ', 'ས'])
@@ -245,8 +245,8 @@ pPostfix = satisfy (`HS.member` postfix) <?> "Postfix character"
 
 -- Subfix 'ད' - 11
 pPostfixDa :: Parser Char
-pPostfixDa = char $ fetchChar consonants 11
+pPostfixDa = char (fetchChar consonants 11) <?> "Postfix ད"
 
 -- Subfix 'ས' - 28
 pPostfixSa :: Parser Char
-pPostfixSa = char $ fetchChar consonants 28
+pPostfixSa = char (fetchChar consonants 28) <?> "Postfix ས"

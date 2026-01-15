@@ -59,11 +59,6 @@ library
     Parser.Structure.Grammar15
     Parser.Structure.Grammar16
     Parser.Structure.Structure01
-    Parser.Structure.Structure10
-    Parser.Structure.Structure11
-    Parser.Structure.Structure12
-    Parser.Structure.Structure13
-    Parser.Structure.Structure14
     Parser.Structure.Structure02
     Parser.Structure.Structure03
     Parser.Structure.Structure04
@@ -72,6 +67,12 @@ library
     Parser.Structure.Structure07
     Parser.Structure.Structure08
     Parser.Structure.Structure09
+    Parser.Structure.Structure10
+    Parser.Structure.Structure11
+    Parser.Structure.Structure12
+    Parser.Structure.Structure13
+    Parser.Structure.Structure14
+    Parser.Structure.Structure15
     Syllables
 
   build-depends:
