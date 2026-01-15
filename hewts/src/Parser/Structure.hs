@@ -4,6 +4,7 @@ module Parser.Structure
     , S.structure3
     , S.structure4
     , S.structure5
+    , S.structure6
     ) where
 
 
@@ -12,6 +13,7 @@ import qualified Parser.Structure.Structure2 as S
 import qualified Parser.Structure.Structure3 as S
 import qualified Parser.Structure.Structure4 as S
 import qualified Parser.Structure.Structure5 as S
+import qualified Parser.Structure.Structure6 as S
 
 
 

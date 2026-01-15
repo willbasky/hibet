@@ -35,7 +35,7 @@ parse_4_1 = do
     pure $ maybe consT (consT :>) vowel
 
 --
--- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ and ར. 
+-- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ or ར. 
 roots2 :: HashSet Char
 roots2 = fetchChars subConsonants [1, 3, 13, 15, 16]
 

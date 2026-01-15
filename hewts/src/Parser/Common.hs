@@ -141,6 +141,17 @@ pSanskrit :: Parser Char
 pSanskrit = satisfy (`HS.member` sanskritConsonant) <?> "Sanskrit character"
 
 --
+-- Vowels (4: ི, ེ , ོ , ུ , plus achung for inherent 'a')
+vowel :: HashSet Char
+vowel = HS.fromList [chr 0x0F72, chr 0x0F7A, chr 0x0F74, chr 0x0F7C] 
+
+vowelLongA :: Parser Char
+vowelLongA = char 'ཱ'
+
+pVowel :: Parser Char
+pVowel = satisfy (`HS.member` vowel) <?> "Vowel character"
+
+--
 -- Prefix characters (5: ['ག', 'ད', 'བ', 'མ', 'འ'])
 prefix :: HashSet Char
 prefix = fetchChars consonants [3, 11, 15, 16, 23]
@@ -153,8 +164,8 @@ pPrefixGa :: Parser Char
 pPrefixGa = char $ fetchChar consonants 3
 
 -- Prefix 'ད' - 11
-pPrefixLa :: Parser Char 
-pPrefixLa = char $ fetchChar consonants 11
+pPrefixDa :: Parser Char 
+pPrefixDa = char $ fetchChar consonants 11
 
 -- Prefix 'བ' - 15
 pPrefixBa :: Parser Char 
@@ -167,33 +178,6 @@ pPrefixMa = char $ fetchChar consonants 16
 -- Prefix 'འ' - 23
 pPrefixA :: Parser Char 
 pPrefixA = char $ fetchChar consonants 23
-
---
--- Vowels (4: ི, ེ , ོ , ུ , plus achung for inherent 'a')
-vowel :: HashSet Char
-vowel = HS.fromList [chr 0x0F72, chr 0x0F7A, chr 0x0F74, chr 0x0F7C] 
-
-vowelLongA :: Parser Char
-vowelLongA = char 'ཱ'
-
-pVowel :: Parser Char
-pVowel = satisfy (`HS.member` vowel) <?> "Vowel character"
-
---
--- Suffix characters (10: ['འ', 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'ར', 'ལ', 'ས'])
-suffix :: HashSet Char
-suffix = fetchChars consonants [ 3, 4, 11, 12, 15, 16, 23, 25, 26, 28]
-
-pSuffix :: Parser Char
-pSuffix = satisfy (`HS.member` suffix) <?> "Suffix character"
-
---
--- Postfix characters (2: ['ད', 'ས'])
-postfix :: HashSet Char
-postfix = fetchChars consonants [11, 28]
-
-pPostfix :: Parser Char
-pPostfix = satisfy (`HS.member` postfix) <?> "Postfix character"
 
 --
 -- Superfix
@@ -242,3 +226,19 @@ pSubfixRa = char $ chr 0x0FB2
 -- Subfix 'ལ' - 26
 pSubfixLa :: Parser Char
 pSubfixLa = char $ chr 0x0FB3
+
+--
+-- Suffix characters (10: ['འ', 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'ར', 'ལ', 'ས'])
+suffix :: HashSet Char
+suffix = fetchChars consonants [ 3, 4, 11, 12, 15, 16, 23, 25, 26, 28]
+
+pSuffix :: Parser Char
+pSuffix = satisfy (`HS.member` suffix) <?> "Suffix character"
+
+--
+-- Postfix characters (2: ['ད', 'ས'])
+postfix :: HashSet Char
+postfix = fetchChars consonants [11, 28]
+
+pPostfix :: Parser Char
+pPostfix = satisfy (`HS.member` postfix) <?> "Postfix character"
