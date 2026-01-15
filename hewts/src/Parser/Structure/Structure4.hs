@@ -2,7 +2,7 @@
 Tibetan spelling structure 4
 On the basis of the Tibetan spelling grammar 4.10
 -}
-module Parser.Structure.Structure4 (structure4) where
+module Parser.Structure.Structure4 (pStructure4) where
 
 import Parser.Common
 
@@ -13,8 +13,8 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-structure4 :: Parser Text
-structure4 = choice [parse_4_1, parse_4_2, parse_4_3, parse_4_4]
+pStructure4 :: Parser Text
+pStructure4 = choice [parse_4_1, parse_4_2, parse_4_3, parse_4_4]
 
 --
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ. 

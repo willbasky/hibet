@@ -8,12 +8,13 @@ import Text.Megaparsec
 allRules :: Parser Text
 allRules =
     choice
-        [ S.structure1
-        , S.structure2
-        , S.structure3
-        , S.structure4
-        , S.structure5
-        , S.structure6
-        , S.structure7
-        , S.structure8
+        [ S.pStructure1
+        , S.pStructure2
+        , S.pStructure3
+        , S.pStructure4
+        , S.pStructure5
+        , S.pStructure6
+        , S.pStructure7
+        , S.pStructure8
+        , S.pStructure9
         ]

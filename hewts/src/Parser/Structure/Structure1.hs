@@ -4,7 +4,7 @@ On the basis of the Tibetan spelling grammar 4.1
 -}
 
 module Parser.Structure.Structure1
-    ( structure1
+    ( pStructure1
     ) where
 
 import Data.Text (Text, pattern (:>))
@@ -12,8 +12,8 @@ import qualified Data.Text as T
 import Parser.Common
 import Text.Megaparsec
 
-structure1 :: Parser Text
-structure1 = parse_1
+pStructure1 :: Parser Text
+pStructure1 = parse_1
 
 parse_1 :: Parser Text
 parse_1 = do

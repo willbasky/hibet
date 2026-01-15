@@ -4,7 +4,7 @@ On the basis of the Tibetan spelling grammar 4.8
 -}
 
 module Parser.Structure.Structure2 
-    ( structure2
+    ( pStructure2
     ) where
 
 import Data.Text (Text, pattern (:>), pattern (:<))
@@ -14,8 +14,8 @@ import Text.Megaparsec
 import Data.HashSet (HashSet, fromList, member, singleton)
 import Text.Megaparsec.Char
 
-structure2 :: Parser Text
-structure2 = choice [parse_2_ra, parse_2_la, parse_2_sa]
+pStructure2 :: Parser Text
+pStructure2 = choice [parse_2_ra, parse_2_la, parse_2_sa]
 
 --
 -- Roots under superfix 'ར' are [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]

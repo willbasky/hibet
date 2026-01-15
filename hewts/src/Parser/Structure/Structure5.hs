@@ -3,7 +3,7 @@ Tibetan spelling structure 5
 On the basis of the Tibetan spelling grammar 4.11
 -}
 
-module Parser.Structure.Structure5 (structure5) where
+module Parser.Structure.Structure5 (pStructure5) where
 
 import Parser.Common
 
@@ -14,8 +14,8 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-structure5 :: Parser Text
-structure5 = choice [parse_5_1, parse_5_2, parse_5_3]
+pStructure5 :: Parser Text
+pStructure5 = choice [parse_5_1, parse_5_2, parse_5_3]
 
 --
 -- (1) root group [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཛ' ] with prefix བ under superfix ར.

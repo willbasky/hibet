@@ -14,8 +14,8 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-structure6 :: Parser Text
-structure6 =
+pStructure6 :: Parser Text
+pStructure6 =
     choice
         [ parse_6_1
         , parse_6_2

@@ -3,7 +3,7 @@ Tibetan spelling structure 7
 On the basis of the Tibetan spelling grammar 4.13
 -}
 
-module Parser.Structure.Structure7 (structure7) where
+module Parser.Structure.Structure7 (pStructure7) where
 
 import Parser.Common
 
@@ -14,8 +14,8 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-structure7 :: Parser Text
-structure7 =
+pStructure7 :: Parser Text
+pStructure7 =
     choice
         [ parse_7_1
         , parse_7_2

@@ -3,7 +3,7 @@ Tibetan spelling structure 3
 On the basis of the Tibetan spelling grammar 4.9
 -}
 
-module Parser.Structure.Structure3 (structure3) where
+module Parser.Structure.Structure3 (pStructure3) where
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -13,8 +13,8 @@ import Parser.Common
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-structure3 :: Parser Text
-structure3 = choice [parse_3_wa, parse_3_ya, parse_3_ra, parse_3_la]
+pStructure3 :: Parser Text
+pStructure3 = choice [parse_3_wa, parse_3_ya, parse_3_ra, parse_3_la]
 
 --
 -- Roots above subfix 'ཝ' are [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]
