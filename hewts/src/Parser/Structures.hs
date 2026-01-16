@@ -663,3 +663,67 @@ parse22 parseSuffix parsePostfix = do
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pStructure22 "སྣོབས"
 -- Right "སྣོབས"
+
+{-
+Tibetan spelling structure 23
+On the basis of the Tibetan spelling grammar 4.9, 4.14, 4.15
+-}
+
+pStructure23 :: Parser Text
+pStructure23 =
+    choice
+        [ try $ parse23 pGrammar16Da pPostfixDa
+        , try $ parse23 pGrammar16Sa pPostfixSa
+        ]
+
+parse23 :: Parser Char -> Parser Char -> Parser Text
+parse23 parseSuffix parsePostfix = do
+    struct <- pGrammar9
+    suffix <- parseSuffix
+    postfix <- parsePostfix
+    eof
+    pure $ struct :> suffix :> postfix
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simpl
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure23 "རློམས"
+-- Right "རློམས"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure23 "དྭོལད"
+-- Right "དྭོལད"
+
+{-
+Tibetan spelling structure 24
+On the basis of the Tibetan spelling grammar 4.10, 4.14, 4.15
+-}
+
+pStructure24 :: Parser Text
+pStructure24 =
+    choice
+        [ try $ parse24 pGrammar16Da pPostfixDa
+        , try $ parse24 pGrammar16Sa pPostfixSa
+        ]
+
+parse24 :: Parser Char -> Parser Char -> Parser Text
+parse24 parseSuffix parsePostfix = do
+    struct <- pGrammar10
+    suffix <- parseSuffix
+    postfix <- parsePostfix
+    eof
+    pure $ struct :> suffix :> postfix
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure24 "རྩྭོངས"
+-- Right "རྩྭོངས"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure24 "སྣྲེནད"
+-- Right "སྣྲེནད"

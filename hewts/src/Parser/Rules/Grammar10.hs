@@ -51,10 +51,10 @@ pRoots2 = satisfy (`member` roots2) <?> "A roots from [ 'ཀ', 'ག', 'པ', '�
 
 -- ན
 pRoot3 :: Parser Char
-pRoot3 = char $ fetchChar subConsonants 12
+pRoot3 = char (fetchChar subConsonants 12) <?> "A root ན"
 
 -- ཙ
 pRoot4 :: Parser Char
-pRoot4 = char $ fetchChar subConsonants 17
+pRoot4 = char (fetchChar subConsonants 17) <?> "A root ཙ"
 
 
