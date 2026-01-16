@@ -13,6 +13,9 @@ import Parser.Rules.Grammar13 (pGrammar13)
 import Parser.Rules.Grammar14 (pGrammar14)
 import Parser.Rules.Grammar15 (pGrammar15)
 import Parser.Rules.Grammar16 (pGrammar16Da, pGrammar16Sa)
+import Parser.Rules.Grammar17 (pGrammar17)
+import Parser.Rules.Grammar18 (pGrammar18)
+import Parser.Rules.Grammar19 (pGrammar19)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -727,3 +730,72 @@ parse24 parseSuffix parsePostfix = do
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pStructure24 "སྣྲེནད"
 -- Right "སྣྲེནད"
+
+{-
+Tibetan spelling structure 25
+On the basis of the Tibetan spelling grammar 4.17
+-}
+
+pStructure25 :: Parser Text
+pStructure25 = do
+    struct <- pGrammar17
+    eof
+    pure struct
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure25 "དྲྭ"
+-- Right "དྲྭ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure25 "ཕྱྭ"
+-- Right "ཕྱྭ"
+
+{-
+Tibetan spelling structure 26
+On the basis of the Tibetan spelling grammar 4.18
+-}
+
+pStructure26 :: Parser Text
+pStructure26 = do
+    struct <- pGrammar18
+    eof
+    pure struct
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure26 "ཧྥ"
+-- Right "ཧྥ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure26 "ཧྥོ"
+-- Right "ཧྥོ"
+
+{-
+Tibetan spelling structure 27
+On the basis of the Tibetan spelling grammar 4.19
+-}
+
+pStructure27 :: Parser Text
+pStructure27 = do
+    struct <- pGrammar19
+    eof
+    pure struct
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure27 "ཧྥེལ"
+-- Right "ཧྥེལ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure27 "ཧྥོས"
+-- Right "ཧྥོས"
