@@ -61,6 +61,9 @@ library
     Parser.Rules.Grammar14
     Parser.Rules.Grammar15
     Parser.Rules.Grammar16
+    Parser.Rules.Grammar17
+    Parser.Rules.Grammar18
+    Parser.Rules.Grammar19
     Parser.Structures
     -- Parser.Structure.Structure01
     -- Parser.Structure.Structure02
