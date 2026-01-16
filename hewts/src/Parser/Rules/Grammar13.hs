@@ -2,7 +2,7 @@
 Tibetan spelling grammar 4.13
 -}
 
-module Parser.Structure.Grammar13 (pGrammar13) where
+module Parser.Rules.Grammar13 (pGrammar13) where
 
 import Parser.Common
 

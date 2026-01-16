@@ -2,7 +2,7 @@
 Tibetan spelling grammar 4.8
 -}
 
-module Parser.Structure.Grammar08 (pGrammar8) where
+module Parser.Rules.Grammar08 (pGrammar8) where
 
 import Parser.Common
 
@@ -18,10 +18,16 @@ import Text.Megaparsec.Char
 pGrammar8 :: Parser Text 
 pGrammar8 =  
     choice
-        [ parseGrammar8 pSuperfixRa pRaSuperfixRoot
-        , parseGrammar8 pSuperfixLa pLaSuperfixRoot
-        , parseGrammar8 pSuperfixSa pSaSuperfixRoot
+        [ try $ parseGrammar8 pSuperfixRa pRaSuperfixRoot
+        , try $ parseGrammar8 pSuperfixLa pLaSuperfixRoot
+        , try $ parseGrammar8 pSuperfixSa pSaSuperfixRoot
         ]
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar8 "སྨ"
+-- Right "སྨ"
 
 parseGrammar8 :: Parser Char -> Parser Char -> Parser Text
 parseGrammar8 parseSuperfix parseRoot = do
@@ -58,5 +64,5 @@ saSuperfixRoot = fetchChars subConsonants [1, 3, 4, 8, 9, 11, 12, 13, 15, 16, 17
 
 pSaSuperfixRoot :: Parser Char
 pSaSuperfixRoot =
-    satisfy (`member` laSuperfixRoot)
-        <?> "Superfix ས should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]"
+    satisfy (`member` saSuperfixRoot)
+        <?> "A root from [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ] should be placed under superfix ས"

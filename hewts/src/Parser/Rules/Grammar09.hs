@@ -2,7 +2,7 @@
 Tibetan spelling grammar 4.9
 -}
 
-module Parser.Structure.Grammar09 (pGrammar9) where
+module Parser.Rules.Grammar09 (pGrammar9) where
 
 import Parser.Common
 

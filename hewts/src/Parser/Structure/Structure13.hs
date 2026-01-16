@@ -3,33 +3,33 @@ Tibetan spelling structure 13
 On the basis of the Tibetan spelling grammar 4.14, 4.15, 4.16
 -}
 
-module Parser.Structure.Structure13
-    ( pStructure13
-    ) where
+-- module Parser.Structure.Structure13
+--     ( pStructure13
+--     ) where
 
-import Parser.Common
-import Parser.Structure.Grammar14 (pGrammar14)
-import Parser.Structure.Grammar16
-    ( pGrammar16Da
-    , pGrammar16Sa
-    )
+-- import Parser.Common
+-- import Parser.Structure.Grammar14 (pGrammar14)
+-- import Parser.Structure.Grammar16
+--     ( pGrammar16Da
+--     , pGrammar16Sa
+--     )
 
-import Data.Char (chr)
-import Data.HashSet (HashSet, fromList, member, singleton)
-import Data.Text (Text, pattern (:<), pattern (:>))
-import qualified Data.Text as T
-import Text.Megaparsec
-import Text.Megaparsec.Char
+-- import Data.Char (chr)
+-- import Data.HashSet (HashSet, fromList, member, singleton)
+-- import Data.Text (Text, pattern (:<), pattern (:>))
+-- import qualified Data.Text as T
+-- import Text.Megaparsec
+-- import Text.Megaparsec.Char
 
-pStructure13 :: Parser Text
-pStructure13 = do
-    struct <-
-        choice
-            [ try $ parse13 pGrammar16Da pPostfixDa
-            , try $ parse13 pGrammar16Sa pPostfixSa
-            ]
-    eof
-    pure struct
+-- pStructure13 :: Parser Text
+-- pStructure13 = do
+--     struct <-
+--         choice
+--             [ try $ parse13 pGrammar16Da pPostfixDa
+--             , try $ parse13 pGrammar16Sa pPostfixSa
+--             ]
+--     eof
+--     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple

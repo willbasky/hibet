@@ -2,7 +2,7 @@
 Tibetan spelling grammar 4.16
 -}
 
-module Parser.Structure.Grammar16
+module Parser.Rules.Grammar16
     ( pGrammar16Da
     , pGrammar16Sa
     ) where

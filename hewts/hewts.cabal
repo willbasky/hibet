@@ -51,36 +51,37 @@ library
     Convert.WylieUnicode
     Parser
     Parser.Common
-    Parser.Structure
-    Parser.Structure.Grammar08
-    Parser.Structure.Grammar09
-    Parser.Structure.Grammar10
-    Parser.Structure.Grammar11
-    Parser.Structure.Grammar12
-    Parser.Structure.Grammar13
-    Parser.Structure.Grammar14
-    Parser.Structure.Grammar15
-    Parser.Structure.Grammar16
-    Parser.Structure.Structure01
-    Parser.Structure.Structure02
-    Parser.Structure.Structure03
-    Parser.Structure.Structure04
-    Parser.Structure.Structure05
-    Parser.Structure.Structure06
-    Parser.Structure.Structure07
-    Parser.Structure.Structure08
-    Parser.Structure.Structure09
-    Parser.Structure.Structure10
-    Parser.Structure.Structure11
-    Parser.Structure.Structure12
-    Parser.Structure.Structure13
-    Parser.Structure.Structure14
-    Parser.Structure.Structure15
-    Parser.Structure.Structure16
-    Parser.Structure.Structure17
-    Parser.Structure.Structure18
-    Parser.Structure.Structure19
-    Parser.Structure.Structure20
+    Parser.Rules.Grammar01
+    Parser.Rules.Grammar08
+    Parser.Rules.Grammar09
+    Parser.Rules.Grammar10
+    Parser.Rules.Grammar11
+    Parser.Rules.Grammar12
+    Parser.Rules.Grammar13
+    Parser.Rules.Grammar14
+    Parser.Rules.Grammar15
+    Parser.Rules.Grammar16
+    Parser.Structures
+    -- Parser.Structure.Structure01
+    -- Parser.Structure.Structure02
+    -- Parser.Structure.Structure03
+    -- Parser.Structure.Structure04
+    -- Parser.Structure.Structure05
+    -- Parser.Structure.Structure06
+    -- Parser.Structure.Structure07
+    -- Parser.Structure.Structure08
+    -- Parser.Structure.Structure09
+    -- Parser.Structure.Structure10
+    -- Parser.Structure.Structure11
+    -- Parser.Structure.Structure12
+    -- Parser.Structure.Structure13
+    -- Parser.Structure.Structure14
+    -- Parser.Structure.Structure15
+    -- Parser.Structure.Structure16
+    -- Parser.Structure.Structure17
+    -- Parser.Structure.Structure18
+    -- Parser.Structure.Structure19
+    -- Parser.Structure.Structure20
     Syllables
 
   build-depends:
