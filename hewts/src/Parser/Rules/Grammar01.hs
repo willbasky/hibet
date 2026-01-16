@@ -2,7 +2,7 @@
 Tibetan spelling grammar 4.1
 -}
 
-module Parser.Rules.Grammar01 (pGrammar1) where
+module Parser.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit) where
 
 import Parser.Common
 
@@ -16,15 +16,22 @@ import Text.Megaparsec.Char
 -- Tibetan spelling grammar 4.1
 
 pGrammar1 :: Parser Text 
-pGrammar1 =  
-    choice
-        [ try $ parseGrammar1 pRootConsonant $ choice [pVowel, vowelLongA]
-        , try $ parseGrammar1 pSanskrit pVowel
-        ]
+pGrammar1 = do 
+    root <- pRootConsonant
+    vowel <- optional pVowel 
+    let consT = T.empty :> root 
+    pure $ maybe consT (consT :>) vowel
 
-parseGrammar1 :: Parser Char -> Parser Char -> Parser Text
-parseGrammar1 parseRoot parseVowel = do
-    root <- parseRoot
-    vowel <- optional parseVowel
-    let consT = T.empty :> root
+pGrammar1WithLong :: Parser Text 
+pGrammar1WithLong = do 
+    root <- pRootConsonant
+    vowel <- optional $ choice [pVowel, vowelLongA] 
+    let consT = T.empty :> root 
+    pure $ maybe consT (consT :>) vowel
+
+pGrammar1Sanskrit :: Parser Text 
+pGrammar1Sanskrit = do 
+    root <- pSanskrit
+    vowel <- optional pVowel 
+    let consT = T.empty :> root 
     pure $ maybe consT (consT :>) vowel

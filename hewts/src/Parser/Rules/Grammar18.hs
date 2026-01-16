@@ -15,8 +15,6 @@ import Data.Text (Text, pattern (:<), pattern (:>))
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.18
-
 pGrammar18 :: Parser Text
 pGrammar18 = do
     root <- pRoot1
@@ -26,10 +24,10 @@ pGrammar18 = do
     pure $ maybe consT (consT :>) vowel
 
 --
--- A root ཧ
+-- ཧ
 pRoot1 :: Parser Char
 pRoot1 = char (fetchChar consonants 29) <?> "A root ཧ"
 
 -- ཕ
 pRoot2 :: Parser Char
-pRoot2 = char (fetchChar subConsonants 14) <?> "A subRoot ྥ"
+pRoot2 = char (fetchChar subConsonants 14) <?> "A subRoot ཕ"

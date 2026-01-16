@@ -13,8 +13,6 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.8
-
 pGrammar8 :: Parser Text 
 pGrammar8 =  
     choice
@@ -28,6 +26,12 @@ pGrammar8 =
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pGrammar8 "སྨ"
 -- Right "སྨ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar8 "སྨོ"
+-- Right "སྨོ"
 
 parseGrammar8 :: Parser Char -> Parser Char -> Parser Text
 parseGrammar8 parseSuperfix parseRoot = do
@@ -45,7 +49,7 @@ raSuperfixRoot = fetchChars subConsonants [1, 3, 4, 7, 8, 9, 11, 12, 15, 16, 17,
 pRaSuperfixRoot :: Parser Char
 pRaSuperfixRoot =
     satisfy (`member` raSuperfixRoot)
-        <?> "Superfix ར should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]"
+        <?> "One of the roots [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'བ', 'མ', 'ཙ', 'ཛ' ]"
 
 --
 -- Roots under superfix 'ལ' are [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]
@@ -55,7 +59,7 @@ laSuperfixRoot = fetchChars subConsonants [1, 3, 4, 5, 7, 9, 11, 13, 15, 29]
 pLaSuperfixRoot :: Parser Char
 pLaSuperfixRoot =
     satisfy (`member` laSuperfixRoot)
-        <?> "Superfix ལ should be placed above the root [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]"
+        <?> "One of the roots [ 'ཀ', 'ག', 'ང', 'ཅ', 'ཇ', 'ཏ', 'ད', 'པ', 'བ', 'ཧ' ]"
 
 --
 -- Roots under superfix 'ས' are [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]
@@ -65,4 +69,4 @@ saSuperfixRoot = fetchChars subConsonants [1, 3, 4, 8, 9, 11, 12, 13, 15, 16, 17
 pSaSuperfixRoot :: Parser Char
 pSaSuperfixRoot =
     satisfy (`member` saSuperfixRoot)
-        <?> "A root from [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ] should be placed under superfix ས"
+        <?> "One of the roots [ 'ཀ', 'ག', 'ང', 'ཉ', 'ཏ', 'ད', 'ན', 'པ', 'བ', 'མ', 'ཙ' ]"

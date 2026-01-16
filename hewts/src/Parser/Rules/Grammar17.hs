@@ -15,8 +15,6 @@ import Data.Text (Text, pattern (:<), pattern (:>))
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.17
-
 pGrammar17 :: Parser Text
 pGrammar17 =
     choice
@@ -41,7 +39,7 @@ roots1 = fetchChars consonants [3,11]
 pRoot1 :: Parser Char
 pRoot1 =
     satisfy (`member` roots1)
-        <?> "A root from [ 'ག', 'ད' ] above subfix ྲ"
+        <?> "A root from [ 'ག', 'ད' ]"
 
 -- ཕ
 pRoot2 :: Parser Char

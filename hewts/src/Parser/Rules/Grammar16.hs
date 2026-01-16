@@ -15,8 +15,6 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.16
-
 --
 -- Suffix group [ 'ན', 'ར', 'ལ' ] before postfix ད.
 suffixPostfixDa :: HashSet Char

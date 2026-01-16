@@ -13,7 +13,6 @@ import qualified Data.Text as T
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.12
 pGrammar12 :: Parser Text
 pGrammar12 =
     choice

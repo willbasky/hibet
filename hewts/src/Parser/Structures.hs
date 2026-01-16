@@ -3,7 +3,7 @@ module Parser.Structures
     ) where
 
 import Parser.Common
-import Parser.Rules.Grammar01 (pGrammar1)
+import Parser.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit)
 import Parser.Rules.Grammar08 (pGrammar8)
 import Parser.Rules.Grammar09 (pGrammar9)
 import Parser.Rules.Grammar10 (pGrammar10)
@@ -16,6 +16,7 @@ import Parser.Rules.Grammar16 (pGrammar16Da, pGrammar16Sa)
 import Parser.Rules.Grammar17 (pGrammar17)
 import Parser.Rules.Grammar18 (pGrammar18)
 import Parser.Rules.Grammar19 (pGrammar19)
+import Parser.Rules.Grammar20 (pGrammar20)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)
@@ -31,7 +32,10 @@ On the basis of the Tibetan spelling grammar 4.1
 
 pStructure1 :: Parser Text
 pStructure1 = do
-    struct <- pGrammar1
+    struct <- choice
+        [ try pGrammar1WithLong
+        , try pGrammar1Sanskrit
+        ]
     eof -- TODO: update syllable ending
     pure struct
 
@@ -799,3 +803,255 @@ pStructure27 = do
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pStructure27 "ཧྥོས"
 -- Right "ཧྥོས"
+
+{-
+Tibetan spelling structure 28
+On the basis of the Tibetan spelling grammar 4.1 and 4.20
+-}
+
+pStructure28 :: Parser Text
+pStructure28 = do
+    root <- pGrammar1
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure28 "ཧིའེ"
+-- Right "ཧིའེ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure28 "གོའྨ"
+-- Right "གོའྨ"
+
+{-
+Tibetan spelling structure 29
+On the basis of the Tibetan spelling grammar 4.8 and 4.20
+-}
+
+pStructure29 :: Parser Text
+pStructure29 = do
+    root <- pGrammar8
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure29 "སྨོའྨ"
+-- Right "སྨོའྨ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure29 "རྒའོ"
+-- Right "རྒའོ"
+
+{-
+Tibetan spelling structure 30
+On the basis of the Tibetan spelling grammar 4.9 and 4.20
+-}
+
+pStructure30 :: Parser Text
+pStructure30 = do
+    root <- pGrammar9
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure30 "སླིའྔ"
+-- Right "སླིའྔ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure30 "ཀྭོའོ"
+-- Right "ཀྭོའོ"
+
+{-
+Tibetan spelling structure 31
+On the basis of the Tibetan spelling grammar 4.10 and 4.20
+-}
+
+pStructure31 :: Parser Text
+pStructure31 = do
+    root <- pGrammar10
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure31 "སྒྱའོ"
+-- Right "སྒྱའོ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure31 "རྐྱའོ"
+-- Right "རྐྱའོ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure31 "རྐྱའ"
+-- Right "རྐྱའ"
+
+{-
+Tibetan spelling structure 32
+On the basis of the Tibetan spelling grammar 4.11 and 4.20
+-}
+
+pStructure32 :: Parser Text
+pStructure32 = do
+    root <- pGrammar11
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure32 "བལྟའ"
+-- Right "བལྟའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure32 "བརྔོའ"
+-- Right "བརྔོའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure32 "བསྟིའི"
+-- Right "བསྟིའ"
+
+{-
+Tibetan spelling structure 33
+On the basis of the Tibetan spelling grammar 4.12 and 4.20
+-}
+
+pStructure33 :: Parser Text
+pStructure33 = do
+    root <- pGrammar12
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure33 "མཁྲའ"
+-- Right "མཁྲའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure33 "དཔྱུའ"
+-- Right "དཔྱུའ"
+
+{-
+Tibetan spelling structure 34
+On the basis of the Tibetan spelling grammar 4.13 and 4.20
+-}
+
+pStructure34 :: Parser Text
+pStructure34 = do
+    root <- pGrammar13
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure34 "བསྐྲའ"
+-- Right "བསྐྲའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure34 "བརྒྱའ"
+-- Right "བརྒྱའ"
+
+{-
+Tibetan spelling structure 35
+On the basis of the Tibetan spelling grammar 4.14 and 4.20
+-}
+
+pStructure35 :: Parser Text
+pStructure35 = do
+    root <- pGrammar14
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure35 "བཟིའ"
+-- Right "བཟིའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure35 "གཤའ"
+-- Right "གཤའ"
+
+{-
+Tibetan spelling structure 36
+On the basis of the Tibetan spelling grammar 4.17 and 4.20
+-}
+
+pStructure36 :: Parser Text
+pStructure36 = do
+    root <- pGrammar17
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure36 "གྲྭའ"
+-- Right "གྲྭའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure36 "ཕྱྭུའ"
+-- Right "ཕྱྭུའ"
+
+{-
+Tibetan spelling structure 37
+On the basis of the Tibetan spelling grammar 4.18 and 4.20
+-}
+
+pStructure37 :: Parser Text
+pStructure37 = do
+    root <- pGrammar18
+    structA <- pGrammar20
+    eof
+    pure $ T.append root structA
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure37 "ཧྥོའ"
+-- Right "ཧྥོའ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure37 "ཧྥའ"
+-- Right "ཧྥའ"

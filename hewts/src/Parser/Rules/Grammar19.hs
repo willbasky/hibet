@@ -17,8 +17,6 @@ import Data.Text (Text, pattern (:<), pattern (:>))
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
--- Tibetan spelling grammar 4.19
-
 pGrammar19 :: Parser Text
 pGrammar19 = do
     struct <- pGrammar18
