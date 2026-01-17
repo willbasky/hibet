@@ -3,4 +3,4 @@ import Text.Pretty.Simple
 :set -interactive-print=Text.Pretty.Simple.pPrint
 import Data.Text.IO as TIO
 
-:def all (const . pure) ":m + *Parser.Common *Parser.Structures"
+:def all (const . pure) ":m + *Parser.Common *Parser.Structures *Parser"

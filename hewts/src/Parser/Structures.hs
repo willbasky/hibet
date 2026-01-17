@@ -1,5 +1,42 @@
 module Parser.Structures
-    (
+    ( 
+      pStructure1
+    , pStructure2
+    , pStructure3
+    , pStructure4
+    , pStructure5
+    , pStructure6
+    , pStructure7
+    , pStructure8
+    , pStructure9
+    , pStructure10
+    , pStructure11
+    , pStructure12
+    , pStructure13
+    , pStructure14
+    , pStructure15
+    , pStructure16
+    , pStructure17
+    , pStructure18
+    , pStructure19
+    , pStructure20
+    , pStructure21
+    , pStructure22
+    , pStructure23
+    , pStructure24
+    , pStructure25
+    , pStructure26
+    , pStructure27
+    , pStructure28
+    , pStructure29
+    , pStructure30
+    , pStructure31
+    , pStructure32
+    , pStructure33
+    , pStructure34
+    , pStructure35
+    , pStructure36
+    , pStructure37
     ) where
 
 import Parser.Common
@@ -36,7 +73,7 @@ pStructure1 = do
         [ try pGrammar1WithLong
         , try pGrammar1Sanskrit
         ]
-    eof -- TODO: update syllable ending
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -83,7 +120,7 @@ On the basis of the Tibetan spelling grammar 4.8
 pStructure2 :: Parser Text
 pStructure2 = do
     struct <- pGrammar8
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -106,7 +143,7 @@ On the basis of the Tibetan spelling grammar 4.9
 pStructure3 :: Parser Text
 pStructure3 = do
     struct <- pGrammar9
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -129,7 +166,7 @@ On the basis of the Tibetan spelling grammar 4.10
 pStructure4 :: Parser Text
 pStructure4 = do
     struct <- pGrammar10
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -164,7 +201,7 @@ On the basis of the Tibetan spelling grammar 4.11
 pStructure5 :: Parser Text
 pStructure5 = do
     struct <- pGrammar11
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -187,7 +224,7 @@ On the basis of the Tibetan spelling grammar 4.12
 pStructure6 :: Parser Text
 pStructure6 = do
     struct <- pGrammar12
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -216,7 +253,7 @@ On the basis of the Tibetan spelling grammar 4.13
 pStructure7 :: Parser Text
 pStructure7 = do
     struct <- pGrammar13
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -239,7 +276,7 @@ On the basis of the Tibetan spelling grammar 4.14
 pStructure8 :: Parser Text
 pStructure8 = do
     struct <- pGrammar14
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -286,7 +323,7 @@ pStructure10 :: Parser Text
 pStructure10 = do
     structure8 <- pGrammar11
     suffix <- pGrammar15
-    eof
+    pPunctuation
     pure $ structure8 :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -381,7 +418,7 @@ pStructure13 = do
             [ try $ parse13 pGrammar16Da pPostfixDa
             , try $ parse13 pGrammar16Sa pPostfixSa
             ]
-    eof
+    pPunctuation
     pure struct
 
 parse13 :: Parser Char -> Parser Char -> Parser Text
@@ -415,7 +452,7 @@ pStructure14 = do
             [ try $ parse14 pGrammar16Da pPostfixDa
             , try $ parse14 pGrammar16Sa pPostfixSa
             ]
-    eof
+    pPunctuation
     pure struct
 
 parse14 :: Parser Char -> Parser Char -> Parser Text
@@ -449,7 +486,7 @@ pStructure15 = do
             [ try $ parse15 pGrammar16Da pPostfixDa
             , try $ parse15 pGrammar16Sa pPostfixSa
             ]
-    eof
+    pPunctuation
     pure struct
 
 parse15 :: Parser Char -> Parser Char -> Parser Text
@@ -483,7 +520,7 @@ pStructure16 = do
             [ try $ parse16 pGrammar16Da pPostfixDa
             , try $ parse16 pGrammar16Sa pPostfixSa
             ]
-    eof
+    pPunctuation
     pure struct
 
 parse16 :: Parser Char -> Parser Char -> Parser Text
@@ -515,7 +552,7 @@ pStructure17 = do
     root <- pRootConsonant
     vowel <- optional pVowel
     suffix <- pGrammar15
-    eof
+    pPunctuation
     let consT = T.empty :> root
     let consVowelT = maybe consT (consT :>) vowel
     pure $ consVowelT :> suffix
@@ -541,7 +578,7 @@ pStructure18 :: Parser Text
 pStructure18 = do
     struct <- pGrammar8
     suffix <- pGrammar15
-    eof
+    pPunctuation
     pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -565,7 +602,7 @@ pStructure19 :: Parser Text
 pStructure19 = do
     struct <- pGrammar9
     suffix <- pGrammar15
-    eof
+    pPunctuation
     pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -589,7 +626,7 @@ pStructure20 :: Parser Text
 pStructure20 = do
     struct <- pGrammar10
     suffix <- pGrammar15
-    eof
+    pPunctuation
     pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -622,7 +659,7 @@ parse21 parseSuffix parsePostfix = do
     vowel <- optional pVowel
     suffix <- parseSuffix
     postfix <- parsePostfix
-    eof
+    pPunctuation
     let consT = T.empty :> root
     let consVowelT = maybe consT (consT :>) vowel
     pure $ consVowelT :> suffix :> postfix
@@ -656,7 +693,7 @@ parse22 parseSuffix parsePostfix = do
     struct <- pGrammar8
     suffix <- parseSuffix
     postfix <- parsePostfix
-    eof
+    pPunctuation
     pure $ struct :> suffix :> postfix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -688,7 +725,7 @@ parse23 parseSuffix parsePostfix = do
     struct <- pGrammar9
     suffix <- parseSuffix
     postfix <- parsePostfix
-    eof
+    pPunctuation
     pure $ struct :> suffix :> postfix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -720,7 +757,7 @@ parse24 parseSuffix parsePostfix = do
     struct <- pGrammar10
     suffix <- parseSuffix
     postfix <- parsePostfix
-    eof
+    pPunctuation
     pure $ struct :> suffix :> postfix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -743,7 +780,7 @@ On the basis of the Tibetan spelling grammar 4.17
 pStructure25 :: Parser Text
 pStructure25 = do
     struct <- pGrammar17
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -766,7 +803,7 @@ On the basis of the Tibetan spelling grammar 4.18
 pStructure26 :: Parser Text
 pStructure26 = do
     struct <- pGrammar18
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -789,7 +826,7 @@ On the basis of the Tibetan spelling grammar 4.19
 pStructure27 :: Parser Text
 pStructure27 = do
     struct <- pGrammar19
-    eof
+    pPunctuation
     pure struct
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -813,7 +850,7 @@ pStructure28 :: Parser Text
 pStructure28 = do
     root <- pGrammar1
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -837,7 +874,7 @@ pStructure29 :: Parser Text
 pStructure29 = do
     root <- pGrammar8
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -861,7 +898,7 @@ pStructure30 :: Parser Text
 pStructure30 = do
     root <- pGrammar9
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -885,7 +922,7 @@ pStructure31 :: Parser Text
 pStructure31 = do
     root <- pGrammar10
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -915,7 +952,7 @@ pStructure32 :: Parser Text
 pStructure32 = do
     root <- pGrammar11
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -945,7 +982,7 @@ pStructure33 :: Parser Text
 pStructure33 = do
     root <- pGrammar12
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -969,7 +1006,7 @@ pStructure34 :: Parser Text
 pStructure34 = do
     root <- pGrammar13
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -993,7 +1030,7 @@ pStructure35 :: Parser Text
 pStructure35 = do
     root <- pGrammar14
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -1017,7 +1054,7 @@ pStructure36 :: Parser Text
 pStructure36 = do
     root <- pGrammar17
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -1041,7 +1078,7 @@ pStructure37 :: Parser Text
 pStructure37 = do
     root <- pGrammar18
     structA <- pGrammar20
-    eof
+    pPunctuation
     pure $ T.append root structA
 
 -- >>> import qualified Data.Text.Lazy as TL

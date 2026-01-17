@@ -66,7 +66,7 @@ subConsonants :: Vector P Char
 subConsonants =
     V.fromList
         Seq
-        [ chr 0x0F90 --'ཀ' -- 1 
+        [ chr 0x0F90 -- 'ཀ' -- 1 
         , chr 0x0F91 -- 'ཁ' -- 2 
         , chr 0x0F92 -- 'ག' -- 3 
         , chr 0x0F94 -- 'ང' -- 4 
@@ -233,3 +233,22 @@ pPostfixDa = char (fetchChar consonants 11) <?> "Postfix ད"
 -- Subfix 'ས' - 28
 pPostfixSa :: Parser Char
 pPostfixSa = char (fetchChar consonants 28) <?> "Postfix ས"
+
+--
+-- Punctuation 
+punctuation :: HashSet Char
+punctuation =
+    HS.fromList
+        [ chr 0x0F0B -- '་' -- tsheg 
+        , chr 0x0F0C -- tsheg bstar -- non-breaking tsheg
+        , chr 0x0F0D -- '།' -- shad
+        , chr 0x0F0E -- '༎' -- nyis shad
+        , chr 0x0F0F -- '༏' -- tsheg shad
+        , chr 0x0F10 -- '༐' -- nyis tsheg shad
+        , chr 0x0F11 -- '༑' -- rin chen spungs shad
+        , chr 0x0F14 -- '༔' -- gter tsheg
+        , ' ' -- space
+        ]
+
+pPunctuation :: Parser Char
+pPunctuation = satisfy (`HS.member` punctuation) <?> "Punctuation character"
