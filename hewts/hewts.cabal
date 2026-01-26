@@ -48,7 +48,7 @@ library
   hs-source-dirs:  src
   exposed-modules:
     Convert
-    Convert.WylieUnicode
+    Convert.Wylie
     Parser
     Parser.Common
     Parser.Rules.Grammar01

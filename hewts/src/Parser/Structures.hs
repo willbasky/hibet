@@ -112,6 +112,18 @@ pStructure1 = do
 -- >>> prettyPrint $ parseEither pStructure1 "ཊོ"
 -- Right "ཊོ"
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure1 "དུ་"
+-- Right "དུ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pStructure1 "ཌ་"
+-- Right "ཌ"
+
 {-
 Tibetan spelling structure 2
 On the basis of the Tibetan spelling grammar 4.8
@@ -300,6 +312,7 @@ pStructure9 :: Parser Text
 pStructure9 = do
     struct <- pGrammar14
     suffix <- pGrammar15
+    pPunctuation
     pure $ struct :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -347,6 +360,7 @@ pStructure11 :: Parser Text
 pStructure11 = do
     structure8 <- pGrammar12
     suffix <- pGrammar15
+    pPunctuation
     pure $ structure8 :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL
@@ -380,6 +394,7 @@ pStructure12 :: Parser Text
 pStructure12 = do
     structure8 <- pGrammar13
     suffix <- pGrammar15
+    pPunctuation
     pure $ structure8 :> suffix
 
 -- >>> import qualified Data.Text.Lazy as TL

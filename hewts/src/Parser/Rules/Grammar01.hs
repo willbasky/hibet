@@ -22,6 +22,24 @@ pGrammar1 = do
     let consT = T.empty :> root 
     pure $ maybe consT (consT :>) vowel
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar1 "ས"
+-- Right "ས"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar1 "སུ"
+-- Right "སུ"
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar1 "ཐོ"
+-- Right "ཐོ"
+
 pGrammar1WithLong :: Parser Text 
 pGrammar1WithLong = do 
     root <- pRootConsonant
@@ -29,9 +47,21 @@ pGrammar1WithLong = do
     let consT = T.empty :> root 
     pure $ maybe consT (consT :>) vowel
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar1WithLong "དུ"
+-- Right "དུ"
+
 pGrammar1Sanskrit :: Parser Text 
 pGrammar1Sanskrit = do 
     root <- pSanskrit
     vowel <- optional pVowel 
     let consT = T.empty :> root 
     pure $ maybe consT (consT :>) vowel
+
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pGrammar1Sanskrit "ཌ"
+-- Right "ཌ"

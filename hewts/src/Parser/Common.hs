@@ -20,6 +20,13 @@ type Parser = Parsec Void Text
 parseEither :: Parser a -> Text -> Either Text a
 parseEither p t = mapLeft (T.pack . errorBundlePretty) $ runParser p "" t
 
+recovering :: Parser a -> Parser a
+recovering p = withRecovery (\e -> registerParseError e *> skipGarbage *> p) p
+
+skipGarbage :: Parser ()
+skipGarbage = skipMany (satisfy (not . flip HS.member punctuation)) <* optional pPunctuation
+
+
 consonants :: Vector P Char
 consonants =
     V.fromList
@@ -151,6 +158,11 @@ vowelLongA = char 'ཱ' <?> "Long vowel འ"
 pVowel :: Parser Char
 pVowel = satisfy (`HS.member` vowel) <?> "Vowel character"
 
+-- >>> import qualified Data.Text.Lazy as TL
+-- >>> import Text.Pretty.Simple
+-- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint $ parseEither pVowel "ུ"
+-- Right 'ུ'
 --
 -- Prefix characters (5: ['ག', 'ད', 'བ', 'མ', 'འ'])
 
@@ -252,3 +264,20 @@ punctuation =
 
 pPunctuation :: Parser Char
 pPunctuation = satisfy (`HS.member` punctuation) <?> "Punctuation character"
+
+numbers :: HashSet Char 
+numbers = HS.fromList
+        [ '༠'
+        , '༡'
+        , '༢'
+        , '༣'
+        , '༤'
+        , '༥'
+        , '༦'
+        , '༧'
+        , '༨'
+        , '༩'
+        ]
+
+pNumber :: Parser Text
+pNumber = T.singleton <$> satisfy (`HS.member` numbers) <?> "Number character"

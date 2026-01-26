@@ -1,13 +1,17 @@
 module Parser where
 
 import Data.Text (Text)
-import Parser.Common (Parser)
+import Parser.Common (Parser, pPunctuation, pNumber, recovering)
 import qualified Parser.Structures as S
 import Text.Megaparsec
+import Text.Megaparsec.Char
+import Text.Megaparsec.Debug (dbg)
 
 p37structures :: Parser Text
-p37structures = 
-    choice
+p37structures = dbg "p37structures" $ do 
+    space
+    skipMany pPunctuation
+    res <- recovering $ choice
         [ try S.pStructure1
         , try S.pStructure2
         , try S.pStructure3
@@ -45,7 +49,20 @@ p37structures =
         , try S.pStructure35
         , try S.pStructure36
         , try S.pStructure37
+        , pNumber
         ]
+    space
+    pure res
 
-pSentence :: Parser [Text] 
-pSentence = some p37structures
+pSpellChekerUnicode :: Parser [Text] 
+pSpellChekerUnicode = do 
+    res <- some p37structures
+    eof
+    pure res
+
+testText :: Text
+testText = "མཆོག་དེ་རིང་ཕྱི་ཚེས་དུ་སུ་"
+
+testLongText :: Text 
+testLongText = "འོན་ཀྱང་དེ་རིང་ཉེ་སྔོན་གྱི་ལག་རྩལ་པས་ཡིག་ཟམ་ཞིག་བསྐུར་བར་ཀུ་ཤུས་རིན་མེད་ཞུབས་ཞུ་བྱེད་མཚམས་བཞག་པས། སྐུ་ཉིད་ནས་ཨ་སྒོར་ ༩༩ གྲ་སྒྲིག་བྱས་ཏེ་ཀུ་ཤུའི་མཉེན་ཆས་ཁྲོམ་sdfs རའི་ཐོག་ཐོ་འགོད་དང་ནང་kgfg འཇུག་བྱས་ཏེ་རང་ཉིད་ལ་དབང་བའི་ས་མིག་ཟུངས་ཞེས་པ་རེད།"
+
