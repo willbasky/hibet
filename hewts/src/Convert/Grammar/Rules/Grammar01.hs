@@ -32,7 +32,12 @@ pGrammar1 = do
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
 -- >>> prettyPrint $ parseEither pGrammar1 "སུ"
--- Right "སུ"
+-- No instance for `Show (Either Text Text)'
+--   arising from a use of `prettyPrint'
+-- In the first argument of `($)', namely `prettyPrint'
+-- In the expression: prettyPrint $ parseEither pGrammar1 "སུ"
+-- In an equation for `it_a11rE':
+--     it_a11rE = prettyPrint $ parseEither pGrammar1 "སུ"
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple

@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Test.Tasty (TestTree, defaultMain, testGroup)
+import qualified Test.Grammar.Rule.Grammar01 as Grammar01
 import qualified Test.Tokenizer.Golden as Golden
 import qualified Test.Tokenizer.Integration as Integration
 import qualified Test.Tokenizer.Spans as Spans
@@ -19,4 +20,5 @@ tests =
         , Tricky.tests
         , Integration.tests
         , Golden.tests
+        , Grammar01.tests
         ]
