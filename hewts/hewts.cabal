@@ -114,7 +114,13 @@ test-suite hewts-test
   hs-source-dirs: test
   main-is:        Spec.hs
 
-  -- build-depends:  hewts
+  build-depends:
+    hewts,
+    bytestring,
+    text,
+    tasty,
+    tasty-hunit,
+    tasty-golden
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
 
 benchmark hewts-benchmark

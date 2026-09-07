@@ -1,4 +1,4 @@
-module Convert.Tokenizer.Unicode where
+module Convert.Tokenizer.UnicodeLegacy where
 
 import Convert.Token
 import Data.HashMap.Strict (HashMap, (!?))

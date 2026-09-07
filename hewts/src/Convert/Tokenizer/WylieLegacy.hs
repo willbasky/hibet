@@ -1,6 +1,6 @@
 {- HLINT ignore "Use camelCase" -}
 
-module Convert.Tokenizer.Wylie where
+module Convert.Tokenizer.WylieLegacy where
 
 import Convert.Token
 import Data.HashMap.Strict (HashMap, (!?))
