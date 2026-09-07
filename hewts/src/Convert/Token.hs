@@ -2,6 +2,7 @@ module Convert.Token where
 
 import Data.Char (chr, isHexDigit, ord)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Numeric (readHex)
 import Text.Printf (printf)
 
@@ -99,6 +100,79 @@ data Token = Token
     , tokenIssues :: [TokenIssue]
     }
     deriving (Show, Eq)
+
+-- Smart constructors centralize Token invariants for both tokenizers.
+mkTokenWith :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> AliasPolicy -> [TokenIssue] -> Token
+mkTokenWith source kind raw canonical span aliasPolicy issues =
+    Token
+        { tokenRaw = raw
+        , tokenCanonical = canonical
+        , tokenKind = kind
+        , tokenSource = source
+        , tokenSpan = span
+        , tokenAliasPolicy = aliasPolicy
+        , tokenIssues = issues
+        }
+
+mkToken :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> Token
+mkToken source kind raw canonical span =
+    mkTokenWith source kind raw canonical span PreserveRaw []
+
+mkConsonant :: TokenSource -> Span -> Text -> Consonant -> Token
+mkConsonant source span raw consonant =
+    mkToken source TkConsonant raw (TcConsonant consonant) span
+
+mkSubConsonant :: TokenSource -> Span -> Text -> SubConsonant -> Token
+mkSubConsonant source span raw subConsonant =
+    mkToken source TkSubConsonant raw (TcSubConsonant subConsonant) span
+
+mkVowel :: TokenSource -> Span -> Text -> Vowel -> Token
+mkVowel source span raw vowel =
+    mkToken source TkVowel raw (TcVowel vowel) span
+
+mkFinal :: TokenSource -> Span -> Text -> FinalMark -> Token
+mkFinal source span raw finalMark =
+    mkToken source TkFinal raw (TcFinal finalMark) span
+
+mkNumber :: TokenSource -> Span -> Text -> Number -> Token
+mkNumber source span raw number =
+    mkToken source TkNumber raw (TcNumber number) span
+
+mkHalfNumber :: TokenSource -> Span -> Text -> HalfNumber -> Token
+mkHalfNumber source span raw halfNumber =
+    mkToken source TkHalfNumber raw (TcHalfNumber halfNumber) span
+
+mkPunctuation :: TokenSource -> Span -> Text -> PunctuationMark -> Token
+mkPunctuation source span raw punctuationMark =
+    mkToken source TkPunctuation raw (TcPunctuation punctuationMark) span
+
+mkSign :: TokenSource -> Span -> Text -> SignMark -> Token
+mkSign source span raw signMark =
+    mkToken source TkSign raw (TcSign signMark) span
+
+mkSanskritMark :: TokenSource -> Span -> Text -> SanskritMark -> Token
+mkSanskritMark source span raw sanskritMark =
+    mkToken source TkSanskritMark raw (TcSanskritMark sanskritMark) span
+
+mkOrnament :: TokenSource -> Span -> Text -> OrnamentMark -> Token
+mkOrnament source span raw ornamentMark =
+    mkToken source TkOrnament raw (TcOrnament ornamentMark) span
+
+mkSpace :: TokenSource -> Span -> Text -> SpaceMark -> Token
+mkSpace source span raw spaceMark =
+    mkToken source TkSpace raw (TcSpace spaceMark) span
+
+mkSymbol :: TokenSource -> Span -> Text -> SymbolMark -> Token
+mkSymbol source span raw symbolMark =
+    mkToken source TkSymbol raw (TcSymbol symbolMark) span
+
+mkUnknownWith :: TokenSource -> Span -> Text -> [TokenIssue] -> Token
+mkUnknownWith source span raw issues =
+    mkTokenWith source TkUnknown raw (TcUnknown (UnknownMark raw)) span PreserveRaw issues
+
+mkUnknown :: TokenSource -> Span -> Text -> Token
+mkUnknown source span raw =
+    mkUnknownWith source span raw [TokenIssue UnknownChar (T.pack "Unknown token")] 
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
