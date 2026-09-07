@@ -212,14 +212,17 @@ other =
 
 -- | Tokenize Unicode Tibetan input to typed IR tokens.
 tokenizeUnicode :: Text -> [Token]
-tokenizeUnicode input = go 0 (T.unpack input)
+tokenizeUnicode input = go 0 input
   where
-    go _ [] = []
-    go offset (c : rest) =
-        let raw = T.singleton c
-            end = offset + 1
-            span = mkSpan (fromIntegral offset) (fromIntegral end)
-         in classifyChar span c raw : go end rest
+    go _ rest | T.null rest = []
+    go offset rest =
+        case T.uncons rest of
+            Nothing -> []
+            Just (c, next) ->
+                let raw = T.singleton c
+                    end = offset + 1
+                    span = mkSpan (fromIntegral offset) (fromIntegral end)
+                 in classifyChar span c raw : go end next
 
 classifyChar :: Span -> Char -> Text -> Token
 classifyChar span ch raw =

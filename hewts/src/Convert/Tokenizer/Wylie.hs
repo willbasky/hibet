@@ -786,34 +786,35 @@ tokens =
 -- | Tokenize Wylie input using longest-match splitting for known multi-char
 -- tokens.
 tokenizeWylie :: Text -> [Token]
-tokenizeWylie input = go 0 (T.unpack input)
+tokenizeWylie input = go 0 input
   where
-    go _ [] = []
+    go _ rest | T.null rest = []
     go offset rest =
         let (chunk, next) = nextChunk rest
-            raw = T.pack chunk
-            end = offset + length chunk
+            raw = chunk
+            end = offset + T.length chunk
             span = mkSpan (fromIntegral offset) (fromIntegral end)
          in classifyToken span raw : go end next
 
--- TODO: use Text type instead of String for better performance and memory usage
-nextChunk :: String -> (String, String)
-nextChunk [] = ([], [])
-nextChunk source@(c : _) =
-    case longestComposite of
-        Just tok -> (tok, drop (length tok) source)
-        Nothing -> ([c], drop 1 source)
+nextChunk :: Text -> (Text, Text)
+nextChunk source =
+    case T.uncons source of
+        Nothing -> (T.empty, T.empty)
+        Just (c, _) ->
+            case longestComposite c of
+                Just tok -> (tok, T.drop (T.length tok) source)
+                Nothing -> (T.take 1 source, T.drop 1 source)
   where
-    longestComposite = do
+    longestComposite c = do
         maxLen <- fromIntegral <$> (tokensStart !? c)
         longestFrom maxLen
 
     longestFrom n
         | n < 2 = Nothing
-        | length source < n = longestFrom (n - 1)
+        | T.length source < n = longestFrom (n - 1)
         | otherwise =
-            let candidate = take n source
-             in if HS.member (T.pack candidate) tokens
+            let candidate = T.take n source
+             in if HS.member candidate tokens
                     then Just candidate
                     else longestFrom (n - 1)
 
