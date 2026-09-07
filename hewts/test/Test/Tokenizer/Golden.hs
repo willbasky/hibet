@@ -23,6 +23,14 @@ tests =
             "unicode token stream"
             "test/golden/unicode_tokens.golden"
             (pure $ renderTokensBS $ tokenizeUnicode "གཞོན་ནུའི་དཔེ་ཆ།། ་x")
+        , goldenVsString
+            "wylie diagnostics token stream"
+            "test/golden/wylie_diagnostics_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeWylie "gzhon // ~+`]-. x")
+        , goldenVsString
+            "unicode edge token stream"
+            "test/golden/unicode_edge_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeUnicode "ཀིི ཀxི ྆།")
         ]
 
 renderTokensBS :: [Token] -> ByteString

@@ -26,6 +26,12 @@ tests =
         , testCase "wylie longest-match Sh then a" caseWylieShThenA
         , testCase "wylie longest-match th then a" caseWylieThThenA
         , testGroup "wylie prefix conflicts" (map mkPrefixCase wyliePrefixCases)
+        , testCase "wylie mixed special markers keep InvalidSequence diagnostics" caseWylieMixedSpecialDiagnostics
+        , testCase "wylie unknown latin keeps UnknownChar diagnostics" caseWylieUnknownDiagnostics
+        , testCase "unicode unexpected ASCII between Tibetan signs is isolated" caseUnicodeUnexpectedAsciiBetweenTibetan
+        , testCase "unicode repeated vowel marks are tokenized separately" caseUnicodeRepeatedVowels
+        , testCase "unicode rare combining mark is unknown with warning" caseUnicodeRareCombiningUnknown
+        , testCase "unicode mixed edge stream preserves per-token diagnostics" caseUnicodeMixedEdgeDiagnostics
         , testCase "unicode tsheg and ASCII space are different kinds" caseUnicodeTshegVsSpace
         , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
         ]
@@ -130,6 +136,74 @@ caseWylieShThenA =
 caseWylieThThenA :: Assertion
 caseWylieThThenA =
     assertWylieRawTokens "tha" ["th", "a"]
+
+caseWylieMixedSpecialDiagnostics :: Assertion
+caseWylieMixedSpecialDiagnostics =
+    let toks = tokenizeWylie "~+`]-."
+        expectedIssue = [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+     in do
+            map tokenRaw toks @?= ["~", "+", "`", "]", "-", "."]
+            map tokenKind toks @?= replicate 6 TkUnknown
+            map tokenCanonical toks
+                @?= map (TcUnknown . UnknownMark) ["~", "+", "`", "]", "-", "."]
+            map tokenIssues toks @?= replicate 6 expectedIssue
+
+caseWylieUnknownDiagnostics :: Assertion
+caseWylieUnknownDiagnostics =
+    case tokenizeWylie "x" of
+        [tok] -> tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseUnicodeUnexpectedAsciiBetweenTibetan :: Assertion
+caseUnicodeUnexpectedAsciiBetweenTibetan =
+    case tokenizeUnicode "ཀxི" of
+        [kTok, xTok, iTok] -> do
+            tokenKind kTok @?= TkConsonant
+            tokenKind xTok @?= TkUnknown
+            tokenKind iTok @?= TkVowel
+            tokenCanonical xTok @?= TcUnknown (UnknownMark "x")
+            tokenIssues xTok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        xs -> error $ "Expected 3 tokens, got " <> show (length xs)
+
+caseUnicodeRepeatedVowels :: Assertion
+caseUnicodeRepeatedVowels =
+    case tokenizeUnicode "ཀིི" of
+        [kTok, i1Tok, i2Tok] -> do
+            tokenKind kTok @?= TkConsonant
+            tokenKind i1Tok @?= TkVowel
+            tokenKind i2Tok @?= TkVowel
+            tokenCanonical i1Tok @?= TcVowel Vi
+            tokenCanonical i2Tok @?= TcVowel Vi
+            tokenIssues i1Tok @?= []
+            tokenIssues i2Tok @?= []
+        xs -> error $ "Expected 3 tokens, got " <> show (length xs)
+
+caseUnicodeRareCombiningUnknown :: Assertion
+caseUnicodeRareCombiningUnknown =
+    case tokenizeUnicode "྆" of
+        [tok] -> do
+            tokenKind tok @?= TkUnknown
+            tokenCanonical tok @?= TcUnknown (UnknownMark "྆")
+            tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseUnicodeMixedEdgeDiagnostics :: Assertion
+caseUnicodeMixedEdgeDiagnostics =
+    let toks = tokenizeUnicode "ཀིི ཀxི ྆།"
+        issuesByRaw = map (\tok -> (tokenRaw tok, tokenIssues tok)) toks
+     in issuesByRaw
+            @?=
+                [ ("ཀ", [])
+                , ("ི", [])
+                , ("ི", [])
+                , (" ", [])
+                , ("ཀ", [])
+                , ("x", [TokenIssue UnknownChar TisWarning "Unknown token"])
+                , ("ི", [])
+                , (" ", [])
+                , ("྆", [TokenIssue UnknownChar TisWarning "Unknown token"])
+                , ("།", [])
+                ]
 
 caseUnicodeTshegVsSpace :: Assertion
 caseUnicodeTshegVsSpace =
