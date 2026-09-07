@@ -25,9 +25,47 @@ tests =
         , testCase "wylie longest-match // then a" caseWylieDoubleShadThenA
         , testCase "wylie longest-match Sh then a" caseWylieShThenA
         , testCase "wylie longest-match th then a" caseWylieThThenA
+        , testGroup "wylie prefix conflicts" (map mkPrefixCase wyliePrefixCases)
         , testCase "unicode tsheg and ASCII space are different kinds" caseUnicodeTshegVsSpace
         , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
         ]
+
+mkPrefixCase :: (String, Text, [Text]) -> TestTree
+mkPrefixCase (name, input, expected) =
+    testCase name (assertWylieRawTokens input expected)
+
+wyliePrefixCases :: [(String, Text, [Text])]
+wyliePrefixCases =
+    [ ("plain d before vowel", "da", ["d", "a"])
+    , ("dz beats d", "dza", ["dz", "a"])
+    , ("dzh beats dz", "dzha", ["dzh", "a"])
+    , ("dz+h beats dzh", "dz+ha", ["dz+h", "a"])
+    , ("plain -d before vowel", "-da", ["-d", "a"])
+    , ("-dh beats -d", "-dha", ["-dh", "a"])
+    , ("-d+h beats -dh", "-d+ha", ["-d+h", "a"])
+    , ("g+h beats g", "g+ha", ["g+h", "a"])
+    , ("gh alias stays one chunk", "gha", ["gh", "a"])
+    , ("D+h beats D", "D+ha", ["D+h", "a"])
+    , ("Dh alias stays one chunk", "Dha", ["Dh", "a"])
+    , ("b+h beats b", "b+ha", ["b+h", "a"])
+    , ("bh alias stays one chunk", "bha", ["bh", "a"])
+    , ("b+l beats b", "b+la", ["b+l", "a"])
+    , ("th beats t", "tha", ["th", "a"])
+    , ("tsh beats th", "tsha", ["tsh", "a"])
+    , ("sh beats s", "sha", ["sh", "a"])
+    , ("Sh beats s", "Sha", ["Sh", "a"])
+    , ("-sh beats -s fallback", "-sha", ["-sh", "a"])
+    , ("// beats /", "//a", ["//", "a"])
+    , ("single slash remains /", "/a", ["/", "a"])
+    , ("ai beats a", "aia", ["ai", "a"])
+    , ("au beats a", "aua", ["au", "a"])
+    , ("-I beats - and I", "-Ia", ["-I", "a"])
+    , ("~M` beats ~M", "~M`a", ["~M`", "a"])
+    , ("~M works standalone", "~Ma", ["~M", "a"])
+    , ("~X works standalone", "~Xa", ["~X", "a"])
+    , ("k+Sh beats k", "k+Sha", ["k+Sh", "a"])
+    , ("CRLF beats CR", "\r\na", ["\r\n", "a"])
+    ]
 
 caseWylieDzh :: Assertion
 caseWylieDzh =
