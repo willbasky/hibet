@@ -37,6 +37,9 @@ data TokenKind
     | TkNumber
     | TkHalfNumber
     | TkPunctuation
+    | TkSign
+    | TkSanskritMark
+    | TkOrnament
     | TkSpace
     | TkSymbol
     | TkUnknown
@@ -77,6 +80,9 @@ data TokenCanonical
     | TcNumber Number
     | TcHalfNumber HalfNumber
     | TcPunctuation PunctuationMark
+    | TcSign SignMark
+    | TcSanskritMark SanskritMark
+    | TcOrnament OrnamentMark
     | TcSpace SpaceMark
     | TcSymbol SymbolMark
     | TcUnknown UnknownMark
@@ -143,6 +149,8 @@ data Consonant
     | Ca -- ཨ \u0f68
     | CkPLUSSh -- ཀྵ \u0f69
     | CR -- ཪ \u0f6a
+    | Ckka -- ཫ \u0f6b
+    | CRra -- ཬ \u0f6c
     deriving (Show, Eq)
 
 data Vowel
@@ -256,8 +264,36 @@ data PunctuationMark
     | PMShad -- ། \u0f0d
     | PMNyisShad -- ༎ \u0f0e
     | PMTshegShad -- ༏ \u0f0f
+    | PMNyisTshegShad -- ༐ \u0f10
     | PMRinChenSpungsShad -- ༑ \u0f11
+    | PMRgyaGramShad -- ༒ \u0f12
+    | PMCaretDzudRtagsMeLong -- ༓ \u0f13
     | PMGterTshigMgo -- ༔ \u0f14
+    deriving (Show, Eq)
+
+data SignMark
+    = SGYigMgoAt -- ༀ \u0f00
+    | SGKaKhaGaGsum -- ༁ \u0f01
+    | SGNyiZlaNaaDa -- ༂ \u0f02
+    | SGSbrulShad -- ༃ \u0f03
+    deriving (Show, Eq)
+
+data SanskritMark
+    = SMiLciRtags -- ྆ \u0f86
+    | SMiYangRtags -- ྇ \u0f87
+    | SMiLceTsaCanSubjoined -- ྍ \u0f8d
+    | SMiMchuCanSubjoined -- ྎ \u0f8e
+    | SMiInvertedMchuCanSubjoined -- ྏ \u0f8f
+    deriving (Show, Eq)
+
+data OrnamentMark
+    = OMRdelDkarGcig -- ࿐ \u0fd0
+    | OMRdelDkarGnyis -- ࿑ \u0fd1
+    | OMRdelDkarGsum -- ࿒ \u0fd2
+    | OMRdelNagGcig -- ࿓ \u0fd3
+    | OMRdelNagGnyis -- ࿔ \u0fd4
+    | OMLeadingMchanRtags -- ࿙ \u0fd9
+    | OMTrailingMchanRtags -- ࿚ \u0fda
     deriving (Show, Eq)
 
 data SpaceMark
