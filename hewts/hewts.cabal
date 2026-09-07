@@ -67,7 +67,9 @@ library
     Convert.Grammar
     Convert.Grammar.Common
     Convert.Tokenizer.Wylie
+    Convert.Tokenizer.WylieLegacy
     Convert.Tokenizer.Unicode    
+    Convert.Tokenizer.UnicodeLegacy    
     Syllables
     -- Convert.Grammar.Structure.Structure01
     -- Convert.Grammar.Structure.Structure02
