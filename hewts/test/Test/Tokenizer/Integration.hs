@@ -15,6 +15,7 @@ tests =
         [ testCase "wylie raw roundtrip through tokens" caseWylieRawRoundtrip
         , testCase "unicode raw roundtrip through tokens" caseUnicodeRawRoundtrip
         , testCase "wylie aliases normalize to canonical rendering" caseWylieCanonicalRender
+        , testCase "wylie f and v keep canonical distinction" caseWylieFvCanonicalDistinct
         , testCase "unicode aliases normalize to canonical rendering" caseUnicodeCanonicalRender
         ]
 
@@ -31,6 +32,10 @@ caseUnicodeRawRoundtrip =
 caseWylieCanonicalRender :: Assertion
 caseWylieCanonicalRender =
     canonicalWylieFromWylie "W O ~M`" @?= "w o M"
+
+caseWylieFvCanonicalDistinct :: Assertion
+caseWylieFvCanonicalDistinct =
+    canonicalWylieFromWylie "f v ph b" @?= "f v ph b"
 
 caseUnicodeCanonicalRender :: Assertion
 caseUnicodeCanonicalRender =
@@ -53,6 +58,8 @@ canonicalPiece tok =
     case tokenCanonical tok of
         TcConsonant Cw -> "w"
         TcConsonant CgPLUSh -> "g+h"
+        TcConsonant Cf -> "f"
+        TcConsonant Cv -> "v"
         TcVowel Vo -> "o"
         TcFinal FMAnusvara -> "M"
         TcPunctuation PMTsheg -> " "

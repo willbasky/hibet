@@ -220,7 +220,9 @@ data Consonant
     | Cn -- ན \u0f53
     | Cp -- པ \u0f54
     | Cph -- ཕ \u0f55
+    | Cf -- f (EWTS-specific) ཕ༹ \u0f55\u0f39
     | Cb -- བ \u0f56
+    | Cv -- v (EWTS-specific) བ༹ \u0f56\u0f39
     | CbPLUSh -- བྷ \u0f57
     | Cm -- མ \u0f58
     | Cts -- ཙ \u0f59

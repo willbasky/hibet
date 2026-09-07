@@ -231,8 +231,8 @@ consonantTokenMap =
         , ("a", Ca)
         , ("k+Sh", CkPLUSSh)
         , ("R", CR)
-        , ("f", Cph)
-        , ("v", Cb)
+        , ("f", Cf)
+        , ("v", Cv)
         ]
 
 vowelTokenMap :: HashMap Text Vowel
