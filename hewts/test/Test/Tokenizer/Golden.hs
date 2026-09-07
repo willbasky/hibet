@@ -31,6 +31,22 @@ tests =
             "unicode edge token stream"
             "test/golden/unicode_edge_tokens.golden"
             (pure $ renderTokensBS $ tokenizeUnicode "ཀིི ཀxི ྆།")
+        , goldenVsString
+            "wylie dense stacks token stream"
+            "test/golden/wylie_dense_stacks_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeWylie "k+Shra dz+ha -d+h'i b+lai ~M` //")
+        , goldenVsString
+            "wylie dense aliases token stream"
+            "test/golden/wylie_dense_aliases_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeWylie "D+hO b+hU dzhai -sha ~Xa //")
+        , goldenVsString
+            "unicode punctuation and signs token stream"
+            "test/golden/unicode_punctuation_signs_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeUnicode "༄༅།༎༏༑༔༈༉༊་ ༼ཀ༽")
+        , goldenVsString
+            "unicode mixed garbage diagnostics token stream"
+            "test/golden/unicode_mixed_garbage_tokens.golden"
+            (pure $ renderTokensBS $ tokenizeUnicode "ཀx?། @྆+་ི\n#ག")
         ]
 
 renderTokensBS :: [Token] -> ByteString
