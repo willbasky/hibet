@@ -71,26 +71,6 @@ library
     Convert.Tokenizer.Unicode    
     Convert.Tokenizer.UnicodeLegacy    
     Syllables
-    -- Convert.Grammar.Structure.Structure01
-    -- Convert.Grammar.Structure.Structure02
-    -- Convert.Grammar.Structure.Structure03
-    -- Convert.Grammar.Structure.Structure04
-    -- Convert.Grammar.Structure.Structure05
-    -- Convert.Grammar.Structure.Structure06
-    -- Convert.Grammar.Structure.Structure07
-    -- Convert.Grammar.Structure.Structure08
-    -- Convert.Grammar.Structure.Structure09
-    -- Convert.Grammar.Structure.Structure10
-    -- Convert.Grammar.Structure.Structure11
-    -- Convert.Grammar.Structure.Structure12
-    -- Convert.Grammar.Structure.Structure13
-    -- Convert.Grammar.Structure.Structure14
-    -- Convert.Grammar.Structure.Structure15
-    -- Convert.Grammar.Structure.Structure16
-    -- Convert.Grammar.Structure.Structure17
-    -- Convert.Grammar.Structure.Structure18
-    -- Convert.Grammar.Structure.Structure19
-    -- Convert.Grammar.Structure.Structure20
 
   build-depends:
     , bytestring
