@@ -1,11 +1,23 @@
 module Test.Tokenizer.Tricky (tests) where
 
 import Convert.Token
+import Convert.Tokenizer.Wylie
+    ( consonantTokenMap
+    , finalTokenMap
+    , longTokenList
+    , numberTokenMap
+    , punctuationTokenMap
+    , symbolTokenMap
+    , tokenizeWylie
+    , vowelTokenMap
+    )
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie)
+import qualified Data.HashMap.Strict as HM
+import qualified Data.HashSet as HS
 import Data.Text (Text)
+import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), Assertion, testCase)
+import Test.Tasty.HUnit ((@?=), Assertion, assertBool, testCase)
 
 tests :: TestTree
 tests =
@@ -34,6 +46,12 @@ tests =
         , testCase "unicode mixed edge stream preserves per-token diagnostics" caseUnicodeMixedEdgeDiagnostics
         , testCase "unicode tsheg and ASCII space are different kinds" caseUnicodeTshegVsSpace
         , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
+        , testGroup "wylie chunking contracts" wylieChunkingContractTests
+        , testGroup "unicode normalization matrix" (map mkUnicodeNormalizationCase unicodeNormalizationCases)
+        , testCase "unicode precomposed U+0F73 maps to VI" caseUnicodePrecomposed073
+        , testCase "unicode decomposed U+0F71 U+0F72 maps to VA+Vi" caseUnicodeDecomposed071072
+        , testCase "unicode precomposed U+0F75 maps to VU" caseUnicodePrecomposed075
+        , testCase "unicode decomposed U+0F71 U+0F74 maps to VA+Vu" caseUnicodeDecomposed071074
         ]
 
 mkPrefixCase :: (String, Text, [Text]) -> TestTree
@@ -224,3 +242,114 @@ caseUnicodeUnknownPreserved =
 assertWylieRawTokens :: Text -> [Text] -> Assertion
 assertWylieRawTokens input expected =
     (tokenRaw <$> tokenizeWylie input) @?= expected
+
+wylieChunkingContractTests :: [TestTree]
+wylieChunkingContractTests =
+    [ testCase "all multi-char tokenizer keys are listed in longTokenList" caseAllMultiCharKeysListed
+    , testCase "no dead multi-char tokenizer keys" caseNoDeadMultiCharKeys
+    ]
+
+caseAllMultiCharKeysListed :: Assertion
+caseAllMultiCharKeysListed =
+    let longTokens = HS.fromList longTokenList
+        missing = filter (not . (`HS.member` longTokens)) multiCharTokenizerKeys
+     in missing @?= []
+
+caseNoDeadMultiCharKeys :: Assertion
+caseNoDeadMultiCharKeys =
+    mapM_ assertReachableMultiCharKey multiCharTokenizerKeys
+
+assertReachableMultiCharKey :: Text -> Assertion
+assertReachableMultiCharKey key =
+    case tokenizeWylie key of
+        [tok] -> tokenRaw tok @?= key
+        toks -> error $ "Expected a single token for key " <> show key <> ", got: " <> show (map tokenRaw toks)
+
+multiCharTokenizerKeys :: [Text]
+multiCharTokenizerKeys =
+    HS.toList . HS.fromList . filter ((> 1) . T.length) $
+        HM.keys consonantTokenMap
+            <> HM.keys vowelTokenMap
+            <> HM.keys finalTokenMap
+            <> HM.keys numberTokenMap
+            <> HM.keys punctuationTokenMap
+            <> HM.keys symbolTokenMap
+
+mkUnicodeNormalizationCase :: (String, Text, [Text]) -> TestTree
+mkUnicodeNormalizationCase (name, input, expectedUnknownRaws) =
+    testCase name (assertUnicodeNormalizationCase input expectedUnknownRaws)
+
+assertUnicodeNormalizationCase :: Text -> [Text] -> Assertion
+assertUnicodeNormalizationCase input expectedUnknownRaws = do
+    let toks = tokenizeUnicode input
+        raws = map tokenRaw toks
+        unknowns = [tok | tok <- toks, tokenKind tok == TkUnknown]
+    assertBool "Unicode stream contains empty tokenRaw" (all (not . T.null) raws)
+    T.concat raws @?= input
+    map tokenRaw unknowns @?= expectedUnknownRaws
+    mapM_ assertUnknownShape unknowns
+
+assertUnknownShape :: Token -> Assertion
+assertUnknownShape tok = do
+    tokenCanonical tok @?= TcUnknown (UnknownMark (tokenRaw tok))
+    tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+
+unicodeNormalizationCases :: [(String, Text, [Text])]
+unicodeNormalizationCases =
+    [ ("precomposed U+0F73", "ཱི", [])
+    , ("decomposed U+0F71 U+0F72", "ཱི", [])
+    , ("precomposed U+0F75", "ཱུ", [])
+    , ("decomposed U+0F71 U+0F74", "ཱུ", [])
+    , ("precomposed U+0F77 unknown", "ཷ", ["ཷ"])
+    , ("decomposed for U+0F77", "ཱྀུ", [])
+    , ("precomposed U+0F79 unknown", "ཹ", ["ཹ"])
+    , ("decomposed for U+0F79", "ཱྀ", [])
+    , ("syllable with precomposed U+0F73", "ཁཱི", [])
+    , ("syllable with decomposed U+0F71 U+0F72", "ཁཱི", [])
+    , ("repeated vowel i", "ཀིི", [])
+    , ("repeated vowel u", "ཀུུ", [])
+    , ("repeated vowel e", "ཀེེ", [])
+    , ("repeated vowel o", "ཀོོ", [])
+    , ("repeated vowel A", "ཀཱཱ", [])
+    , ("repeated minus-i vowel", "ཀྀྀ", [])
+    , ("repeated anusvara", "ཀཾཾ", [])
+    , ("repeated halanta", "ཀ྄྄", [])
+    , ("double shad punctuation", "ཀ།།", [])
+    , ("double tsheg punctuation", "ཀ་་", [])
+    , ("ascii letter between Tibetan chars", "ཀxི", ["x"])
+    , ("ascii question between Tibetan chars", "ཀ?ི", ["?"])
+    , ("ascii at between Tibetan chars", "ཀ@ི", ["@"])
+    , ("ascii space between Tibetan chars", "ཀ ི", [])
+    , ("tab between Tibetan chars", "ཀ\tི", ["\t"])
+    , ("newline between Tibetan chars", "ཀ\nི", ["\n"])
+    , ("carriage return between Tibetan chars", "ཀ\rི", ["\r"])
+    , ("ascii hash between Tibetan chars", "ཀ#ི", ["#"])
+    , ("ascii digit between Tibetan chars", "ཀ0ི", ["0"])
+    , ("leading NUL control", "\NULཀ", ["\NUL"])
+    , ("NUL inside Tibetan chars", "ཀ\NULི", ["\NUL"])
+    , ("DEL control between Tibetan chars", "ཀ\DELི", ["\DEL"])
+    , ("rare combining mark inside syllable", "ཀི྆", ["྆"])
+    , ("known unicode symbols around unknown ascii", "ཀ༄x།", ["x"])
+    , ("unicode sign sequence only", "༄༅༆", [])
+    , ("plus in unicode stream", "ཀ+་ི", ["+"])
+    , ("newline between shad marks", "ཀ།\n།ི", ["\n"])
+    , ("tab between shad marks", "ཀ།\t།ི", ["\t"])
+    , ("carriage return between shad marks", "ཀ།\r།ི", ["\r"])
+    , ("NUL between shad marks", "ཀ།\NUL།ི", ["\NUL"])
+    ]
+
+caseUnicodePrecomposed073 :: Assertion
+caseUnicodePrecomposed073 =
+    map tokenCanonical (tokenizeUnicode "ཱི") @?= [TcVowel VI]
+
+caseUnicodeDecomposed071072 :: Assertion
+caseUnicodeDecomposed071072 =
+    map tokenCanonical (tokenizeUnicode "ཱི") @?= [TcVowel VA, TcVowel Vi]
+
+caseUnicodePrecomposed075 :: Assertion
+caseUnicodePrecomposed075 =
+    map tokenCanonical (tokenizeUnicode "ཱུ") @?= [TcVowel VU]
+
+caseUnicodeDecomposed071074 :: Assertion
+caseUnicodeDecomposed071074 =
+    map tokenCanonical (tokenizeUnicode "ཱུ") @?= [TcVowel VA, TcVowel Vu]

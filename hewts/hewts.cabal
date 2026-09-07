@@ -125,6 +125,7 @@ test-suite hewts-test
     hewts,
     bytestring,
     text,
+    unordered-containers,
     tasty,
     tasty-hunit,
     tasty-golden
