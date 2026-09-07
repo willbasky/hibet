@@ -28,7 +28,7 @@ fromUnicodeEscape (x : xs) = x : fromUnicodeEscape xs
 data TokenSource
     = TsUnicode
     | TsWylie
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- High-level token classes shared by both tokenizers.
 data TokenKind
@@ -45,39 +45,39 @@ data TokenKind
     | TkSpace
     | TkSymbol
     | TkUnknown
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Whether raw spelling should be preserved when alias forms normalize.
 data AliasPolicy
     = PreserveRaw
     | Canonicalized
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data TokenIssueCode
     = UnknownChar
     | InvalidSequence
     | AmbiguousAlias
     | AutoNormalized
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data TokenIssueSeverity
     = TisWarning
     | TisError
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data TokenIssue = TokenIssue
     { issueCode :: TokenIssueCode
     , issueSeverity :: TokenIssueSeverity
     , issueMessage :: Text
     }
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Character offsets in the original input, half-open interval [start, end).
 data Span = Span
     { offsetStart :: Natural
     , offsetEnd :: Natural
     }
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Keep spans half-open and monotonic: [start, end), end >= start.
 mkSpan :: Natural -> Natural -> Span
@@ -100,7 +100,7 @@ data TokenCanonical
     | TcSpace SpaceMark
     | TcSymbol SymbolMark
     | TcUnknown UnknownMark
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Canonical IR token used as contract between tokenizer and grammar layers.
 -- Invariants:
@@ -117,7 +117,7 @@ data Token = Token
     , tokenAliasPolicy :: AliasPolicy
     , tokenIssues :: [TokenIssue]
     }
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Smart constructors centralize Token invariants for both tokenizers.
 mkTokenWith :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> AliasPolicy -> [TokenIssue] -> Token
@@ -245,7 +245,7 @@ data Consonant
     | CR -- ཪ \u0f6a
     | Ckka -- ཫ \u0f6b
     | CRra -- ཬ \u0f6c
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data Vowel
     = VA -- ཱ \u0f71
@@ -267,7 +267,7 @@ data Vowel
     -- | Vuo -- ོུ \u0f74\u0f7c
     -- | Vui -- ིུ \u0f74\u0f72
     -- | Vue -- ེུ \u0f74\u0f7a
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data Number
     = N0 -- ༠ \u0f20
@@ -280,7 +280,7 @@ data Number
     | N7 -- ༧ \u0f27
     | N8 -- ༨ \u0f28
     | N9 -- ༩ \u0f29
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data HalfNumber
     = H_0 -- ༳ \u0f33
@@ -293,7 +293,7 @@ data HalfNumber
     | H_7 -- ༰ \u0f30
     | H_8 -- ༱ \u0f31
     | H_9 -- ༲ \u0f32
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- Subjoined Tibetan consonants used in stacks.
 data SubConsonant
@@ -341,7 +341,7 @@ data SubConsonant
     | SCW -- ྺ \u0fba
     | SCY -- ྻ \u0fbb
     | SCR -- ྼ \u0fbc
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data FinalMark
     = FMAnusvara -- ཾ \u0f7e, ྂ \u0f82, ྃ \u0f83
@@ -350,7 +350,7 @@ data FinalMark
     | FMHalanta -- ྄ \u0f84
     | FMCaret -- ྐྵ \u0f39
     | FMYigMgo -- ྅ \u0f85
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data PunctuationMark
     = PMTsheg -- ་ \u0f0b
@@ -363,14 +363,14 @@ data PunctuationMark
     | PMRgyaGramShad -- ༒ \u0f12
     | PMCaretDzudRtagsMeLong -- ༓ \u0f13
     | PMGterTshigMgo -- ༔ \u0f14
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data SignMark
     = SGYigMgoAt -- ༀ \u0f00
     | SGKaKhaGaGsum -- ༁ \u0f01
     | SGNyiZlaNaaDa -- ༂ \u0f02
     | SGSbrulShad -- ༃ \u0f03
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data SanskritMark
     = SMiLciRtags -- ྆ \u0f86
@@ -378,7 +378,7 @@ data SanskritMark
     | SMiLceTsaCanSubjoined -- ྍ \u0f8d
     | SMiMchuCanSubjoined -- ྎ \u0f8e
     | SMiInvertedMchuCanSubjoined -- ྏ \u0f8f
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data OrnamentMark
     = OMRdelDkarGcig -- ࿐ \u0fd0
@@ -388,11 +388,11 @@ data OrnamentMark
     | OMRdelNagGnyis -- ࿔ \u0fd4
     | OMLeadingMchanRtags -- ࿙ \u0fd9
     | OMTrailingMchanRtags -- ࿚ \u0fda
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data SpaceMark
     = SMSpace --   \u0020
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 data SymbolMark
     = SMExclamation -- ! \u0021
@@ -411,10 +411,10 @@ data SymbolMark
     | SMSemicolon -- ; \u003b
     | SMBar -- | \u007c
     | SMColon -- : \u003a
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 newtype UnknownMark = UnknownMark Text
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 -- >>> import Data.Char
 -- >>> import qualified Data.Text as T

@@ -67,10 +67,9 @@ library
     Convert.Grammar
     Convert.Grammar.Common
     Convert.Tokenizer.Wylie
-    Convert.Tokenizer.WylieLegacy
     Convert.Tokenizer.Unicode    
-    Convert.Tokenizer.UnicodeLegacy    
     Syllables
+    Convert.Grammar.Parser
 
   build-depends:
     , bytestring
