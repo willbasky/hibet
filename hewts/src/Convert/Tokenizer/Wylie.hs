@@ -2,11 +2,13 @@
 
 module Convert.Tokenizer.Wylie where
 
+import Convert.Token
 import Data.HashMap.Strict (HashMap, (!?))
 import qualified Data.HashMap.Strict as HM
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Word (Word8)
 
 -- wylie consonant => unicode
@@ -777,4 +779,202 @@ tokens =
         , "~M"
         , "~X"
         , "\r\n"
+        ]
+
+-- | Tokenize Wylie input using longest-match splitting for known multi-char
+-- tokens.
+tokenizeWylie :: Text -> [Token]
+tokenizeWylie input = go 0 (T.unpack input)
+  where
+    go _ [] = []
+    go offset rest =
+        let (chunk, next) = nextChunk rest
+            raw = T.pack chunk
+            end = offset + length chunk
+            span = mkSpan (fromIntegral offset) (fromIntegral end)
+         in classifyToken span raw : go end next
+
+-- TODO: use Text type instead of String for better performance and memory usage
+nextChunk :: String -> (String, String)
+nextChunk [] = ([], [])
+nextChunk source@(c : _) =
+    case longestComposite of
+        Just tok -> (tok, drop (length tok) source)
+        Nothing -> ([c], drop 1 source)
+  where
+    longestComposite = do
+        maxLen <- fromIntegral <$> (tokensStart !? c)
+        longestFrom maxLen
+
+    longestFrom n
+        | n < 2 = Nothing
+        | length source < n = longestFrom (n - 1)
+        | otherwise =
+            let candidate = take n source
+             in if HS.member (T.pack candidate) tokens
+                    then Just candidate
+                    else longestFrom (n - 1)
+
+-- TODO: improve case approach via monad Maybe or something similar to avoid nested case statements
+classifyToken :: Span -> Text -> Token
+classifyToken span raw =
+    case HM.lookup raw consonantTokenMap of
+        Just c -> mkConsonant TsWylie span raw c
+        Nothing ->
+            case HM.lookup raw vowelTokenMap of
+                Just v -> mkVowel TsWylie span raw v
+                Nothing ->
+                    case HM.lookup raw finalTokenMap of
+                        Just f -> mkFinal TsWylie span raw f
+                        Nothing ->
+                            case HM.lookup raw numberTokenMap of
+                                Just n -> mkNumber TsWylie span raw n
+                                Nothing ->
+                                    case HM.lookup raw punctuationTokenMap of
+                                        Just p -> mkPunctuation TsWylie span raw p
+                                        Nothing ->
+                                            case HM.lookup raw symbolTokenMap of
+                                                Just s -> mkSymbol TsWylie span raw s
+                                                Nothing
+                                                    | raw == "_" -> mkSpace TsWylie span raw SMSpace
+                                                    | HS.member raw special ->
+                                                        mkUnknownWith
+                                                            TsWylie
+                                                            span
+                                                            raw
+                                                            [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+                                                    | otherwise -> mkUnknown TsWylie span raw
+
+consonantTokenMap :: HashMap Text Consonant
+consonantTokenMap =
+    HM.fromList
+        [ ("k", Ck)
+        , ("kh", Ckh)
+        , ("g", Cg)
+        , ("gh", CgPLUSh)
+        , ("g+h", CgPLUSh)
+        , ("ng", Cng)
+        , ("c", Cc)
+        , ("ch", Cch)
+        , ("j", Cj)
+        , ("ny", Cny)
+        , ("T", CT)
+        , ("-t", CT)
+        , ("Th", CTh)
+        , ("-th", CTh)
+        , ("D", CD)
+        , ("-d", CD)
+        , ("Dh", CDPLUSh)
+        , ("D+h", CDPLUSh)
+        , ("-dh", CDPLUSh)
+        , ("-d+h", CDPLUSh)
+        , ("N", CN)
+        , ("-n", CN)
+        , ("t", Ct)
+        , ("th", Cth)
+        , ("d", Cd)
+        , ("dh", CdPLUSh)
+        , ("d+h", CdPLUSh)
+        , ("n", Cn)
+        , ("p", Cp)
+        , ("ph", Cph)
+        , ("b", Cb)
+        , ("bh", CbPLUSh)
+        , ("b+h", CbPLUSh)
+        , ("m", Cm)
+        , ("ts", Cts)
+        , ("tsh", Ctsh)
+        , ("dz", Cdz)
+        , ("dzh", CdzPLUSh)
+        , ("dz+h", CdzPLUSh)
+        , ("w", Cw)
+        , ("W", Cw)
+        , ("zh", Czh)
+        , ("z", Cz)
+        , ("'", C')
+        , ("y", Cy)
+        , ("Y", Cy)
+        , ("r", Cr)
+        , ("l", Cl)
+        , ("sh", Csh)
+        , ("Sh", CSh)
+        , ("-sh", CSh)
+        , ("s", Cs)
+        , ("h", Ch)
+        , ("a", Ca)
+        , ("k+Sh", CkPLUSSh)
+        , ("R", CR)
+        ]
+
+vowelTokenMap :: HashMap Text Vowel
+vowelTokenMap =
+    HM.fromList
+        [ ("A", VA)
+        , ("i", Vi)
+        , ("I", VI)
+        , ("u", Vu)
+        , ("U", VU)
+        , ("e", Ve)
+        , ("ai", Vai)
+        , ("o", Vo)
+        , ("O", Vo)
+        , ("au", Vau)
+        , ("-i", V_i)
+        , ("-I", V_I)
+        ]
+
+finalTokenMap :: HashMap Text FinalMark
+finalTokenMap =
+    HM.fromList
+        [ ("M", FMAnusvara)
+        , ("~M`", FMAnusvara)
+        , ("~M", FMAnusvara)
+        , ("X", FMCandrabinduOrNasal)
+        , ("~X", FMCandrabinduOrNasal)
+        , ("H", FMVisarga)
+        , ("?", FMHalanta)
+        , ("^", FMCaret)
+        , ("&", FMYigMgo)
+        ]
+
+numberTokenMap :: HashMap Text Number
+numberTokenMap =
+    HM.fromList
+        [ ("0", N0)
+        , ("1", N1)
+        , ("2", N2)
+        , ("3", N3)
+        , ("4", N4)
+        , ("5", N5)
+        , ("6", N6)
+        , ("7", N7)
+        , ("8", N8)
+        , ("9", N9)
+        ]
+
+punctuationTokenMap :: HashMap Text PunctuationMark
+punctuationTokenMap =
+    HM.fromList
+        [ (" ", PMTsheg)
+        , ("*", PMNonBreakingTsheg)
+        , ("/", PMShad)
+        , ("//", PMNyisShad)
+        , (";", PMTshegShad)
+        , ("|", PMRinChenSpungsShad)
+        , (":", PMGterTshigMgo)
+        ]
+
+symbolTokenMap :: HashMap Text SymbolMark
+symbolTokenMap =
+    HM.fromList
+        [ ("!", SMExclamation)
+        , ("@", SMAt)
+        , ("#", SMHash)
+        , ("$", SMDollar)
+        , ("%", SMPercent)
+        , ("=", SMEqual)
+        , ("<", SMLt)
+        , (">", SMGt)
+        , ("(", SMLParen)
+        , (")", SMRParen)
         ]
