@@ -38,6 +38,7 @@ wylieCases =
     , ("consonant plus-form gh -> CgPLUSh", singleWylie "gh" (TkConsonant, TcConsonant CgPLUSh))
     , ("consonant explicit plus g+h", singleWylie "g+h" (TkConsonant, TcConsonant CgPLUSh))
     , ("consonant alias W -> Cw", singleWylie "W" (TkConsonant, TcConsonant Cw))
+    , ("consonant stack k+Sh", singleWylie "k+Sh" (TkConsonant, TcConsonant CkPLUSSh))
     , ("consonant stacked dz+h", singleWylie "dz+h" (TkConsonant, TcConsonant CdzPLUSh))
     , ("vowel short i", singleWylie "i" (TkVowel, TcVowel Vi))
     , ("vowel long alias O -> Vo", singleWylie "O" (TkVowel, TcVowel Vo))

@@ -2,6 +2,8 @@
 
 module Convert.Tokenizer.Wylie where
 
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
 import Convert.Token
 import Data.HashMap.Strict (HashMap, (!?))
 import qualified Data.HashMap.Strict as HM
@@ -9,87 +11,65 @@ import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Word (Word8)
+import qualified Data.Text.Encoding as TE
 import Control.Applicative (asum)
 import Data.Maybe (fromMaybe)
+import qualified Data.Trie as Trie
 
 
 -- special characters: flag those if they occur out of context
 special :: HashSet Text
 special = HS.fromList [".", "+", "-", "~", "^", "?", "`", "]"]
 
--- a map used to split the input string into tokens for toUnicode().
--- all letters which start tokens longer than one letter are mapped to the max
--- length of tokens starting with that letter.
-tokenStart :: HashMap Char Word8
-tokenStart =
-    HM.fromList
-        [ ('S', 2)
-        , ('/', 2)
-        , ('d', 4)
-        , ('g', 3)
-        , ('b', 3)
-        , ('D', 3)
-        , ('z', 2)
-        , ('~', 3)
-        , ('-', 4)
-        , ('T', 2)
-        , ('a', 2)
-        , ('k', 2)
-        , ('t', 3)
-        , ('s', 2)
-        , ('c', 2)
-        , ('n', 2)
-        , ('p', 2)
-        , ('\r', 2)
-        ]
+-- Longest-match lookup over known multi-char Wylie tokens.
+longTokenTrie :: Trie.Trie ()
+longTokenTrie =
+    Trie.fromList [(TE.encodeUtf8 tok, ()) | tok <- longTokenList]
 
--- also for tokenization - a set of tokens longer than one letter
-longToken :: HashSet Text
-longToken =
-    HS.fromList
-        [ "k+Sh"
-        , "b+l"
-        , "-d+h"
-        , "dz+h"
-        , "-dh"
-        , "-sh"
-        , "-th"
-        , "D+h"
-        , "b+h"
-        , "d+h"
-        , "dzh"
-        , "g+h"
-        , "tsh"
-        , "~M`"
-        , "-I"
-        , "-d"
-        , "-i"
-        , "-n"
-        , "-t"
-        , "//"
-        , "Dh"
-        , "Sh"
-        , "Th"
-        , "ai"
-        , "au"
-        , "bh"
-        , "ch"
-        , "dh"
-        , "dz"
-        , "gh"
-        , "kh"
-        , "ng"
-        , "ny"
-        , "ph"
-        , "sh"
-        , "th"
-        , "ts"
-        , "zh"
-        , "~M"
-        , "~X"
-        , "\r\n"
-        ]
+longTokenList :: [Text]
+longTokenList =
+    [ "k+Sh"
+    , "b+l"
+    , "-d+h"
+    , "dz+h"
+    , "-dh"
+    , "-sh"
+    , "-th"
+    , "D+h"
+    , "b+h"
+    , "d+h"
+    , "dzh"
+    , "g+h"
+    , "tsh"
+    , "~M`"
+    , "-I"
+    , "-d"
+    , "-i"
+    , "-n"
+    , "-t"
+    , "//"
+    , "Dh"
+    , "Sh"
+    , "Th"
+    , "ai"
+    , "au"
+    , "bh"
+    , "ch"
+    , "dh"
+    , "dz"
+    , "gh"
+    , "kh"
+    , "ng"
+    , "ny"
+    , "ph"
+    , "sh"
+    , "th"
+    , "ts"
+    , "zh"
+    , "~M"
+    , "~X"
+    , "\r\n"
+    ]
 
 -- | Tokenize Wylie input using longest-match splitting for known multi-char
 -- tokens.
@@ -105,26 +85,17 @@ tokenizeWylie input = go 0 input
          in classifyToken span raw : go end next
 
 nextChunk :: Text -> (Text, Text)
-nextChunk source =
-    case T.uncons source of
-        Nothing -> (T.empty, T.empty)
-        Just (c, _) ->
-            case longestComposite c of
-                Just tok -> (tok, T.drop (T.length tok) source)
-                Nothing -> (T.take 1 source, T.drop 1 source)
+nextChunk source
+    | T.null source = (T.empty, T.empty)
+    | otherwise =
+        case Trie.match longTokenTrie sourceBytes of
+            Just (prefix, _, rest)
+                | not (BS.null prefix) ->
+                    (TE.decodeUtf8 prefix, TE.decodeUtf8 rest)
+            _ -> (T.take 1 source, T.drop 1 source)
   where
-    longestComposite c = do
-        maxLen <- fromIntegral <$> (tokenStart !? c)
-        longestFrom maxLen
-
-    longestFrom n
-        | n < 2 = Nothing
-        | T.length source < n = longestFrom (n - 1)
-        | otherwise =
-            let candidate = T.take n source
-             in if HS.member candidate longToken
-                    then Just candidate
-                    else longestFrom (n - 1)
+    sourceBytes :: ByteString
+    sourceBytes = TE.encodeUtf8 source
 
 classifyToken :: Span -> Text -> Token
 classifyToken span raw =
