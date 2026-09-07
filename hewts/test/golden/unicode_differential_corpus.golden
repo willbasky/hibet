@@ -1,0 +1,56 @@
+# differential report
+source=unicode
+input=གཞོན་ནུའི་དཔེ་ཆ།།
+new.raw=[ག, ཞ, ོ, ན, ་, ན, ུ, འ, ི, ་, ད, པ, ེ, ་, ཆ, །, །]
+legacy.raw=[ག, ཞ, ོ, ན, ་, ན, ུ, འ, ི, ་, ད, པ, ེ, ་, ཆ, །, །]
+new.kind=[TkConsonant, TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkPunctuation, TkPunctuation]
+legacy.kind=[LkConsonant, LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkPunctuation, LkPunctuation]
+status=MATCH
+---
+source=unicode
+input=དྷག བྷུག ཛྷིན
+new.raw=[དྷ, ག,  , བྷ, ུ, ག,  , ཛྷ, ི, ན]
+legacy.raw=[དྷ, ག,  , བྷ, ུ, ག,  , ཛྷ, ི, ན]
+new.kind=[TkConsonant, TkConsonant, TkSpace, TkConsonant, TkVowel, TkConsonant, TkSpace, TkConsonant, TkVowel, TkConsonant]
+legacy.kind=[LkConsonant, LkConsonant, LkSpace, LkConsonant, LkVowel, LkConsonant, LkSpace, LkConsonant, LkVowel, LkConsonant]
+status=MATCH
+---
+source=unicode
+input=༥༦༧༨༩༠༡༢༣༤
+new.raw=[༥, ༦, ༧, ༨, ༩, ༠, ༡, ༢, ༣, ༤]
+legacy.raw=[༥, ༦, ༧, ༨, ༩, ༠, ༡, ༢, ༣, ༤]
+new.kind=[TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber]
+legacy.kind=[LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber]
+status=MATCH
+---
+source=unicode
+input=༄༅།༎༏༑༔
+new.raw=[༄, ༅, །, ༎, ༏, ༑, ༔]
+legacy.raw=[༄, ༅, །, ༎, ༏, ༑, ༔]
+new.kind=[TkSymbol, TkSymbol, TkPunctuation, TkPunctuation, TkPunctuation, TkPunctuation, TkPunctuation]
+legacy.kind=[LkSymbol, LkSymbol, LkPunctuation, LkPunctuation, LkPunctuation, LkPunctuation, LkPunctuation]
+status=MATCH
+---
+source=unicode
+input=༈༉༊་༌༼༽༾༿
+new.raw=[༈, ༉, ༊, ་, ༌, ༼, ༽, ༾, ༿]
+legacy.raw=[༈, ༉, ༊, ་, ༌, ༼, ༽, ༾, ༿]
+new.kind=[TkSymbol, TkUnknown, TkUnknown, TkPunctuation, TkPunctuation, TkSymbol, TkSymbol, TkUnknown, TkUnknown]
+legacy.kind=[LkSymbol, LkUnknown, LkUnknown, LkPunctuation, LkPunctuation, LkSymbol, LkSymbol, LkUnknown, LkUnknown]
+status=MATCH
+---
+source=unicode
+input=ཾ྄༷༵ྂྃ྅
+new.raw=[ཾ, ྂ, ྃ, ༷, ༵, ྄, ྅]
+legacy.raw=[ཾ, ྂ, ྃ, ༷, ༵, ྄, ྅]
+new.kind=[TkFinal, TkFinal, TkFinal, TkFinal, TkFinal, TkFinal, TkFinal]
+legacy.kind=[LkFinal, LkFinal, LkFinal, LkFinal, LkFinal, LkFinal, LkFinal]
+status=MATCH
+---
+source=unicode
+input=ཀxི
+new.raw=[ཀ, x, ི]
+legacy.raw=[ཀ, x, ི]
+new.kind=[TkConsonant, TkUnknown, TkVowel]
+legacy.kind=[LkConsonant, LkUnknown, LkVowel]
+status=MATCH

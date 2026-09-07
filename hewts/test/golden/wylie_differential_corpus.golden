@@ -1,0 +1,56 @@
+# differential report
+source=wylie
+input=gzhon nu'i dpe chos //
+new.raw=[g, zh, o, n,  , n, u, ', i,  , d, p, e,  , ch, o, s,  , //]
+legacy.raw=[g, zh, o, n,  , n, u, ', i,  , d, p, e,  , ch, o, s,  , //]
+new.kind=[TkConsonant, TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkPunctuation]
+legacy.kind=[LkConsonant, LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkPunctuation]
+status=MATCH
+---
+source=wylie
+input=d+hig b+hug dzhin
+new.raw=[d+h, i, g,  , b+h, u, g,  , dzh, i, n]
+legacy.raw=[d+h, i, g,  , b+h, u, g,  , dzh, i, n]
+new.kind=[TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkConsonant, TkVowel, TkConsonant]
+legacy.kind=[LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkConsonant, LkVowel, LkConsonant]
+status=MATCH
+---
+source=wylie
+input=-d+hi -dhi -di
+new.raw=[-d+h, i,  , -dh, i,  , -d, i]
+legacy.raw=[-d+h, i,  , -dh, i,  , -d, i]
+new.kind=[TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkVowel, TkPunctuation, TkConsonant, TkVowel]
+legacy.kind=[LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkVowel, LkPunctuation, LkConsonant, LkVowel]
+status=MATCH
+---
+source=wylie
+input=Shes rig // thugs rje
+new.raw=[Sh, e, s,  , r, i, g,  , //,  , th, u, g, s,  , r, j, e]
+legacy.raw=[Sh, e, s,  , r, i, g,  , //,  , th, u, g, s,  , r, j, e]
+new.kind=[TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkPunctuation, TkPunctuation, TkPunctuation, TkConsonant, TkVowel, TkConsonant, TkConsonant, TkPunctuation, TkConsonant, TkConsonant, TkVowel]
+legacy.kind=[LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkPunctuation, LkPunctuation, LkPunctuation, LkConsonant, LkVowel, LkConsonant, LkConsonant, LkPunctuation, LkConsonant, LkConsonant, LkVowel]
+status=MATCH
+---
+source=wylie
+input=~M` ~M X ~X H ? ^ &
+new.raw=[~M`,  , ~M,  , X,  , ~X,  , H,  , ?,  , ^,  , &]
+legacy.raw=[~M`,  , ~M,  , X,  , ~X,  , H,  , ?,  , ^,  , &]
+new.kind=[TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal, TkPunctuation, TkFinal]
+legacy.kind=[LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal, LkPunctuation, LkFinal]
+status=MATCH
+---
+source=wylie
+input=0123456789
+new.raw=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+legacy.raw=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+new.kind=[TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber, TkNumber]
+legacy.kind=[LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber, LkNumber]
+status=MATCH
+---
+source=wylie
+input=!@#$%=<>()
+new.raw=[!, @, #, $, %, =, <, >, (, )]
+legacy.raw=[!, @, #, $, %, =, <, >, (, )]
+new.kind=[TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol, TkSymbol]
+legacy.kind=[LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol, LkSymbol]
+status=MATCH

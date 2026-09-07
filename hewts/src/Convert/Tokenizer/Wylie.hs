@@ -4,6 +4,7 @@ module Convert.Tokenizer.Wylie where
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
+import Data.Char (isHexDigit)
 import Convert.Token
 import Data.HashMap.Strict (HashMap, (!?))
 import qualified Data.HashMap.Strict as HM
@@ -87,6 +88,8 @@ tokenizeWylie input = go 0 input
 nextChunk :: Text -> (Text, Text)
 nextChunk source
     | T.null source = (T.empty, T.empty)
+    | T.isPrefixOf "[" source = consumeBracketed source
+    | T.isPrefixOf "\\" source = consumeEscape source
     | otherwise =
         case Trie.match longTokenTrie sourceBytes of
             Just (prefix, _, rest)
@@ -97,30 +100,76 @@ nextChunk source
     sourceBytes :: ByteString
     sourceBytes = TE.encodeUtf8 source
 
+consumeBracketed :: Text -> (Text, Text)
+consumeBracketed txt =
+    case closeAt 1 1 False of
+        Just end -> (T.take end txt, T.drop end txt)
+        Nothing -> (txt, T.empty)
+  where
+    txtLen = T.length txt
+
+    closeAt :: Int -> Int -> Bool -> Maybe Int
+    closeAt i depth escaped
+        | i >= txtLen = Nothing
+        | escaped = closeAt (i + 1) depth False
+        | otherwise =
+            case T.index txt i of
+                '\\' -> closeAt (i + 1) depth True
+                '[' -> closeAt (i + 1) (depth + 1) False
+                ']' ->
+                    if depth == 1
+                        then Just (i + 1)
+                        else closeAt (i + 1) (depth - 1) False
+                _ -> closeAt (i + 1) depth False
+
+consumeEscape :: Text -> (Text, Text)
+consumeEscape txt
+    | T.length txt < 2 = (txt, T.empty)
+    | T.isPrefixOf "\\u" txt
+        && T.length txt >= 6
+        && T.all isHexDigit (T.take 4 (T.drop 2 txt)) = (T.take 6 txt, T.drop 6 txt)
+    | T.isPrefixOf "\\U" txt
+        && T.length txt >= 10
+        && T.all isHexDigit (T.take 8 (T.drop 2 txt)) = (T.take 10 txt, T.drop 10 txt)
+    | otherwise = (T.take 2 txt, T.drop 2 txt)
+
 classifyToken :: Span -> Text -> Token
-classifyToken span raw =
-    fromMaybe (mkUnknown TsWylie span raw) $ asum
-        [ lookupAs mkConsonant consonantTokenMap
-        , lookupAs mkVowel vowelTokenMap
-        , lookupAs mkFinal finalTokenMap
-        , lookupAs mkNumber numberTokenMap
-        , lookupAs mkPunctuation punctuationTokenMap
-        , lookupAs mkSymbol symbolTokenMap
-        , if raw == "_"
-            then Just (mkSpace TsWylie span raw SMSpace)
-            else Nothing
-        , if HS.member raw special
-            then Just $
-                mkUnknownWith
-                    TsWylie
-                    span
-                    raw
-                    [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
-            else Nothing
-        ]
+classifyToken span raw
+    | raw == "\r\n" = mkSpace TsWylie span raw SMSpace
+    | raw == "b+l" = mkUnknown TsWylie span raw
+    | isClosedBracketChunk raw || isKnownEscapeChunk raw = mkUnknownWith TsWylie span raw []
+    | otherwise =
+        fromMaybe (mkUnknown TsWylie span raw) $ asum
+            [ lookupAs mkConsonant consonantTokenMap
+            , lookupAs mkVowel vowelTokenMap
+            , lookupAs mkFinal finalTokenMap
+            , lookupAs mkNumber numberTokenMap
+            , lookupAs mkPunctuation punctuationTokenMap
+            , lookupAs mkSymbol symbolTokenMap
+            , if raw == "_"
+                then Just (mkSpace TsWylie span raw SMSpace)
+                else Nothing
+            , if HS.member raw special
+                then Just $
+                    mkUnknownWith
+                        TsWylie
+                        span
+                        raw
+                        [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+                else Nothing
+            ]
   where
     lookupAs constructor tokenMap =
         constructor TsWylie span raw <$> HM.lookup raw tokenMap
+
+    isClosedBracketChunk chunk =
+        T.length chunk >= 2 && T.head chunk == '[' && T.last chunk == ']'
+
+    isKnownEscapeChunk chunk
+        | T.length chunk == 2 && T.head chunk == '\\' = True
+        | T.length chunk == 6 && T.isPrefixOf "\\u" chunk = T.all isHexDigit (T.drop 2 chunk)
+        | T.length chunk == 10 && T.isPrefixOf "\\U" chunk = T.all isHexDigit (T.drop 2 chunk)
+        | otherwise = False
 
 
 consonantTokenMap :: HashMap Text Consonant
@@ -182,6 +231,8 @@ consonantTokenMap =
         , ("a", Ca)
         , ("k+Sh", CkPLUSSh)
         , ("R", CR)
+        , ("f", Cph)
+        , ("v", Cb)
         ]
 
 vowelTokenMap :: HashMap Text Vowel

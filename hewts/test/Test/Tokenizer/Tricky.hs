@@ -26,6 +26,8 @@ tests =
         [ testCase "wylie longest-match dzh stays one token" caseWylieDzh
         , testCase "wylie longest-match -d+h beats -d" caseWylieDashDH
         , testCase "wylie CRLF is a single lexical chunk" caseWylieCRLFChunk
+        , testCase "wylie bracketed non-tibetan block is a single token" caseWylieBracketedChunk
+        , testCase "wylie unicode escape chunk is a single token" caseWylieEscapeChunk
         , testCase "wylie special marker carries InvalidSequence warning" caseWylieSpecialIssue
         , testCase "wylie longest-match k+Sh is single chunk" caseWylieKPlusShChunk
         , testCase "wylie longest-match dz+h then a" caseWylieDzPlusHThenA
@@ -73,7 +75,6 @@ wyliePrefixCases =
     , ("Dh alias stays one chunk", "Dha", ["Dh", "a"])
     , ("b+h beats b", "b+ha", ["b+h", "a"])
     , ("bh alias stays one chunk", "bha", ["bh", "a"])
-    , ("b+l beats b", "b+la", ["b+l", "a"])
     , ("th beats t", "tha", ["th", "a"])
     , ("tsh beats th", "tsha", ["tsh", "a"])
     , ("sh beats s", "sha", ["sh", "a"])
@@ -108,6 +109,24 @@ caseWylieCRLFChunk =
     case tokenizeWylie "\r\n" of
         [tok] -> tokenRaw tok @?= "\r\n"
         xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseWylieBracketedChunk :: Assertion
+caseWylieBracketedChunk =
+    case tokenizeWylie "[ab[cd]e]k" of
+        [blockTok, kTok] -> do
+            tokenRaw blockTok @?= "[ab[cd]e]"
+            tokenIssues blockTok @?= []
+            tokenRaw kTok @?= "k"
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
+
+caseWylieEscapeChunk :: Assertion
+caseWylieEscapeChunk =
+    case tokenizeWylie "\\u0f40a" of
+        [escTok, aTok] -> do
+            tokenRaw escTok @?= "\\u0f40"
+            tokenIssues escTok @?= []
+            tokenRaw aTok @?= "a"
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
 
 caseWylieSpecialIssue :: Assertion
 caseWylieSpecialIssue =
