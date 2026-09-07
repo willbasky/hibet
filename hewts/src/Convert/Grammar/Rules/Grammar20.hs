@@ -2,11 +2,11 @@
 Tibetan spelling grammar 4.20
 -}
 
-module Parser.Rules.Grammar20
+module Convert.Grammar.Rules.Grammar20
     ( pGrammar20
     ) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

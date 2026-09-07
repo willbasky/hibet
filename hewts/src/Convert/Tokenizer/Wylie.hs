@@ -1,6 +1,6 @@
 {- HLINT ignore "Use camelCase" -}
 
-module Convert.Wylie where
+module Convert.Tokenizer.Wylie where
 
 import Data.HashMap.Strict (HashMap, (!?))
 import qualified Data.HashMap.Strict as HM
@@ -10,8 +10,8 @@ import Data.Text (Text)
 import Data.Word (Word8)
 
 -- wylie consonant => unicode
-consonants :: HashMap Text Text
-consonants = 
+consonant :: HashMap Text Text
+consonant = 
     HM.fromList
         [ ("k", "\x0f40")
         , ("kh", "\x0f41")
@@ -603,3 +603,178 @@ ambiguous_wylie =
         , ("dbs", "dbas")
         ]
 
+-- all these stacked consonant combinations don't need "+"s in them
+stack :: HashSet Text
+stack =
+    HS.fromList
+        [ "b+l"
+        , "b+r"
+        , "b+y"
+        , "c+w"
+        , "d+r"
+        , "d+r+w"
+        , "d+w"
+        , "dz+r"
+        , "g+l"
+        , "g+r"
+        , "g+r+w"
+        , "g+w"
+        , "g+y"
+        , "h+r"
+        , "h+w"
+        , "k+l"
+        , "k+r"
+        , "k+w"
+        , "k+y"
+        , "kh+r"
+        , "kh+w"
+        , "kh+y"
+        , "l+b"
+        , "l+c"
+        , "l+d"
+        , "l+g"
+        , "l+h"
+        , "l+j"
+        , "l+k"
+        , "l+ng"
+        , "l+p"
+        , "l+t"
+        , "l+w"
+        , "m+r"
+        , "m+y"
+        , "n+r"
+        , "ny+w"
+        , "p+r"
+        , "p+y"
+        , "ph+r"
+        , "ph+y"
+        , "ph+y+w"
+        , "r+b"
+        , "r+d"
+        , "r+dz"
+        , "r+g"
+        , "r+g+w"
+        , "r+g+y"
+        , "r+j"
+        , "r+k"
+        , "r+k+y"
+        , "r+l"
+        , "r+m"
+        , "r+m+y"
+        , "r+n"
+        , "r+ng"
+        , "r+ny"
+        , "r+t"
+        , "r+ts"
+        , "r+ts+w"
+        , "r+w"
+        , "s+b"
+        , "s+b+r"
+        , "s+b+y"
+        , "s+d"
+        , "s+g"
+        , "s+g+r"
+        , "s+g+y"
+        , "s+k"
+        , "s+k+r"
+        , "s+k+y"
+        , "s+l"
+        , "s+m"
+        , "s+m+r"
+        , "s+m+y"
+        , "s+n"
+        , "s+n+r"
+        , "s+ng"
+        , "s+ny"
+        , "s+p"
+        , "s+p+r"
+        , "s+p+y"
+        , "s+r"
+        , "s+t"
+        , "s+ts"
+        , "s+w"
+        , "sh+r"
+        , "sh+w"
+        , "t+r"
+        , "t+w"
+        , "th+r"
+        , "ts+w"
+        , "tsh+w"
+        , "z+l"
+        , "z+w"
+        , "zh+w"
+        ]
+
+-- a map used to split the input string into tokens for toUnicode().
+-- all letters which start tokens longer than one letter are mapped to the max
+-- length of tokens starting with that letter.
+
+tokensStart :: HashMap Char Word8
+tokensStart =
+    HM.fromList
+        [ ('S', 2)
+        , ('/', 2)
+        , ('d', 4)
+        , ('g', 3)
+        , ('b', 3)
+        , ('D', 3)
+        , ('z', 2)
+        , ('~', 3)
+        , ('-', 4)
+        , ('T', 2)
+        , ('a', 2)
+        , ('k', 2)
+        , ('t', 3)
+        , ('s', 2)
+        , ('c', 2)
+        , ('n', 2)
+        , ('p', 2)
+        , ('\r', 2)
+        ]
+
+-- also for tokenization - a set of tokens longer than one letter
+tokens :: HashSet Text
+tokens =
+    HS.fromList
+        [ "k+Sh"
+        , "b+l"
+        , "-d+h"
+        , "dz+h"
+        , "-dh"
+        , "-sh"
+        , "-th"
+        , "D+h"
+        , "b+h"
+        , "d+h"
+        , "dzh"
+        , "g+h"
+        , "tsh"
+        , "~M`"
+        , "-I"
+        , "-d"
+        , "-i"
+        , "-n"
+        , "-t"
+        , "//"
+        , "Dh"
+        , "Sh"
+        , "Th"
+        , "ai"
+        , "au"
+        , "bh"
+        , "ch"
+        , "dh"
+        , "dz"
+        , "gh"
+        , "kh"
+        , "ng"
+        , "ny"
+        , "ph"
+        , "sh"
+        , "th"
+        , "ts"
+        , "zh"
+        , "~M"
+        , "~X"
+        , "\r\n"
+        ]

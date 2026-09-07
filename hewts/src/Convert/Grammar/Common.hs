@@ -1,4 +1,4 @@
-module Parser.Common where
+module Convert.Grammar.Common where
 
 import Data.Char
 import Data.Either.Extra (fromEither, mapLeft)

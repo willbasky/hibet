@@ -2,9 +2,9 @@
 Tibetan spelling grammar 4.8
 -}
 
-module Parser.Rules.Grammar08 (pGrammar8) where
+module Convert.Grammar.Rules.Grammar08 (pGrammar8) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

@@ -2,11 +2,11 @@
 Tibetan spelling grammar 4.18
 -}
 
-module Parser.Rules.Grammar18
+module Convert.Grammar.Rules.Grammar18
     ( pGrammar18
     ) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

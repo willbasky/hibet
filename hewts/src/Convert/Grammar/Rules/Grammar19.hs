@@ -2,13 +2,13 @@
 Tibetan spelling grammar 4.19
 -}
 
-module Parser.Rules.Grammar19
+module Convert.Grammar.Rules.Grammar19
     ( pGrammar19
     ) where
 
-import Parser.Common
-import Parser.Rules.Grammar15 (pGrammar15)
-import Parser.Rules.Grammar18 (pGrammar18)
+import Convert.Grammar.Common
+import Convert.Grammar.Rules.Grammar15 (pGrammar15)
+import Convert.Grammar.Rules.Grammar18 (pGrammar18)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

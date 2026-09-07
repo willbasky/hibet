@@ -2,12 +2,12 @@
 Tibetan spelling grammar 4.16
 -}
 
-module Parser.Rules.Grammar16
+module Convert.Grammar.Rules.Grammar16
     ( pGrammar16Da
     , pGrammar16Sa
     ) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

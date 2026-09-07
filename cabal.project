@@ -1,13 +1,13 @@
 packages: 
-    hibet
     hewts
+    -- hibet
 
 tests: True
 benchmarks: True
 
 index-state:
   -- Bump this if you need newer packages from Hackage
-  , hackage.haskell.org 2026-01-11T13:45:38Z
+  , hackage.haskell.org 2026-09-07T04:49:09Z
 
 constraints: 
   text >= 2.1.2

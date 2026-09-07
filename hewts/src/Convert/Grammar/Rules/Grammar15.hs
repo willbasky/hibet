@@ -2,9 +2,9 @@
 Tibetan spelling grammar 4.15
 -}
 
-module Parser.Rules.Grammar15 (pGrammar15) where
+module Convert.Grammar.Rules.Grammar15 (pGrammar15) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

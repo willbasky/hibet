@@ -1,8 +1,8 @@
-module Parser where
+module Convert.Grammar where
 
 import Data.Text (Text)
-import Parser.Common (Parser, pPunctuation, pNumber, recovering)
-import qualified Parser.Structures as S
+import Convert.Grammar.Common (Parser, pPunctuation, pNumber, recovering)
+import qualified Convert.Grammar.Structures as S
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.Debug (dbg)

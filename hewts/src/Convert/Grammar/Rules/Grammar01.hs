@@ -2,9 +2,9 @@
 Tibetan spelling grammar 4.1
 -}
 
-module Parser.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit) where
+module Convert.Grammar.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit) where
 
-import Parser.Common
+import Convert.Grammar.Common
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

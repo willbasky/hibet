@@ -1,4 +1,4 @@
-module Parser.Structures
+module Convert.Grammar.Structures
     ( 
       pStructure1
     , pStructure2
@@ -39,21 +39,21 @@ module Parser.Structures
     , pStructure37
     ) where
 
-import Parser.Common
-import Parser.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit)
-import Parser.Rules.Grammar08 (pGrammar8)
-import Parser.Rules.Grammar09 (pGrammar9)
-import Parser.Rules.Grammar10 (pGrammar10)
-import Parser.Rules.Grammar11 (pGrammar11)
-import Parser.Rules.Grammar12 (pGrammar12)
-import Parser.Rules.Grammar13 (pGrammar13)
-import Parser.Rules.Grammar14 (pGrammar14)
-import Parser.Rules.Grammar15 (pGrammar15)
-import Parser.Rules.Grammar16 (pGrammar16Da, pGrammar16Sa)
-import Parser.Rules.Grammar17 (pGrammar17)
-import Parser.Rules.Grammar18 (pGrammar18)
-import Parser.Rules.Grammar19 (pGrammar19)
-import Parser.Rules.Grammar20 (pGrammar20)
+import Convert.Grammar.Common
+import Convert.Grammar.Rules.Grammar01 (pGrammar1, pGrammar1WithLong, pGrammar1Sanskrit)
+import Convert.Grammar.Rules.Grammar08 (pGrammar8)
+import Convert.Grammar.Rules.Grammar09 (pGrammar9)
+import Convert.Grammar.Rules.Grammar10 (pGrammar10)
+import Convert.Grammar.Rules.Grammar11 (pGrammar11)
+import Convert.Grammar.Rules.Grammar12 (pGrammar12)
+import Convert.Grammar.Rules.Grammar13 (pGrammar13)
+import Convert.Grammar.Rules.Grammar14 (pGrammar14)
+import Convert.Grammar.Rules.Grammar15 (pGrammar15)
+import Convert.Grammar.Rules.Grammar16 (pGrammar16Da, pGrammar16Sa)
+import Convert.Grammar.Rules.Grammar17 (pGrammar17)
+import Convert.Grammar.Rules.Grammar18 (pGrammar18)
+import Convert.Grammar.Rules.Grammar19 (pGrammar19)
+import Convert.Grammar.Rules.Grammar20 (pGrammar20)
 
 import Data.Char (chr)
 import Data.HashSet (HashSet, fromList, member, singleton)

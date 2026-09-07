@@ -1,0 +1,13 @@
+cradle:
+  cabal:
+    - path: "src"
+      component: "lib:hewts"
+
+    - path: "app/Main.hs"
+      component: "hewts:exe:hewts"
+
+    - path: "test"
+      component: "hewts:test:hewts-test"
+
+    - path: "benchmark/Main.hs"
+      component: "hewts:bench:hewts-benchmark"

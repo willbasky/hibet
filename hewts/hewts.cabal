@@ -16,7 +16,7 @@ extra-doc-files:
   CHANGELOG.md
   README.md
 
-tested-with:     GHC ==9.6.7
+tested-with:     GHC ==9.10.3
 
 common exec-options
   ghc-options:
@@ -48,45 +48,47 @@ library
   hs-source-dirs:  src
   exposed-modules:
     Convert
-    Convert.Wylie
-    Parser
-    Parser.Common
-    Parser.Rules.Grammar01
-    Parser.Rules.Grammar08
-    Parser.Rules.Grammar09
-    Parser.Rules.Grammar10
-    Parser.Rules.Grammar11
-    Parser.Rules.Grammar12
-    Parser.Rules.Grammar13
-    Parser.Rules.Grammar14
-    Parser.Rules.Grammar15
-    Parser.Rules.Grammar16
-    Parser.Rules.Grammar17
-    Parser.Rules.Grammar18
-    Parser.Rules.Grammar19
-    Parser.Rules.Grammar20
-    Parser.Structures
-    -- Parser.Structure.Structure01
-    -- Parser.Structure.Structure02
-    -- Parser.Structure.Structure03
-    -- Parser.Structure.Structure04
-    -- Parser.Structure.Structure05
-    -- Parser.Structure.Structure06
-    -- Parser.Structure.Structure07
-    -- Parser.Structure.Structure08
-    -- Parser.Structure.Structure09
-    -- Parser.Structure.Structure10
-    -- Parser.Structure.Structure11
-    -- Parser.Structure.Structure12
-    -- Parser.Structure.Structure13
-    -- Parser.Structure.Structure14
-    -- Parser.Structure.Structure15
-    -- Parser.Structure.Structure16
-    -- Parser.Structure.Structure17
-    -- Parser.Structure.Structure18
-    -- Parser.Structure.Structure19
-    -- Parser.Structure.Structure20
+    Convert.Grammar.Rules.Grammar01
+    Convert.Grammar.Rules.Grammar08
+    Convert.Grammar.Rules.Grammar09
+    Convert.Grammar.Rules.Grammar10
+    Convert.Grammar.Rules.Grammar11
+    Convert.Grammar.Rules.Grammar12
+    Convert.Grammar.Rules.Grammar13
+    Convert.Grammar.Rules.Grammar14
+    Convert.Grammar.Rules.Grammar15
+    Convert.Grammar.Rules.Grammar16
+    Convert.Grammar.Rules.Grammar17
+    Convert.Grammar.Rules.Grammar18
+    Convert.Grammar.Rules.Grammar19
+    Convert.Grammar.Rules.Grammar20
+    Convert.Grammar.Structures
+    Convert.Token
+    Convert.Grammar
+    Convert.Grammar.Common
+    Convert.Tokenizer.Wylie
+    Convert.Tokenizer.Unicode    
     Syllables
+    -- Convert.Grammar.Structure.Structure01
+    -- Convert.Grammar.Structure.Structure02
+    -- Convert.Grammar.Structure.Structure03
+    -- Convert.Grammar.Structure.Structure04
+    -- Convert.Grammar.Structure.Structure05
+    -- Convert.Grammar.Structure.Structure06
+    -- Convert.Grammar.Structure.Structure07
+    -- Convert.Grammar.Structure.Structure08
+    -- Convert.Grammar.Structure.Structure09
+    -- Convert.Grammar.Structure.Structure10
+    -- Convert.Grammar.Structure.Structure11
+    -- Convert.Grammar.Structure.Structure12
+    -- Convert.Grammar.Structure.Structure13
+    -- Convert.Grammar.Structure.Structure14
+    -- Convert.Grammar.Structure.Structure15
+    -- Convert.Grammar.Structure.Structure16
+    -- Convert.Grammar.Structure.Structure17
+    -- Convert.Grammar.Structure.Structure18
+    -- Convert.Grammar.Structure.Structure19
+    -- Convert.Grammar.Structure.Structure20
 
   build-depends:
     , bytestring
