@@ -8,6 +8,8 @@ import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Word (Word8)
+import Data.Maybe (fromMaybe)
+import Control.Applicative (asum)
 
 -- top letters
 consonant :: HashMap Char Text
@@ -219,32 +221,24 @@ tokenizeUnicode input = go 0 (T.unpack input)
             span = mkSpan (fromIntegral offset) (fromIntegral end)
          in classifyChar span c raw : go end rest
 
--- TODO: improve case approach via monad Maybe or something similar to avoid nested case statements
 classifyChar :: Span -> Char -> Text -> Token
 classifyChar span ch raw =
-    case HM.lookup ch consonantTokenMap of
-        Just c -> mkConsonant TsUnicode span raw c
-        Nothing ->
-            case HM.lookup ch subConsonantTokenMap of
-                Just sc -> mkSubConsonant TsUnicode span raw sc
-                Nothing ->
-                    case HM.lookup ch vowelTokenMap of
-                        Just v -> mkVowel TsUnicode span raw v
-                        Nothing ->
-                            case HM.lookup ch finalTokenMap of
-                                Just f -> mkFinal TsUnicode span raw f
-                                Nothing ->
-                                    case HM.lookup ch numberTokenMap of
-                                        Just n -> mkNumber TsUnicode span raw n
-                                        Nothing ->
-                                            case HM.lookup ch punctuationTokenMap of
-                                                Just p -> mkPunctuation TsUnicode span raw p
-                                                Nothing ->
-                                                    case HM.lookup ch symbolTokenMap of
-                                                        Just s -> mkSymbol TsUnicode span raw s
-                                                        Nothing
-                                                            | ch == ' ' -> mkSpace TsUnicode span raw SMSpace
-                                                            | otherwise -> mkUnknown TsUnicode span raw
+    fromMaybe (mkUnknown TsUnicode span raw) $ asum
+        [ fromMap mkConsonant consonantTokenMap
+        , fromMap mkSubConsonant subConsonantTokenMap
+        , fromMap mkVowel vowelTokenMap
+        , fromMap mkFinal finalTokenMap
+        , fromMap mkNumber numberTokenMap
+        , fromMap mkPunctuation punctuationTokenMap
+        , fromMap mkSymbol symbolTokenMap
+        , if ch == ' '
+            then Just (mkSpace TsUnicode span raw SMSpace)
+            else Nothing
+        ]
+  where
+    fromMap constructor tokenMap =
+        constructor TsUnicode span raw <$> HM.lookup ch tokenMap
+
 
 consonantTokenMap :: HashMap Char Consonant
 consonantTokenMap =

@@ -10,6 +10,8 @@ import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Word (Word8)
+import Control.Applicative (asum)
+import Data.Maybe (fromMaybe)
 
 -- wylie consonant => unicode
 consonant :: HashMap Text Text
@@ -815,35 +817,31 @@ nextChunk source@(c : _) =
                     then Just candidate
                     else longestFrom (n - 1)
 
--- TODO: improve case approach via monad Maybe or something similar to avoid nested case statements
 classifyToken :: Span -> Text -> Token
 classifyToken span raw =
-    case HM.lookup raw consonantTokenMap of
-        Just c -> mkConsonant TsWylie span raw c
-        Nothing ->
-            case HM.lookup raw vowelTokenMap of
-                Just v -> mkVowel TsWylie span raw v
-                Nothing ->
-                    case HM.lookup raw finalTokenMap of
-                        Just f -> mkFinal TsWylie span raw f
-                        Nothing ->
-                            case HM.lookup raw numberTokenMap of
-                                Just n -> mkNumber TsWylie span raw n
-                                Nothing ->
-                                    case HM.lookup raw punctuationTokenMap of
-                                        Just p -> mkPunctuation TsWylie span raw p
-                                        Nothing ->
-                                            case HM.lookup raw symbolTokenMap of
-                                                Just s -> mkSymbol TsWylie span raw s
-                                                Nothing
-                                                    | raw == "_" -> mkSpace TsWylie span raw SMSpace
-                                                    | HS.member raw special ->
-                                                        mkUnknownWith
-                                                            TsWylie
-                                                            span
-                                                            raw
-                                                            [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
-                                                    | otherwise -> mkUnknown TsWylie span raw
+    fromMaybe (mkUnknown TsWylie span raw) $ asum
+        [ lookupAs mkConsonant consonantTokenMap
+        , lookupAs mkVowel vowelTokenMap
+        , lookupAs mkFinal finalTokenMap
+        , lookupAs mkNumber numberTokenMap
+        , lookupAs mkPunctuation punctuationTokenMap
+        , lookupAs mkSymbol symbolTokenMap
+        , if raw == "_"
+            then Just (mkSpace TsWylie span raw SMSpace)
+            else Nothing
+        , if HS.member raw special
+            then Just $
+                mkUnknownWith
+                    TsWylie
+                    span
+                    raw
+                    [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+            else Nothing
+        ]
+  where
+    lookupAs constructor tokenMap =
+        constructor TsWylie span raw <$> HM.lookup raw tokenMap
+
 
 consonantTokenMap :: HashMap Text Consonant
 consonantTokenMap =
