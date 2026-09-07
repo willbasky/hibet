@@ -48,7 +48,9 @@ library
   hs-source-dirs:  src
   exposed-modules:
     Convert
-    Convert.Grammar.Rule.Grammar01
+    Convert.Grammar.Rule.Constraint01
+    Convert.Grammar.Rule.Constraint08
+    Convert.Grammar.Rule.Constraint09
     Convert.Grammar.Rules.Grammar01
     Convert.Grammar.Rules.Grammar08
     Convert.Grammar.Rules.Grammar09
@@ -95,7 +97,9 @@ test-suite hewts-test
   hs-source-dirs: test
   main-is:        Spec.hs
   other-modules:
-    Test.Grammar.Rule.Grammar01
+    Test.Grammar.Rule.Constraint01
+    Test.Grammar.Rule.Constraint08
+    Test.Grammar.Rule.Constraint09
     Test.Tokenizer.Types
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky
