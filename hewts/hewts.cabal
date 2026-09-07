@@ -113,6 +113,12 @@ test-suite hewts-test
   type:           exitcode-stdio-1.0
   hs-source-dirs: test
   main-is:        Spec.hs
+  other-modules:
+    Test.Tokenizer.Types
+    Test.Tokenizer.Spans
+    Test.Tokenizer.Tricky
+    Test.Tokenizer.Integration
+    Test.Tokenizer.Golden
 
   build-depends:
     hewts,

@@ -1,0 +1,59 @@
+module Test.Tokenizer.Tricky (tests) where
+
+import Convert.Token
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit ((@?=), Assertion, testCase)
+
+tests :: TestTree
+tests =
+    testGroup
+        "tricky"
+        [ testCase "wylie longest-match dzh stays one token" caseWylieDzh
+        , testCase "wylie longest-match -d+h beats -d" caseWylieDashDH
+        , testCase "wylie CRLF is a single lexical chunk" caseWylieCRLFChunk
+        , testCase "wylie special marker carries InvalidSequence warning" caseWylieSpecialIssue
+        , testCase "unicode tsheg and ASCII space are different kinds" caseUnicodeTshegVsSpace
+        , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
+        ]
+
+caseWylieDzh :: Assertion
+caseWylieDzh =
+    case tokenizeWylie "dzh" of
+        [tok] -> (tokenKind tok, tokenCanonical tok) @?= (TkConsonant, TcConsonant CdzPLUSh)
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseWylieDashDH :: Assertion
+caseWylieDashDH =
+    case tokenizeWylie "-d+h" of
+        [tok] -> tokenCanonical tok @?= TcConsonant CDPLUSh
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseWylieCRLFChunk :: Assertion
+caseWylieCRLFChunk =
+    case tokenizeWylie "\r\n" of
+        [tok] -> tokenRaw tok @?= "\r\n"
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseWylieSpecialIssue :: Assertion
+caseWylieSpecialIssue =
+    case tokenizeWylie "~" of
+        [tok] -> tokenIssues tok @?= [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseUnicodeTshegVsSpace :: Assertion
+caseUnicodeTshegVsSpace =
+    case tokenizeUnicode "་ " of
+        [tshegTok, spaceTok] -> do
+            tokenKind tshegTok @?= TkPunctuation
+            tokenKind spaceTok @?= TkSpace
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
+
+caseUnicodeUnknownPreserved :: Assertion
+caseUnicodeUnknownPreserved =
+    case tokenizeUnicode "x" of
+        [tok] -> do
+            tokenCanonical tok @?= TcUnknown (UnknownMark "x")
+            tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
