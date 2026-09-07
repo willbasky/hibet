@@ -3,6 +3,7 @@ module Convert.Token where
 import Data.Char (chr, isHexDigit, ord)
 import Data.Text (Text)
 import qualified Data.Text as T
+import Numeric.Natural (Natural)
 import Numeric (readHex)
 import Text.Printf (printf)
 
@@ -59,18 +60,30 @@ data TokenIssueCode
     | AutoNormalized
     deriving (Show, Eq)
 
+data TokenIssueSeverity
+    = TisWarning
+    | TisError
+    deriving (Show, Eq)
+
 data TokenIssue = TokenIssue
     { issueCode :: TokenIssueCode
+    , issueSeverity :: TokenIssueSeverity
     , issueMessage :: Text
     }
     deriving (Show, Eq)
 
 -- Character offsets in the original input, half-open interval [start, end).
 data Span = Span
-    { offsetStart :: Int
-    , offsetEnd :: Int
+    { offsetStart :: Natural
+    , offsetEnd :: Natural
     }
     deriving (Show, Eq)
+
+-- Keep spans half-open and monotonic: [start, end), end >= start.
+mkSpan :: Natural -> Natural -> Span
+mkSpan start end =
+    let end' = max start end
+    in Span start end'
 
 -- Canonical typed payload of an IR token.
 data TokenCanonical
@@ -90,6 +103,11 @@ data TokenCanonical
     deriving (Show, Eq)
 
 -- Canonical IR token used as contract between tokenizer and grammar layers.
+-- Invariants:
+-- 1) tokenRaw always stores the exact source slice from input.
+-- 2) tokenCanonical is always normalized to shared canonical domain values.
+-- 3) tokenSpan is a half-open interval [start, end) over source offsets.
+-- 4) tokenIssues only describe lexical/tokenization-level diagnostics.
 data Token = Token
     { tokenRaw :: Text
     , tokenCanonical :: TokenCanonical
@@ -109,7 +127,7 @@ mkTokenWith source kind raw canonical span aliasPolicy issues =
         , tokenCanonical = canonical
         , tokenKind = kind
         , tokenSource = source
-        , tokenSpan = span
+        , tokenSpan = mkSpan (offsetStart span) (offsetEnd span)
         , tokenAliasPolicy = aliasPolicy
         , tokenIssues = issues
         }
@@ -172,7 +190,7 @@ mkUnknownWith source span raw issues =
 
 mkUnknown :: TokenSource -> Span -> Text -> Token
 mkUnknown source span raw =
-    mkUnknownWith source span raw [TokenIssue UnknownChar (T.pack "Unknown token")] 
+    mkUnknownWith source span raw [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
