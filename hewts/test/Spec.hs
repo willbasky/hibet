@@ -10,6 +10,7 @@ import qualified Test.Grammar.Rule.Constraint12 as Constraint12
 import qualified Test.Grammar.Rule.Constraint13 as Constraint13
 import qualified Test.Grammar.Rule.Constraint14 as Constraint14
 import qualified Test.Grammar.Rule.Constraint15 as Constraint15
+import qualified Test.Grammar.Rule.Constraint16 as Constraint16
 import qualified Test.Tokenizer.Golden as Golden
 import qualified Test.Tokenizer.Integration as Integration
 import qualified Test.Tokenizer.Spans as Spans
@@ -37,4 +38,5 @@ tests =
         , Constraint13.tests
         , Constraint14.tests
         , Constraint15.tests
+        , Constraint16.tests
         ]
