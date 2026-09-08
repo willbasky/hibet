@@ -1,6 +1,6 @@
 module Test.Grammar.Rule.Constraint11 (tests) where
 
-import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Parser
 import Convert.Grammar.Rule.Constraint11 (pConstraint11)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -26,5 +26,5 @@ tests =
         parseRaws pConstraint11 "བསྐུ" @?= Right ["བ", "ས", "ྐ", "ུ"]
     ]
 
-parseRaws :: GP.Parser [Token] -> Text -> Either Text [Text]
-parseRaws p input = fmap (map tokenRaw) $ GP.parseEither p (tokenizeUnicode input)
+parseRaws :: Parser [Token] -> Text -> Either Text [Text]
+parseRaws p input = fmap (map tokenRaw) $ parseEither p (tokenizeUnicode input)

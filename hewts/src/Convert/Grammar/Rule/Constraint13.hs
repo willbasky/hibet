@@ -4,6 +4,7 @@ Tibetan spelling grammar 4.13 (token parser variant)
 
 module Convert.Grammar.Rule.Constraint13 (pConstraint13) where
 
+import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Token
   ( SubConsonant (..)
@@ -15,14 +16,14 @@ import Data.Maybe (maybeToList)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint13 :: GP.Parser [Token]
+pConstraint13 :: Parser [Token]
 pConstraint13 =
   MP.choice
     [ MP.try $ parseConstraint13 GP.pPrefixBa GP.pSuperfixSa (GP.pSubfixYa <|> GP.pSubfixRa)
     , MP.try $ parseConstraint13 GP.pPrefixBa GP.pSuperfixRa GP.pSubfixYa
     ]
 
-parseConstraint13 :: GP.Parser Token -> GP.Parser Token -> GP.Parser Token -> GP.Parser [Token]
+parseConstraint13 :: Parser Token -> Parser Token -> Parser Token -> Parser [Token]
 parseConstraint13 parsePrefix parseSuperfix parseSubfix = do
   prefix <- parsePrefix
   superfix <- parseSuperfix
@@ -32,10 +33,10 @@ parseConstraint13 parsePrefix parseSuperfix parseSubfix = do
   pure $ [prefix, superfix, root, subfix] <> maybeToList vowel
 
 -- root group [ 'ཀ', 'ག' ]
-pRoot :: GP.Parser Token
+pRoot :: Parser Token
 pRoot = pAllowedRoot [SCk, SCg]
 
-pAllowedRoot :: [SubConsonant] -> GP.Parser Token
+pAllowedRoot :: [SubConsonant] -> Parser Token
 pAllowedRoot allowed = do
   tok <- GP.pSubConsonant
   case tokenCanonical tok of

@@ -4,6 +4,7 @@ Tibetan spelling grammar 4.10 (token parser variant)
 
 module Convert.Grammar.Rule.Constraint10 (pConstraint10) where
 
+import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Token
   ( SubConsonant (..)
@@ -15,7 +16,7 @@ import Data.Maybe (maybeToList)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint10 :: GP.Parser [Token]
+pConstraint10 :: Parser [Token]
 pConstraint10 =
   MP.choice
     [ MP.try $ parseConstraint10 GP.pSuperfixRa pRoots1 GP.pSubfixYa
@@ -24,7 +25,7 @@ pConstraint10 =
     , MP.try $ parseConstraint10 GP.pSuperfixRa pRoot4 GP.pSubfixWa
     ]
 
-parseConstraint10 :: GP.Parser Token -> GP.Parser Token -> GP.Parser Token -> GP.Parser [Token]
+parseConstraint10 :: Parser Token -> Parser Token -> Parser Token -> Parser [Token]
 parseConstraint10 parseSuperfix parseRoot parseSubfix = do
   superfix <- parseSuperfix
   root <- parseRoot
@@ -33,22 +34,22 @@ parseConstraint10 parseSuperfix parseRoot parseSubfix = do
   pure $ [superfix, root, subfix] <> maybeToList vowel
 
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ
-pRoots1 :: GP.Parser Token
+pRoots1 :: Parser Token
 pRoots1 = pAllowedRoot [SCk, SCg, SCm]
 
 -- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ or ར
-pRoots2 :: GP.Parser Token
+pRoots2 :: Parser Token
 pRoots2 = pAllowedRoot [SCk, SCg, SCp, SCb, SCm]
 
 -- ན
-pRoot3 :: GP.Parser Token
+pRoot3 :: Parser Token
 pRoot3 = pAllowedRoot [SCn]
 
 -- ཙ
-pRoot4 :: GP.Parser Token
+pRoot4 :: Parser Token
 pRoot4 = pAllowedRoot [SCts]
 
-pAllowedRoot :: [SubConsonant] -> GP.Parser Token
+pAllowedRoot :: [SubConsonant] -> Parser Token
 pAllowedRoot allowed = do
   tok <- GP.pSubConsonant
   case tokenCanonical tok of
