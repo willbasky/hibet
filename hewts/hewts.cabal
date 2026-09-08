@@ -52,6 +52,7 @@ library
     Convert.Grammar.Rule.Constraint08
     Convert.Grammar.Rule.Constraint09
     Convert.Grammar.Rule.Constraint10
+    Convert.Grammar.Rule.Constraint11
     Convert.Grammar.Rules.Grammar01
     Convert.Grammar.Rules.Grammar08
     Convert.Grammar.Rules.Grammar09
@@ -102,6 +103,7 @@ test-suite hewts-test
     Test.Grammar.Rule.Constraint08
     Test.Grammar.Rule.Constraint09
     Test.Grammar.Rule.Constraint10
+    Test.Grammar.Rule.Constraint11
     Test.Tokenizer.Types
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky

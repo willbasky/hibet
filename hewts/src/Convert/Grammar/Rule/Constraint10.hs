@@ -30,7 +30,7 @@ parseConstraint10 parseSuperfix parseRoot parseSubfix = do
   root <- parseRoot
   subfix <- parseSubfix
   vowel <- MP.optional GP.pVowel
-  pure $ [superfix, root, subfix] <> maybe [] (: []) vowel
+  pure $ [superfix, root, subfix] <> maybeToList vowel
 
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ
 pRoots1 :: GP.Parser Token
