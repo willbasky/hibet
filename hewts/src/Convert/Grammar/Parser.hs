@@ -132,8 +132,11 @@ isSanskritConsonantToken Token{tokenCanonical = TcConsonant c} = c `elem` sanskr
 isSanskritConsonantToken _ = False
 
 isVowelToken :: Token -> Bool
-isVowelToken Token{tokenCanonical = TcVowel _} = True
+isVowelToken Token{tokenCanonical = TcVowel v} = v `elem` shortVowels
 isVowelToken _ = False
+
+shortVowels :: [Vowel]
+shortVowels = [Vi, Ve, Vo, Vu]
 
 isLongAVowelToken :: Token -> Bool
 isLongAVowelToken Token{tokenCanonical = TcVowel VA} = True

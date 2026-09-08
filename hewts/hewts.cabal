@@ -77,7 +77,7 @@ library
     Convert.Grammar.Rules.Grammar19
     Convert.Grammar.Rules.Grammar20
     Convert.Grammar.Structures
-    -- Convert.Grammar.Rule
+    Convert.Grammar.Rule
     Convert.Token
     Convert.Grammar
     Convert.Grammar.Common
@@ -123,7 +123,7 @@ test-suite hewts-test
     Test.Grammar.Rule.Constraint18
     Test.Grammar.Rule.Constraint19
     Test.Grammar.Rule.Constraint20
-    -- Test.Grammar.Rule.Structures
+    Test.Grammar.Rule.Structures
     Test.Tokenizer.Types
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky
