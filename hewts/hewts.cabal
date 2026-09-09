@@ -62,25 +62,9 @@ library
     Convert.Grammar.Rule.Constraint18
     Convert.Grammar.Rule.Constraint19
     Convert.Grammar.Rule.Constraint20
-    Convert.Grammar.Rules.Grammar01
-    Convert.Grammar.Rules.Grammar08
-    Convert.Grammar.Rules.Grammar09
-    Convert.Grammar.Rules.Grammar10
-    Convert.Grammar.Rules.Grammar11
-    Convert.Grammar.Rules.Grammar12
-    Convert.Grammar.Rules.Grammar13
-    Convert.Grammar.Rules.Grammar14
-    Convert.Grammar.Rules.Grammar15
-    Convert.Grammar.Rules.Grammar16
-    Convert.Grammar.Rules.Grammar17
-    Convert.Grammar.Rules.Grammar18
-    Convert.Grammar.Rules.Grammar19
-    Convert.Grammar.Rules.Grammar20
-    Convert.Grammar.Structures
     Convert.Grammar.Rule
     Convert.Grammar.Sentence
     Convert.Token
-    Convert.Grammar
     Convert.Grammar.Common
     Convert.Tokenizer.Wylie
     Convert.Tokenizer.Unicode    
