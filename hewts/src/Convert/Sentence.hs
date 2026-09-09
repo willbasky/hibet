@@ -1,7 +1,7 @@
 {- | Token-level sentence dispatcher.
 
 Parses a token stream into a list of 'SpellItem' preserving every token:
-syllables are recognized via the Convert.Grammar.Rule structures,
+syllables are recognized via the Convert.Grammar.Structure structures,
 Tibetan digits ༠–༩ become 'Number', punctuation and whitespace tokens are
 kept as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
 dropped).

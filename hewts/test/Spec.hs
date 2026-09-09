@@ -1,21 +1,21 @@
 module Main (main) where
 
 import Test.Tasty (TestTree, defaultMain, testGroup)
-import qualified Test.Grammar.Rule.Constraint01 as Constraint01
-import qualified Test.Grammar.Rule.Constraint08 as Constraint08
-import qualified Test.Grammar.Rule.Constraint09 as Constraint09
-import qualified Test.Grammar.Rule.Constraint10 as Constraint10
-import qualified Test.Grammar.Rule.Constraint11 as Constraint11
-import qualified Test.Grammar.Rule.Constraint12 as Constraint12
-import qualified Test.Grammar.Rule.Constraint13 as Constraint13
-import qualified Test.Grammar.Rule.Constraint14 as Constraint14
-import qualified Test.Grammar.Rule.Constraint15 as Constraint15
-import qualified Test.Grammar.Rule.Constraint16 as Constraint16
-import qualified Test.Grammar.Rule.Constraint17 as Constraint17
-import qualified Test.Grammar.Rule.Constraint18 as Constraint18
-import qualified Test.Grammar.Rule.Constraint19 as Constraint19
-import qualified Test.Grammar.Rule.Constraint20 as Constraint20
-import qualified Test.Grammar.Rule.Structures as Structures
+import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
+import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
+import qualified Test.Grammar.Constraint.Constraint09 as Constraint09
+import qualified Test.Grammar.Constraint.Constraint10 as Constraint10
+import qualified Test.Grammar.Constraint.Constraint11 as Constraint11
+import qualified Test.Grammar.Constraint.Constraint12 as Constraint12
+import qualified Test.Grammar.Constraint.Constraint13 as Constraint13
+import qualified Test.Grammar.Constraint.Constraint14 as Constraint14
+import qualified Test.Grammar.Constraint.Constraint15 as Constraint15
+import qualified Test.Grammar.Constraint.Constraint16 as Constraint16
+import qualified Test.Grammar.Constraint.Constraint17 as Constraint17
+import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
+import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
+import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
+import qualified Test.Grammar.Structure as Structures
 import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Convert as Convert
 import qualified Test.Tokenizer.Golden as Golden

@@ -57,21 +57,22 @@ library
 
   other-modules:
     Convert.Grammar.Parser
-    Convert.Grammar.Rule
-    Convert.Grammar.Rule.Constraint01
-    Convert.Grammar.Rule.Constraint08
-    Convert.Grammar.Rule.Constraint09
-    Convert.Grammar.Rule.Constraint10
-    Convert.Grammar.Rule.Constraint11
-    Convert.Grammar.Rule.Constraint12
-    Convert.Grammar.Rule.Constraint13
-    Convert.Grammar.Rule.Constraint14
-    Convert.Grammar.Rule.Constraint15
-    Convert.Grammar.Rule.Constraint16
-    Convert.Grammar.Rule.Constraint17
-    Convert.Grammar.Rule.Constraint18
-    Convert.Grammar.Rule.Constraint19
-    Convert.Grammar.Rule.Constraint20
+    Convert.Grammar.Constraint
+    Convert.Grammar.Constraint.Constraint01
+    Convert.Grammar.Constraint.Constraint08
+    Convert.Grammar.Constraint.Constraint09
+    Convert.Grammar.Constraint.Constraint10
+    Convert.Grammar.Constraint.Constraint11
+    Convert.Grammar.Constraint.Constraint12
+    Convert.Grammar.Constraint.Constraint13
+    Convert.Grammar.Constraint.Constraint14
+    Convert.Grammar.Constraint.Constraint15
+    Convert.Grammar.Constraint.Constraint16
+    Convert.Grammar.Constraint.Constraint17
+    Convert.Grammar.Constraint.Constraint18
+    Convert.Grammar.Constraint.Constraint19
+    Convert.Grammar.Constraint.Constraint20
+    Convert.Grammar.Structure
 
   build-depends:
     , bytestring
@@ -89,21 +90,21 @@ test-suite hewts-test
   hs-source-dirs: test
   main-is:        Spec.hs
   other-modules:
-    Test.Grammar.Rule.Constraint01
-    Test.Grammar.Rule.Constraint08
-    Test.Grammar.Rule.Constraint09
-    Test.Grammar.Rule.Constraint10
-    Test.Grammar.Rule.Constraint11
-    Test.Grammar.Rule.Constraint12
-    Test.Grammar.Rule.Constraint13
-    Test.Grammar.Rule.Constraint14
-    Test.Grammar.Rule.Constraint15
-    Test.Grammar.Rule.Constraint16
-    Test.Grammar.Rule.Constraint17
-    Test.Grammar.Rule.Constraint18
-    Test.Grammar.Rule.Constraint19
-    Test.Grammar.Rule.Constraint20
-    Test.Grammar.Rule.Structures
+   Test.Grammar.Constraint.Constraint01
+   Test.Grammar.Constraint.Constraint08
+   Test.Grammar.Constraint.Constraint09
+   Test.Grammar.Constraint.Constraint10
+   Test.Grammar.Constraint.Constraint11
+   Test.Grammar.Constraint.Constraint12
+   Test.Grammar.Constraint.Constraint13
+   Test.Grammar.Constraint.Constraint14
+   Test.Grammar.Constraint.Constraint15
+   Test.Grammar.Constraint.Constraint16
+   Test.Grammar.Constraint.Constraint17
+   Test.Grammar.Constraint.Constraint18
+   Test.Grammar.Constraint.Constraint19
+   Test.Grammar.Constraint.Constraint20
+   Test.Grammar.Structure
     Test.Convert.Sentence
     Test.Convert
     Test.Tokenizer.Types

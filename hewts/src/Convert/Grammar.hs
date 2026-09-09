@@ -76,7 +76,27 @@ module Convert.Grammar
     ) where
 
 import Convert.Grammar.Parser (Parser, parseEither, pPunctuation, pNumber, isPunctuationLike)
-import Convert.Grammar.Rule
+import Convert.Grammar.Constraint
+  ( pConstraint01
+  , pConstraint01WithLong
+  , pConstraint01Sanskrit
+  , pConstraint08
+  , pConstraint09
+  , pConstraint10
+  , pConstraint11
+  , pConstraint12
+  , pConstraint13
+  , pConstraint14
+  , pConstraint15
+  , pConstraint16Da
+  , pConstraint16Sa
+  , pConstraint17Ra
+  , pConstraint17Ya
+  , pConstraint18
+  , pConstraint19
+  , pConstraint20
+  )
+import Convert.Grammar.Structure
   ( pStructure1
   , pStructure2
   , pStructure3
@@ -115,17 +135,3 @@ import Convert.Grammar.Rule
   , pStructure36
   , pStructure37
   )
-import Convert.Grammar.Rule.Constraint01 (pConstraint01, pConstraint01Sanskrit, pConstraint01WithLong)
-import Convert.Grammar.Rule.Constraint08 (pConstraint08)
-import Convert.Grammar.Rule.Constraint09 (pConstraint09)
-import Convert.Grammar.Rule.Constraint10 (pConstraint10)
-import Convert.Grammar.Rule.Constraint11 (pConstraint11)
-import Convert.Grammar.Rule.Constraint12 (pConstraint12)
-import Convert.Grammar.Rule.Constraint13 (pConstraint13)
-import Convert.Grammar.Rule.Constraint14 (pConstraint14)
-import Convert.Grammar.Rule.Constraint15 (pConstraint15)
-import Convert.Grammar.Rule.Constraint16 (pConstraint16Da, pConstraint16Sa)
-import Convert.Grammar.Rule.Constraint17 (pConstraint17Ra, pConstraint17Ya)
-import Convert.Grammar.Rule.Constraint18 (pConstraint18)
-import Convert.Grammar.Rule.Constraint19 (pConstraint19)
-import Convert.Grammar.Rule.Constraint20 (pConstraint20)
