@@ -20,6 +20,7 @@ import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Convert as Convert
 import qualified Test.Tokenizer.Golden as Golden
 import qualified Test.Tokenizer.Integration as Integration
+import qualified Test.Tokenizer.RoundTrip as RoundTrip
 import qualified Test.Tokenizer.Spans as Spans
 import qualified Test.Tokenizer.Tricky as Tricky
 import qualified Test.Tokenizer.Types as Types
@@ -36,6 +37,7 @@ tests =
         , Tricky.tests
         , Integration.tests
         , Golden.tests
+        , RoundTrip.tests
         , Constraint01.tests
         , Constraint08.tests
         , Constraint09.tests

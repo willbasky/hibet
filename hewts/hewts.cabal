@@ -89,21 +89,21 @@ test-suite hewts-test
   hs-source-dirs: test
   main-is:        Spec.hs
   other-modules:
-   Test.Grammar.Constraint.Constraint01
-   Test.Grammar.Constraint.Constraint08
-   Test.Grammar.Constraint.Constraint09
-   Test.Grammar.Constraint.Constraint10
-   Test.Grammar.Constraint.Constraint11
-   Test.Grammar.Constraint.Constraint12
-   Test.Grammar.Constraint.Constraint13
-   Test.Grammar.Constraint.Constraint14
-   Test.Grammar.Constraint.Constraint15
-   Test.Grammar.Constraint.Constraint16
-   Test.Grammar.Constraint.Constraint17
-   Test.Grammar.Constraint.Constraint18
-   Test.Grammar.Constraint.Constraint19
-   Test.Grammar.Constraint.Constraint20
-   Test.Grammar.Structure
+    Test.Grammar.Constraint.Constraint01
+    Test.Grammar.Constraint.Constraint08
+    Test.Grammar.Constraint.Constraint09
+    Test.Grammar.Constraint.Constraint10
+    Test.Grammar.Constraint.Constraint11
+    Test.Grammar.Constraint.Constraint12
+    Test.Grammar.Constraint.Constraint13
+    Test.Grammar.Constraint.Constraint14
+    Test.Grammar.Constraint.Constraint15
+    Test.Grammar.Constraint.Constraint16
+    Test.Grammar.Constraint.Constraint17
+    Test.Grammar.Constraint.Constraint18
+    Test.Grammar.Constraint.Constraint19
+    Test.Grammar.Constraint.Constraint20
+    Test.Grammar.Structure
     Test.Convert.Sentence
     Test.Convert
     Test.Tokenizer.Types
@@ -111,6 +111,7 @@ test-suite hewts-test
     Test.Tokenizer.Tricky
     Test.Tokenizer.Integration
     Test.Tokenizer.Golden
+    Test.Tokenizer.RoundTrip
 
   build-depends:
     hewts,

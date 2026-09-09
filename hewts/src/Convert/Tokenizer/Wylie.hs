@@ -236,8 +236,8 @@ wylieConsonant = \case
     Ca -> "a"
     CkPLUSSh -> "k+Sh"
     CR -> "R"
-    Ckka -> "\\u0F6B"
-    CRra -> "\\u0F6C"
+    Ckka -> "\\u0f6b"
+    CRra -> "\\u0f6c"
 
 wylieVowel :: Vowel -> Text
 wylieVowel = \case
@@ -246,10 +246,10 @@ wylieVowel = \case
     VI -> "I"
     Vu -> "u"
     VU -> "U"
-    Vr_i -> "\\u0F76"
-    Vr_I -> "\\u0F77"
-    Vl_i -> "\\u0F78"
-    Vl_I -> "\\u0F79"
+    Vr_i -> "\\u0f76"
+    Vr_I -> "\\u0f77"
+    Vl_i -> "\\u0f78"
+    Vl_I -> "\\u0f79"
     Ve -> "e"
     Vai -> "ai"
     Vo -> "o"
@@ -281,16 +281,16 @@ wylieNumber = \case
 
 wylieHalfNumber :: HalfNumber -> Text
 wylieHalfNumber = \case
-    H_0 -> "\\u0F33"
-    H_1 -> "\\u0F2A"
-    H_2 -> "\\u0F2B"
-    H_3 -> "\\u0F2C"
-    H_4 -> "\\u0F2D"
-    H_5 -> "\\u0F2E"
-    H_6 -> "\\u0F2F"
-    H_7 -> "\\u0F30"
-    H_8 -> "\\u0F31"
-    H_9 -> "\\u0F32"
+    H_0 -> "\\u0f33"
+    H_1 -> "\\u0f2a"
+    H_2 -> "\\u0f2b"
+    H_3 -> "\\u0f2c"
+    H_4 -> "\\u0f2d"
+    H_5 -> "\\u0f2e"
+    H_6 -> "\\u0f2f"
+    H_7 -> "\\u0f30"
+    H_8 -> "\\u0f31"
+    H_9 -> "\\u0f32"
 
 wyliePunctuation :: PunctuationMark -> Text
 wyliePunctuation = \case
@@ -299,36 +299,36 @@ wyliePunctuation = \case
     PMShad -> "/"
     PMNyisShad -> "//"
     PMTshegShad -> ";"
-    PMNyisTshegShad -> "\\u0F10"
+    PMNyisTshegShad -> "\\u0f10"
     PMRinChenSpungsShad -> "|"
-    PMRgyaGramShad -> "\\u0F12"
-    PMCaretDzudRtagsMeLong -> "\\u0F13"
+    PMRgyaGramShad -> "\\u0f12"
+    PMCaretDzudRtagsMeLong -> "\\u0f13"
     PMGterTshigMgo -> ":"
 
 wylieSign :: SignMark -> Text
 wylieSign = \case
-    SGYigMgoAt -> "\\u0F00"
-    SGKaKhaGaGsum -> "\\u0F01"
-    SGNyiZlaNaaDa -> "\\u0F02"
-    SGSbrulShad -> "\\u0F03"
+    SGYigMgoAt -> "\\u0f00"
+    SGKaKhaGaGsum -> "\\u0f01"
+    SGNyiZlaNaaDa -> "\\u0f02"
+    SGSbrulShad -> "\\u0f03"
 
 wylieSanskritMark :: SanskritMark -> Text
 wylieSanskritMark = \case
-    SMiLciRtags -> "\\u0F86"
-    SMiYangRtags -> "\\u0F87"
-    SMiLceTsaCanSubjoined -> "\\u0F8D"
-    SMiMchuCanSubjoined -> "\\u0F8E"
-    SMiInvertedMchuCanSubjoined -> "\\u0F8F"
+    SMiLciRtags -> "\\u0f86"
+    SMiYangRtags -> "\\u0f87"
+    SMiLceTsaCanSubjoined -> "\\u0f8d"
+    SMiMchuCanSubjoined -> "\\u0f8e"
+    SMiInvertedMchuCanSubjoined -> "\\u0f8f"
 
 wylieOrnament :: OrnamentMark -> Text
 wylieOrnament = \case
-    OMRdelDkarGcig -> "\\u0FD0"
-    OMRdelDkarGnyis -> "\\u0FD1"
-    OMRdelDkarGsum -> "\\u0FD2"
-    OMRdelNagGcig -> "\\u0FD3"
-    OMRdelNagGnyis -> "\\u0FD4"
-    OMLeadingMchanRtags -> "\\u0FD9"
-    OMTrailingMchanRtags -> "\\u0FDA"
+    OMRdelDkarGcig -> "\\u0fd0"
+    OMRdelDkarGnyis -> "\\u0fd1"
+    OMRdelDkarGsum -> "\\u0fd2"
+    OMRdelNagGcig -> "\\u0fd3"
+    OMRdelNagGnyis -> "\\u0fd4"
+    OMLeadingMchanRtags -> "\\u0fd9"
+    OMTrailingMchanRtags -> "\\u0fda"
 
 wylieSymbol :: SymbolMark -> Text
 wylieSymbol = \case
