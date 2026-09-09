@@ -114,6 +114,12 @@ unicodeCases =
     , ("punctuation nyis shad", singleUnicode "༎" (TkPunctuation, TcPunctuation PMNyisShad))
     , ("symbol at-like mark", singleUnicode "༄" (TkSymbol, TcSymbol SMAt))
     , ("symbol opening mark", singleUnicode "༼" (TkSymbol, TcSymbol SMLParen))
+    , ("sign yig mgo at", singleUnicode "\x0f00" (TkSign, TcSign SGYigMgoAt))
+    , ("half number H_4", singleUnicode "\x0f2d" (TkHalfNumber, TcHalfNumber H_4))
+    , ("sanskrit mark i lci rtags", singleUnicode "྆" (TkSanskritMark, TcSanskritMark SMiLciRtags))
+    , ("ornament rdel dkar gcig", singleUnicode "\x0fd0" (TkOrnament, TcOrnament OMRdelDkarGcig))
+    , ("vowel vocalic r long", singleUnicode "ཷ" (TkVowel, TcVowel Vr_I))
+    , ("punctuation nyis tsheg shad", singleUnicode "\x0f10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
     , ("ascii space becomes TkSpace", singleUnicode " " (TkSpace, TcSpace SMSpace))
     , ("unknown latin x becomes unknown", singleUnicode "x" (TkUnknown, TcUnknown (UnknownMark "x")))
     ]
@@ -131,7 +137,11 @@ unicodeTableCases =
     , ("unicode vowels full table", assertUnicodeSingles unicodeVowels)
     , ("unicode finals full table", assertUnicodeSingles unicodeFinals)
     , ("unicode numbers full table", assertUnicodeSingles unicodeNumbers)
+    , ("unicode half-numbers full table", assertUnicodeSingles unicodeHalfNumbers)
     , ("unicode punctuation full table", assertUnicodeSingles unicodePunctuation)
+    , ("unicode signs full table", assertUnicodeSingles unicodeSigns)
+    , ("unicode sanskrit marks full table", assertUnicodeSingles unicodeSanskritMarks)
+    , ("unicode ornaments full table", assertUnicodeSingles unicodeOrnaments)
     , ("unicode symbols full table", assertUnicodeSingles unicodeSymbols)
     ]
 
@@ -279,6 +289,48 @@ unicodeNumbers =
     , ('\x0f29', (TkNumber, TcNumber N9))
     ]
 
+unicodeHalfNumbers :: [(Char, (TokenKind, TokenCanonical))]
+unicodeHalfNumbers =
+    [ ('\x0f2a', (TkHalfNumber, TcHalfNumber H_1))
+    , ('\x0f2b', (TkHalfNumber, TcHalfNumber H_2))
+    , ('\x0f2c', (TkHalfNumber, TcHalfNumber H_3))
+    , ('\x0f2d', (TkHalfNumber, TcHalfNumber H_4))
+    , ('\x0f2e', (TkHalfNumber, TcHalfNumber H_5))
+    , ('\x0f2f', (TkHalfNumber, TcHalfNumber H_6))
+    , ('\x0f30', (TkHalfNumber, TcHalfNumber H_7))
+    , ('\x0f31', (TkHalfNumber, TcHalfNumber H_8))
+    , ('\x0f32', (TkHalfNumber, TcHalfNumber H_9))
+    , ('\x0f33', (TkHalfNumber, TcHalfNumber H_0))
+    ]
+
+unicodeSigns :: [(Char, (TokenKind, TokenCanonical))]
+unicodeSigns =
+    [ ('\x0f00', (TkSign, TcSign SGYigMgoAt))
+    , ('\x0f01', (TkSign, TcSign SGKaKhaGaGsum))
+    , ('\x0f02', (TkSign, TcSign SGNyiZlaNaaDa))
+    , ('\x0f03', (TkSign, TcSign SGSbrulShad))
+    ]
+
+unicodeSanskritMarks :: [(Char, (TokenKind, TokenCanonical))]
+unicodeSanskritMarks =
+    [ ('\x0f86', (TkSanskritMark, TcSanskritMark SMiLciRtags))
+    , ('\x0f87', (TkSanskritMark, TcSanskritMark SMiYangRtags))
+    , ('\x0f8d', (TkSanskritMark, TcSanskritMark SMiLceTsaCanSubjoined))
+    , ('\x0f8e', (TkSanskritMark, TcSanskritMark SMiMchuCanSubjoined))
+    , ('\x0f8f', (TkSanskritMark, TcSanskritMark SMiInvertedMchuCanSubjoined))
+    ]
+
+unicodeOrnaments :: [(Char, (TokenKind, TokenCanonical))]
+unicodeOrnaments =
+    [ ('\x0fd0', (TkOrnament, TcOrnament OMRdelDkarGcig))
+    , ('\x0fd1', (TkOrnament, TcOrnament OMRdelDkarGnyis))
+    , ('\x0fd2', (TkOrnament, TcOrnament OMRdelDkarGsum))
+    , ('\x0fd3', (TkOrnament, TcOrnament OMRdelNagGcig))
+    , ('\x0fd4', (TkOrnament, TcOrnament OMRdelNagGnyis))
+    , ('\x0fd9', (TkOrnament, TcOrnament OMLeadingMchanRtags))
+    , ('\x0fda', (TkOrnament, TcOrnament OMTrailingMchanRtags))
+    ]
+
 unicodeConsonants :: [(Char, (TokenKind, TokenCanonical))]
 unicodeConsonants =
     [ ('\x0f40', (TkConsonant, TcConsonant Ck))
@@ -323,6 +375,8 @@ unicodeConsonants =
     , ('\x0f68', (TkConsonant, TcConsonant Ca))
     , ('\x0f69', (TkConsonant, TcConsonant CkPLUSSh))
     , ('\x0f6a', (TkConsonant, TcConsonant CR))
+    , ('\x0f6b', (TkConsonant, TcConsonant Ckka))
+    , ('\x0f6c', (TkConsonant, TcConsonant CRra))
     ]
 
 unicodeSubConsonants :: [(Char, (TokenKind, TokenCanonical))]
@@ -380,11 +434,16 @@ unicodeVowels =
     , ('\x0f73', (TkVowel, TcVowel VI))
     , ('\x0f74', (TkVowel, TcVowel Vu))
     , ('\x0f75', (TkVowel, TcVowel VU))
+    , ('\x0f76', (TkVowel, TcVowel Vr_i))
+    , ('\x0f77', (TkVowel, TcVowel Vr_I))
+    , ('\x0f78', (TkVowel, TcVowel Vl_i))
+    , ('\x0f79', (TkVowel, TcVowel Vl_I))
     , ('\x0f7a', (TkVowel, TcVowel Ve))
     , ('\x0f7b', (TkVowel, TcVowel Vai))
     , ('\x0f7c', (TkVowel, TcVowel Vo))
     , ('\x0f7d', (TkVowel, TcVowel Vau))
     , ('\x0f80', (TkVowel, TcVowel V_i))
+    , ('\x0f81', (TkVowel, TcVowel V_I))
     ]
 
 unicodeFinals :: [(Char, (TokenKind, TokenCanonical))]
@@ -407,7 +466,10 @@ unicodePunctuation =
     , ('\x0f0d', (TkPunctuation, TcPunctuation PMShad))
     , ('\x0f0e', (TkPunctuation, TcPunctuation PMNyisShad))
     , ('\x0f0f', (TkPunctuation, TcPunctuation PMTshegShad))
+    , ('\x0f10', (TkPunctuation, TcPunctuation PMNyisTshegShad))
     , ('\x0f11', (TkPunctuation, TcPunctuation PMRinChenSpungsShad))
+    , ('\x0f12', (TkPunctuation, TcPunctuation PMRgyaGramShad))
+    , ('\x0f13', (TkPunctuation, TcPunctuation PMCaretDzudRtagsMeLong))
     , ('\x0f14', (TkPunctuation, TcPunctuation PMGterTshigMgo))
     ]
 

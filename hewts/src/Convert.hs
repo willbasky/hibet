@@ -1,14 +1,18 @@
 module Convert
     ( splitSentences
     , syllables
+    , renderItems
+    , OutputFormat (..)
     , SpellItem (..)
     , pSentence
     ) where
 
 import Convert.Grammar.Parser (parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
-import Convert.Token (tokenRaw)
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Token (TokenSource (..), tokenCanonical, tokenRaw, tokenSource)
+import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
+import Convert.Tokenizer.Wylie (wylieOf)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 
@@ -26,3 +30,31 @@ syllables :: Text -> Either Text [Text]
 syllables input = do
     items <- splitSentences input
     pure [T.concat (map tokenRaw ts) | Syllable ts <- items]
+
+-- | The script used for 'renderItems' conversion.
+data OutputFormat
+    = OutUnicode
+    | OutWylie
+    deriving (Show, Eq)
+
+-- | Convert every token to an 'OutputFormat' spelling, preserving
+-- everything: same-script tokens keep their exact raw spelling (including
+-- aliases), cross-script tokens become canonical representatives, and
+-- tokens without a cross-script spelling fall back to their raw spelling.
+renderItems :: OutputFormat -> [SpellItem] -> Text
+renderItems fmt = T.concat . map renderItem
+  where
+    renderItem (Syllable ts) = T.concat (map (renderToken fmt) ts)
+    renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
+    renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
+    renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
+
+    renderToken fmt tok
+        | tokenSource tok == sourceOf fmt = tokenRaw tok
+        | otherwise = fromMaybe (tokenRaw tok) (scriptOf fmt (tokenCanonical tok))
+
+    sourceOf OutUnicode = TsUnicode
+    sourceOf OutWylie = TsWylie
+
+    scriptOf OutUnicode = unicodeOf
+    scriptOf OutWylie = wylieOf

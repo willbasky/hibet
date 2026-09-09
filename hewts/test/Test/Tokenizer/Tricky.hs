@@ -2,17 +2,20 @@ module Test.Tokenizer.Tricky (tests) where
 
 import Convert.Token
 import Convert.Tokenizer.Wylie
-    ( consonantTokenMap
-    , finalTokenMap
-    , longTokenList
-    , numberTokenMap
-    , punctuationTokenMap
-    , symbolTokenMap
+    ( longTokenList
     , tokenizeWylie
-    , vowelTokenMap
+    , wylieConsonant
+    , wylieConsonantAliases
+    , wylieFinal
+    , wylieFinalAliases
+    , wylieNumber
+    , wyliePunctuation
+    , wylieSpace
+    , wylieSymbol
+    , wylieVowel
+    , wylieVowelAliases
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import qualified Data.HashMap.Strict as HM
 import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -219,9 +222,9 @@ caseUnicodeRareCombiningUnknown :: Assertion
 caseUnicodeRareCombiningUnknown =
     case tokenizeUnicode "྆" of
         [tok] -> do
-            tokenKind tok @?= TkUnknown
-            tokenCanonical tok @?= TcUnknown (UnknownMark "྆")
-            tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+            tokenKind tok @?= TkSanskritMark
+            tokenCanonical tok @?= TcSanskritMark SMiLciRtags
+            tokenIssues tok @?= []
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
 caseUnicodeMixedEdgeDiagnostics :: Assertion
@@ -238,7 +241,7 @@ caseUnicodeMixedEdgeDiagnostics =
                 , ("x", [TokenIssue UnknownChar TisWarning "Unknown token"])
                 , ("ི", [])
                 , (" ", [])
-                , ("྆", [TokenIssue UnknownChar TisWarning "Unknown token"])
+                , ("྆", [])
                 , ("།", [])
                 ]
 
@@ -287,12 +290,16 @@ assertReachableMultiCharKey key =
 multiCharTokenizerKeys :: [Text]
 multiCharTokenizerKeys =
     HS.toList . HS.fromList . filter ((> 1) . T.length) $
-        HM.keys consonantTokenMap
-            <> HM.keys vowelTokenMap
-            <> HM.keys finalTokenMap
-            <> HM.keys numberTokenMap
-            <> HM.keys punctuationTokenMap
-            <> HM.keys symbolTokenMap
+        map wylieConsonant [minBound .. maxBound]
+            <> map wylieVowel [minBound .. maxBound]
+            <> map wylieFinal [minBound .. maxBound]
+            <> map wylieNumber [minBound .. maxBound]
+            <> map wyliePunctuation [minBound .. maxBound]
+            <> map wylieSpace [minBound .. maxBound]
+            <> map wylieSymbol [minBound .. maxBound]
+            <> map fst wylieConsonantAliases
+            <> map fst wylieVowelAliases
+            <> map fst wylieFinalAliases
 
 mkUnicodeNormalizationCase :: (String, Text, [Text]) -> TestTree
 mkUnicodeNormalizationCase (name, input, expectedUnknownRaws) =
@@ -319,9 +326,9 @@ unicodeNormalizationCases =
     , ("decomposed U+0F71 U+0F72", "ཱི", [])
     , ("precomposed U+0F75", "ཱུ", [])
     , ("decomposed U+0F71 U+0F74", "ཱུ", [])
-    , ("precomposed U+0F77 unknown", "ཷ", ["ཷ"])
+    , ("precomposed U+0F77 vocalic r", "ཷ", [])
     , ("decomposed for U+0F77", "ཱྀུ", [])
-    , ("precomposed U+0F79 unknown", "ཹ", ["ཹ"])
+    , ("precomposed U+0F79 vocalic l", "ཹ", [])
     , ("decomposed for U+0F79", "ཱྀ", [])
     , ("syllable with precomposed U+0F73", "ཁཱི", [])
     , ("syllable with decomposed U+0F71 U+0F72", "ཁཱི", [])
@@ -347,7 +354,7 @@ unicodeNormalizationCases =
     , ("leading NUL control", "\NULཀ", ["\NUL"])
     , ("NUL inside Tibetan chars", "ཀ\NULི", ["\NUL"])
     , ("DEL control between Tibetan chars", "ཀ\DELི", ["\DEL"])
-    , ("rare combining mark inside syllable", "ཀི྆", ["྆"])
+    , ("rare combining mark inside syllable", "ཀི྆", [])
     , ("known unicode symbols around unknown ascii", "ཀ༄x།", ["x"])
     , ("unicode sign sequence only", "༄༅༆", [])
     , ("plus in unicode stream", "ཀ+་ི", ["+"])

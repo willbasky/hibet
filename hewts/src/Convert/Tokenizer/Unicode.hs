@@ -1,15 +1,10 @@
 module Convert.Tokenizer.Unicode where
 
 import Convert.Token
-import Data.HashMap.Strict (HashMap, (!?))
-import qualified Data.HashMap.Strict as HM
-import Data.HashSet (HashSet)
-import qualified Data.HashSet as HS
+import Control.Applicative (asum, (<|>))
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Word (Word8)
-import Data.Maybe (fromMaybe)
-import Control.Applicative (asum)
 
 -- | Tokenize Unicode Tibetan input to typed IR tokens.
 tokenizeUnicode :: Text -> [Token]
@@ -28,188 +23,290 @@ tokenizeUnicode input = go 0 input
 classifyChar :: Span -> Char -> Text -> Token
 classifyChar span ch raw =
     fromMaybe (mkUnknown TsUnicode span raw) $ asum
-        [ fromMap mkConsonant consonantTokenMap
-        , fromMap mkSubConsonant subConsonantTokenMap
-        , fromMap mkVowel vowelTokenMap
-        , fromMap mkFinal finalTokenMap
-        , fromMap mkNumber numberTokenMap
-        , fromMap mkPunctuation punctuationTokenMap
-        , fromMap mkSymbol symbolTokenMap
-        , if ch == ' '
-            then Just (mkSpace TsUnicode span raw SMSpace)
-            else Nothing
+        [ fromLookup mkConsonant inverseUnicodeConsonant
+        , fromLookup mkSubConsonant inverseUnicodeSubConsonant
+        , fromLookup mkVowel inverseUnicodeVowel
+        , fromLookup mkFinal (merged inverseUnicodeFinal unicodeFinalAliases)
+        , fromLookup mkNumber inverseUnicodeNumber
+        , fromLookup mkHalfNumber inverseUnicodeHalfNumber
+        , fromLookup mkPunctuation inverseUnicodePunctuation
+        , fromLookup mkSign inverseUnicodeSign
+        , fromLookup mkSanskritMark inverseUnicodeSanskritMark
+        , fromLookup mkOrnament inverseUnicodeOrnament
+        , fromLookup mkSymbol inverseUnicodeSymbol
+        , fromLookup mkSpace inverseUnicodeSpace
         ]
   where
-    fromMap constructor tokenMap =
-        constructor TsUnicode span raw <$> HM.lookup ch tokenMap
+    fromLookup constructor fn =
+        constructor TsUnicode span raw <$> fn raw
+    merged inverse aliases x = inverse x <|> lookup x aliases
 
+-- | Render a canonical token to its Unicode spelling.
+unicodeOf :: TokenCanonical -> Maybe Text
+unicodeOf = \case
+    TcConsonant c -> Just (unicodeConsonant c)
+    TcSubConsonant s -> Just (unicodeSubConsonant s)
+    TcVowel v -> Just (unicodeVowel v)
+    TcFinal f -> Just (unicodeFinal f)
+    TcNumber n -> Just (unicodeNumber n)
+    TcHalfNumber h -> Just (unicodeHalfNumber h)
+    TcPunctuation p -> Just (unicodePunctuation p)
+    TcSign s -> Just (unicodeSign s)
+    TcSanskritMark m -> Just (unicodeSanskritMark m)
+    TcOrnament o -> Just (unicodeOrnament o)
+    TcSpace m -> Just (unicodeSpace m)
+    TcSymbol s -> Just (unicodeSymbol s)
+    TcUnknown _ -> Nothing
 
-consonantTokenMap :: HashMap Char Consonant
-consonantTokenMap =
-    HM.fromList
-        [ ('\x0f40', Ck)
-        , ('\x0f41', Ckh)
-        , ('\x0f42', Cg)
-        , ('\x0f43', CgPLUSh)
-        , ('\x0f44', Cng)
-        , ('\x0f45', Cc)
-        , ('\x0f46', Cch)
-        , ('\x0f47', Cj)
-        , ('\x0f49', Cny)
-        , ('\x0f4a', CT)
-        , ('\x0f4b', CTh)
-        , ('\x0f4c', CD)
-        , ('\x0f4d', CDPLUSh)
-        , ('\x0f4e', CN)
-        , ('\x0f4f', Ct)
-        , ('\x0f50', Cth)
-        , ('\x0f51', Cd)
-        , ('\x0f52', CdPLUSh)
-        , ('\x0f53', Cn)
-        , ('\x0f54', Cp)
-        , ('\x0f55', Cph)
-        , ('\x0f56', Cb)
-        , ('\x0f57', CbPLUSh)
-        , ('\x0f58', Cm)
-        , ('\x0f59', Cts)
-        , ('\x0f5a', Ctsh)
-        , ('\x0f5b', Cdz)
-        , ('\x0f5c', CdzPLUSh)
-        , ('\x0f5d', Cw)
-        , ('\x0f5e', Czh)
-        , ('\x0f5f', Cz)
-        , ('\x0f60', C')
-        , ('\x0f61', Cy)
-        , ('\x0f62', Cr)
-        , ('\x0f63', Cl)
-        , ('\x0f64', Csh)
-        , ('\x0f65', CSh)
-        , ('\x0f66', Cs)
-        , ('\x0f67', Ch)
-        , ('\x0f68', Ca)
-        , ('\x0f69', CkPLUSSh)
-        , ('\x0f6a', CR)
-        ]
+unicodeConsonant :: Consonant -> Text
+unicodeConsonant = \case
+    Ck -> "\x0f40"
+    Ckh -> "\x0f41"
+    Cg -> "\x0f42"
+    CgPLUSh -> "\x0f43"
+    Cng -> "\x0f44"
+    Cc -> "\x0f45"
+    Cch -> "\x0f46"
+    Cj -> "\x0f47"
+    Cny -> "\x0f49"
+    CT -> "\x0f4a"
+    CTh -> "\x0f4b"
+    CD -> "\x0f4c"
+    CDPLUSh -> "\x0f4d"
+    CN -> "\x0f4e"
+    Ct -> "\x0f4f"
+    Cth -> "\x0f50"
+    Cd -> "\x0f51"
+    CdPLUSh -> "\x0f52"
+    Cn -> "\x0f53"
+    Cp -> "\x0f54"
+    Cph -> "\x0f55"
+    Cf -> "\x0f55\x0f39"
+    Cb -> "\x0f56"
+    Cv -> "\x0f56\x0f39"
+    CbPLUSh -> "\x0f57"
+    Cm -> "\x0f58"
+    Cts -> "\x0f59"
+    Ctsh -> "\x0f5a"
+    Cdz -> "\x0f5b"
+    CdzPLUSh -> "\x0f5c"
+    Cw -> "\x0f5d"
+    Czh -> "\x0f5e"
+    Cz -> "\x0f5f"
+    C' -> "\x0f60"
+    Cy -> "\x0f61"
+    Cr -> "\x0f62"
+    Cl -> "\x0f63"
+    Csh -> "\x0f64"
+    CSh -> "\x0f65"
+    Cs -> "\x0f66"
+    Ch -> "\x0f67"
+    Ca -> "\x0f68"
+    CkPLUSSh -> "\x0f69"
+    CR -> "\x0f6a"
+    Ckka -> "\x0f6b"
+    CRra -> "\x0f6c"
 
-subConsonantTokenMap :: HashMap Char SubConsonant
-subConsonantTokenMap =
-    HM.fromList
-        [ ('\x0f90', SCk)
-        , ('\x0f91', SCkh)
-        , ('\x0f92', SCg)
-        , ('\x0f93', SCgPLUSh)
-        , ('\x0f94', SCng)
-        , ('\x0f95', SCc)
-        , ('\x0f96', SCch)
-        , ('\x0f97', SCj)
-        , ('\x0f99', SCny)
-        , ('\x0f9a', SCT)
-        , ('\x0f9b', SCTh)
-        , ('\x0f9c', SCD)
-        , ('\x0f9d', SCDPLUSh)
-        , ('\x0f9e', SCN)
-        , ('\x0f9f', SCt)
-        , ('\x0fa0', SCth)
-        , ('\x0fa1', SCd)
-        , ('\x0fa2', SCdPLUSh)
-        , ('\x0fa3', SCn)
-        , ('\x0fa4', SCp)
-        , ('\x0fa5', SCph)
-        , ('\x0fa6', SCb)
-        , ('\x0fa7', SCbPLUSh)
-        , ('\x0fa8', SCm)
-        , ('\x0fa9', SCts)
-        , ('\x0faa', SCtsh)
-        , ('\x0fab', SCdz)
-        , ('\x0fac', SCdzPLUSh)
-        , ('\x0fad', SCw)
-        , ('\x0fae', SCzh)
-        , ('\x0faf', SCz)
-        , ('\x0fb0', SC')
-        , ('\x0fb1', SCy)
-        , ('\x0fb2', SCr)
-        , ('\x0fb3', SCl)
-        , ('\x0fb4', SCsh)
-        , ('\x0fb5', SCSh)
-        , ('\x0fb6', SCs)
-        , ('\x0fb7', SCh)
-        , ('\x0fb8', SCa)
-        , ('\x0fb9', SCkPLUSSh)
-        , ('\x0fba', SCW)
-        , ('\x0fbb', SCY)
-        , ('\x0fbc', SCR)
-        ]
+unicodeSubConsonant :: SubConsonant -> Text
+unicodeSubConsonant = \case
+    SCk -> "\x0f90"
+    SCkh -> "\x0f91"
+    SCg -> "\x0f92"
+    SCgPLUSh -> "\x0f93"
+    SCng -> "\x0f94"
+    SCc -> "\x0f95"
+    SCch -> "\x0f96"
+    SCj -> "\x0f97"
+    SCny -> "\x0f99"
+    SCT -> "\x0f9a"
+    SCTh -> "\x0f9b"
+    SCD -> "\x0f9c"
+    SCDPLUSh -> "\x0f9d"
+    SCN -> "\x0f9e"
+    SCt -> "\x0f9f"
+    SCth -> "\x0fa0"
+    SCd -> "\x0fa1"
+    SCdPLUSh -> "\x0fa2"
+    SCn -> "\x0fa3"
+    SCp -> "\x0fa4"
+    SCph -> "\x0fa5"
+    SCb -> "\x0fa6"
+    SCbPLUSh -> "\x0fa7"
+    SCm -> "\x0fa8"
+    SCts -> "\x0fa9"
+    SCtsh -> "\x0faa"
+    SCdz -> "\x0fab"
+    SCdzPLUSh -> "\x0fac"
+    SCw -> "\x0fad"
+    SCzh -> "\x0fae"
+    SCz -> "\x0faf"
+    SC' -> "\x0fb0"
+    SCy -> "\x0fb1"
+    SCr -> "\x0fb2"
+    SCl -> "\x0fb3"
+    SCsh -> "\x0fb4"
+    SCSh -> "\x0fb5"
+    SCs -> "\x0fb6"
+    SCh -> "\x0fb7"
+    SCa -> "\x0fb8"
+    SCkPLUSSh -> "\x0fb9"
+    SCW -> "\x0fba"
+    SCY -> "\x0fbb"
+    SCR -> "\x0fbc"
 
-vowelTokenMap :: HashMap Char Vowel
-vowelTokenMap =
-    HM.fromList
-        [ ('\x0f71', VA)
-        , ('\x0f72', Vi)
-        , ('\x0f73', VI)
-        , ('\x0f74', Vu)
-        , ('\x0f75', VU)
-        , ('\x0f7a', Ve)
-        , ('\x0f7b', Vai)
-        , ('\x0f7c', Vo)
-        , ('\x0f7d', Vau)
-        , ('\x0f80', V_i)
-        ]
+unicodeVowel :: Vowel -> Text
+unicodeVowel = \case
+    VA -> "\x0f71"
+    Vi -> "\x0f72"
+    VI -> "\x0f73"
+    Vu -> "\x0f74"
+    VU -> "\x0f75"
+    Vr_i -> "\x0f76"
+    Vr_I -> "\x0f77"
+    Vl_i -> "\x0f78"
+    Vl_I -> "\x0f79"
+    Ve -> "\x0f7a"
+    Vai -> "\x0f7b"
+    Vo -> "\x0f7c"
+    Vau -> "\x0f7d"
+    V_i -> "\x0f80"
+    V_I -> "\x0f81"
 
-finalTokenMap :: HashMap Char FinalMark
-finalTokenMap =
-    HM.fromList
-        [ ('\x0f7e', FMAnusvara)
-        , ('\x0f82', FMAnusvara)
-        , ('\x0f83', FMAnusvara)
-        , ('\x0f37', FMCandrabinduOrNasal)
-        , ('\x0f35', FMCandrabinduOrNasal)
-        , ('\x0f39', FMCaret)
-        , ('\x0f7f', FMVisarga)
-        , ('\x0f84', FMHalanta)
-        , ('\x0f85', FMYigMgo)
-        ]
+unicodeFinal :: FinalMark -> Text
+unicodeFinal = \case
+    FMAnusvara -> "\x0f7e"
+    FMVisarga -> "\x0f7f"
+    FMCandrabinduOrNasal -> "\x0f37"
+    FMHalanta -> "\x0f84"
+    FMCaret -> "\x0f39"
+    FMYigMgo -> "\x0f85"
 
-numberTokenMap :: HashMap Char Number
-numberTokenMap =
-    HM.fromList
-        [ ('\x0f20', N0)
-        , ('\x0f21', N1)
-        , ('\x0f22', N2)
-        , ('\x0f23', N3)
-        , ('\x0f24', N4)
-        , ('\x0f25', N5)
-        , ('\x0f26', N6)
-        , ('\x0f27', N7)
-        , ('\x0f28', N8)
-        , ('\x0f29', N9)
-        ]
+unicodeNumber :: Number -> Text
+unicodeNumber = \case
+    N0 -> "\x0f20"
+    N1 -> "\x0f21"
+    N2 -> "\x0f22"
+    N3 -> "\x0f23"
+    N4 -> "\x0f24"
+    N5 -> "\x0f25"
+    N6 -> "\x0f26"
+    N7 -> "\x0f27"
+    N8 -> "\x0f28"
+    N9 -> "\x0f29"
 
-punctuationTokenMap :: HashMap Char PunctuationMark
-punctuationTokenMap =
-    HM.fromList
-        [ ('\x0f0b', PMTsheg)
-        , ('\x0f0c', PMNonBreakingTsheg)
-        , ('\x0f0d', PMShad)
-        , ('\x0f0e', PMNyisShad)
-        , ('\x0f0f', PMTshegShad)
-        , ('\x0f11', PMRinChenSpungsShad)
-        , ('\x0f14', PMGterTshigMgo)
-        ]
+unicodeHalfNumber :: HalfNumber -> Text
+unicodeHalfNumber = \case
+    H_0 -> "\x0f33"
+    H_1 -> "\x0f2a"
+    H_2 -> "\x0f2b"
+    H_3 -> "\x0f2c"
+    H_4 -> "\x0f2d"
+    H_5 -> "\x0f2e"
+    H_6 -> "\x0f2f"
+    H_7 -> "\x0f30"
+    H_8 -> "\x0f31"
+    H_9 -> "\x0f32"
 
-symbolTokenMap :: HashMap Char SymbolMark
-symbolTokenMap =
-    HM.fromList
-        [ ('\x0f08', SMExclamation)
-        , ('\x0f04', SMAt)
-        , ('\x0f05', SMHash)
-        , ('\x0f06', SMDollar)
-        , ('\x0f07', SMPercent)
-        , ('\x0f34', SMEqual)
-        , ('\x0f3a', SMLt)
-        , ('\x0f3b', SMGt)
-        , ('\x0f3c', SMLParen)
-        , ('\x0f3d', SMRParen)
-        ]
+unicodePunctuation :: PunctuationMark -> Text
+unicodePunctuation = \case
+    PMTsheg -> "\x0f0b"
+    PMNonBreakingTsheg -> "\x0f0c"
+    PMShad -> "\x0f0d"
+    PMNyisShad -> "\x0f0e"
+    PMTshegShad -> "\x0f0f"
+    PMNyisTshegShad -> "\x0f10"
+    PMRinChenSpungsShad -> "\x0f11"
+    PMRgyaGramShad -> "\x0f12"
+    PMCaretDzudRtagsMeLong -> "\x0f13"
+    PMGterTshigMgo -> "\x0f14"
 
+unicodeSign :: SignMark -> Text
+unicodeSign = \case
+    SGYigMgoAt -> "\x0f00"
+    SGKaKhaGaGsum -> "\x0f01"
+    SGNyiZlaNaaDa -> "\x0f02"
+    SGSbrulShad -> "\x0f03"
 
+unicodeSanskritMark :: SanskritMark -> Text
+unicodeSanskritMark = \case
+    SMiLciRtags -> "\x0f86"
+    SMiYangRtags -> "\x0f87"
+    SMiLceTsaCanSubjoined -> "\x0f8d"
+    SMiMchuCanSubjoined -> "\x0f8e"
+    SMiInvertedMchuCanSubjoined -> "\x0f8f"
 
+unicodeOrnament :: OrnamentMark -> Text
+unicodeOrnament = \case
+    OMRdelDkarGcig -> "\x0fd0"
+    OMRdelDkarGnyis -> "\x0fd1"
+    OMRdelDkarGsum -> "\x0fd2"
+    OMRdelNagGcig -> "\x0fd3"
+    OMRdelNagGnyis -> "\x0fd4"
+    OMLeadingMchanRtags -> "\x0fd9"
+    OMTrailingMchanRtags -> "\x0fda"
+
+unicodeSpace :: SpaceMark -> Text
+unicodeSpace = \case
+    SMSpace -> " "
+
+unicodeSymbol :: SymbolMark -> Text
+unicodeSymbol = \case
+    SMExclamation -> "\x0f08"
+    SMAt -> "\x0f04"
+    SMHash -> "\x0f05"
+    SMDollar -> "\x0f06"
+    SMPercent -> "\x0f07"
+    SMEqual -> "\x0f34"
+    SMLt -> "\x0f3a"
+    SMGt -> "\x0f3b"
+    SMLParen -> "\x0f3c"
+    SMRParen -> "\x0f3d"
+    SMAsterisk -> ""
+    SMSlash -> ""
+    SMDoubleSlash -> ""
+    SMSemicolon -> ""
+    SMBar -> ""
+    SMColon -> ""
+
+unicodeFinalAliases :: [(Text, FinalMark)]
+unicodeFinalAliases =
+    [ ("\x0f82", FMAnusvara)
+    , ("\x0f83", FMAnusvara)
+    , ("\x0f35", FMCandrabinduOrNasal)
+    ]
+
+inverseUnicodeConsonant :: Text -> Maybe Consonant
+inverseUnicodeConsonant = inverseMap unicodeConsonant
+
+inverseUnicodeSubConsonant :: Text -> Maybe SubConsonant
+inverseUnicodeSubConsonant = inverseMap unicodeSubConsonant
+
+inverseUnicodeVowel :: Text -> Maybe Vowel
+inverseUnicodeVowel = inverseMap unicodeVowel
+
+inverseUnicodeFinal :: Text -> Maybe FinalMark
+inverseUnicodeFinal = inverseMap unicodeFinal
+
+inverseUnicodeNumber :: Text -> Maybe Number
+inverseUnicodeNumber = inverseMap unicodeNumber
+
+inverseUnicodeHalfNumber :: Text -> Maybe HalfNumber
+inverseUnicodeHalfNumber = inverseMap unicodeHalfNumber
+
+inverseUnicodePunctuation :: Text -> Maybe PunctuationMark
+inverseUnicodePunctuation = inverseMap unicodePunctuation
+
+inverseUnicodeSign :: Text -> Maybe SignMark
+inverseUnicodeSign = inverseMap unicodeSign
+
+inverseUnicodeSanskritMark :: Text -> Maybe SanskritMark
+inverseUnicodeSanskritMark = inverseMap unicodeSanskritMark
+
+inverseUnicodeOrnament :: Text -> Maybe OrnamentMark
+inverseUnicodeOrnament = inverseMap unicodeOrnament
+
+inverseUnicodeSpace :: Text -> Maybe SpaceMark
+inverseUnicodeSpace = inverseMap unicodeSpace
+
+inverseUnicodeSymbol :: Text -> Maybe SymbolMark
+inverseUnicodeSymbol = inverseMap unicodeSymbol

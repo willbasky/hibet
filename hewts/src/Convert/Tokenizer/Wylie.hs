@@ -6,14 +6,12 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (isHexDigit)
 import Convert.Token
-import Data.HashMap.Strict (HashMap, (!?))
-import qualified Data.HashMap.Strict as HM
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import Control.Applicative (asum)
+import Control.Applicative (asum, (<|>))
 import Data.Maybe (fromMaybe)
 import qualified Data.Trie as Trie
 
@@ -27,50 +25,24 @@ longTokenTrie :: Trie.Trie ()
 longTokenTrie =
     Trie.fromList [(TE.encodeUtf8 tok, ()) | tok <- longTokenList]
 
+-- | All multi-char Wylie spellings (representatives + aliases), derived from
+-- the render tables to keep the trie and the tables in sync.
 longTokenList :: [Text]
 longTokenList =
-    [ "k+Sh"
-    , "b+l"
-    , "-d+h"
-    , "dz+h"
-    , "-dh"
-    , "-sh"
-    , "-th"
-    , "D+h"
-    , "b+h"
-    , "d+h"
-    , "dzh"
-    , "g+h"
-    , "tsh"
-    , "~M`"
-    , "-I"
-    , "-d"
-    , "-i"
-    , "-n"
-    , "-t"
-    , "//"
-    , "Dh"
-    , "Sh"
-    , "Th"
-    , "ai"
-    , "au"
-    , "bh"
-    , "ch"
-    , "dh"
-    , "dz"
-    , "gh"
-    , "kh"
-    , "ng"
-    , "ny"
-    , "ph"
-    , "sh"
-    , "th"
-    , "ts"
-    , "zh"
-    , "~M"
-    , "~X"
-    , "\r\n"
-    ]
+    HS.toList . HS.fromList $
+        concat
+            [ [ s | s <- map wylieConsonant [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieVowel [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieFinal [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieNumber [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wyliePunctuation [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1 ]
+            , map fst wylieConsonantAliases
+            , map fst wylieVowelAliases
+            , map fst wylieFinalAliases
+            , ["b+l", "\r\n"]
+            ]
 
 -- | Tokenize Wylie input using longest-match splitting for known multi-char
 -- tokens.
@@ -140,15 +112,13 @@ classifyToken span raw
     | isClosedBracketChunk raw || isKnownEscapeChunk raw = mkUnknownWith TsWylie span raw []
     | otherwise =
         fromMaybe (mkUnknown TsWylie span raw) $ asum
-            [ lookupAs mkConsonant consonantTokenMap
-            , lookupAs mkVowel vowelTokenMap
-            , lookupAs mkFinal finalTokenMap
-            , lookupAs mkNumber numberTokenMap
-            , lookupAs mkPunctuation punctuationTokenMap
-            , lookupAs mkSymbol symbolTokenMap
-            , if raw == "_"
-                then Just (mkSpace TsWylie span raw SMSpace)
-                else Nothing
+            [ lookupAs mkConsonant (lookupWylie inverseWylieConsonant wylieConsonantAliases)
+            , lookupAs mkVowel (lookupWylie inverseWylieVowel wylieVowelAliases)
+            , lookupAs mkFinal (lookupWylie inverseWylieFinal wylieFinalAliases)
+            , lookupAs mkNumber inverseWylieNumber
+            , lookupAs mkPunctuation inverseWyliePunctuation
+            , lookupAs mkSymbol inverseWylieSymbol
+            , lookupAs mkSpace inverseWylieSpace
             , if HS.member raw special
                 then Just $
                     mkUnknownWith
@@ -159,8 +129,11 @@ classifyToken span raw
                 else Nothing
             ]
   where
-    lookupAs constructor tokenMap =
-        constructor TsWylie span raw <$> HM.lookup raw tokenMap
+    lookupAs constructor lookupFn =
+        constructor TsWylie span raw <$> lookupFn raw
+
+    lookupWylie inverseLookup aliases x =
+        inverseLookup x <|> lookup x aliases
 
     isClosedBracketChunk chunk =
         T.length chunk >= 2 && T.head chunk == '[' && T.last chunk == ']'
@@ -171,139 +144,199 @@ classifyToken span raw
         | T.length chunk == 10 && T.isPrefixOf "\\U" chunk = T.all isHexDigit (T.drop 2 chunk)
         | otherwise = False
 
+-- | Render a canonical token to its Wylie spelling.
+wylieOf :: TokenCanonical -> Maybe Text
+wylieOf = \case
+    TcConsonant Ckka -> Nothing
+    TcConsonant CRra -> Nothing
+    TcConsonant c -> Just (wylieConsonant c)
+    TcVowel Vr_i -> Nothing
+    TcVowel Vr_I -> Nothing
+    TcVowel Vl_i -> Nothing
+    TcVowel Vl_I -> Nothing
+    TcVowel v -> Just (wylieVowel v)
+    TcFinal f -> Just (wylieFinal f)
+    TcNumber n -> Just (wylieNumber n)
+    TcPunctuation PMNyisTshegShad -> Nothing
+    TcPunctuation PMRgyaGramShad -> Nothing
+    TcPunctuation PMCaretDzudRtagsMeLong -> Nothing
+    TcPunctuation p -> Just (wyliePunctuation p)
+    TcSymbol s -> Just (wylieSymbol s)
+    TcSpace m -> Just (wylieSpace m)
+    _ -> Nothing
 
-consonantTokenMap :: HashMap Text Consonant
-consonantTokenMap =
-    HM.fromList
-        [ ("k", Ck)
-        , ("kh", Ckh)
-        , ("g", Cg)
-        , ("gh", CgPLUSh)
-        , ("g+h", CgPLUSh)
-        , ("ng", Cng)
-        , ("c", Cc)
-        , ("ch", Cch)
-        , ("j", Cj)
-        , ("ny", Cny)
-        , ("T", CT)
-        , ("-t", CT)
-        , ("Th", CTh)
-        , ("-th", CTh)
-        , ("D", CD)
-        , ("-d", CD)
-        , ("Dh", CDPLUSh)
-        , ("D+h", CDPLUSh)
-        , ("-dh", CDPLUSh)
-        , ("-d+h", CDPLUSh)
-        , ("N", CN)
-        , ("-n", CN)
-        , ("t", Ct)
-        , ("th", Cth)
-        , ("d", Cd)
-        , ("dh", CdPLUSh)
-        , ("d+h", CdPLUSh)
-        , ("n", Cn)
-        , ("p", Cp)
-        , ("ph", Cph)
-        , ("b", Cb)
-        , ("bh", CbPLUSh)
-        , ("b+h", CbPLUSh)
-        , ("m", Cm)
-        , ("ts", Cts)
-        , ("tsh", Ctsh)
-        , ("dz", Cdz)
-        , ("dzh", CdzPLUSh)
-        , ("dz+h", CdzPLUSh)
-        , ("w", Cw)
-        , ("W", Cw)
-        , ("zh", Czh)
-        , ("z", Cz)
-        , ("'", C')
-        , ("y", Cy)
-        , ("Y", Cy)
-        , ("r", Cr)
-        , ("l", Cl)
-        , ("sh", Csh)
-        , ("Sh", CSh)
-        , ("-sh", CSh)
-        , ("s", Cs)
-        , ("h", Ch)
-        , ("a", Ca)
-        , ("k+Sh", CkPLUSSh)
-        , ("R", CR)
-        , ("f", Cf)
-        , ("v", Cv)
-        ]
+wylieConsonant :: Consonant -> Text
+wylieConsonant = \case
+    Ck -> "k"
+    Ckh -> "kh"
+    Cg -> "g"
+    CgPLUSh -> "gh"
+    Cng -> "ng"
+    Cc -> "c"
+    Cch -> "ch"
+    Cj -> "j"
+    Cny -> "ny"
+    CT -> "T"
+    CTh -> "Th"
+    CD -> "D"
+    CDPLUSh -> "Dh"
+    CN -> "N"
+    Ct -> "t"
+    Cth -> "th"
+    Cd -> "d"
+    CdPLUSh -> "dh"
+    Cn -> "n"
+    Cp -> "p"
+    Cph -> "ph"
+    Cf -> "f"
+    Cb -> "b"
+    Cv -> "v"
+    CbPLUSh -> "bh"
+    Cm -> "m"
+    Cts -> "ts"
+    Ctsh -> "tsh"
+    Cdz -> "dz"
+    CdzPLUSh -> "dzh"
+    Cw -> "w"
+    Czh -> "zh"
+    Cz -> "z"
+    C' -> "'"
+    Cy -> "y"
+    Cr -> "r"
+    Cl -> "l"
+    Csh -> "sh"
+    CSh -> "Sh"
+    Cs -> "s"
+    Ch -> "h"
+    Ca -> "a"
+    CkPLUSSh -> "k+Sh"
+    CR -> "R"
+    Ckka -> ""
+    CRra -> ""
 
-vowelTokenMap :: HashMap Text Vowel
-vowelTokenMap =
-    HM.fromList
-        [ ("A", VA)
-        , ("i", Vi)
-        , ("I", VI)
-        , ("u", Vu)
-        , ("U", VU)
-        , ("e", Ve)
-        , ("ai", Vai)
-        , ("o", Vo)
-        , ("O", Vo)
-        , ("au", Vau)
-        , ("-i", V_i)
-        , ("-I", V_I)
-        ]
+wylieVowel :: Vowel -> Text
+wylieVowel = \case
+    VA -> "A"
+    Vi -> "i"
+    VI -> "I"
+    Vu -> "u"
+    VU -> "U"
+    Vr_i -> ""
+    Vr_I -> ""
+    Vl_i -> ""
+    Vl_I -> ""
+    Ve -> "e"
+    Vai -> "ai"
+    Vo -> "o"
+    Vau -> "au"
+    V_i -> "-i"
+    V_I -> "-I"
 
-finalTokenMap :: HashMap Text FinalMark
-finalTokenMap =
-    HM.fromList
-        [ ("M", FMAnusvara)
-        , ("~M`", FMAnusvara)
-        , ("~M", FMAnusvara)
-        , ("X", FMCandrabinduOrNasal)
-        , ("~X", FMCandrabinduOrNasal)
-        , ("H", FMVisarga)
-        , ("?", FMHalanta)
-        , ("^", FMCaret)
-        , ("&", FMYigMgo)
-        ]
+wylieFinal :: FinalMark -> Text
+wylieFinal = \case
+    FMAnusvara -> "M"
+    FMVisarga -> "H"
+    FMCandrabinduOrNasal -> "X"
+    FMHalanta -> "?"
+    FMCaret -> "^"
+    FMYigMgo -> "&"
 
-numberTokenMap :: HashMap Text Number
-numberTokenMap =
-    HM.fromList
-        [ ("0", N0)
-        , ("1", N1)
-        , ("2", N2)
-        , ("3", N3)
-        , ("4", N4)
-        , ("5", N5)
-        , ("6", N6)
-        , ("7", N7)
-        , ("8", N8)
-        , ("9", N9)
-        ]
+wylieNumber :: Number -> Text
+wylieNumber = \case
+    N0 -> "0"
+    N1 -> "1"
+    N2 -> "2"
+    N3 -> "3"
+    N4 -> "4"
+    N5 -> "5"
+    N6 -> "6"
+    N7 -> "7"
+    N8 -> "8"
+    N9 -> "9"
 
-punctuationTokenMap :: HashMap Text PunctuationMark
-punctuationTokenMap =
-    HM.fromList
-        [ (" ", PMTsheg)
-        , ("*", PMNonBreakingTsheg)
-        , ("/", PMShad)
-        , ("//", PMNyisShad)
-        , (";", PMTshegShad)
-        , ("|", PMRinChenSpungsShad)
-        , (":", PMGterTshigMgo)
-        ]
+wyliePunctuation :: PunctuationMark -> Text
+wyliePunctuation = \case
+    PMTsheg -> " "
+    PMNonBreakingTsheg -> "*"
+    PMShad -> "/"
+    PMNyisShad -> "//"
+    PMTshegShad -> ";"
+    PMNyisTshegShad -> ""
+    PMRinChenSpungsShad -> "|"
+    PMRgyaGramShad -> ""
+    PMCaretDzudRtagsMeLong -> ""
+    PMGterTshigMgo -> ":"
 
-symbolTokenMap :: HashMap Text SymbolMark
-symbolTokenMap =
-    HM.fromList
-        [ ("!", SMExclamation)
-        , ("@", SMAt)
-        , ("#", SMHash)
-        , ("$", SMDollar)
-        , ("%", SMPercent)
-        , ("=", SMEqual)
-        , ("<", SMLt)
-        , (">", SMGt)
-        , ("(", SMLParen)
-        , (")", SMRParen)
-        ]
+wylieSymbol :: SymbolMark -> Text
+wylieSymbol = \case
+    SMExclamation -> "!"
+    SMAt -> "@"
+    SMHash -> "#"
+    SMDollar -> "$"
+    SMPercent -> "%"
+    SMEqual -> "="
+    SMLt -> "<"
+    SMGt -> ">"
+    SMLParen -> "("
+    SMRParen -> ")"
+    SMAsterisk -> "*"
+    SMSlash -> "/"
+    SMDoubleSlash -> "//"
+    SMSemicolon -> ";"
+    SMBar -> "|"
+    SMColon -> ":"
+
+wylieSpace :: SpaceMark -> Text
+wylieSpace = \case
+    SMSpace -> "_"
+
+wylieConsonantAliases :: [(Text, Consonant)]
+wylieConsonantAliases =
+    [ ("g+h", CgPLUSh)
+    , ("-t", CT)
+    , ("-th", CTh)
+    , ("-d", CD)
+    , ("D+h", CDPLUSh)
+    , ("-dh", CDPLUSh)
+    , ("-d+h", CDPLUSh)
+    , ("-n", CN)
+    , ("d+h", CdPLUSh)
+    , ("b+h", CbPLUSh)
+    , ("dz+h", CdzPLUSh)
+    , ("W", Cw)
+    , ("Y", Cy)
+    , ("-sh", CSh)
+    ]
+
+wylieVowelAliases :: [(Text, Vowel)]
+wylieVowelAliases =
+    [ ("O", Vo)
+    ]
+
+wylieFinalAliases :: [(Text, FinalMark)]
+wylieFinalAliases =
+    [ ("~M`", FMAnusvara)
+    , ("~M", FMAnusvara)
+    , ("~X", FMCandrabinduOrNasal)
+    ]
+
+inverseWylieConsonant :: Text -> Maybe Consonant
+inverseWylieConsonant = inverseMap wylieConsonant
+
+inverseWylieVowel :: Text -> Maybe Vowel
+inverseWylieVowel = inverseMap wylieVowel
+
+inverseWylieFinal :: Text -> Maybe FinalMark
+inverseWylieFinal = inverseMap wylieFinal
+
+inverseWylieNumber :: Text -> Maybe Number
+inverseWylieNumber = inverseMap wylieNumber
+
+inverseWyliePunctuation :: Text -> Maybe PunctuationMark
+inverseWyliePunctuation = inverseMap wyliePunctuation
+
+inverseWylieSymbol :: Text -> Maybe SymbolMark
+inverseWylieSymbol = inverseMap wylieSymbol
+
+inverseWylieSpace :: Text -> Maybe SpaceMark
+inverseWylieSpace = inverseMap wylieSpace

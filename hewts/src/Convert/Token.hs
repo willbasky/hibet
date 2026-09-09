@@ -1,11 +1,19 @@
 module Convert.Token where
 
 import Data.Char (chr, isHexDigit, ord)
+import qualified Data.Map.Strict as M
 import Data.Text (Text)
 import qualified Data.Text as T
 import Numeric.Natural (Natural)
 import Numeric (readHex)
 import Text.Printf (printf)
+
+-- | Partial inverse of @f@, mirroring Relude 'Relude.Enum.inverseMap'.
+-- The resulting @Map k a@ is built once and shared for every call.
+inverseMap :: (Bounded a, Enum a, Ord k) => (a -> k) -> (k -> Maybe a)
+inverseMap f = \k -> M.lookup k dict
+  where
+    dict = M.fromList [(f a, a) | a <- [minBound .. maxBound]]
 
 -- | Превращает строку в формат "\\x0f40\\x0fad..."
 toUnicodeEscape :: String -> String
@@ -245,7 +253,7 @@ data Consonant
     | CR -- ཪ \u0f6a
     | Ckka -- ཫ \u0f6b
     | CRra -- ཬ \u0f6c
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Vowel
     = VA -- ཱ \u0f71
@@ -267,7 +275,7 @@ data Vowel
     -- | Vuo -- ོུ \u0f74\u0f7c
     -- | Vui -- ིུ \u0f74\u0f72
     -- | Vue -- ེུ \u0f74\u0f7a
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Number
     = N0 -- ༠ \u0f20
@@ -280,7 +288,7 @@ data Number
     | N7 -- ༧ \u0f27
     | N8 -- ༨ \u0f28
     | N9 -- ༩ \u0f29
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data HalfNumber
     = H_0 -- ༳ \u0f33
@@ -293,7 +301,7 @@ data HalfNumber
     | H_7 -- ༰ \u0f30
     | H_8 -- ༱ \u0f31
     | H_9 -- ༲ \u0f32
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 -- Subjoined Tibetan consonants used in stacks.
 data SubConsonant
@@ -341,7 +349,7 @@ data SubConsonant
     | SCW -- ྺ \u0fba
     | SCY -- ྻ \u0fbb
     | SCR -- ྼ \u0fbc
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data FinalMark
     = FMAnusvara -- ཾ \u0f7e, ྂ \u0f82, ྃ \u0f83
@@ -350,7 +358,7 @@ data FinalMark
     | FMHalanta -- ྄ \u0f84
     | FMCaret -- ྐྵ \u0f39
     | FMYigMgo -- ྅ \u0f85
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data PunctuationMark
     = PMTsheg -- ་ \u0f0b
@@ -363,14 +371,14 @@ data PunctuationMark
     | PMRgyaGramShad -- ༒ \u0f12
     | PMCaretDzudRtagsMeLong -- ༓ \u0f13
     | PMGterTshigMgo -- ༔ \u0f14
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data SignMark
     = SGYigMgoAt -- ༀ \u0f00
     | SGKaKhaGaGsum -- ༁ \u0f01
     | SGNyiZlaNaaDa -- ༂ \u0f02
     | SGSbrulShad -- ༃ \u0f03
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data SanskritMark
     = SMiLciRtags -- ྆ \u0f86
@@ -378,7 +386,7 @@ data SanskritMark
     | SMiLceTsaCanSubjoined -- ྍ \u0f8d
     | SMiMchuCanSubjoined -- ྎ \u0f8e
     | SMiInvertedMchuCanSubjoined -- ྏ \u0f8f
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data OrnamentMark
     = OMRdelDkarGcig -- ࿐ \u0fd0
@@ -388,11 +396,11 @@ data OrnamentMark
     | OMRdelNagGnyis -- ࿔ \u0fd4
     | OMLeadingMchanRtags -- ࿙ \u0fd9
     | OMTrailingMchanRtags -- ࿚ \u0fda
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data SpaceMark
     = SMSpace --   \u0020
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 data SymbolMark
     = SMExclamation -- ! \u0021
@@ -411,19 +419,7 @@ data SymbolMark
     | SMSemicolon -- ; \u003b
     | SMBar -- | \u007c
     | SMColon -- : \u003a
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Enum, Bounded)
 
 newtype UnknownMark = UnknownMark Text
     deriving (Show, Eq, Ord)
-
--- >>> import Data.Char
--- >>> import qualified Data.Text as T
--- >>> T.map ((\c -> (c, ord c))) "ཀཁགངཅཆཇཉཏཐདནཔཕབམཙཚཛཝཞཟའཡརལཤསཧཨ"
--- Couldn't match expected type `Char' with actual type `(Char, Int)'
--- In the expression: (c_an4V, ord c_an4V)
--- In the first argument of `map', namely
---   `((\ c_an4V -> (c_an4V, ord c_an4V)))'
--- In the expression:
---   map
---     ((\ c_an4V -> (c_an4V, ord c_an4V)))
---     "ཀཁགངཅཆཇཉཏཐདནཔཕབམཙཚཛཝཞཟའཡརལཤསཧཨ"
