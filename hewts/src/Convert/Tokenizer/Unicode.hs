@@ -22,23 +22,30 @@ tokenizeUnicode input = go 0 input
 
 classifyChar :: Span -> Char -> Text -> Token
 classifyChar span ch raw =
-    fromMaybe (mkUnknown TsUnicode span raw) $ asum
-        [ fromLookup mkConsonant inverseUnicodeConsonant
-        , fromLookup mkSubConsonant inverseUnicodeSubConsonant
-        , fromLookup mkVowel inverseUnicodeVowel
-        , fromLookup mkFinal (merged inverseUnicodeFinal unicodeFinalAliases)
-        , fromLookup mkNumber inverseUnicodeNumber
-        , fromLookup mkHalfNumber inverseUnicodeHalfNumber
-        , fromLookup mkPunctuation inverseUnicodePunctuation
-        , fromLookup mkSign inverseUnicodeSign
-        , fromLookup mkSanskritMark inverseUnicodeSanskritMark
-        , fromLookup mkOrnament inverseUnicodeOrnament
-        , fromLookup mkSymbol inverseUnicodeSymbol
-        , fromLookup mkSpace inverseUnicodeSpace
+    case classifyCanonical ch of
+        Just canonical -> mkTokenFromCanonical TsUnicode span raw canonical
+        Nothing -> mkUnknown TsUnicode span raw
+
+-- | Map a single character to its shared canonical payload, via the same
+-- inverse tables used by 'classifyChar'.
+classifyCanonical :: Char -> Maybe TokenCanonical
+classifyCanonical ch =
+    asum
+        [ TcConsonant <$> inverseUnicodeConsonant raw
+        , TcSubConsonant <$> inverseUnicodeSubConsonant raw
+        , TcVowel <$> inverseUnicodeVowel raw
+        , TcFinal <$> merged inverseUnicodeFinal unicodeFinalAliases raw
+        , TcNumber <$> inverseUnicodeNumber raw
+        , TcHalfNumber <$> inverseUnicodeHalfNumber raw
+        , TcPunctuation <$> inverseUnicodePunctuation raw
+        , TcSign <$> inverseUnicodeSign raw
+        , TcSanskritMark <$> inverseUnicodeSanskritMark raw
+        , TcOrnament <$> inverseUnicodeOrnament raw
+        , TcSymbol <$> inverseUnicodeSymbol raw
+        , TcSpace <$> inverseUnicodeSpace raw
         ]
   where
-    fromLookup constructor fn =
-        constructor TsUnicode span raw <$> fn raw
+    raw = T.singleton ch
     merged inverse aliases x = inverse x <|> lookup x aliases
 
 -- | Render a canonical token to its Unicode spelling.
@@ -261,12 +268,6 @@ unicodeSymbol = \case
     SMGt -> "\x0f3b"
     SMLParen -> "\x0f3c"
     SMRParen -> "\x0f3d"
-    SMAsterisk -> ""
-    SMSlash -> ""
-    SMDoubleSlash -> ""
-    SMSemicolon -> ""
-    SMBar -> ""
-    SMColon -> ""
 
 unicodeFinalAliases :: [(Text, FinalMark)]
 unicodeFinalAliases =

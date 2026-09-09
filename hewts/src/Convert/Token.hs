@@ -200,6 +200,25 @@ mkUnknown :: TokenSource -> Span -> Text -> Token
 mkUnknown source span raw =
     mkUnknownWith source span raw [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
 
+-- | Build a 'Token' from a decoded canonical payload, dispatching on its
+-- constructor. Used by both tokenizers when a raw chunk (e.g. a \\uXXXX
+-- escape) resolves to a known canonical.
+mkTokenFromCanonical :: TokenSource -> Span -> Text -> TokenCanonical -> Token
+mkTokenFromCanonical source span raw = \case
+    TcConsonant c -> mkConsonant source span raw c
+    TcSubConsonant s -> mkSubConsonant source span raw s
+    TcVowel v -> mkVowel source span raw v
+    TcFinal f -> mkFinal source span raw f
+    TcNumber n -> mkNumber source span raw n
+    TcHalfNumber h -> mkHalfNumber source span raw h
+    TcPunctuation p -> mkPunctuation source span raw p
+    TcSign s -> mkSign source span raw s
+    TcSanskritMark m -> mkSanskritMark source span raw m
+    TcOrnament o -> mkOrnament source span raw o
+    TcSpace m -> mkSpace source span raw m
+    TcSymbol s -> mkSymbol source span raw s
+    TcUnknown _ -> mkUnknownWith source span raw []
+
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
 -- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
@@ -413,12 +432,6 @@ data SymbolMark
     | SMGt -- > \u003e
     | SMLParen -- ( \u0028
     | SMRParen -- ) \u0029
-    | SMAsterisk -- * \u002a
-    | SMSlash -- / \u002f
-    | SMDoubleSlash -- // \u002f\u002f
-    | SMSemicolon -- ; \u003b
-    | SMBar -- | \u007c
-    | SMColon -- : \u003a
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 newtype UnknownMark = UnknownMark Text

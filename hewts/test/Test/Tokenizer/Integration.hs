@@ -23,6 +23,8 @@ tests =
         , testCase "same-script render keeps everything raw" caseRenderSameScriptKeepsRaw
         , testCase "cross-script render f and v compose" caseRenderFvComposed
         , testCase "cross-script render normalizes to canonical" caseRenderCrossScriptCanonical
+        , testCase "unicode stubs render to \\u0Fxx escapes" caseRenderUnicodeStubsToWylie
+        , testCase "escape input renders back to unicode (lossless)" caseRenderEscapeToUnicode
         ]
 
 caseWylieRawRoundtrip :: Assertion
@@ -66,6 +68,14 @@ caseRenderFvComposed =
 caseRenderCrossScriptCanonical :: Assertion
 caseRenderCrossScriptCanonical =
     renderInput OutWylie "ཉ་ཱི" @?= "ny Ai"
+
+caseRenderUnicodeStubsToWylie :: Assertion
+caseRenderUnicodeStubsToWylie =
+    renderInput OutWylie "ཫཬཷ༐༪྆࿐" @?= "\\u0F6B\\u0F6C\\u0F77\\u0F10\\u0F2A\\u0F86\\u0FD0"
+
+caseRenderEscapeToUnicode :: Assertion
+caseRenderEscapeToUnicode =
+    renderFromTokens OutUnicode (tokenizeWylie "\\u0F6C\\u0F76\\u0F12\\u0F33") @?= "ཬྲྀ༒༳"
 
 rawRoundtripWylie :: Text -> Text
 rawRoundtripWylie = T.concat . fmap tokenRaw . tokenizeWylie

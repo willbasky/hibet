@@ -63,6 +63,16 @@ wylieCases =
     , ("explicit space marker underscore", singleWylie "_" (TkSpace, TcSpace SMSpace))
     , ("special marker out-of-context becomes unknown", singleWylie "+" (TkUnknown, TcUnknown (UnknownMark "+")))
     , ("unknown latin x becomes unknown", singleWylie "x" (TkUnknown, TcUnknown (UnknownMark "x")))
+    , ("escape decodes consonant kka", singleWylie "\\u0F6B" (TkConsonant, TcConsonant Ckka))
+    , ("escape lower-case hex decodes too", singleWylie "\\u0f6c" (TkConsonant, TcConsonant CRra))
+    , ("escape decodes vowel vocalic r-i", singleWylie "\\u0F76" (TkVowel, TcVowel Vr_i))
+    , ("escape decodes punctuation nyis tsheg shad", singleWylie "\\u0F10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
+    , ("escape decodes half number H_1", singleWylie "\\u0F2A" (TkHalfNumber, TcHalfNumber H_1))
+    , ("escape decodes sign yig mgo at", singleWylie "\\u0F00" (TkSign, TcSign SGYigMgoAt))
+    , ("escape decodes sanskrit mark", singleWylie "\\u0F86" (TkSanskritMark, TcSanskritMark SMiLciRtags))
+    , ("escape decodes ornament", singleWylie "\\u0FD0" (TkOrnament, TcOrnament OMRdelDkarGcig))
+    , ("escape to unknown codepoint stays unknown", singleWylie "\\u0E0E" (TkUnknown, TcUnknown (UnknownMark "\\u0E0E")))
+    , ("U escape out of Tibetan stays unknown", singleWylie "\\U0001F600" (TkUnknown, TcUnknown (UnknownMark "\\U0001F600")))
     ]
 
 wylieAliasCases :: [(String, Assertion)]
@@ -90,7 +100,11 @@ wylieTableCases =
     , ("wylie vowels full table", assertWylieSingles wylieVowels)
     , ("wylie finals full table", assertWylieSingles wylieFinals)
     , ("wylie numbers full table", assertWylieSingles wylieNumbers)
+    , ("wylie half-numbers full table", assertWylieSingles wylieHalfNumbers)
     , ("wylie punctuation full table", assertWylieSingles wyliePunctuation)
+    , ("wylie signs full table", assertWylieSingles wylieSigns)
+    , ("wylie sanskrit marks full table", assertWylieSingles wylieSanskritMarks)
+    , ("wylie ornaments full table", assertWylieSingles wylieOrnaments)
     , ("wylie symbols full table", assertWylieSingles wylieSymbols)
     ]
 
@@ -248,6 +262,48 @@ wylieNumbers =
     , ("7", (TkNumber, TcNumber N7))
     , ("8", (TkNumber, TcNumber N8))
     , ("9", (TkNumber, TcNumber N9))
+    ]
+
+wylieHalfNumbers :: [(Text, (TokenKind, TokenCanonical))]
+wylieHalfNumbers =
+    [ ("\\u0F2A", (TkHalfNumber, TcHalfNumber H_1))
+    , ("\\u0F2B", (TkHalfNumber, TcHalfNumber H_2))
+    , ("\\u0F2C", (TkHalfNumber, TcHalfNumber H_3))
+    , ("\\u0F2D", (TkHalfNumber, TcHalfNumber H_4))
+    , ("\\u0F2E", (TkHalfNumber, TcHalfNumber H_5))
+    , ("\\u0F2F", (TkHalfNumber, TcHalfNumber H_6))
+    , ("\\u0F30", (TkHalfNumber, TcHalfNumber H_7))
+    , ("\\u0F31", (TkHalfNumber, TcHalfNumber H_8))
+    , ("\\u0F32", (TkHalfNumber, TcHalfNumber H_9))
+    , ("\\u0F33", (TkHalfNumber, TcHalfNumber H_0))
+    ]
+
+wylieSigns :: [(Text, (TokenKind, TokenCanonical))]
+wylieSigns =
+    [ ("\\u0F00", (TkSign, TcSign SGYigMgoAt))
+    , ("\\u0F01", (TkSign, TcSign SGKaKhaGaGsum))
+    , ("\\u0F02", (TkSign, TcSign SGNyiZlaNaaDa))
+    , ("\\u0F03", (TkSign, TcSign SGSbrulShad))
+    ]
+
+wylieSanskritMarks :: [(Text, (TokenKind, TokenCanonical))]
+wylieSanskritMarks =
+    [ ("\\u0F86", (TkSanskritMark, TcSanskritMark SMiLciRtags))
+    , ("\\u0F87", (TkSanskritMark, TcSanskritMark SMiYangRtags))
+    , ("\\u0F8D", (TkSanskritMark, TcSanskritMark SMiLceTsaCanSubjoined))
+    , ("\\u0F8E", (TkSanskritMark, TcSanskritMark SMiMchuCanSubjoined))
+    , ("\\u0F8F", (TkSanskritMark, TcSanskritMark SMiInvertedMchuCanSubjoined))
+    ]
+
+wylieOrnaments :: [(Text, (TokenKind, TokenCanonical))]
+wylieOrnaments =
+    [ ("\\u0FD0", (TkOrnament, TcOrnament OMRdelDkarGcig))
+    , ("\\u0FD1", (TkOrnament, TcOrnament OMRdelDkarGnyis))
+    , ("\\u0FD2", (TkOrnament, TcOrnament OMRdelDkarGsum))
+    , ("\\u0FD3", (TkOrnament, TcOrnament OMRdelNagGcig))
+    , ("\\u0FD4", (TkOrnament, TcOrnament OMRdelNagGnyis))
+    , ("\\u0FD9", (TkOrnament, TcOrnament OMLeadingMchanRtags))
+    , ("\\u0FDA", (TkOrnament, TcOrnament OMTrailingMchanRtags))
     ]
 
 wyliePunctuation :: [(Text, (TokenKind, TokenCanonical))]

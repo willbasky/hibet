@@ -4,8 +4,9 @@ module Convert.Tokenizer.Wylie where
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
-import Data.Char (isHexDigit)
+import Data.Char (chr, isHexDigit)
 import Convert.Token
+import Convert.Tokenizer.Unicode (classifyCanonical)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
@@ -14,6 +15,7 @@ import qualified Data.Text.Encoding as TE
 import Control.Applicative (asum, (<|>))
 import Data.Maybe (fromMaybe)
 import qualified Data.Trie as Trie
+import Numeric (readHex)
 
 
 -- special characters: flag those if they occur out of context
@@ -35,7 +37,11 @@ longTokenList =
             , [ s | s <- map wylieVowel [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wylieFinal [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wylieNumber [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieHalfNumber [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wyliePunctuation [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieSign [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieSanskritMark [minBound .. maxBound], T.length s > 1 ]
+            , [ s | s <- map wylieOrnament [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1 ]
             , map fst wylieConsonantAliases
@@ -109,7 +115,8 @@ classifyToken :: Span -> Text -> Token
 classifyToken span raw
     | raw == "\r\n" = mkSpace TsWylie span raw SMSpace
     | raw == "b+l" = mkUnknown TsWylie span raw
-    | isClosedBracketChunk raw || isKnownEscapeChunk raw = mkUnknownWith TsWylie span raw []
+    | isClosedBracketChunk raw = mkUnknownWith TsWylie span raw []
+    | isKnownEscapeChunk raw = decodeEscape span raw
     | otherwise =
         fromMaybe (mkUnknown TsWylie span raw) $ asum
             [ lookupAs mkConsonant (lookupWylie inverseWylieConsonant wylieConsonantAliases)
@@ -147,23 +154,41 @@ classifyToken span raw
 -- | Render a canonical token to its Wylie spelling.
 wylieOf :: TokenCanonical -> Maybe Text
 wylieOf = \case
-    TcConsonant Ckka -> Nothing
-    TcConsonant CRra -> Nothing
     TcConsonant c -> Just (wylieConsonant c)
-    TcVowel Vr_i -> Nothing
-    TcVowel Vr_I -> Nothing
-    TcVowel Vl_i -> Nothing
-    TcVowel Vl_I -> Nothing
     TcVowel v -> Just (wylieVowel v)
     TcFinal f -> Just (wylieFinal f)
     TcNumber n -> Just (wylieNumber n)
-    TcPunctuation PMNyisTshegShad -> Nothing
-    TcPunctuation PMRgyaGramShad -> Nothing
-    TcPunctuation PMCaretDzudRtagsMeLong -> Nothing
+    TcHalfNumber h -> Just (wylieHalfNumber h)
     TcPunctuation p -> Just (wyliePunctuation p)
+    TcSign s -> Just (wylieSign s)
+    TcSanskritMark m -> Just (wylieSanskritMark m)
+    TcOrnament o -> Just (wylieOrnament o)
     TcSymbol s -> Just (wylieSymbol s)
     TcSpace m -> Just (wylieSpace m)
     _ -> Nothing
+
+-- | Decode a \\uXXXX or \\UXXXXXXXX escape chunk to the token it names, if
+-- the target character is a known canonical; otherwise keep it opaque.
+decodeEscape :: Span -> Text -> Token
+decodeEscape span raw =
+    case decodeHexCode raw of
+        Just c ->
+            maybe
+                (mkUnknownWith TsWylie span raw [])
+                (mkTokenFromCanonical TsWylie span raw)
+                (classifyCanonical c)
+        Nothing -> mkUnknownWith TsWylie span raw []
+
+decodeHexCode :: Text -> Maybe Char
+decodeHexCode raw
+    | T.isPrefixOf "\\u" raw && T.length raw == 6 = readHexCode (T.drop 2 raw)
+    | T.isPrefixOf "\\U" raw && T.length raw == 10 = readHexCode (T.drop 2 raw)
+    | otherwise = Nothing
+  where
+    readHexCode hex =
+        case readHex (T.unpack hex) of
+            [(n, "")] | n <= 0x10FFFF -> Just (chr n)
+            _ -> Nothing
 
 wylieConsonant :: Consonant -> Text
 wylieConsonant = \case
@@ -211,8 +236,8 @@ wylieConsonant = \case
     Ca -> "a"
     CkPLUSSh -> "k+Sh"
     CR -> "R"
-    Ckka -> ""
-    CRra -> ""
+    Ckka -> "\\u0F6B"
+    CRra -> "\\u0F6C"
 
 wylieVowel :: Vowel -> Text
 wylieVowel = \case
@@ -221,10 +246,10 @@ wylieVowel = \case
     VI -> "I"
     Vu -> "u"
     VU -> "U"
-    Vr_i -> ""
-    Vr_I -> ""
-    Vl_i -> ""
-    Vl_I -> ""
+    Vr_i -> "\\u0F76"
+    Vr_I -> "\\u0F77"
+    Vl_i -> "\\u0F78"
+    Vl_I -> "\\u0F79"
     Ve -> "e"
     Vai -> "ai"
     Vo -> "o"
@@ -254,6 +279,19 @@ wylieNumber = \case
     N8 -> "8"
     N9 -> "9"
 
+wylieHalfNumber :: HalfNumber -> Text
+wylieHalfNumber = \case
+    H_0 -> "\\u0F33"
+    H_1 -> "\\u0F2A"
+    H_2 -> "\\u0F2B"
+    H_3 -> "\\u0F2C"
+    H_4 -> "\\u0F2D"
+    H_5 -> "\\u0F2E"
+    H_6 -> "\\u0F2F"
+    H_7 -> "\\u0F30"
+    H_8 -> "\\u0F31"
+    H_9 -> "\\u0F32"
+
 wyliePunctuation :: PunctuationMark -> Text
 wyliePunctuation = \case
     PMTsheg -> " "
@@ -261,11 +299,36 @@ wyliePunctuation = \case
     PMShad -> "/"
     PMNyisShad -> "//"
     PMTshegShad -> ";"
-    PMNyisTshegShad -> ""
+    PMNyisTshegShad -> "\\u0F10"
     PMRinChenSpungsShad -> "|"
-    PMRgyaGramShad -> ""
-    PMCaretDzudRtagsMeLong -> ""
+    PMRgyaGramShad -> "\\u0F12"
+    PMCaretDzudRtagsMeLong -> "\\u0F13"
     PMGterTshigMgo -> ":"
+
+wylieSign :: SignMark -> Text
+wylieSign = \case
+    SGYigMgoAt -> "\\u0F00"
+    SGKaKhaGaGsum -> "\\u0F01"
+    SGNyiZlaNaaDa -> "\\u0F02"
+    SGSbrulShad -> "\\u0F03"
+
+wylieSanskritMark :: SanskritMark -> Text
+wylieSanskritMark = \case
+    SMiLciRtags -> "\\u0F86"
+    SMiYangRtags -> "\\u0F87"
+    SMiLceTsaCanSubjoined -> "\\u0F8D"
+    SMiMchuCanSubjoined -> "\\u0F8E"
+    SMiInvertedMchuCanSubjoined -> "\\u0F8F"
+
+wylieOrnament :: OrnamentMark -> Text
+wylieOrnament = \case
+    OMRdelDkarGcig -> "\\u0FD0"
+    OMRdelDkarGnyis -> "\\u0FD1"
+    OMRdelDkarGsum -> "\\u0FD2"
+    OMRdelNagGcig -> "\\u0FD3"
+    OMRdelNagGnyis -> "\\u0FD4"
+    OMLeadingMchanRtags -> "\\u0FD9"
+    OMTrailingMchanRtags -> "\\u0FDA"
 
 wylieSymbol :: SymbolMark -> Text
 wylieSymbol = \case
@@ -279,12 +342,6 @@ wylieSymbol = \case
     SMGt -> ">"
     SMLParen -> "("
     SMRParen -> ")"
-    SMAsterisk -> "*"
-    SMSlash -> "/"
-    SMDoubleSlash -> "//"
-    SMSemicolon -> ";"
-    SMBar -> "|"
-    SMColon -> ":"
 
 wylieSpace :: SpaceMark -> Text
 wylieSpace = \case
