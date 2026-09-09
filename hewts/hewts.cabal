@@ -65,7 +65,6 @@ library
     Convert.Grammar.Rule
     Convert.Grammar.Sentence
     Convert.Token
-    Convert.Grammar.Common
     Convert.Tokenizer.Wylie
     Convert.Tokenizer.Unicode    
     Convert.Grammar.Parser
