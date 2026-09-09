@@ -1,11 +1,15 @@
 {- | Public interface for the Tibetan spelling grammar layer.
 
-Exposes the shared token parser primitive 'Parser' / 'parseEither', the
-syllable-boundary helpers ('pPunctuation', 'pNumber', 'isPunctuationLike'),
-and the 37 syllable spelling structures ('pStructure1' … 'pStructure37') that
-recognize a single syllable out of a 'Token' stream. The structures are
+This is the single public door into the spelling grammar: the shared token
+parser primitive 'Parser' / 'parseEither', the syllable-boundary helpers
+('pPunctuation', 'pNumber', 'isPunctuationLike'), the 37 syllable spelling
+structures ('pStructure1' … 'pStructure37'), and the underlying constraint
+parsers ('pConstraint01' … 'pConstraint20').
+
+The structures recognize a single syllable out of a 'Token' stream. They are
 composed downward from the Rule/Constraint modules and consumed upward by
-'Convert.Sentence'.
+'Convert.Sentence'. The implementation modules living under 'Convert.Grammar.*'
+(Parser, Rule, Rule.Constraint*) are internal.
 -}
 
 module Convert.Grammar
@@ -51,6 +55,24 @@ module Convert.Grammar
     , pStructure35
     , pStructure36
     , pStructure37
+    , pConstraint01
+    , pConstraint01WithLong
+    , pConstraint01Sanskrit
+    , pConstraint08
+    , pConstraint09
+    , pConstraint10
+    , pConstraint11
+    , pConstraint12
+    , pConstraint13
+    , pConstraint14
+    , pConstraint15
+    , pConstraint16Da
+    , pConstraint16Sa
+    , pConstraint17Ra
+    , pConstraint17Ya
+    , pConstraint18
+    , pConstraint19
+    , pConstraint20
     ) where
 
 import Convert.Grammar.Parser (Parser, parseEither, pPunctuation, pNumber, isPunctuationLike)
@@ -93,3 +115,17 @@ import Convert.Grammar.Rule
   , pStructure36
   , pStructure37
   )
+import Convert.Grammar.Rule.Constraint01 (pConstraint01, pConstraint01Sanskrit, pConstraint01WithLong)
+import Convert.Grammar.Rule.Constraint08 (pConstraint08)
+import Convert.Grammar.Rule.Constraint09 (pConstraint09)
+import Convert.Grammar.Rule.Constraint10 (pConstraint10)
+import Convert.Grammar.Rule.Constraint11 (pConstraint11)
+import Convert.Grammar.Rule.Constraint12 (pConstraint12)
+import Convert.Grammar.Rule.Constraint13 (pConstraint13)
+import Convert.Grammar.Rule.Constraint14 (pConstraint14)
+import Convert.Grammar.Rule.Constraint15 (pConstraint15)
+import Convert.Grammar.Rule.Constraint16 (pConstraint16Da, pConstraint16Sa)
+import Convert.Grammar.Rule.Constraint17 (pConstraint17Ra, pConstraint17Ya)
+import Convert.Grammar.Rule.Constraint18 (pConstraint18)
+import Convert.Grammar.Rule.Constraint19 (pConstraint19)
+import Convert.Grammar.Rule.Constraint20 (pConstraint20)

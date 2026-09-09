@@ -1,7 +1,6 @@
 module Test.Grammar.Rule.Constraint16 (tests) where
 
-import Convert.Grammar.Parser
-import Convert.Grammar.Rule.Constraint16 (pConstraint16Da, pConstraint16Sa)
+import Convert.Grammar
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer (tokenizeUnicode)
 import Data.Either (isLeft)

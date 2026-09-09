@@ -1,7 +1,6 @@
 module Test.Grammar.Rule.Constraint11 (tests) where
 
-import Convert.Grammar.Parser
-import Convert.Grammar.Rule.Constraint11 (pConstraint11)
+import Convert.Grammar
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer (tokenizeUnicode)
 import Data.Text (Text)

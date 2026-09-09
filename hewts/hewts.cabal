@@ -54,6 +54,8 @@ library
     Convert.Tokenizer.Wylie
     Convert.Tokenizer.Unicode
     Convert.Grammar
+
+  other-modules:
     Convert.Grammar.Parser
     Convert.Grammar.Rule
     Convert.Grammar.Rule.Constraint01
