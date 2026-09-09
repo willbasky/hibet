@@ -1,10 +1,10 @@
-{-
-Token-level sentence dispatcher.
+{- | Token-level sentence dispatcher.
 
-Parses a token stream into a list of SpellItem preserving every token:
+Parses a token stream into a list of 'SpellItem' preserving every token:
 syllables are recognized via the Convert.Grammar.Rule structures,
-punctuation and whitespace tokens are kept as Punct, and anything
-unrecognized is kept as Other (nothing is dropped).
+Tibetan digits ༠–༩ become 'Number', punctuation and whitespace tokens are
+kept as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
+dropped).
 -}
 
 module Convert.Grammar.Sentence
@@ -58,6 +58,7 @@ import qualified Text.Megaparsec as MP
 
 data SpellItem
     = Syllable [Token]
+    | Number [Token]
     | Punct [Token]
     | Other [Token]
     deriving (Show, Eq)
@@ -69,6 +70,7 @@ pItem :: Parser SpellItem
 pItem =
     MP.choice
         [ Punct <$> MP.some GP.pPunctuation
+        , Number <$> MP.some GP.pNumber
         , Syllable <$> MP.try pStructure
         , Other <$> MP.some (MP.satisfy (not . GP.isPunctuationLike))
         ]

@@ -84,7 +84,6 @@ library
     Convert.Grammar.Common
     Convert.Tokenizer.Wylie
     Convert.Tokenizer.Unicode    
-    Syllables
     Convert.Grammar.Parser
 
   build-depends:
