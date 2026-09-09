@@ -1,8 +1,8 @@
 module Test.Tokenizer.Spans (tests) where
 
 import Convert.Token
-import Convert.Tokenizer (tokenizeUnicode)
-import Convert.Tokenizer (tokenizeWylie)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.Text as T
 import Numeric.Natural (Natural)
 import Test.Tasty (TestTree, testGroup)

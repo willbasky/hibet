@@ -12,12 +12,9 @@ module Convert.Sentence
     , pSentence
     ) where
 
-import Convert.Grammar
-  ( Parser
-  , pNumber
-  , pPunctuation
-  , isPunctuationLike
-  , pStructure1
+import Convert.Grammar.Parser (Parser, isPunctuationLike, pNumber, pPunctuation)
+import Convert.Grammar.Structure
+  ( pStructure1
   , pStructure2
   , pStructure3
   , pStructure4

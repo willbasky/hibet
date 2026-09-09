@@ -1,8 +1,9 @@
 module Test.Grammar.Constraint.Constraint14 (tests) where
 
-import Convert.Grammar
+import Convert.Grammar.Constraint
+import Convert.Grammar.Parser (Parser, parseEither)
 import Convert.Token (Token, tokenRaw)
-import Convert.Tokenizer (tokenizeUnicode)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit ((@?=), testCase)

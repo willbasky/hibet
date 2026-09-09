@@ -1,8 +1,8 @@
 module Test.Tokenizer.Types (tests) where
 
 import Convert.Token
-import Convert.Tokenizer (tokenizeUnicode)
-import Convert.Tokenizer (tokenizeWylie)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)

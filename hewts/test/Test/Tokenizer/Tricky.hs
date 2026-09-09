@@ -11,7 +11,7 @@ import Convert.Tokenizer.Wylie
     , tokenizeWylie
     , vowelTokenMap
     )
-import Convert.Tokenizer (tokenizeUnicode)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import qualified Data.HashMap.Strict as HM
 import qualified Data.HashSet as HS
 import Data.Text (Text)

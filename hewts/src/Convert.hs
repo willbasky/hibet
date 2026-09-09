@@ -5,10 +5,10 @@ module Convert
     , pSentence
     ) where
 
-import Convert.Grammar (parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token (tokenRaw)
-import Convert.Tokenizer (tokenizeUnicode)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Text (Text)
 import qualified Data.Text as T
 

@@ -50,14 +50,13 @@ library
     Convert
     Convert.Sentence
     Convert.Token
-    Convert.Tokenizer
     Convert.Tokenizer.Wylie
     Convert.Tokenizer.Unicode
-    Convert.Grammar
+    Convert.Grammar.Parser
+    Convert.Grammar.Structure
+    Convert.Grammar.Constraint
 
   other-modules:
-    Convert.Grammar.Parser
-    Convert.Grammar.Constraint
     Convert.Grammar.Constraint.Constraint01
     Convert.Grammar.Constraint.Constraint08
     Convert.Grammar.Constraint.Constraint09
@@ -72,7 +71,6 @@ library
     Convert.Grammar.Constraint.Constraint18
     Convert.Grammar.Constraint.Constraint19
     Convert.Grammar.Constraint.Constraint20
-    Convert.Grammar.Structure
 
   build-depends:
     , bytestring
