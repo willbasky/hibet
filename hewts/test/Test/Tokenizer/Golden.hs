@@ -1,8 +1,8 @@
 module Test.Tokenizer.Golden (tests) where
 
 import Convert.Token
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Convert.Tokenizer (tokenizeUnicode)
+import Convert.Tokenizer (tokenizeWylie)
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as BL
 import Data.Text (Text)

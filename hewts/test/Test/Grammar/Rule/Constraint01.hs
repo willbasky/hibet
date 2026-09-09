@@ -3,7 +3,7 @@ module Test.Grammar.Rule.Constraint01 (tests) where
 import Convert.Grammar.Parser
 import Convert.Grammar.Rule.Constraint01 (pConstraint01, pConstraint01Sanskrit, pConstraint01WithLong)
 import Convert.Token (Token, tokenRaw)
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer (tokenizeUnicode)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit ((@?=), testCase)

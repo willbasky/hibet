@@ -7,15 +7,17 @@ kept as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
 dropped).
 -}
 
-module Convert.Grammar.Sentence
+module Convert.Sentence
     ( SpellItem (..)
     , pSentence
     ) where
 
-import Convert.Grammar.Parser (Parser)
-import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Rule
-  ( pStructure1
+import Convert.Grammar
+  ( Parser
+  , pNumber
+  , pPunctuation
+  , isPunctuationLike
+  , pStructure1
   , pStructure2
   , pStructure3
   , pStructure4
@@ -69,10 +71,10 @@ pSentence = MP.many pItem <* MP.eof
 pItem :: Parser SpellItem
 pItem =
     MP.choice
-        [ Punct <$> MP.some GP.pPunctuation
-        , Number <$> MP.some GP.pNumber
+        [ Punct <$> MP.some pPunctuation
+        , Number <$> MP.some pNumber
         , Syllable <$> MP.try pStructure
-        , Other <$> MP.some (MP.satisfy (not . GP.isPunctuationLike))
+        , Other <$> MP.some (MP.satisfy (not . isPunctuationLike))
         ]
 
 -- A syllable must match the structure that consumes the most tokens: a

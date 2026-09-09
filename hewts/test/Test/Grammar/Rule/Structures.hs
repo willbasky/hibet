@@ -41,7 +41,7 @@ import Convert.Grammar.Rule
   , pStructure37
   )
 import Convert.Token (Token, tokenRaw)
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer (tokenizeUnicode)
 import Data.Either (isLeft)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)

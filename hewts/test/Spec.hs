@@ -16,7 +16,7 @@ import qualified Test.Grammar.Rule.Constraint18 as Constraint18
 import qualified Test.Grammar.Rule.Constraint19 as Constraint19
 import qualified Test.Grammar.Rule.Constraint20 as Constraint20
 import qualified Test.Grammar.Rule.Structures as Structures
-import qualified Test.Grammar.Sentence as Sentence
+import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Convert as Convert
 import qualified Test.Tokenizer.Golden as Golden
 import qualified Test.Tokenizer.Integration as Integration

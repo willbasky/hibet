@@ -3,7 +3,7 @@ module Test.Grammar.Rule.Constraint16 (tests) where
 import Convert.Grammar.Parser
 import Convert.Grammar.Rule.Constraint16 (pConstraint16Da, pConstraint16Sa)
 import Convert.Token (Token, tokenRaw)
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer (tokenizeUnicode)
 import Data.Either (isLeft)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)

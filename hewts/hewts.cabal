@@ -48,6 +48,14 @@ library
   hs-source-dirs:  src
   exposed-modules:
     Convert
+    Convert.Sentence
+    Convert.Token
+    Convert.Tokenizer
+    Convert.Tokenizer.Wylie
+    Convert.Tokenizer.Unicode
+    Convert.Grammar
+    Convert.Grammar.Parser
+    Convert.Grammar.Rule
     Convert.Grammar.Rule.Constraint01
     Convert.Grammar.Rule.Constraint08
     Convert.Grammar.Rule.Constraint09
@@ -62,12 +70,6 @@ library
     Convert.Grammar.Rule.Constraint18
     Convert.Grammar.Rule.Constraint19
     Convert.Grammar.Rule.Constraint20
-    Convert.Grammar.Rule
-    Convert.Grammar.Sentence
-    Convert.Token
-    Convert.Tokenizer.Wylie
-    Convert.Tokenizer.Unicode    
-    Convert.Grammar.Parser
 
   build-depends:
     , bytestring
@@ -78,13 +80,6 @@ library
     , text
     , unordered-containers
     , bytestring-trie
-
-executable hewts
-  import:         common-options
-  hs-source-dirs: app
-  main-is:        Main.hs
-  build-depends:  hewts, text
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
 
 test-suite hewts-test
   import:         common-options
@@ -107,7 +102,7 @@ test-suite hewts-test
     Test.Grammar.Rule.Constraint19
     Test.Grammar.Rule.Constraint20
     Test.Grammar.Rule.Structures
-    Test.Grammar.Sentence
+    Test.Convert.Sentence
     Test.Convert
     Test.Tokenizer.Types
     Test.Tokenizer.Spans
