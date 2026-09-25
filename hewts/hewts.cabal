@@ -1,34 +1,38 @@
-cabal-version:   3.0
-name:            hewts
-version:         0.0.0.0
-synopsis:        See README for more info
+cabal-version: 3.0
+name: hewts
+version: 0.0.0.0
+synopsis: See README for more info
 description:
   See README for more info.
   See README.md for more details.
 
-license:         BSD-3-Clause
-license-file:    LICENSE
-author:          Vladislav
-maintainer:      Vladislav <email@email.com>
-copyright:       2026 Vladislav
-build-type:      Simple
+license: BSD-3-Clause
+license-file: LICENSE
+author: Vladislav
+maintainer: Vladislav <email@email.com>
+copyright: 2026 Vladislav
+build-type: Simple
 extra-doc-files:
   CHANGELOG.md
   README.md
-  test/vectors/README.md
   test/vectors/*.tsv
   test/vectors/kang.txt
+  test/vectors/README.md
 
-tested-with:     GHC ==9.10.3
+tested-with: ghc ==9.10.3
 
 common exec-options
   ghc-options:
-    -with-rtsopts=-N1 -with-rtsopts=-qn8 -with-rtsopts=-A64m
-    -with-rtsopts=-AL256m -with-rtsopts=-I0 -with-rtsopts=-T
+    -with-rtsopts=-N1
+    -with-rtsopts=-qn8
+    -with-rtsopts=-A64m
+    -with-rtsopts=-AL256m
+    -with-rtsopts=-I0
+    -with-rtsopts=-T
 
 common common-options
-  build-depends:      base >=4.11 && <5
-  default-language:   Haskell2010
+  build-depends: base >=4.11 && <5
+  default-language: Haskell2010
   default-extensions:
     ConstraintKinds
     DeriveGeneric
@@ -47,17 +51,17 @@ common common-options
     ViewPatterns
 
 library
-  import:          common-options
-  hs-source-dirs:  src
+  import: common-options
+  hs-source-dirs: src
   exposed-modules:
     Convert
-    Convert.Sentence
-    Convert.Token
-    Convert.Tokenizer.Wylie
-    Convert.Tokenizer.Unicode
+    Convert.Grammar.Constraint
     Convert.Grammar.Parser
     Convert.Grammar.Structure
-    Convert.Grammar.Constraint
+    Convert.Sentence
+    Convert.Token
+    Convert.Tokenizer.Unicode
+    Convert.Tokenizer.Wylie
 
   other-modules:
     Convert.Grammar.Constraint.Constraint01
@@ -76,22 +80,24 @@ library
     Convert.Grammar.Constraint.Constraint20
 
   build-depends:
-    , bytestring
-    , containers
-    , extra
-    , massiv
-    , megaparsec
-    , pretty-simple
-    , text
-    , unordered-containers
-    , bytestring-trie
+    bytestring,
+    bytestring-trie,
+    containers,
+    extra,
+    massiv,
+    megaparsec,
+    pretty-simple,
+    text,
+    unordered-containers,
 
 test-suite hewts-test
-  import:         common-options
-  type:           exitcode-stdio-1.0
+  import: common-options
+  type: exitcode-stdio-1.0
   hs-source-dirs: test
-  main-is:        Spec.hs
+  main-is: Spec.hs
   other-modules:
+    Test.Convert
+    Test.Convert.Sentence
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
     Test.Grammar.Constraint.Constraint09
@@ -107,31 +113,35 @@ test-suite hewts-test
     Test.Grammar.Constraint.Constraint19
     Test.Grammar.Constraint.Constraint20
     Test.Grammar.Structure
-    Test.Convert.Sentence
-    Test.Convert
-    Test.Tokenizer.Types
+    Test.Parity
+    Test.Tokenizer.Golden
+    Test.Tokenizer.Integration
+    Test.Tokenizer.RoundTrip
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky
-    Test.Tokenizer.Integration
-    Test.Tokenizer.Golden
-    Test.Tokenizer.RoundTrip
-    Test.Parity
+    Test.Tokenizer.Types
 
   build-depends:
-    hewts,
     bytestring,
+    hewts,
+    tasty,
+    tasty-golden,
+    tasty-hunit,
     text,
     unordered-containers,
-    tasty,
-    tasty-hunit,
-    tasty-golden
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
 
 benchmark hewts-benchmark
-  import:         common-options
-  type:           exitcode-stdio-1.0
+  import: common-options
+  type: exitcode-stdio-1.0
   hs-source-dirs: benchmark
-  main-is:        Main.hs
-
+  main-is: Main.hs
   -- build-depends:  hewts
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
