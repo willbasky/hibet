@@ -61,6 +61,7 @@ thinking.txt
 src/Sandbox.hs
 *.prof.html
 *.svg
+hewts/test/vectors/parity_report.txt
 
 # Build_files
 PKGBUILD

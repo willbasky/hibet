@@ -1,0 +1,35 @@
+# Extracted from ewts-rs ewts/src/rules_test.rs: the 16 EWTS rules,
+# W->U only. Two fields per row (wylie, unicode); the reference states
+# neither warnings nor a back-conversion here, so they are not checked.
+# Rule 1
+bsgribs	བསྒྲིབས
+# Rule 2
+mkhan	མཁན
+# Rule 3
+gyon g.yon 	གྱོན་གཡོན་
+# Rule 4
+sat+t+wa	སཏྟྭ
+# Rule 5
+bru+e rdo+e 	བྲེུ་རྡོེ་
+# Rule 6
+rta r+ta 	རྟ་རྟ་
+# Rule 7
+sarba mang+galaM 	སརྦ་མངྒལཾ་
+# Rule 8
+ka \u0F40	ཀ་ཀ
+# Rule 9
+khong [New York] la phebs song /	ཁོང་New York་ལ་ཕེབས་སོང་།
+# Rule 10
+de la \3 yod/	དེ་ལ་3་ཡོད།
+# Rule 11
+a khu/_ug pa/_aM/	ཨ་ཁུ། ཨུག་པ། ཨཾ།
+# Rule 12
+mA duH phaT 	མཱ་དུཿ་ཕཊ་
+# Rule 13
+R+na R+Ya R+ya 	ཪྣ་ཪྻ་ཪྱ་
+# Rule 14
+rnya rla rwa 	རྙ་རླ་རྭ་
+# Rule 15
+r+r r+R s+Wa r+Y 	རྲ་རྼ་སྺ་རྻ་
+# Rule 16
+r+sha l+ra h+wa h+ya 	རྴ་ལྲ་ཧྭ་ཧྱ་

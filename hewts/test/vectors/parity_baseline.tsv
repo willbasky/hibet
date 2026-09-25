@@ -1,0 +1,21 @@
+# Ratchet baseline for Test.Parity: corpus <TAB> check <TAB> total <TAB> passing.
+#
+# `passing` is how many checks of that kind passed when this file was written.
+# The test fails when the current number is LOWER, so waves 2..6 lower these
+# numbers instead of touching the corpora. `total` must always equal the real
+# number of checks, which pins the corpus files against silent truncation.
+#
+# Starting point, recorded right after Wave 1: hewts has the token layer and a
+# grammar, but no orthography rules and no stack resolution yet, so most
+# differences are real work for waves 2..6. Warnings are not checked at all —
+# hewts has no warning channel yet (see README.md).
+jsewts	w2u	210	24
+jsewts	u2w	210	16
+jsewts	roundtrip	210	36
+lingua	w2u	218	25
+lingua	u2w	218	15
+lingua	roundtrip	218	37
+ewts-rs	w2u	16	0
+java	w2u	6	1
+java	u2w	2	0
+kangyur	roundtrip	254	251

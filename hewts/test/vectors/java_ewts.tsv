@@ -1,0 +1,9 @@
+# Extracted from ewts-converter ConversionTest.java, method textEwts()
+# (the EWTS-parity assertions; the ALALC/sloppy/lenient ones are not here).
+# `?` in an expectation column = the reference does not specify it.
+pa'ng	པའང	0
+be’u'i'o	བེའུའིའོ	0
+pa'm	པའམ	0
+ga&	ག྅	?	ga&	?	?
+sO	སཱོ	?	sO	?	?
+mNyon mNges gTso rDza padma	མཉོན་མངེས་གཙོ་རྫ་པདྨ

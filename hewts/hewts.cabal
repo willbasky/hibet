@@ -15,6 +15,9 @@ build-type:      Simple
 extra-doc-files:
   CHANGELOG.md
   README.md
+  test/vectors/README.md
+  test/vectors/*.tsv
+  test/vectors/kang.txt
 
 tested-with:     GHC ==9.10.3
 
@@ -112,6 +115,7 @@ test-suite hewts-test
     Test.Tokenizer.Integration
     Test.Tokenizer.Golden
     Test.Tokenizer.RoundTrip
+    Test.Parity
 
   build-depends:
     hewts,

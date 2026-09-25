@@ -1,6 +1,7 @@
 module Main (main) where
 
-import Test.Tasty (TestTree, defaultMain, testGroup)
+import qualified Test.Convert as Convert
+import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
 import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
 import qualified Test.Grammar.Constraint.Constraint09 as Constraint09
@@ -16,8 +17,8 @@ import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
 import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
 import qualified Test.Grammar.Structure as Structures
-import qualified Test.Convert.Sentence as Sentence
-import qualified Test.Convert as Convert
+import qualified Test.Parity as Parity
+import Test.Tasty (TestTree, defaultMain, testGroup)
 import qualified Test.Tokenizer.Golden as Golden
 import qualified Test.Tokenizer.Integration as Integration
 import qualified Test.Tokenizer.RoundTrip as RoundTrip
@@ -55,4 +56,5 @@ tests =
         , Structures.tests
         , Sentence.tests
         , Convert.tests
+        , Parity.tests
         ]
