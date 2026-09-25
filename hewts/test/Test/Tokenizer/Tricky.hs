@@ -6,14 +6,13 @@ import Convert.Tokenizer.Wylie
     , tokenizeWylie
     , wylieConsonant
     , wylieConsonantAliases
+    , wylieExpansions
     , wylieFinal
-    , wylieFinalAliases
     , wylieNumber
     , wyliePunctuation
     , wylieSpace
     , wylieSymbol
     , wylieVowel
-    , wylieVowelAliases
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import qualified Data.HashSet as HS
@@ -53,9 +52,9 @@ tests =
         , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
         , testGroup "wylie chunking contracts" wylieChunkingContractTests
         , testGroup "unicode normalization matrix" (map mkUnicodeNormalizationCase unicodeNormalizationCases)
-        , testCase "unicode precomposed U+0F73 maps to VI" caseUnicodePrecomposed073
+        , testCase "unicode precomposed U+0F73 maps to VA+Vi" caseUnicodePrecomposed073
         , testCase "unicode decomposed U+0F71 U+0F72 maps to VA+Vi" caseUnicodeDecomposed071072
-        , testCase "unicode precomposed U+0F75 maps to VU" caseUnicodePrecomposed075
+        , testCase "unicode precomposed U+0F75 maps to VA+Vu" caseUnicodePrecomposed075
         , testCase "unicode decomposed U+0F71 U+0F74 maps to VA+Vu" caseUnicodeDecomposed071074
         ]
 
@@ -97,15 +96,11 @@ wyliePrefixCases =
 
 caseWylieDzh :: Assertion
 caseWylieDzh =
-    case tokenizeWylie "dzh" of
-        [tok] -> (tokenKind tok, tokenCanonical tok) @?= (TkConsonant, TcConsonant CdzPLUSh)
-        xs -> error $ "Expected 1 token, got " <> show (length xs)
+    map tokenCanonical (tokenizeWylie "dzh") @?= [TcConsonant Cdz, TcSubConsonant SCh]
 
 caseWylieDashDH :: Assertion
 caseWylieDashDH =
-    case tokenizeWylie "-d+h" of
-        [tok] -> tokenCanonical tok @?= TcConsonant CDPLUSh
-        xs -> error $ "Expected 1 token, got " <> show (length xs)
+    map tokenCanonical (tokenizeWylie "-d+h") @?= [TcSubConsonant SCD, TcSubConsonant SCh]
 
 caseWylieCRLFChunk :: Assertion
 caseWylieCRLFChunk =
@@ -183,10 +178,17 @@ caseWylieMixedSpecialDiagnostics =
         expectedIssue = [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
      in do
             map tokenRaw toks @?= ["~", "+", "`", "]", "-", "."]
-            map tokenKind toks @?= replicate 6 TkUnknown
+            map tokenKind toks @?= [TkUnknown, TkConSpec, TkUnknown, TkUnknown, TkUnknown, TkConSpec]
             map tokenCanonical toks
-                @?= map (TcUnknown . UnknownMark) ["~", "+", "`", "]", "-", "."]
-            map tokenIssues toks @?= replicate 6 expectedIssue
+                @?=
+                    [ TcUnknown (UnknownMark "~")
+                    , TcConSpec CSPlus
+                    , TcUnknown (UnknownMark "`")
+                    , TcUnknown (UnknownMark "]")
+                    , TcUnknown (UnknownMark "-")
+                    , TcConSpec CSDot
+                    ]
+            map tokenIssues toks @?= [expectedIssue, [], expectedIssue, expectedIssue, expectedIssue, []]
 
 caseWylieUnknownDiagnostics :: Assertion
 caseWylieUnknownDiagnostics =
@@ -263,7 +265,9 @@ caseUnicodeUnknownPreserved =
 
 assertWylieRawTokens :: Text -> [Text] -> Assertion
 assertWylieRawTokens input expected =
-    (tokenRaw <$> tokenizeWylie input) @?= expected
+    -- Continuation tokens of decomposed spellings carry an empty raw slice;
+    -- drop them so chunking contract tests compare the source chunks only.
+    (filter (not . T.null) (tokenRaw <$> tokenizeWylie input)) @?= expected
 
 wylieChunkingContractTests :: [TestTree]
 wylieChunkingContractTests =
@@ -284,8 +288,8 @@ caseNoDeadMultiCharKeys =
 assertReachableMultiCharKey :: Text -> Assertion
 assertReachableMultiCharKey key =
     case tokenizeWylie key of
-        [tok] -> tokenRaw tok @?= key
-        toks -> error $ "Expected a single token for key " <> show key <> ", got: " <> show (map tokenRaw toks)
+        tok : _ -> tokenRaw tok @?= key
+        [] -> error $ "No token produced for key " <> show key
 
 multiCharTokenizerKeys :: [Text]
 multiCharTokenizerKeys =
@@ -298,8 +302,7 @@ multiCharTokenizerKeys =
             <> map wylieSpace [minBound .. maxBound]
             <> map wylieSymbol [minBound .. maxBound]
             <> map fst wylieConsonantAliases
-            <> map fst wylieVowelAliases
-            <> map fst wylieFinalAliases
+            <> map fst wylieExpansions
 
 mkUnicodeNormalizationCase :: (String, Text, [Text]) -> TestTree
 mkUnicodeNormalizationCase (name, input, expectedUnknownRaws) =
@@ -310,7 +313,8 @@ assertUnicodeNormalizationCase input expectedUnknownRaws = do
     let toks = tokenizeUnicode input
         raws = map tokenRaw toks
         unknowns = [tok | tok <- toks, tokenKind tok == TkUnknown]
-    assertBool "Unicode stream contains empty tokenRaw" (all (not . T.null) raws)
+    -- Continuation tokens of decomposed spellings carry an empty raw slice;
+    -- the identity invariant is that the raws concatenate back to the input.
     T.concat raws @?= input
     map tokenRaw unknowns @?= expectedUnknownRaws
     mapM_ assertUnknownShape unknowns
@@ -366,7 +370,7 @@ unicodeNormalizationCases =
 
 caseUnicodePrecomposed073 :: Assertion
 caseUnicodePrecomposed073 =
-    map tokenCanonical (tokenizeUnicode "ཱི") @?= [TcVowel VI]
+    map tokenCanonical (tokenizeUnicode "ཱི") @?= [TcVowel VA, TcVowel Vi]
 
 caseUnicodeDecomposed071072 :: Assertion
 caseUnicodeDecomposed071072 =
@@ -374,7 +378,7 @@ caseUnicodeDecomposed071072 =
 
 caseUnicodePrecomposed075 :: Assertion
 caseUnicodePrecomposed075 =
-    map tokenCanonical (tokenizeUnicode "ཱུ") @?= [TcVowel VU]
+    map tokenCanonical (tokenizeUnicode "ཱུ") @?= [TcVowel VA, TcVowel Vu]
 
 caseUnicodeDecomposed071074 :: Assertion
 caseUnicodeDecomposed071074 =

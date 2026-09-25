@@ -6,7 +6,7 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (chr, isHexDigit)
 import Convert.Token
-import Convert.Tokenizer.Unicode (classifyCanonical)
+import Convert.Tokenizer.Unicode (canonicalSeq)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
@@ -18,9 +18,10 @@ import qualified Data.Trie as Trie
 import Numeric (readHex)
 
 
--- special characters: flag those if they occur out of context
+-- special characters: flag those if they occur out of context.
+-- '+' and '.' are ConSpec tokens, so they are not flagged here any more.
 special :: HashSet Text
-special = HS.fromList [".", "+", "-", "~", "^", "?", "`", "]"]
+special = HS.fromList ["-", "~", "^", "?", "`", "]"]
 
 -- Longest-match lookup over known multi-char Wylie tokens.
 longTokenTrie :: Trie.Trie ()
@@ -45,13 +46,13 @@ longTokenList =
             , [ s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1 ]
             , [ s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1 ]
             , map fst wylieConsonantAliases
-            , map fst wylieVowelAliases
-            , map fst wylieFinalAliases
+            , map fst wylieExpansions
             , ["b+l", "\r\n"]
             ]
 
 -- | Tokenize Wylie input using longest-match splitting for known multi-char
--- tokens.
+-- tokens. One Wylie spelling may produce several tokens (compound forms such
+-- as aspirates and long vowels): see 'wylieExpansions'.
 tokenizeWylie :: Text -> [Token]
 tokenizeWylie input = go 0 input
   where
@@ -61,7 +62,7 @@ tokenizeWylie input = go 0 input
             raw = chunk
             end = offset + T.length chunk
             span = mkSpan (fromIntegral offset) (fromIntegral end)
-         in classifyToken span raw : go end next
+         in classifyTokens span raw <> go end next
 
 nextChunk :: Text -> (Text, Text)
 nextChunk source
@@ -111,30 +112,36 @@ consumeEscape txt
         && T.all isHexDigit (T.take 8 (T.drop 2 txt)) = (T.take 10 txt, T.drop 10 txt)
     | otherwise = (T.take 2 txt, T.drop 2 txt)
 
-classifyToken :: Span -> Text -> Token
-classifyToken span raw
-    | raw == "\r\n" = mkSpace TsWylie span raw SMSpace
-    | raw == "b+l" = mkUnknown TsWylie span raw
-    | isClosedBracketChunk raw = mkUnknownWith TsWylie span raw []
+classifyTokens :: Span -> Text -> [Token]
+classifyTokens span raw
+    | raw == "\r\n" = [mkSpace TsWylie span raw SMSpace]
+    | raw == "b+l" = [mkUnknown TsWylie span raw]
+    | raw == "+" = [mkToken TsWylie TkConSpec raw (TcConSpec CSPlus) span]
+    | raw == "." = [mkToken TsWylie TkConSpec raw (TcConSpec CSDot) span]
+    | isClosedBracketChunk raw = [mkUnknownWith TsWylie span raw []]
     | isKnownEscapeChunk raw = decodeEscape span raw
     | otherwise =
-        fromMaybe (mkUnknown TsWylie span raw) $ asum
-            [ lookupAs mkConsonant (lookupWylie inverseWylieConsonant wylieConsonantAliases)
-            , lookupAs mkVowel (lookupWylie inverseWylieVowel wylieVowelAliases)
-            , lookupAs mkFinal (lookupWylie inverseWylieFinal wylieFinalAliases)
-            , lookupAs mkNumber inverseWylieNumber
-            , lookupAs mkPunctuation inverseWyliePunctuation
-            , lookupAs mkSymbol inverseWylieSymbol
-            , lookupAs mkSpace inverseWylieSpace
-            , if HS.member raw special
-                then Just $
-                    mkUnknownWith
-                        TsWylie
-                        span
-                        raw
-                        [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
-                else Nothing
-            ]
+        case lookup raw wylieExpansions of
+            Just canons -> mkSequenceTokens TsWylie span raw canons
+            Nothing ->
+                [ fromMaybe (mkUnknown TsWylie span raw) $ asum
+                    [ lookupAs mkConsonant (lookupWylie inverseWylieConsonant wylieConsonantAliases)
+                    , lookupAs mkVowel inverseWylieVowel
+                    , lookupAs mkFinal inverseWylieFinal
+                    , lookupAs mkNumber inverseWylieNumber
+                    , lookupAs mkPunctuation inverseWyliePunctuation
+                    , lookupAs mkSymbol inverseWylieSymbol
+                    , lookupAs mkSpace inverseWylieSpace
+                    , if HS.member raw special
+                        then Just $
+                            mkUnknownWith
+                                TsWylie
+                                span
+                                raw
+                                [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+                        else Nothing
+                    ]
+                ]
   where
     lookupAs constructor lookupFn =
         constructor TsWylie span raw <$> lookupFn raw
@@ -155,6 +162,7 @@ classifyToken span raw
 wylieOf :: TokenCanonical -> Maybe Text
 wylieOf = \case
     TcConsonant c -> Just (wylieConsonant c)
+    TcSubConsonant _ -> Nothing
     TcVowel v -> Just (wylieVowel v)
     TcFinal f -> Just (wylieFinal f)
     TcNumber n -> Just (wylieNumber n)
@@ -165,19 +173,27 @@ wylieOf = \case
     TcOrnament o -> Just (wylieOrnament o)
     TcSymbol s -> Just (wylieSymbol s)
     TcSpace m -> Just (wylieSpace m)
+    TcConSpec cs -> Just (wylieConSpec cs)
     _ -> Nothing
 
--- | Decode a \\uXXXX or \\UXXXXXXXX escape chunk to the token it names, if
--- the target character is a known canonical; otherwise keep it opaque.
-decodeEscape :: Span -> Text -> Token
+-- | Wylie spelling of a ConSpec operator.
+wylieConSpec :: ConSpec -> Text
+wylieConSpec = \case
+    CSPlus -> "+"
+    CSDot -> "."
+
+-- | Decode a \\uXXXX or \\UXXXXXXXX escape chunk. The named character may
+-- map to several canonical tokens (deprecated precomposed forms are
+-- decomposed here too); otherwise the chunk stays opaque.
+decodeEscape :: Span -> Text -> [Token]
 decodeEscape span raw =
     case decodeHexCode raw of
         Just c ->
             maybe
-                (mkUnknownWith TsWylie span raw [])
-                (mkTokenFromCanonical TsWylie span raw)
-                (classifyCanonical c)
-        Nothing -> mkUnknownWith TsWylie span raw []
+                [mkUnknownWith TsWylie span raw []]
+                (mkSequenceTokens TsWylie span raw)
+                (canonicalSeq c)
+        Nothing -> [mkUnknownWith TsWylie span raw []]
 
 decodeHexCode :: Text -> Maybe Char
 decodeHexCode raw
@@ -195,7 +211,6 @@ wylieConsonant = \case
     Ck -> "k"
     Ckh -> "kh"
     Cg -> "g"
-    CgPLUSh -> "gh"
     Cng -> "ng"
     Cc -> "c"
     Cch -> "ch"
@@ -204,24 +219,18 @@ wylieConsonant = \case
     CT -> "T"
     CTh -> "Th"
     CD -> "D"
-    CDPLUSh -> "Dh"
     CN -> "N"
     Ct -> "t"
     Cth -> "th"
     Cd -> "d"
-    CdPLUSh -> "dh"
     Cn -> "n"
     Cp -> "p"
     Cph -> "ph"
-    Cf -> "f"
     Cb -> "b"
-    Cv -> "v"
-    CbPLUSh -> "bh"
     Cm -> "m"
     Cts -> "ts"
     Ctsh -> "tsh"
     Cdz -> "dz"
-    CdzPLUSh -> "dzh"
     Cw -> "w"
     Czh -> "zh"
     Cz -> "z"
@@ -234,7 +243,6 @@ wylieConsonant = \case
     Cs -> "s"
     Ch -> "h"
     Ca -> "a"
-    CkPLUSSh -> "k+Sh"
     CR -> "R"
     Ckka -> "\\u0f6b"
     CRra -> "\\u0f6c"
@@ -243,25 +251,21 @@ wylieVowel :: Vowel -> Text
 wylieVowel = \case
     VA -> "A"
     Vi -> "i"
-    VI -> "I"
     Vu -> "u"
-    VU -> "U"
-    Vr_i -> "\\u0f76"
-    Vr_I -> "\\u0f77"
-    Vl_i -> "\\u0f78"
-    Vl_I -> "\\u0f79"
     Ve -> "e"
     Vai -> "ai"
     Vo -> "o"
     Vau -> "au"
     V_i -> "-i"
-    V_I -> "-I"
 
 wylieFinal :: FinalMark -> Text
 wylieFinal = \case
     FMAnusvara -> "M"
+    FMBinduNada -> "~M`"
+    FMCandrabindu -> "~M"
+    FMSrogMed -> "X"
+    FMCandrabinduHalanta -> "~X"
     FMVisarga -> "H"
-    FMCandrabinduOrNasal -> "X"
     FMHalanta -> "?"
     FMCaret -> "^"
     FMYigMgo -> "&"
@@ -349,32 +353,48 @@ wylieSpace = \case
 
 wylieConsonantAliases :: [(Text, Consonant)]
 wylieConsonantAliases =
-    [ ("g+h", CgPLUSh)
-    , ("-t", CT)
+    [ ("-t", CT)
     , ("-th", CTh)
     , ("-d", CD)
-    , ("D+h", CDPLUSh)
-    , ("-dh", CDPLUSh)
-    , ("-d+h", CDPLUSh)
     , ("-n", CN)
-    , ("d+h", CdPLUSh)
-    , ("b+h", CbPLUSh)
-    , ("dz+h", CdzPLUSh)
     , ("W", Cw)
     , ("Y", Cy)
     , ("-sh", CSh)
     ]
 
-wylieVowelAliases :: [(Text, Vowel)]
-wylieVowelAliases =
-    [ ("O", Vo)
-    ]
-
-wylieFinalAliases :: [(Text, FinalMark)]
-wylieFinalAliases =
-    [ ("~M`", FMAnusvara)
-    , ("~M", FMAnusvara)
-    , ("~X", FMCandrabinduOrNasal)
+-- | Wylie spellings that expand to several canonical tokens.
+--
+-- These are the compound forms of the canonical domain: aspirated consonants
+-- ("gh" = g + subjoined-h), long vowels ("I" = A+i, "E" = A+e, ...),
+-- vocalic r/l ("r-i" = subjoined-r + reverse-i) and the EWTS letters
+-- f/v ("f" = ph + caret, "v" = b + caret). No precomposed canonical
+-- exists for them, so a single spelling produces a token sequence.
+wylieExpansions :: [(Text, [TokenCanonical])]
+wylieExpansions =
+    [ ("gh", [TcConsonant Cg, TcSubConsonant SCh])
+    , ("g+h", [TcConsonant Cg, TcSubConsonant SCh])
+    , ("Dh", [TcConsonant CD, TcSubConsonant SCh])
+    , ("D+h", [TcConsonant CD, TcSubConsonant SCh])
+    , ("dh", [TcConsonant Cd, TcSubConsonant SCh])
+    , ("d+h", [TcConsonant Cd, TcSubConsonant SCh])
+    , ("bh", [TcConsonant Cb, TcSubConsonant SCh])
+    , ("b+h", [TcConsonant Cb, TcSubConsonant SCh])
+    , ("dzh", [TcConsonant Cdz, TcSubConsonant SCh])
+    , ("dz+h", [TcConsonant Cdz, TcSubConsonant SCh])
+    , ("k+Sh", [TcConsonant Ck, TcSubConsonant SCSh])
+    , ("f", [TcConsonant Cph, TcFinal FMCaret])
+    , ("v", [TcConsonant Cb, TcFinal FMCaret])
+    , ("-dh", [TcSubConsonant SCD, TcSubConsonant SCh])
+    , ("-d+h", [TcSubConsonant SCD, TcSubConsonant SCh])
+    , ("I", [TcVowel VA, TcVowel Vi])
+    , ("U", [TcVowel VA, TcVowel Vu])
+    , ("E", [TcVowel VA, TcVowel Ve])
+    , ("O", [TcVowel VA, TcVowel Vo])
+    , ("-I", [TcVowel VA, TcVowel V_i])
+    , ("r-i", [TcSubConsonant SCr, TcVowel V_i])
+    , ("r-I", [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
+    , ("l-i", [TcSubConsonant SCl, TcVowel V_i])
+    , ("l-I", [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
     ]
 
 inverseWylieConsonant :: Text -> Maybe Consonant

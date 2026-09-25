@@ -3,7 +3,8 @@ module Test.Tokenizer.Integration (tests) where
 import Convert (OutputFormat (..), SpellItem (..), renderItems, splitSentences)
 import Convert.Token
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
@@ -15,7 +16,7 @@ tests =
         "integration"
         [ testCase "wylie raw roundtrip through tokens" caseWylieRawRoundtrip
         , testCase "unicode raw roundtrip through tokens" caseUnicodeRawRoundtrip
-        , testCase "wylie aliases normalize to canonical rendering" caseWylieCanonicalRender
+        , testCase "wylie canonical rendering" caseWylieCanonicalRender
         , testCase "wylie f and v keep canonical distinction" caseWylieFvCanonicalDistinct
         , testCase "unicode aliases normalize to canonical rendering" caseUnicodeCanonicalRender
         , testCase "render to wylie from unicode" caseRenderUnicodeToWylie
@@ -39,11 +40,11 @@ caseUnicodeRawRoundtrip =
 
 caseWylieCanonicalRender :: Assertion
 caseWylieCanonicalRender =
-    canonicalWylieFromWylie "W O ~M`" @?= "w o M"
+    canonicalWylieFromWylie "W O ~M`" @?= "w Ao ~M`"
 
 caseWylieFvCanonicalDistinct :: Assertion
 caseWylieFvCanonicalDistinct =
-    canonicalWylieFromWylie "f v ph b" @?= "f v ph b"
+    canonicalWylieFromWylie "f v ph b" @?= "ph^ b^ ph b"
 
 caseUnicodeCanonicalRender :: Assertion
 caseUnicodeCanonicalRender =
@@ -71,11 +72,11 @@ caseRenderCrossScriptCanonical =
 
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =
-    renderInput OutWylie "ཫཬཷ༐༪྆࿐" @?= "\\u0f6b\\u0f6c\\u0f77\\u0f10\\u0f2a\\u0f86\\u0fd0"
+    renderInput OutWylie "ཫཬཷ༐༪྆࿐" @?= "\\u0f6b\\u0f6cཷA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
-    renderFromTokens OutUnicode (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33") @?= "ཬྲྀ༒༳"
+    renderFromTokens OutUnicode (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33") @?= "ཬྲྀ༒༳"
 
 rawRoundtripWylie :: Text -> Text
 rawRoundtripWylie = T.concat . fmap tokenRaw . tokenizeWylie
@@ -99,12 +100,13 @@ canonicalPiece :: Token -> Text
 canonicalPiece tok =
     case tokenCanonical tok of
         TcConsonant Cw -> "w"
-        TcConsonant CgPLUSh -> "g+h"
-        TcConsonant Cf -> "f"
-        TcConsonant Cv -> "v"
+        TcVowel VA -> "A"
         TcVowel Vo -> "o"
         TcFinal FMAnusvara -> "M"
+        TcFinal FMBinduNada -> "~M`"
         TcPunctuation PMTsheg -> " "
         TcSpace SMSpace -> " "
         TcUnknown (UnknownMark raw) -> raw
-        _ -> tokenRaw tok
+        -- Canonical Wylie spelling when the token has one (renders compound
+        -- expansions like "f" -> "ph^" honestly), the raw slice otherwise.
+        _ -> fromMaybe (tokenRaw tok) (wylieOf (tokenCanonical tok))

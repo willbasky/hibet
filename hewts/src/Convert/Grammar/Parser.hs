@@ -207,11 +207,11 @@ isSpecificSubConsonant _ _ = False
 
 rootConsonants :: [Consonant]
 rootConsonants =
-    [ Ck, Ckh, Cg, CgPLUSh, Cng
+    [ Ck, Ckh, Cg, Cng
     , Cc, Cch, Cj, Cny, Ct, Cth
-    , Cd, CdPLUSh, Cn, Cp, Cph
-    , Cb, CbPLUSh, Cm, Cts, Ctsh
-    , Cdz, CdzPLUSh, Cw, Czh, Cz
+    , Cd, Cn, Cp, Cph
+    , Cb, Cm, Cts, Ctsh
+    , Cdz, Cw, Czh, Cz
     , C', Cy, Cr, Cl, Csh, Cs, Ch, Ca
     ]
 

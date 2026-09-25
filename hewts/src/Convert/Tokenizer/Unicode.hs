@@ -1,12 +1,14 @@
 module Convert.Tokenizer.Unicode where
 
 import Convert.Token
-import Control.Applicative (asum, (<|>))
+import Control.Applicative (asum)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 
--- | Tokenize Unicode Tibetan input to typed IR tokens.
+-- | Tokenize Unicode Tibetan input to typed IR tokens. Deprecated
+-- precomposed characters (aspirates, long vowels, vocalic r/l) decompose
+-- into a token sequence; see 'unicodeDecompose'.
 tokenizeUnicode :: Text -> [Token]
 tokenizeUnicode input = go 0 input
   where
@@ -18,13 +20,47 @@ tokenizeUnicode input = go 0 input
                 let raw = T.singleton c
                     end = offset + 1
                     span = mkSpan (fromIntegral offset) (fromIntegral end)
-                 in classifyChar span c raw : go end next
+                 in classifyChar span raw c <> go end next
 
-classifyChar :: Span -> Char -> Text -> Token
-classifyChar span ch raw =
-    case classifyCanonical ch of
-        Just canonical -> mkTokenFromCanonical TsUnicode span raw canonical
-        Nothing -> mkUnknown TsUnicode span raw
+classifyChar :: Span -> Text -> Char -> [Token]
+classifyChar span raw ch =
+    case canonicalSeq ch of
+        Just canons -> mkSequenceTokens TsUnicode span raw canons
+        Nothing -> [mkUnknown TsUnicode span raw]
+
+-- | Canonical token sequence for a single character: either one canonical or
+-- a decomposition into several (deprecated precomposed forms).
+canonicalSeq :: Char -> Maybe [TokenCanonical]
+canonicalSeq ch =
+    case lookup ch unicodeDecompose of
+        Just canons -> Just canons
+        Nothing -> fmap pure (classifyCanonical ch)
+
+-- | Deprecated precomposed Tibetan characters decomposed to canonical token
+-- sequences on input: aspirated consonants (± subjoined), long vowels and
+-- vocalic r/l. Matches the reference decompositions (ewts-converter / jsewts).
+unicodeDecompose :: [(Char, [TokenCanonical])]
+unicodeDecompose =
+    [ ('\x0f43', [TcConsonant Cg, TcSubConsonant SCh])
+    , ('\x0f4d', [TcConsonant CD, TcSubConsonant SCh])
+    , ('\x0f52', [TcConsonant Cd, TcSubConsonant SCh])
+    , ('\x0f57', [TcConsonant Cb, TcSubConsonant SCh])
+    , ('\x0f5c', [TcConsonant Cdz, TcSubConsonant SCh])
+    , ('\x0f69', [TcConsonant Ck, TcSubConsonant SCSh])
+    , ('\x0f93', [TcSubConsonant SCg, TcSubConsonant SCh])
+    , ('\x0f9d', [TcSubConsonant SCD, TcSubConsonant SCh])
+    , ('\x0fa2', [TcSubConsonant SCd, TcSubConsonant SCh])
+    , ('\x0fa7', [TcSubConsonant SCb, TcSubConsonant SCh])
+    , ('\x0fac', [TcSubConsonant SCdz, TcSubConsonant SCh])
+    , ('\x0fb9', [TcSubConsonant SCk, TcSubConsonant SCSh])
+    , ('\x0f73', [TcVowel VA, TcVowel Vi])
+    , ('\x0f75', [TcVowel VA, TcVowel Vu])
+    , ('\x0f81', [TcVowel VA, TcVowel V_i])
+    , ('\x0f76', [TcSubConsonant SCr, TcVowel V_i])
+    , ('\x0f77', [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
+    , ('\x0f78', [TcSubConsonant SCl, TcVowel V_i])
+    , ('\x0f79', [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
+    ]
 
 -- | Map a single character to its shared canonical payload, via the same
 -- inverse tables used by 'classifyChar'.
@@ -34,7 +70,7 @@ classifyCanonical ch =
         [ TcConsonant <$> inverseUnicodeConsonant raw
         , TcSubConsonant <$> inverseUnicodeSubConsonant raw
         , TcVowel <$> inverseUnicodeVowel raw
-        , TcFinal <$> merged inverseUnicodeFinal unicodeFinalAliases raw
+        , TcFinal <$> inverseUnicodeFinal raw
         , TcNumber <$> inverseUnicodeNumber raw
         , TcHalfNumber <$> inverseUnicodeHalfNumber raw
         , TcPunctuation <$> inverseUnicodePunctuation raw
@@ -46,7 +82,6 @@ classifyCanonical ch =
         ]
   where
     raw = T.singleton ch
-    merged inverse aliases x = inverse x <|> lookup x aliases
 
 -- | Render a canonical token to its Unicode spelling.
 unicodeOf :: TokenCanonical -> Maybe Text
@@ -63,6 +98,7 @@ unicodeOf = \case
     TcOrnament o -> Just (unicodeOrnament o)
     TcSpace m -> Just (unicodeSpace m)
     TcSymbol s -> Just (unicodeSymbol s)
+    TcConSpec _ -> Nothing
     TcUnknown _ -> Nothing
 
 unicodeConsonant :: Consonant -> Text
@@ -70,7 +106,6 @@ unicodeConsonant = \case
     Ck -> "\x0f40"
     Ckh -> "\x0f41"
     Cg -> "\x0f42"
-    CgPLUSh -> "\x0f43"
     Cng -> "\x0f44"
     Cc -> "\x0f45"
     Cch -> "\x0f46"
@@ -79,24 +114,18 @@ unicodeConsonant = \case
     CT -> "\x0f4a"
     CTh -> "\x0f4b"
     CD -> "\x0f4c"
-    CDPLUSh -> "\x0f4d"
     CN -> "\x0f4e"
     Ct -> "\x0f4f"
     Cth -> "\x0f50"
     Cd -> "\x0f51"
-    CdPLUSh -> "\x0f52"
     Cn -> "\x0f53"
     Cp -> "\x0f54"
     Cph -> "\x0f55"
-    Cf -> "\x0f55\x0f39"
     Cb -> "\x0f56"
-    Cv -> "\x0f56\x0f39"
-    CbPLUSh -> "\x0f57"
     Cm -> "\x0f58"
     Cts -> "\x0f59"
     Ctsh -> "\x0f5a"
     Cdz -> "\x0f5b"
-    CdzPLUSh -> "\x0f5c"
     Cw -> "\x0f5d"
     Czh -> "\x0f5e"
     Cz -> "\x0f5f"
@@ -109,7 +138,6 @@ unicodeConsonant = \case
     Cs -> "\x0f66"
     Ch -> "\x0f67"
     Ca -> "\x0f68"
-    CkPLUSSh -> "\x0f69"
     CR -> "\x0f6a"
     Ckka -> "\x0f6b"
     CRra -> "\x0f6c"
@@ -119,7 +147,6 @@ unicodeSubConsonant = \case
     SCk -> "\x0f90"
     SCkh -> "\x0f91"
     SCg -> "\x0f92"
-    SCgPLUSh -> "\x0f93"
     SCng -> "\x0f94"
     SCc -> "\x0f95"
     SCch -> "\x0f96"
@@ -128,22 +155,18 @@ unicodeSubConsonant = \case
     SCT -> "\x0f9a"
     SCTh -> "\x0f9b"
     SCD -> "\x0f9c"
-    SCDPLUSh -> "\x0f9d"
     SCN -> "\x0f9e"
     SCt -> "\x0f9f"
     SCth -> "\x0fa0"
     SCd -> "\x0fa1"
-    SCdPLUSh -> "\x0fa2"
     SCn -> "\x0fa3"
     SCp -> "\x0fa4"
     SCph -> "\x0fa5"
     SCb -> "\x0fa6"
-    SCbPLUSh -> "\x0fa7"
     SCm -> "\x0fa8"
     SCts -> "\x0fa9"
     SCtsh -> "\x0faa"
     SCdz -> "\x0fab"
-    SCdzPLUSh -> "\x0fac"
     SCw -> "\x0fad"
     SCzh -> "\x0fae"
     SCz -> "\x0faf"
@@ -156,7 +179,6 @@ unicodeSubConsonant = \case
     SCs -> "\x0fb6"
     SCh -> "\x0fb7"
     SCa -> "\x0fb8"
-    SCkPLUSSh -> "\x0fb9"
     SCW -> "\x0fba"
     SCY -> "\x0fbb"
     SCR -> "\x0fbc"
@@ -165,25 +187,21 @@ unicodeVowel :: Vowel -> Text
 unicodeVowel = \case
     VA -> "\x0f71"
     Vi -> "\x0f72"
-    VI -> "\x0f73"
     Vu -> "\x0f74"
-    VU -> "\x0f75"
-    Vr_i -> "\x0f76"
-    Vr_I -> "\x0f77"
-    Vl_i -> "\x0f78"
-    Vl_I -> "\x0f79"
     Ve -> "\x0f7a"
     Vai -> "\x0f7b"
     Vo -> "\x0f7c"
     Vau -> "\x0f7d"
     V_i -> "\x0f80"
-    V_I -> "\x0f81"
 
 unicodeFinal :: FinalMark -> Text
 unicodeFinal = \case
     FMAnusvara -> "\x0f7e"
+    FMBinduNada -> "\x0f82"
+    FMCandrabindu -> "\x0f83"
+    FMSrogMed -> "\x0f37"
+    FMCandrabinduHalanta -> "\x0f35"
     FMVisarga -> "\x0f7f"
-    FMCandrabinduOrNasal -> "\x0f37"
     FMHalanta -> "\x0f84"
     FMCaret -> "\x0f39"
     FMYigMgo -> "\x0f85"
@@ -268,13 +286,6 @@ unicodeSymbol = \case
     SMGt -> "\x0f3b"
     SMLParen -> "\x0f3c"
     SMRParen -> "\x0f3d"
-
-unicodeFinalAliases :: [(Text, FinalMark)]
-unicodeFinalAliases =
-    [ ("\x0f82", FMAnusvara)
-    , ("\x0f83", FMAnusvara)
-    , ("\x0f35", FMCandrabinduOrNasal)
-    ]
 
 inverseUnicodeConsonant :: Text -> Maybe Consonant
 inverseUnicodeConsonant = inverseMap unicodeConsonant

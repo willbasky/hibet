@@ -52,6 +52,7 @@ data TokenKind
     | TkOrnament
     | TkSpace
     | TkSymbol
+    | TkConSpec
     | TkUnknown
     deriving (Show, Eq, Ord)
 
@@ -107,14 +108,19 @@ data TokenCanonical
     | TcOrnament OrnamentMark
     | TcSpace SpaceMark
     | TcSymbol SymbolMark
+    | TcConSpec ConSpec
     | TcUnknown UnknownMark
     deriving (Show, Eq, Ord)
 
 -- Canonical IR token used as contract between tokenizer and grammar layers.
 -- Invariants:
--- 1) tokenRaw always stores the exact source slice from input.
--- 2) tokenCanonical is always normalized to shared canonical domain values.
--- 3) tokenSpan is a half-open interval [start, end) over source offsets.
+-- 1) tokenRaw stores the exact source slice from input; a token that is a
+--    *continuation* of a decomposed/expanded source slice (one slice ->
+--    several tokens) stores the empty slice at the slice end instead.
+-- 2) tokenCanonical is always normalized to shared canonical domain values
+--    (compound forms; deprecated precomposed spellings never occur here).
+-- 3) tokenSpan is a half-open interval [start, end) over source offsets;
+--    spans are monotonic and cover the whole input without gaps or overlap.
 -- 4) tokenIssues only describe lexical/tokenization-level diagnostics.
 data Token = Token
     { tokenRaw :: Text
@@ -217,7 +223,23 @@ mkTokenFromCanonical source span raw = \case
     TcOrnament o -> mkOrnament source span raw o
     TcSpace m -> mkSpace source span raw m
     TcSymbol s -> mkSymbol source span raw s
+    TcConSpec cs -> mkToken source TkConSpec raw (TcConSpec cs) span
     TcUnknown _ -> mkUnknownWith source span raw []
+
+-- | Build the token stream for one source slice that decomposes or expands
+-- into several canonical tokens (e.g. "gh" -> [Cg, SCh], or a deprecated
+-- precomposed Unicode char). The first token carries the slice and its span;
+-- each continuation token carries an empty 'tokenRaw' and an empty span
+-- sitting at the end of the slice, so that 'T.concat' over 'tokenRaw' always
+-- reproduces the input exactly.
+mkSequenceTokens :: TokenSource -> Span -> Text -> [TokenCanonical] -> [Token]
+mkSequenceTokens source span raw = \case
+    [] -> []
+    c : cs ->
+        mkTokenFromCanonical source span raw c
+            : [ mkTokenFromCanonical source (mkSpan end end) mempty k | k <- cs ]
+  where
+    end = offsetEnd span
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
@@ -229,7 +251,6 @@ data Consonant
     = Ck -- ཀ \u0f40
     | Ckh -- ཁ \u0f41
     | Cg -- ག \u0f42
-    | CgPLUSh -- གྷ \u0f43
     | Cng -- ང \u0f44
     | Cc -- ཅ \u0f45
     | Cch -- ཆ \u0f46
@@ -238,24 +259,18 @@ data Consonant
     | CT -- ཊ \u0f4a
     | CTh -- ཋ \u0f4b
     | CD -- ཌ \u0f4c
-    | CDPLUSh -- ཌྷ \u0f4d
     | CN -- ཎ \u0f4e
     | Ct -- ཏ \u0f4f
     | Cth -- ཐ \u0f50
     | Cd -- ད \u0f51
-    | CdPLUSh -- དྷ \u0f52
     | Cn -- ན \u0f53
     | Cp -- པ \u0f54
     | Cph -- ཕ \u0f55
-    | Cf -- f (EWTS-specific) ཕ༹ \u0f55\u0f39
     | Cb -- བ \u0f56
-    | Cv -- v (EWTS-specific) བ༹ \u0f56\u0f39
-    | CbPLUSh -- བྷ \u0f57
     | Cm -- མ \u0f58
     | Cts -- ཙ \u0f59
     | Ctsh -- ཚ \u0f5a
     | Cdz -- ཛ \u0f5b
-    | CdzPLUSh -- ཛྷ \u0f5c
     | Cw -- ཝ \u0f5d
     | Czh -- ཞ \u0f5e
     | Cz -- ཟ \u0f5f
@@ -268,32 +283,33 @@ data Consonant
     | Cs -- ས \u0f66
     | Ch -- ཧ \u0f67
     | Ca -- ཨ \u0f68
-    | CkPLUSSh -- ཀྵ \u0f69
     | CR -- ཪ \u0f6a
     | Ckka -- ཫ \u0f6b
     | CRra -- ཬ \u0f6c
     deriving (Show, Eq, Ord, Enum, Bounded)
 
+-- The aspirated letters (gh, Dh, dh, bh, dzh) have no canonical of their own:
+-- they are always the compound  C + subjoined-h  (e.g. "gh" = [Cg, SCh],
+-- 0x0f42 0x0fb7). Deprecated precomposed codepoints (0x0f43, 0x0f4d, 0x0f52,
+-- 0x0f57, 0x0f5c and their subjoined counterparts) are decomposed on input.
+-- The same holds for the EWTS letters f/v: they are  C + caret  ([Cph, FMCaret]
+-- / [Cb, FMCaret], 0x0f55 0x0f39 / 0x0f56 0x0f39), never canonicals of their
+-- own.
+
 data Vowel
     = VA -- ཱ \u0f71
     | Vi -- ི \u0f72
-    | VI -- ཱི \u0f73
     | Vu -- ུ \u0f74
-    | VU -- ཱུ \u0f75
-    | Vr_i -- ྲྀ \u0f76
-    | Vr_I -- ཷ \u0f77
-    | Vl_i -- ླྀ \u0f78
-    | Vl_I -- ཹ \u0f79
     | Ve -- ེ \u0f7a
     | Vai -- ཻ \u0f7b
     | Vo -- ོ \u0f7c
     | Vau -- ཽ \u0f7d
     | V_i -- ྀ \u0f80
-    | V_I -- ཱྀ \u0f81
 
-    -- | Vuo -- ོུ \u0f74\u0f7c
-    -- | Vui -- ིུ \u0f74\u0f72
-    -- | Vue -- ེུ \u0f74\u0f7a
+    -- Long vowels and vocalic r/l have no canonicals of their own: they are
+    -- token sequences over the atomic vowels above ("I" = [VA, Vi],
+    -- "r-i" = [SCr, V_i], ...). Deprecated precomposed codepoints (0x0f73,
+    -- 0x0f75, 0x0f76-0x0f79, 0x0f81) are decomposed on input.
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Number
@@ -327,7 +343,6 @@ data SubConsonant
     = SCk -- ྐ \u0f90
     | SCkh -- ྑ \u0f91
     | SCg -- ྒ \u0f92
-    | SCgPLUSh -- ྒྷ \u0f93
     | SCng -- ྔ \u0f94
     | SCc -- ྕ \u0f95
     | SCch -- ྖ \u0f96
@@ -336,22 +351,18 @@ data SubConsonant
     | SCT -- ྚ \u0f9a
     | SCTh -- ྛ \u0f9b
     | SCD -- ྜ \u0f9c
-    | SCDPLUSh -- ྜྷ \u0f9d
     | SCN -- ྞ \u0f9e
     | SCt -- ྟ \u0f9f
     | SCth -- ྠ \u0fa0
     | SCd -- ྡ \u0fa1
-    | SCdPLUSh -- ྡྷ \u0fa2
     | SCn -- ྣ \u0fa3
     | SCp -- ྤ \u0fa4
     | SCph -- ྥ \u0fa5
     | SCb -- ྦ \u0fa6
-    | SCbPLUSh -- ྦྷ \u0fa7
     | SCm -- ྨ \u0fa8
     | SCts -- ྩ \u0fa9
     | SCtsh -- ྪ \u0faa
     | SCdz -- ྫ \u0fab
-    | SCdzPLUSh -- ྫྷ \u0fac
     | SCw -- ྭ \u0fad
     | SCzh -- ྮ \u0fae
     | SCz -- ྯ \u0faf
@@ -364,19 +375,49 @@ data SubConsonant
     | SCs -- ྶ \u0fb6
     | SCh -- ྷ \u0fb7
     | SCa -- ྸ \u0fb8
-    | SCkPLUSSh -- ྐྵ \u0fb9
     | SCW -- ྺ \u0fba
     | SCY -- ྻ \u0fbb
     | SCR -- ྼ \u0fbc
     deriving (Show, Eq, Ord, Enum, Bounded)
 
+-- The subjoined aspirated letters (SCgPLUSh 0x0f93, SCDPLUSh 0x0f9d,
+-- SCdPLUSh 0x0fa2, SCbPLUSh 0x0fa7, SCdzPLUSh 0x0fac) are decomposed on input
+-- into subjoined base + subjoined-h, mirroring the Consonant rule above.
+
+-- | The nine EWTS final marks. 'finalClass' groups the orthographic variants
+-- that may never follow the same syllable (duplicate detection, later wave).
 data FinalMark
-    = FMAnusvara -- ཾ \u0f7e, ྂ \u0f82, ྃ \u0f83
-    | FMVisarga -- ཿ \u0f7f
-    | FMCandrabinduOrNasal -- ༵ \u0f35, ༷ \u0f37
-    | FMHalanta -- ྄ \u0f84
-    | FMCaret -- ྐྵ \u0f39
-    | FMYigMgo -- ྅ \u0f85
+    = FMAnusvara -- M ཾ \u0f7e
+    | FMBinduNada -- ~M` ྂ \u0f82
+    | FMCandrabindu -- ~M ྃ \u0f83
+    | FMSrogMed -- X ༷ \u0f37 (sign ngas bzung nyi zla / srog med)
+    | FMCandrabinduHalanta -- ~X ༵ \u0f35 (mark ngas bzung nyi zla)
+    | FMVisarga -- H ཿ \u0f7f
+    | FMHalanta -- ? ྄ \u0f84
+    | FMCaret -- ^ ༹ \u0f39
+    | FMYigMgo -- & ྅ \u0f85
+    deriving (Show, Eq, Ord, Enum, Bounded)
+
+-- | Orthographic class of a final: at most one member of each class per
+-- syllable. Matches the reference tables (ewts-converter m_final_class).
+finalClass :: FinalMark -> Text
+finalClass = \case
+    FMAnusvara -> "M"
+    FMBinduNada -> "M"
+    FMCandrabindu -> "M"
+    FMSrogMed -> "X"
+    FMCandrabinduHalanta -> "X"
+    FMVisarga -> "H"
+    FMHalanta -> "?"
+    FMCaret -> "^"
+    FMYigMgo -> "&"
+
+-- | Wylie-only consonant-stack operators: '+' (explicit subjoin) and '.'
+-- (explicit stack). They exist only in the Wylie input alphabet and have no
+-- Unicode spelling.
+data ConSpec
+    = CSPlus
+    | CSDot
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data PunctuationMark

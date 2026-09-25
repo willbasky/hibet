@@ -12,9 +12,9 @@ tests :: TestTree
 tests =
     testGroup
         "spans"
-        [ testCase "wylie spans are contiguous" (assertContiguousSpans $ tokenizeWylie "tsh + //")
+        [ testCase "wylie spans are contiguous" (assertContiguousSpans $ tokenizeWylie "tsh // g+ha + //")
         , testCase "wylie multi-char token span length" caseWylieMultiCharLen
-        , testCase "unicode spans are contiguous" (assertContiguousSpans $ tokenizeUnicode "ཚ །།")
+        , testCase "unicode spans are contiguous" (assertContiguousSpans $ tokenizeUnicode "ཚ དྷ།།")
         , testCase "unicode final token ends at input length" caseUnicodeEndsAtLength
         , testCase "wylie stream invariants on mixed input" caseWylieStreamInvariants
         , testCase "unicode stream invariants on mixed input" caseUnicodeStreamInvariants
@@ -25,8 +25,12 @@ tests =
 caseWylieMultiCharLen :: Assertion
 caseWylieMultiCharLen =
     case tokenizeWylie "g+h" of
-        [tok] -> tokenSpan tok @?= mkSpan 0 3
-        xs -> error $ "Expected 1 token, got " <> show (length xs)
+        [tok, cont] -> do
+            tokenSpan tok @?= mkSpan 0 3
+            tokenRaw cont @?= ""
+            tokenSpan cont @?= mkSpan 3 3
+            tokenCanonical cont @?= TcSubConsonant SCh
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
 
 caseUnicodeEndsAtLength :: Assertion
 caseUnicodeEndsAtLength =
@@ -39,11 +43,11 @@ caseUnicodeEndsAtLength =
 
 caseWylieStreamInvariants :: Assertion
 caseWylieStreamInvariants =
-    assertTokenStreamInvariants tokenizeWylie "gzhon // ~+`]-. x _ k+Sh"
+    assertTokenStreamInvariants tokenizeWylie "gzhon // g+h O ~+`]-. x _ k+Sh"
 
 caseUnicodeStreamInvariants :: Assertion
 caseUnicodeStreamInvariants =
-    assertTokenStreamInvariants tokenizeUnicode "ཀིི ཀxི ྆། ་"
+    assertTokenStreamInvariants tokenizeUnicode "ཀིི ཀདྷ ཀxི ྆། ་"
 
 assertContiguousSpans :: [Token] -> Assertion
 assertContiguousSpans [] = pure ()
@@ -60,9 +64,18 @@ assertContiguousSpans toks = go 0 toks
 assertTokenStreamInvariants :: (T.Text -> [Token]) -> T.Text -> Assertion
 assertTokenStreamInvariants tokenizer input = do
     let toks = tokenizer input
-    assertBool "Token stream contains empty tokenRaw" (all (not . T.null . tokenRaw) toks)
+    mapM_ assertContinuationShape toks
     T.concat (map tokenRaw toks) @?= input
     mapM_ assertUnknownCanonicalEqualsRaw toks
+
+-- A token carries an empty raw slice exactly when it is a continuation token
+-- of a decomposed spelling: its span is degenerate (start == end). Ordinary
+-- tokens always carry a non-empty raw slice.
+assertContinuationShape :: Token -> Assertion
+assertContinuationShape tok =
+    let rawEmpty = T.null (tokenRaw tok)
+        spanEmpty = offsetStart (tokenSpan tok) == offsetEnd (tokenSpan tok)
+     in assertBool "empty tokenRaw must coincide with a degenerate span" (rawEmpty == spanEmpty)
 
 assertUnknownCanonicalEqualsRaw :: Token -> Assertion
 assertUnknownCanonicalEqualsRaw tok =

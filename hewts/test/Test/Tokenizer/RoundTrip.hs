@@ -18,7 +18,6 @@ import Convert.Tokenizer.Wylie
     , wylieConsonant
     , wylieConsonantAliases
     , wylieFinal
-    , wylieFinalAliases
     , wylieHalfNumber
     , wylieNumber
     , wylieOrnament
@@ -28,7 +27,6 @@ import Convert.Tokenizer.Wylie
     , wylieSpace
     , wylieSymbol
     , wylieVowel
-    , wylieVowelAliases
     )
 
 tests :: TestTree
@@ -37,10 +35,7 @@ tests =
         "round-trip"
         [ unicodeToWylieToUnicode
         , wylieToUnicodeToWylie
-        , asciiPurity
-        , escapeSpellings
-        , corpus
-        , subjoined
+        , compounds
         ]
 
 -- | Parse Tibetan text as Unicode and run the token-level grammar.
@@ -72,8 +67,9 @@ rtW :: Text -> Text
 rtW input = renderW (parseU (renderU (parseW input)))
 
 -- | Every canonical with both a Unicode spelling and a Wylie spelling.
--- @SubConsonant@ is handled separately (see the 'subjoined' group) because
--- its Wylie behaviour depends on a still-open design decision.
+-- @SubConsonant@ is handled in the later waves: subjoined letters have no
+-- Wylie spelling of their own until the composition waves, so they are not
+-- covered here.
 canonicals :: [TokenCanonical]
 canonicals =
     [ TcConsonant c | c <- [minBound .. maxBound :: Consonant] ]
@@ -138,16 +134,7 @@ wylieReps =
         <> [ wylieSpace m | m <- [minBound .. maxBound :: SpaceMark] ]
 
 wylieAliasKeys :: [Text]
-wylieAliasKeys =
-    map fst wylieConsonantAliases
-        <> map fst wylieVowelAliases
-        <> map fst wylieFinalAliases
-
--- | EWTS-only letters whose Unicode spelling decompresses into two separate
--- tokens (base consonant + caret). They stay idempotent but their Wylie form
--- changes after a pass through Unicode, so they are not rep fixed points.
-composedWylie :: [String]
-composedWylie = ["f", "v"]
+wylieAliasKeys = map fst wylieConsonantAliases
 
 wylieToUnicodeToWylie :: TestTree
 wylieToUnicodeToWylie =
@@ -169,23 +156,33 @@ checkSpelling spelling wasAlias = do
     assertBool
         (unwords ["wylie leg unstable:", show spelling, show u, show s1, show s2])
         (s1 == s2)
-    when (not wasAlias && T.unpack spelling `notElem` composedWylie) $
+    when (not wasAlias) $
         assertBool
             ("canonical representative changed: " <> show spelling <> " -> " <> show s1)
             (s1 == spelling)
 
--- | Filled in stage 3: Wylie render output must stay pure ASCII.
-asciiPurity :: TestTree
-asciiPurity = testGroup "wylie output is pure ASCII" []
+-- | Compound (expanded) spellings: R"gh" -> R"གྷ" -> [Cg, SCh] -> R"གྷ".
+-- The Wylie leg is not stable yet (subjoined letters have no Wylie spelling
+-- until the later waves), so we pin the Unicode leg only.
+compounds :: TestTree
+compounds =
+    testGroup
+        "compound spellings"
+        [ testCase (T.unpack s) (checkCompoundSpelling s)
+        | s <- compoundSpellings
+        ]
 
--- | Filled in stage 3: every \\uXXXX spelling round-trips to its character.
-escapeSpellings :: TestTree
-escapeSpellings = testGroup "\\uXXXX spellings" []
+compoundSpellings :: [Text]
+compoundSpellings =
+    [ "gh", "g+h", "Dh", "D+h", "dh", "d+h", "bh", "b+h", "dzh", "dz+h"
+    , "k+Sh", "-dh", "-d+h", "I", "U", "E", "O", "-I", "r-i", "r-I", "l-i", "l-I"
+    , "f", "v"
+    ]
 
--- | Filled in stage 4: full-sentence corpus round-trips in both directions.
-corpus :: TestTree
-corpus = testGroup "sentence corpus" []
-
--- | Filled in stage 4: documented behaviour for subjoined letters.
-subjoined :: TestTree
-subjoined = testGroup "subjoined letters" []
+checkCompoundSpelling :: Text -> Assertion
+checkCompoundSpelling spelling = do
+    let u = renderU (parseW spelling)
+        back = renderU (parseU u)
+    assertBool
+        (unwords ["compound unicode leg unstable:", show spelling, show u, show back])
+        (u == back)

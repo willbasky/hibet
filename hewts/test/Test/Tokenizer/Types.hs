@@ -14,9 +14,11 @@ tests =
         "types"
         [ testGroup "wylie" (map mkCase wylieCases)
         , testGroup "wylie aliases" (map mkCase wylieAliasCases)
+        , testGroup "wylie expansions" (map mkCase wylieExpansionCases)
+        , testGroup "final classes" (map mkCase finalClassCases)
         , testGroup "wylie tables" (map mkCase wylieTableCases)
         , testGroup "unicode" (map mkCase unicodeCases)
-        , testGroup "unicode aliases" (map mkCase unicodeAliasCases)
+        , testGroup "unicode decomposition" (map mkCase unicodeDecompositionCases)
         , testGroup "unicode tables" (map mkCase unicodeTableCases)
         ]
 
@@ -35,23 +37,28 @@ singleUnicode input expected =
         [tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
         xs -> error $ "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
+-- | Expect the whole input to tokenize to exactly the given canonical
+-- sequence (a single spelling may expand or decompose into several tokens).
+seqWylie :: Text -> [TokenCanonical] -> Assertion
+seqWylie input expected =
+    map tokenCanonical (tokenizeWylie input) @?= expected
+
+seqUnicode :: Text -> [TokenCanonical] -> Assertion
+seqUnicode input expected =
+    map tokenCanonical (tokenizeUnicode input) @?= expected
+
 wylieCases :: [(String, Assertion)]
 wylieCases =
     [ ("consonant basic k", singleWylie "k" (TkConsonant, TcConsonant Ck))
     , ("consonant aspirated kh", singleWylie "kh" (TkConsonant, TcConsonant Ckh))
-    , ("consonant plus-form gh -> CgPLUSh", singleWylie "gh" (TkConsonant, TcConsonant CgPLUSh))
-    , ("consonant explicit plus g+h", singleWylie "g+h" (TkConsonant, TcConsonant CgPLUSh))
     , ("consonant alias W -> Cw", singleWylie "W" (TkConsonant, TcConsonant Cw))
-    , ("consonant EWTS f stays distinct", singleWylie "f" (TkConsonant, TcConsonant Cf))
-    , ("consonant EWTS v stays distinct", singleWylie "v" (TkConsonant, TcConsonant Cv))
-    , ("consonant stack k+Sh", singleWylie "k+Sh" (TkConsonant, TcConsonant CkPLUSSh))
-    , ("consonant stacked dz+h", singleWylie "dz+h" (TkConsonant, TcConsonant CdzPLUSh))
     , ("vowel short i", singleWylie "i" (TkVowel, TcVowel Vi))
-    , ("vowel long alias O -> Vo", singleWylie "O" (TkVowel, TcVowel Vo))
     , ("vowel composite au", singleWylie "au" (TkVowel, TcVowel Vau))
-    , ("vowel minus form -I", singleWylie "-I" (TkVowel, TcVowel V_I))
-    , ("final variant ~M` -> FMAnusvara", singleWylie "~M`" (TkFinal, TcFinal FMAnusvara))
-    , ("final nasal variant ~X", singleWylie "~X" (TkFinal, TcFinal FMCandrabinduOrNasal))
+    , ("final anusvara M", singleWylie "M" (TkFinal, TcFinal FMAnusvara))
+    , ("final bindu nAda ~M`", singleWylie "~M`" (TkFinal, TcFinal FMBinduNada))
+    , ("final candrabindu ~M", singleWylie "~M" (TkFinal, TcFinal FMCandrabindu))
+    , ("final srog med X", singleWylie "X" (TkFinal, TcFinal FMSrogMed))
+    , ("final nasal variant ~X", singleWylie "~X" (TkFinal, TcFinal FMCandrabinduHalanta))
     , ("final visarga H", singleWylie "H" (TkFinal, TcFinal FMVisarga))
     , ("number 0", singleWylie "0" (TkNumber, TcNumber N0))
     , ("number 9", singleWylie "9" (TkNumber, TcNumber N9))
@@ -61,11 +68,12 @@ wylieCases =
     , ("symbol exclamation", singleWylie "!" (TkSymbol, TcSymbol SMExclamation))
     , ("symbol right paren", singleWylie ")" (TkSymbol, TcSymbol SMRParen))
     , ("explicit space marker underscore", singleWylie "_" (TkSpace, TcSpace SMSpace))
-    , ("special marker out-of-context becomes unknown", singleWylie "+" (TkUnknown, TcUnknown (UnknownMark "+")))
+    , ("explicit plus becomes ConSpec", singleWylie "+" (TkConSpec, TcConSpec CSPlus))
+    , ("explicit dot becomes ConSpec", singleWylie "." (TkConSpec, TcConSpec CSDot))
     , ("unknown latin x becomes unknown", singleWylie "x" (TkUnknown, TcUnknown (UnknownMark "x")))
     , ("escape decodes consonant kka", singleWylie "\\u0F6B" (TkConsonant, TcConsonant Ckka))
     , ("escape lower-case hex decodes too", singleWylie "\\u0f6c" (TkConsonant, TcConsonant CRra))
-    , ("escape decodes vowel vocalic r-i", singleWylie "\\u0F76" (TkVowel, TcVowel Vr_i))
+    , ("escape decodes vowel vocalic r-i as sequence", seqWylie "\\u0F76" [TcSubConsonant SCr, TcVowel V_i])
     , ("escape decodes punctuation nyis tsheg shad", singleWylie "\\u0F10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
     , ("escape decodes half number H_1", singleWylie "\\u0F2A" (TkHalfNumber, TcHalfNumber H_1))
     , ("escape decodes sign yig mgo at", singleWylie "\\u0F00" (TkSign, TcSign SGYigMgoAt))
@@ -77,21 +85,38 @@ wylieCases =
 
 wylieAliasCases :: [(String, Assertion)]
 wylieAliasCases =
-    [ aliasesWylie "g+ha aliases" ["gh", "g+h"] (TkConsonant, TcConsonant CgPLUSh)
-    , aliasesWylie "D+ha aliases" ["Dh", "D+h", "-dh", "-d+h"] (TkConsonant, TcConsonant CDPLUSh)
-    , aliasesWylie "d+ha aliases" ["dh", "d+h"] (TkConsonant, TcConsonant CdPLUSh)
-    , aliasesWylie "b+ha aliases" ["bh", "b+h"] (TkConsonant, TcConsonant CbPLUSh)
-    , aliasesWylie "dz+ha aliases" ["dzh", "dz+h"] (TkConsonant, TcConsonant CdzPLUSh)
-    , aliasesWylie "retroflex ta aliases" ["T", "-t"] (TkConsonant, TcConsonant CT)
+    [ aliasesWylie "retroflex ta aliases" ["T", "-t"] (TkConsonant, TcConsonant CT)
     , aliasesWylie "retroflex tha aliases" ["Th", "-th"] (TkConsonant, TcConsonant CTh)
     , aliasesWylie "retroflex da aliases" ["D", "-d"] (TkConsonant, TcConsonant CD)
     , aliasesWylie "retroflex na aliases" ["N", "-n"] (TkConsonant, TcConsonant CN)
     , aliasesWylie "sha aliases" ["Sh", "-sh"] (TkConsonant, TcConsonant CSh)
     , aliasesWylie "wa aliases" ["w", "W"] (TkConsonant, TcConsonant Cw)
     , aliasesWylie "ya aliases" ["y", "Y"] (TkConsonant, TcConsonant Cy)
-    , aliasesWylie "o aliases" ["o", "O"] (TkVowel, TcVowel Vo)
-    , aliasesWylie "anusvara aliases" ["M", "~M", "~M`"] (TkFinal, TcFinal FMAnusvara)
-    , aliasesWylie "nasal aliases" ["X", "~X"] (TkFinal, TcFinal FMCandrabinduOrNasal)
+    ]
+
+-- | Compound spellings that expand to several canonical tokens: aspirates
+-- (consonant + subjoined-h), long vowels (A + vowel) and vocalic r/l
+-- (subjoined r/l + reverse-i).
+wylieExpansionCases :: [(String, Assertion)]
+wylieExpansionCases =
+    [ seqAliasesWylie "gh expansions" ["gh", "g+h"] [TcConsonant Cg, TcSubConsonant SCh]
+    , seqAliasesWylie "Dh expansions" ["Dh", "D+h"] [TcConsonant CD, TcSubConsonant SCh]
+    , seqAliasesWylie "dh expansions" ["dh", "d+h"] [TcConsonant Cd, TcSubConsonant SCh]
+    , seqAliasesWylie "bh expansions" ["bh", "b+h"] [TcConsonant Cb, TcSubConsonant SCh]
+    , seqAliasesWylie "dzh expansions" ["dzh", "dz+h"] [TcConsonant Cdz, TcSubConsonant SCh]
+    , ("k+Sh expansion", seqWylie "k+Sh" [TcConsonant Ck, TcSubConsonant SCSh])
+    , ("f caret expansion", seqWylie "f" [TcConsonant Cph, TcFinal FMCaret])
+    , ("v caret expansion", seqWylie "v" [TcConsonant Cb, TcFinal FMCaret])
+    , seqAliasesWylie "subjoined Dh expansions" ["-dh", "-d+h"] [TcSubConsonant SCD, TcSubConsonant SCh]
+    , ("long I", seqWylie "I" [TcVowel VA, TcVowel Vi])
+    , ("long U", seqWylie "U" [TcVowel VA, TcVowel Vu])
+    , ("long E", seqWylie "E" [TcVowel VA, TcVowel Ve])
+    , ("long O", seqWylie "O" [TcVowel VA, TcVowel Vo])
+    , ("long -I", seqWylie "-I" [TcVowel VA, TcVowel V_i])
+    , ("vocalic r-i", seqWylie "r-i" [TcSubConsonant SCr, TcVowel V_i])
+    , ("vocalic r-I", seqWylie "r-I" [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
+    , ("vocalic l-i", seqWylie "l-i" [TcSubConsonant SCl, TcVowel V_i])
+    , ("vocalic l-I", seqWylie "l-I" [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
     ]
 
 wylieTableCases :: [(String, Assertion)]
@@ -111,8 +136,6 @@ wylieTableCases =
 unicodeCases :: [(String, Assertion)]
 unicodeCases =
     [ ("consonant basic ka", singleUnicode "ཀ" (TkConsonant, TcConsonant Ck))
-    , ("consonant plus-form ga+ha", singleUnicode "གྷ" (TkConsonant, TcConsonant CgPLUSh))
-    , ("consonant stacked-ksha", singleUnicode "ཀྵ" (TkConsonant, TcConsonant CkPLUSSh))
     , ("subconsonant ya", singleUnicode "ྱ" (TkSubConsonant, TcSubConsonant SCy))
     , ("subconsonant R", singleUnicode "ྼ" (TkSubConsonant, TcSubConsonant SCR))
     , ("vowel i", singleUnicode "ི" (TkVowel, TcVowel Vi))
@@ -132,16 +155,34 @@ unicodeCases =
     , ("half number H_4", singleUnicode "\x0f2d" (TkHalfNumber, TcHalfNumber H_4))
     , ("sanskrit mark i lci rtags", singleUnicode "྆" (TkSanskritMark, TcSanskritMark SMiLciRtags))
     , ("ornament rdel dkar gcig", singleUnicode "\x0fd0" (TkOrnament, TcOrnament OMRdelDkarGcig))
-    , ("vowel vocalic r long", singleUnicode "ཷ" (TkVowel, TcVowel Vr_I))
     , ("punctuation nyis tsheg shad", singleUnicode "\x0f10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
     , ("ascii space becomes TkSpace", singleUnicode " " (TkSpace, TcSpace SMSpace))
     , ("unknown latin x becomes unknown", singleUnicode "x" (TkUnknown, TcUnknown (UnknownMark "x")))
     ]
 
-unicodeAliasCases :: [(String, Assertion)]
-unicodeAliasCases =
-    [ aliasesUnicode "unicode anusvara aliases" ['\x0f7e', '\x0f82', '\x0f83'] (TkFinal, TcFinal FMAnusvara)
-    , aliasesUnicode "unicode candrabindu aliases" ['\x0f37', '\x0f35'] (TkFinal, TcFinal FMCandrabinduOrNasal)
+-- | Deprecated precomposed characters decompose into canonical token
+-- sequences on input (aspirates, long vowels, vocalic r/l).
+unicodeDecompositionCases :: [(String, Assertion)]
+unicodeDecompositionCases =
+    [ ("precomposed U+0F43 (གྷ) decomposes", seqUnicode "\x0f43" [TcConsonant Cg, TcSubConsonant SCh])
+    , ("precomposed U+0F4D (ཌྷ) decomposes", seqUnicode "\x0f4d" [TcConsonant CD, TcSubConsonant SCh])
+    , ("precomposed U+0F52 (དྷ) decomposes", seqUnicode "\x0f52" [TcConsonant Cd, TcSubConsonant SCh])
+    , ("precomposed U+0F57 (བྷ) decomposes", seqUnicode "\x0f57" [TcConsonant Cb, TcSubConsonant SCh])
+    , ("precomposed U+0F5C (ཛྷ) decomposes", seqUnicode "\x0f5c" [TcConsonant Cdz, TcSubConsonant SCh])
+    , ("precomposed U+0F69 (ཀྵ) decomposes", seqUnicode "\x0f69" [TcConsonant Ck, TcSubConsonant SCSh])
+    , ("precomposed U+0FB9 (ྐྵ) decomposes", seqUnicode "\x0fb9" [TcSubConsonant SCk, TcSubConsonant SCSh])
+    , ("precomposed U+0F93 (ྒྷ) decomposes", seqUnicode "\x0f93" [TcSubConsonant SCg, TcSubConsonant SCh])
+    , ("precomposed U+0F9D (ྜྷ) decomposes", seqUnicode "\x0f9d" [TcSubConsonant SCD, TcSubConsonant SCh])
+    , ("precomposed U+0FA2 (ྡྷ) decomposes", seqUnicode "\x0fa2" [TcSubConsonant SCd, TcSubConsonant SCh])
+    , ("precomposed U+0FA7 (ྦྷ) decomposes", seqUnicode "\x0fa7" [TcSubConsonant SCb, TcSubConsonant SCh])
+    , ("precomposed U+0FAC (ྫྷ) decomposes", seqUnicode "\x0fac" [TcSubConsonant SCdz, TcSubConsonant SCh])
+    , ("precomposed U+0F73 (ཱི) decomposes", seqUnicode "\x0f73" [TcVowel VA, TcVowel Vi])
+    , ("precomposed U+0F75 (ཱུ) decomposes", seqUnicode "\x0f75" [TcVowel VA, TcVowel Vu])
+    , ("precomposed U+0F81 (ཱྀ) decomposes", seqUnicode "\x0f81" [TcVowel VA, TcVowel V_i])
+    , ("precomposed U+0F76 (ྲྀ) decomposes", seqUnicode "\x0f76" [TcSubConsonant SCr, TcVowel V_i])
+    , ("precomposed U+0F77 (ཷ) decomposes", seqUnicode "\x0f77" [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
+    , ("precomposed U+0F78 (ླྀ) decomposes", seqUnicode "\x0f78" [TcSubConsonant SCl, TcVowel V_i])
+    , ("precomposed U+0F79 (ཹ) decomposes", seqUnicode "\x0f79" [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
     ]
 
 unicodeTableCases :: [(String, Assertion)]
@@ -164,8 +205,6 @@ wylieConsonants =
     [ ("k", (TkConsonant, TcConsonant Ck))
     , ("kh", (TkConsonant, TcConsonant Ckh))
     , ("g", (TkConsonant, TcConsonant Cg))
-    , ("gh", (TkConsonant, TcConsonant CgPLUSh))
-    , ("g+h", (TkConsonant, TcConsonant CgPLUSh))
     , ("ng", (TkConsonant, TcConsonant Cng))
     , ("c", (TkConsonant, TcConsonant Cc))
     , ("ch", (TkConsonant, TcConsonant Cch))
@@ -177,31 +216,19 @@ wylieConsonants =
     , ("-th", (TkConsonant, TcConsonant CTh))
     , ("D", (TkConsonant, TcConsonant CD))
     , ("-d", (TkConsonant, TcConsonant CD))
-    , ("Dh", (TkConsonant, TcConsonant CDPLUSh))
-    , ("D+h", (TkConsonant, TcConsonant CDPLUSh))
-    , ("-dh", (TkConsonant, TcConsonant CDPLUSh))
-    , ("-d+h", (TkConsonant, TcConsonant CDPLUSh))
     , ("N", (TkConsonant, TcConsonant CN))
     , ("-n", (TkConsonant, TcConsonant CN))
     , ("t", (TkConsonant, TcConsonant Ct))
     , ("th", (TkConsonant, TcConsonant Cth))
     , ("d", (TkConsonant, TcConsonant Cd))
-    , ("dh", (TkConsonant, TcConsonant CdPLUSh))
-    , ("d+h", (TkConsonant, TcConsonant CdPLUSh))
     , ("n", (TkConsonant, TcConsonant Cn))
     , ("p", (TkConsonant, TcConsonant Cp))
     , ("ph", (TkConsonant, TcConsonant Cph))
-    , ("f", (TkConsonant, TcConsonant Cf))
     , ("b", (TkConsonant, TcConsonant Cb))
-    , ("v", (TkConsonant, TcConsonant Cv))
-    , ("bh", (TkConsonant, TcConsonant CbPLUSh))
-    , ("b+h", (TkConsonant, TcConsonant CbPLUSh))
     , ("m", (TkConsonant, TcConsonant Cm))
     , ("ts", (TkConsonant, TcConsonant Cts))
     , ("tsh", (TkConsonant, TcConsonant Ctsh))
     , ("dz", (TkConsonant, TcConsonant Cdz))
-    , ("dzh", (TkConsonant, TcConsonant CdzPLUSh))
-    , ("dz+h", (TkConsonant, TcConsonant CdzPLUSh))
     , ("w", (TkConsonant, TcConsonant Cw))
     , ("W", (TkConsonant, TcConsonant Cw))
     , ("zh", (TkConsonant, TcConsonant Czh))
@@ -217,7 +244,6 @@ wylieConsonants =
     , ("s", (TkConsonant, TcConsonant Cs))
     , ("h", (TkConsonant, TcConsonant Ch))
     , ("a", (TkConsonant, TcConsonant Ca))
-    , ("k+Sh", (TkConsonant, TcConsonant CkPLUSSh))
     , ("R", (TkConsonant, TcConsonant CR))
     ]
 
@@ -225,29 +251,40 @@ wylieVowels :: [(Text, (TokenKind, TokenCanonical))]
 wylieVowels =
     [ ("A", (TkVowel, TcVowel VA))
     , ("i", (TkVowel, TcVowel Vi))
-    , ("I", (TkVowel, TcVowel VI))
     , ("u", (TkVowel, TcVowel Vu))
-    , ("U", (TkVowel, TcVowel VU))
     , ("e", (TkVowel, TcVowel Ve))
     , ("ai", (TkVowel, TcVowel Vai))
     , ("o", (TkVowel, TcVowel Vo))
-    , ("O", (TkVowel, TcVowel Vo))
     , ("au", (TkVowel, TcVowel Vau))
     , ("-i", (TkVowel, TcVowel V_i))
-    , ("-I", (TkVowel, TcVowel V_I))
     ]
 
 wylieFinals :: [(Text, (TokenKind, TokenCanonical))]
 wylieFinals =
     [ ("M", (TkFinal, TcFinal FMAnusvara))
-    , ("~M`", (TkFinal, TcFinal FMAnusvara))
-    , ("~M", (TkFinal, TcFinal FMAnusvara))
-    , ("X", (TkFinal, TcFinal FMCandrabinduOrNasal))
-    , ("~X", (TkFinal, TcFinal FMCandrabinduOrNasal))
+    , ("~M`", (TkFinal, TcFinal FMBinduNada))
+    , ("~M", (TkFinal, TcFinal FMCandrabindu))
+    , ("X", (TkFinal, TcFinal FMSrogMed))
+    , ("~X", (TkFinal, TcFinal FMCandrabinduHalanta))
     , ("H", (TkFinal, TcFinal FMVisarga))
     , ("?", (TkFinal, TcFinal FMHalanta))
     , ("^", (TkFinal, TcFinal FMCaret))
     , ("&", (TkFinal, TcFinal FMYigMgo))
+    ]
+
+-- | Orthographic classes of the nine finals (at most one member per class in
+-- a syllable, used by the later spelling check).
+finalClassCases :: [(String, Assertion)]
+finalClassCases =
+    [ ("M class for anusvara", finalClass FMAnusvara @?= "M")
+    , ("M class for bindu nAda", finalClass FMBinduNada @?= "M")
+    , ("M class for candrabindu", finalClass FMCandrabindu @?= "M")
+    , ("X class for srog med", finalClass FMSrogMed @?= "X")
+    , ("X class for candrabindu halanta", finalClass FMCandrabinduHalanta @?= "X")
+    , ("H class for visarga", finalClass FMVisarga @?= "H")
+    , ("? class for halanta", finalClass FMHalanta @?= "?")
+    , ("^ class for caret", finalClass FMCaret @?= "^")
+    , ("& class for yig mgo", finalClass FMYigMgo @?= "&")
     ]
 
 wylieNumbers :: [(Text, (TokenKind, TokenCanonical))]
@@ -392,7 +429,6 @@ unicodeConsonants =
     [ ('\x0f40', (TkConsonant, TcConsonant Ck))
     , ('\x0f41', (TkConsonant, TcConsonant Ckh))
     , ('\x0f42', (TkConsonant, TcConsonant Cg))
-    , ('\x0f43', (TkConsonant, TcConsonant CgPLUSh))
     , ('\x0f44', (TkConsonant, TcConsonant Cng))
     , ('\x0f45', (TkConsonant, TcConsonant Cc))
     , ('\x0f46', (TkConsonant, TcConsonant Cch))
@@ -401,22 +437,18 @@ unicodeConsonants =
     , ('\x0f4a', (TkConsonant, TcConsonant CT))
     , ('\x0f4b', (TkConsonant, TcConsonant CTh))
     , ('\x0f4c', (TkConsonant, TcConsonant CD))
-    , ('\x0f4d', (TkConsonant, TcConsonant CDPLUSh))
     , ('\x0f4e', (TkConsonant, TcConsonant CN))
     , ('\x0f4f', (TkConsonant, TcConsonant Ct))
     , ('\x0f50', (TkConsonant, TcConsonant Cth))
     , ('\x0f51', (TkConsonant, TcConsonant Cd))
-    , ('\x0f52', (TkConsonant, TcConsonant CdPLUSh))
     , ('\x0f53', (TkConsonant, TcConsonant Cn))
     , ('\x0f54', (TkConsonant, TcConsonant Cp))
     , ('\x0f55', (TkConsonant, TcConsonant Cph))
     , ('\x0f56', (TkConsonant, TcConsonant Cb))
-    , ('\x0f57', (TkConsonant, TcConsonant CbPLUSh))
     , ('\x0f58', (TkConsonant, TcConsonant Cm))
     , ('\x0f59', (TkConsonant, TcConsonant Cts))
     , ('\x0f5a', (TkConsonant, TcConsonant Ctsh))
     , ('\x0f5b', (TkConsonant, TcConsonant Cdz))
-    , ('\x0f5c', (TkConsonant, TcConsonant CdzPLUSh))
     , ('\x0f5d', (TkConsonant, TcConsonant Cw))
     , ('\x0f5e', (TkConsonant, TcConsonant Czh))
     , ('\x0f5f', (TkConsonant, TcConsonant Cz))
@@ -429,7 +461,6 @@ unicodeConsonants =
     , ('\x0f66', (TkConsonant, TcConsonant Cs))
     , ('\x0f67', (TkConsonant, TcConsonant Ch))
     , ('\x0f68', (TkConsonant, TcConsonant Ca))
-    , ('\x0f69', (TkConsonant, TcConsonant CkPLUSSh))
     , ('\x0f6a', (TkConsonant, TcConsonant CR))
     , ('\x0f6b', (TkConsonant, TcConsonant Ckka))
     , ('\x0f6c', (TkConsonant, TcConsonant CRra))
@@ -440,7 +471,6 @@ unicodeSubConsonants =
     [ ('\x0f90', (TkSubConsonant, TcSubConsonant SCk))
     , ('\x0f91', (TkSubConsonant, TcSubConsonant SCkh))
     , ('\x0f92', (TkSubConsonant, TcSubConsonant SCg))
-    , ('\x0f93', (TkSubConsonant, TcSubConsonant SCgPLUSh))
     , ('\x0f94', (TkSubConsonant, TcSubConsonant SCng))
     , ('\x0f95', (TkSubConsonant, TcSubConsonant SCc))
     , ('\x0f96', (TkSubConsonant, TcSubConsonant SCch))
@@ -449,22 +479,18 @@ unicodeSubConsonants =
     , ('\x0f9a', (TkSubConsonant, TcSubConsonant SCT))
     , ('\x0f9b', (TkSubConsonant, TcSubConsonant SCTh))
     , ('\x0f9c', (TkSubConsonant, TcSubConsonant SCD))
-    , ('\x0f9d', (TkSubConsonant, TcSubConsonant SCDPLUSh))
     , ('\x0f9e', (TkSubConsonant, TcSubConsonant SCN))
     , ('\x0f9f', (TkSubConsonant, TcSubConsonant SCt))
     , ('\x0fa0', (TkSubConsonant, TcSubConsonant SCth))
     , ('\x0fa1', (TkSubConsonant, TcSubConsonant SCd))
-    , ('\x0fa2', (TkSubConsonant, TcSubConsonant SCdPLUSh))
     , ('\x0fa3', (TkSubConsonant, TcSubConsonant SCn))
     , ('\x0fa4', (TkSubConsonant, TcSubConsonant SCp))
     , ('\x0fa5', (TkSubConsonant, TcSubConsonant SCph))
     , ('\x0fa6', (TkSubConsonant, TcSubConsonant SCb))
-    , ('\x0fa7', (TkSubConsonant, TcSubConsonant SCbPLUSh))
     , ('\x0fa8', (TkSubConsonant, TcSubConsonant SCm))
     , ('\x0fa9', (TkSubConsonant, TcSubConsonant SCts))
     , ('\x0faa', (TkSubConsonant, TcSubConsonant SCtsh))
     , ('\x0fab', (TkSubConsonant, TcSubConsonant SCdz))
-    , ('\x0fac', (TkSubConsonant, TcSubConsonant SCdzPLUSh))
     , ('\x0fad', (TkSubConsonant, TcSubConsonant SCw))
     , ('\x0fae', (TkSubConsonant, TcSubConsonant SCzh))
     , ('\x0faf', (TkSubConsonant, TcSubConsonant SCz))
@@ -477,7 +503,6 @@ unicodeSubConsonants =
     , ('\x0fb6', (TkSubConsonant, TcSubConsonant SCs))
     , ('\x0fb7', (TkSubConsonant, TcSubConsonant SCh))
     , ('\x0fb8', (TkSubConsonant, TcSubConsonant SCa))
-    , ('\x0fb9', (TkSubConsonant, TcSubConsonant SCkPLUSSh))
     , ('\x0fba', (TkSubConsonant, TcSubConsonant SCW))
     , ('\x0fbb', (TkSubConsonant, TcSubConsonant SCY))
     , ('\x0fbc', (TkSubConsonant, TcSubConsonant SCR))
@@ -487,31 +512,24 @@ unicodeVowels :: [(Char, (TokenKind, TokenCanonical))]
 unicodeVowels =
     [ ('\x0f71', (TkVowel, TcVowel VA))
     , ('\x0f72', (TkVowel, TcVowel Vi))
-    , ('\x0f73', (TkVowel, TcVowel VI))
     , ('\x0f74', (TkVowel, TcVowel Vu))
-    , ('\x0f75', (TkVowel, TcVowel VU))
-    , ('\x0f76', (TkVowel, TcVowel Vr_i))
-    , ('\x0f77', (TkVowel, TcVowel Vr_I))
-    , ('\x0f78', (TkVowel, TcVowel Vl_i))
-    , ('\x0f79', (TkVowel, TcVowel Vl_I))
     , ('\x0f7a', (TkVowel, TcVowel Ve))
     , ('\x0f7b', (TkVowel, TcVowel Vai))
     , ('\x0f7c', (TkVowel, TcVowel Vo))
     , ('\x0f7d', (TkVowel, TcVowel Vau))
     , ('\x0f80', (TkVowel, TcVowel V_i))
-    , ('\x0f81', (TkVowel, TcVowel V_I))
     ]
 
 unicodeFinals :: [(Char, (TokenKind, TokenCanonical))]
 unicodeFinals =
     [ ('\x0f7e', (TkFinal, TcFinal FMAnusvara))
-    , ('\x0f82', (TkFinal, TcFinal FMAnusvara))
-    , ('\x0f83', (TkFinal, TcFinal FMAnusvara))
-    , ('\x0f37', (TkFinal, TcFinal FMCandrabinduOrNasal))
-    , ('\x0f35', (TkFinal, TcFinal FMCandrabinduOrNasal))
-    , ('\x0f39', (TkFinal, TcFinal FMCaret))
+    , ('\x0f82', (TkFinal, TcFinal FMBinduNada))
+    , ('\x0f83', (TkFinal, TcFinal FMCandrabindu))
+    , ('\x0f37', (TkFinal, TcFinal FMSrogMed))
+    , ('\x0f35', (TkFinal, TcFinal FMCandrabinduHalanta))
     , ('\x0f7f', (TkFinal, TcFinal FMVisarga))
     , ('\x0f84', (TkFinal, TcFinal FMHalanta))
+    , ('\x0f39', (TkFinal, TcFinal FMCaret))
     , ('\x0f85', (TkFinal, TcFinal FMYigMgo))
     ]
 
@@ -547,9 +565,9 @@ aliasesWylie :: String -> [Text] -> (TokenKind, TokenCanonical) -> (String, Asse
 aliasesWylie name raws expected =
     (name, mapM_ (`singleWylie` expected) raws)
 
-aliasesUnicode :: String -> [Char] -> (TokenKind, TokenCanonical) -> (String, Assertion)
-aliasesUnicode name raws expected =
-    (name, mapM_ (\ch -> singleUnicode (T.singleton ch) expected) raws)
+seqAliasesWylie :: String -> [Text] -> [TokenCanonical] -> (String, Assertion)
+seqAliasesWylie name raws expected =
+    (name, mapM_ (`seqWylie` expected) raws)
 
 assertWylieSingles :: [(Text, (TokenKind, TokenCanonical))] -> Assertion
 assertWylieSingles = mapM_ (\(raw, expected) -> singleWylie raw expected)
