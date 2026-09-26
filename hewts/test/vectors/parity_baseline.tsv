@@ -18,17 +18,26 @@
 # Almost every remaining warning gap is a syllable-level one ("Subjoined y not
 # expected after r", "Invalid prefix consonant", "more than one ^"), i.e. the
 # orthography rules of wave 3, plus "No Tibetan characters found!" from wave 4.
-jsewts	w2u	210	28
+#
+# Wave 3.3 (the generic stack renderer) brought w2u from 28 to 185 (jsewts),
+# 29 to 188 (Lingua), 0 to 14 (ewts-rs) and 1 to 4 (java): syllables the book
+# did not spell now render with the references' marks - subjoined letters,
+# vowels, carets - so the word-shape checks of w2u mostly pass. The u2w leg
+# is untouched by that wave (it does not run the generic stack). The roundtrip
+# gains (37->175 / 38->177) are the same shapes proving stable through
+# W->U->W->U. Remaining w2u gaps are reference quirks (repeated tshegs,
+# vowel-only escapes, "blaxbla" splitting) and the warning texts.
+jsewts	w2u	210	185
 jsewts	u2w	210	16
-jsewts	roundtrip	210	37
+jsewts	roundtrip	210	175
 jsewts	w2u-warnings	210	172
 jsewts	u2w-warnings	210	201
-lingua	w2u	218	29
+lingua	w2u	218	188
 lingua	u2w	218	15
-lingua	roundtrip	218	38
+lingua	roundtrip	218	177
 lingua	w2u-warnings	218	174
 lingua	u2w-warnings	218	208
-ewts-rs	w2u	16	0
-java	w2u	6	1
+ewts-rs	w2u	16	14
+java	w2u	6	4
 java	u2w	2	0
 kangyur	roundtrip	254	251

@@ -17,6 +17,7 @@ import qualified Test.Grammar.Constraint.Constraint17 as Constraint17
 import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
 import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
+import qualified Test.Grammar.Stack as Stack
 import qualified Test.Grammar.Structure as Structures
 import qualified Test.Parity as Parity
 import Test.Tasty (TestTree, defaultMain, testGroup)
@@ -54,6 +55,7 @@ tests =
         , Constraint18.tests
         , Constraint19.tests
         , Constraint20.tests
+        , Stack.tests
         , Structures.tests
         , Sentence.tests
         , Convert.tests

@@ -10,11 +10,15 @@ module Convert
 
 import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Word (Position (..))
 import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token
-    ( TokenCanonical (..)
+    ( FinalMark (FMCaret)
+    , Token
+    , TokenCanonical (..)
     , TokenSource (..)
     , UnknownMark (..)
+    , subjoinOf
     , tokenCanonical
     , tokenRaw
     , tokenSource
@@ -65,10 +69,65 @@ data OutputFormat
 renderItems :: OutputFormat -> [SpellItem] -> Text
 renderItems fmt = T.concat . map renderItem
     where
-        renderItem (Syllable ts) = T.concat (toList (fmap (renderToken fmt . snd) ts))
+        renderItem (Syllable ts)
+            -- The Unicode renderer reads the position marks (wave 3.3): a
+            -- subfix prints its subjoined letter, an implicit @a@ prints
+            -- nothing, a word-initial vowel gets the a-chen written out.
+            -- The Wylie renderer keeps the old per-token behavior.
+            | fmt == OutUnicode = renderSyllable (toList ts)
+            | otherwise = T.concat (toList (fmap (renderToken fmt . snd) ts))
         renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
         renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
         renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
+
+        renderSyllable ms =
+            prependA ms <> T.concat (go False (toList ms))
+            where
+                prependA ((Vowel, tok) : _)
+                    | tokenSource tok == TsWylie = "ཨ"
+                prependA _ = ""
+
+                -- A Tibetan token always prints its own slice (identity holds even
+                -- when a mark would hide or join it: གཨ prints its ཨ, གྲ prints
+                -- its joined ྲ).
+                renderMark (_, tok) | tokenSource tok == TsUnicode = tokenRaw tok
+                -- The implicit @a@ a Wylie writer always spells after a base.
+                renderMark (ImplicitVowel, _) = ""
+                renderMark (Subfix, tok) = subjoinedGlyph tok
+                renderMark (_, tok) = renderToken OutUnicode tok
+
+                -- The letters under a superfix print subjoined (rka -> རྐ, sgra ->
+                -- སྒྲ): jsewts writes every letter after the superscript in its
+                -- subjoined form, so a root below the superfix follows the same
+                -- rule - when the stack reaches a vowel. A stack that never does
+                -- backtracks, and the next letter is a fresh base instead (rk ->
+                -- ར + ཀ).
+                go :: Bool -> [(Position, Token)] -> [Text]
+                go _ [] = []
+                go underSuperfix (m@(Root, tok) : rest)
+                    | underSuperfix && runReachesVowel rest = subjoinedGlyph tok : go False rest
+                    | otherwise = renderMark m : go False rest
+                go _ (m@(Superfix, _) : rest) = renderMark m : go True rest
+                go _ (m : rest) = renderMark m : go False rest
+
+                -- Whether the marks after a superfix's root reach a vowel before
+                -- anything that ends the stack: only subfixes (and a caret) may
+                -- stand between the root and the vowel.
+                runReachesVowel :: [(Position, Token)] -> Bool
+                runReachesVowel ((pos, tok) : rest) =
+                    case pos of
+                        Subfix -> runReachesVowel rest
+                        Final
+                            | tokenCanonical tok == TcFinal FMCaret -> runReachesVowel rest
+                        Vowel -> True
+                        ImplicitVowel -> True
+                        _ -> False
+                runReachesVowel [] = False
+
+                subjoinedGlyph tok =
+                    case subjoinOf tok of
+                        Just sc -> fromMaybe "" (unicodeOf (TcSubConsonant sc))
+                        Nothing -> renderToken OutUnicode tok
 
         renderToken fmt tok
             | tokenSource tok == sourceOf fmt = tokenRaw tok

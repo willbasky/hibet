@@ -4,16 +4,16 @@ import Data.Char (chr, isHexDigit, ord)
 import qualified Data.Map.Strict as M
 import Data.Text (Text)
 import qualified Data.Text as T
-import Numeric.Natural (Natural)
 import Numeric (readHex)
+import Numeric.Natural (Natural)
 import Text.Printf (printf)
 
 -- | Partial inverse of @f@, mirroring Relude 'Relude.Enum.inverseMap'.
 -- The resulting @Map k a@ is built once and shared for every call.
 inverseMap :: (Bounded a, Enum a, Ord k) => (a -> k) -> (k -> Maybe a)
 inverseMap f = \k -> M.lookup k dict
-  where
-    dict = M.fromList [(f a, a) | a <- [minBound .. maxBound]]
+    where
+        dict = M.fromList [(f a, a) | a <- [minBound .. maxBound]]
 
 -- | Превращает строку в формат "\\x0f40\\x0fad..."
 toUnicodeEscape :: String -> String
@@ -93,7 +93,7 @@ data Span = Span
 mkSpan :: Natural -> Natural -> Span
 mkSpan start end =
     let end' = max start end
-    in Span start end'
+     in Span start end'
 
 -- Canonical typed payload of an IR token.
 data TokenCanonical
@@ -135,7 +135,15 @@ data Token = Token
     deriving (Show, Eq, Ord)
 
 -- Smart constructors centralize Token invariants for both tokenizers.
-mkTokenWith :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> AliasPolicy -> [TokenIssue] -> Token
+mkTokenWith ::
+    TokenSource
+    -> TokenKind
+    -> Text
+    -> TokenCanonical
+    -> Span
+    -> AliasPolicy
+    -> [TokenIssue]
+    -> Token
 mkTokenWith source kind raw canonical span aliasPolicy issues =
     Token
         { tokenRaw = raw
@@ -201,11 +209,22 @@ mkSymbol source span raw symbolMark =
 
 mkUnknownWith :: TokenSource -> Span -> Text -> [TokenIssue] -> Token
 mkUnknownWith source span raw issues =
-    mkTokenWith source TkUnknown raw (TcUnknown (UnknownMark raw)) span PreserveRaw issues
+    mkTokenWith
+        source
+        TkUnknown
+        raw
+        (TcUnknown (UnknownMark raw))
+        span
+        PreserveRaw
+        issues
 
 mkUnknown :: TokenSource -> Span -> Text -> Token
 mkUnknown source span raw =
-    mkUnknownWith source span raw [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
+    mkUnknownWith
+        source
+        span
+        raw
+        [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
 
 -- | A bracketed block of non-Wylie text. The brackets are Wylie-only syntax:
 -- they stay in the raw slice (so the input remains fully covered), while the
@@ -245,9 +264,9 @@ mkSequenceTokens source span raw = \case
     [] -> []
     c : cs ->
         mkTokenFromCanonical source span raw c
-            : [ mkTokenFromCanonical source (mkSpan end end) mempty k | k <- cs ]
-  where
-    end = offsetEnd span
+            : [mkTokenFromCanonical source (mkSpan end end) mempty k | k <- cs]
+    where
+        end = offsetEnd span
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple
@@ -402,7 +421,8 @@ data FinalMark
     | FMCandrabinduHalanta -- ~X ༵ \u0f35 (mark ngas bzung nyi zla)
     | FMVisarga -- H ཿ \u0f7f
     | FMHalanta -- ? ྄ \u0f84
-    | FMCaret -- ^ ༹ \u0f39
+    | -- | ༹ \u0f39
+      FMCaret
     | FMYigMgo -- & ྅ \u0f85
     deriving (Show, Eq, Ord, Enum, Bounded)
 
@@ -427,6 +447,62 @@ data ConSpec
     = CSPlus
     | CSDot
     deriving (Show, Eq, Ord, Enum, Bounded)
+
+-- | A consonant's subjoined form, when the register has a regular subjoined
+-- letter for it. The bundled EWTS letters (kka ཫ, rra ཬ) have none: they are
+-- stacks of their parts, never a subjoined letter of their own.
+toSubjoined :: Consonant -> Maybe SubConsonant
+toSubjoined = \case
+    Ck -> Just SCk
+    Ckh -> Just SCkh
+    Cg -> Just SCg
+    Cng -> Just SCng
+    Cc -> Just SCc
+    Cch -> Just SCch
+    Cj -> Just SCj
+    Cny -> Just SCny
+    CT -> Just SCT
+    CTh -> Just SCTh
+    CD -> Just SCD
+    CN -> Just SCN
+    Ct -> Just SCt
+    Cth -> Just SCth
+    Cd -> Just SCd
+    Cn -> Just SCn
+    Cp -> Just SCp
+    Cph -> Just SCph
+    Cb -> Just SCb
+    Cm -> Just SCm
+    Cts -> Just SCts
+    Ctsh -> Just SCtsh
+    Cdz -> Just SCdz
+    Cw -> Just SCw
+    Czh -> Just SCzh
+    Cz -> Just SCz
+    C' -> Just SC'
+    Cy -> Just SCy
+    Cr -> Just SCr
+    Cl -> Just SCl
+    Csh -> Just SCsh
+    CSh -> Just SCSh
+    Cs -> Just SCs
+    Ch -> Just SCh
+    Ca -> Just SCa
+    CR -> Just SCR
+    Ckka -> Nothing
+    CRra -> Nothing
+
+-- | The subjoined form a token prints as. Source-aware: the EWTS raised
+-- letters @W@ and @Y@ stay raised (their Wylie slices are @\"W\"@ and
+-- @\"Y\"@), and a token that is already a subconsonant carries its own
+-- subjoined form.
+subjoinOf :: Token -> Maybe SubConsonant
+subjoinOf Token{tokenRaw = raw, tokenCanonical = TcConsonant c}
+    | raw == "W" = Just SCW
+    | raw == "Y" = Just SCY
+    | otherwise = toSubjoined c
+subjoinOf Token{tokenCanonical = TcSubConsonant sc} = Just sc
+subjoinOf _ = Nothing
 
 data PunctuationMark
     = PMTsheg -- ་ \u0f0b
@@ -474,8 +550,9 @@ data SymbolMark
     = SMExclamation -- ! \u0021
     | SMAt -- @ \u0040
     | SMHash -- # \u0023
-    | SMDollar -- $ \u0024
-    | SMPercent -- % \u0025
+    | SMDollar
+    | -- \$ \u0024
+      SMPercent -- % \u0025
     | SMEqual -- = \u003d
     | SMLt -- < \u003c
     | SMGt -- > \u003e
