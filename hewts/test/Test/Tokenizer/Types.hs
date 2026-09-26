@@ -27,13 +27,13 @@ mkCase (name, assertion) = testCase name assertion
 
 singleWylie :: Text -> (TokenKind, TokenCanonical) -> Assertion
 singleWylie input expected =
-    case tokenizeWylie input of
+    case fst (tokenizeWylie input) of
         [tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
         xs -> error $ "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
 singleUnicode :: Text -> (TokenKind, TokenCanonical) -> Assertion
 singleUnicode input expected =
-    case tokenizeUnicode input of
+    case fst (tokenizeUnicode input) of
         [tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
         xs -> error $ "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
@@ -41,11 +41,11 @@ singleUnicode input expected =
 -- sequence (a single spelling may expand or decompose into several tokens).
 seqWylie :: Text -> [TokenCanonical] -> Assertion
 seqWylie input expected =
-    map tokenCanonical (tokenizeWylie input) @?= expected
+    map tokenCanonical (fst (tokenizeWylie input)) @?= expected
 
 seqUnicode :: Text -> [TokenCanonical] -> Assertion
 seqUnicode input expected =
-    map tokenCanonical (tokenizeUnicode input) @?= expected
+    map tokenCanonical (fst (tokenizeUnicode input)) @?= expected
 
 wylieCases :: [(String, Assertion)]
 wylieCases =

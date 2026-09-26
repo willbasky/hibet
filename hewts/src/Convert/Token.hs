@@ -53,6 +53,7 @@ data TokenKind
     | TkSpace
     | TkSymbol
     | TkConSpec
+    | TkNonTibetan
     | TkUnknown
     deriving (Show, Eq, Ord)
 
@@ -205,6 +206,13 @@ mkUnknownWith source span raw issues =
 mkUnknown :: TokenSource -> Span -> Text -> Token
 mkUnknown source span raw =
     mkUnknownWith source span raw [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
+
+-- | A bracketed block of non-Wylie text. The brackets are Wylie-only syntax:
+-- they stay in the raw slice (so the input remains fully covered), while the
+-- content - the text the token stands for - is what reaches the other script.
+mkNonTibetan :: TokenSource -> Span -> Text -> Text -> Token
+mkNonTibetan source span raw content =
+    mkToken source TkNonTibetan raw (TcUnknown (UnknownMark content)) span
 
 -- | Build a 'Token' from a decoded canonical payload, dispatching on its
 -- constructor. Used by both tokenizers when a raw chunk (e.g. a \\uXXXX

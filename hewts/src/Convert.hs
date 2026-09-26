@@ -1,5 +1,6 @@
 module Convert
     ( splitSentences
+    , splitSentencesWith
     , syllables
     , renderItems
     , OutputFormat (..)
@@ -7,9 +8,10 @@ module Convert
     , pSentence
     ) where
 
+import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
-import Convert.Token (TokenSource (..), tokenCanonical, tokenRaw, tokenSource)
+import Convert.Token (TokenCanonical (..), TokenSource (..), UnknownMark (..), tokenCanonical, tokenRaw, tokenSource)
 import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
 import Convert.Tokenizer.Wylie (wylieOf)
 import Data.Maybe (fromMaybe)
@@ -21,7 +23,18 @@ import qualified Data.Text as T
 -- digits become 'Number', punctuation and whitespace become 'Punct',
 -- and anything unrecognized becomes 'Other'.
 splitSentences :: Text -> Either Text [SpellItem]
-splitSentences = parseEither pSentence . tokenizeUnicode
+splitSentences input =
+    case splitSentencesWith input of
+        Left err -> Left err
+        Right (items, _) -> Right items
+
+-- | Like 'splitSentences', but also hands back what the tokenizer noticed
+-- while reading the text.
+splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
+splitSentencesWith input = do
+    let (tokens, diagnostics) = tokenizeUnicode input
+    items <- parseEither pSentence tokens
+    pure (items, diagnostics)
 
 -- | Extract only the recognized syllables from Tibetan text, each as its
 -- raw spelling (e.g. @མཆོག་དེ ' ->
@@ -51,7 +64,15 @@ renderItems fmt = T.concat . map renderItem
 
     renderToken fmt tok
         | tokenSource tok == sourceOf fmt = tokenRaw tok
-        | otherwise = fromMaybe (tokenRaw tok) (scriptOf fmt (tokenCanonical tok))
+        -- a token without a cross-script spelling falls back to the text it
+        -- stands for: the content of a bracket block, the character of an
+        -- escape, and otherwise the raw slice
+        | otherwise = fromMaybe (unknownText tok) (scriptOf fmt (tokenCanonical tok))
+
+    unknownText tok =
+        case tokenCanonical tok of
+            TcUnknown (UnknownMark text) -> text
+            _ -> tokenRaw tok
 
     sourceOf OutUnicode = TsUnicode
     sourceOf OutWylie = TsWylie

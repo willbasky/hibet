@@ -55,6 +55,7 @@ library
   hs-source-dirs: src
   exposed-modules:
     Convert
+    Convert.Diagnostic
     Convert.Grammar.Constraint
     Convert.Grammar.Parser
     Convert.Grammar.Structure
@@ -123,6 +124,7 @@ test-suite hewts-test
 
   build-depends:
     bytestring,
+    containers,
     hewts,
     tasty,
     tasty-golden,

@@ -1,0 +1,224 @@
+# Warning TEXTS from the Lingua reference (Lingua-BO-Wylie/lib/Lingua/BO/Wylie.pm),
+# one row per corpus row: the same caseLine the parity report uses (1-based
+# physical line of lingua_parity.tsv), then the warning texts separated by tabs.
+# A row with only the number means: no warnings in this mode.
+# Generated with check_strict => 0 / check_strict => 1.
+
+2
+3
+4
+5
+6
+7
+8
+9	line 1: "gha": "gh" should be "g+h"
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21	line 1: "bhrUM": "bh" should be "b+h"	line 1: "bhrUM": Subjoined "r" not expected after "bh".
+22
+23
+24
+25
+26	line 1: "dzha": "dzh" should be "dz+h"
+27
+28
+29
+30
+31	line 1: "rya": Subjoined "y" not expected after "r".
+32	line 1: "mrya": Subjoined "y" not expected after "r".
+33
+34
+35
+36
+37
+38
+39	line 1: "sya": Subjoined "y" not expected after "s".
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101	No Tibetan characters found!
+102
+103
+104
+105	line 1: Unfinished [non-Wylie stuff].
+106
+107
+108	No Tibetan characters found!
+109
+110	line 1: "\u01x3": invalid hexadecimal code.
+111	line 1: Unexpected character "x".	line 1: Unexpected character "x".	line 1: Unexpected character "x".	No Tibetan characters found!
+112	line 1: Unexpected character "x".
+113
+114	line 1: Unexpected character ".".	line 1: Unexpected character "?".	line 1: Unexpected character "?".	line 1: Unexpected character "?".
+115
+116
+117	line 1: "tgra": Invalid prefix consonant: "t".
+118
+119	line 1: "g^r^a": Cannot have more than one "^" applied to the same stack.
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133	line 1: "c": Invalid prefix consonant: "c".
+134
+135
+136	line 1: "grywa": Subjoined "y" not expected after "r".	line 1: "grywa": Prefix "g" does not occur before "r".	line 1: "grywa": Subjoined "y" not expected after "r".
+137	line 1: "grla": Prefix "g" does not occur before "r".
+138
+139	line 1: "cla": Subjoined "l" not expected after "c".
+140
+141
+142
+143
+144	line 1: "g+X": Expected vowel or consonant after "+".
+145	line 1: "ge+a": Cannot subjoin a-chen (a) after vowel (e) in same stack.
+146	line 1: "ge+r": Cannot subjoin consonant (r) after vowel (e) in same stack.
+147
+148	line 1: "oMM": Cannot have two "M" applied to the same stack.
+149
+150	line 1: "o~M`M": Cannot have "M" and "~M`" applied to the same stack.
+151
+152
+153	line 1: "g.": Prefix "g" does not occur before ".".	line 1: "g.": Vowel expected after "g".	line 1: Unexpected character ".".	line 1: Unexpected character ".".	line 1: Unexpected character ".".
+154	line 1: "grglam": Prefix "g" does not occur before "r".	line 1: "grglam": Expected vowel after "r".
+155
+156
+157	line 1: "pgru": Invalid prefix consonant: "p".
+158
+159	line 1: "bdza": Prefix "b" does not occur before "dz".
+160	line 1: "bz": Expected vowel after "z".
+161
+162	line 1: "bars": Second suffix "s" does not occur after "r".
+163	line 1: "bart": Invalid 2nd suffix consonant: "t".
+164
+165	line 1: "gabsp": Cannot have another consonant "p" after 2nd suffix.
+166	line 1: "b": Vowel expected after "b".
+167
+168	line 1: "dga": Syllable should probably be "dag".
+169
+170
+171
+172
+173
+174
+175	line 1: "dags": Syllable should probably be "dgas".
+176	line 1: "'ags": Syllable should probably be "'gas".
+177	line 1: "dabs": Syllable should probably be "dbas".
+178	line 1: "dams": Syllable should probably be "dmas".
+179	line 1: "bgas": Syllable should probably be "bags".
+180	line 1: Unexpected character "M".
+181
+182
+183
+184	line 1: "badzra": Subjoined "r" not expected after "dz".	line 1: "sid+dhi": "dh" should be "d+h"
+185	line 1: "sid+dhi": "dh" should be "d+h"
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196	No Tibetan characters found!
+197	line 1: "bo+ra": Cannot subjoin consonant (r) after vowel (o) in same stack.
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211	line 1: "bgrya": Subjoined "y" not expected after "r".
+212
+213
+214	line 1: "mgas": Syllable should probably be "mags".
+215
+216
+217
+218
+219

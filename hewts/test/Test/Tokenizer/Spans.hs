@@ -12,19 +12,19 @@ tests :: TestTree
 tests =
     testGroup
         "spans"
-        [ testCase "wylie spans are contiguous" (assertContiguousSpans $ tokenizeWylie "tsh // g+ha + //")
+        [ testCase "wylie spans are contiguous" (assertContiguousSpans $ fst (tokenizeWylie "tsh // g+ha + //"))
         , testCase "wylie multi-char token span length" caseWylieMultiCharLen
-        , testCase "unicode spans are contiguous" (assertContiguousSpans $ tokenizeUnicode "ཚ དྷ།།")
+        , testCase "unicode spans are contiguous" (assertContiguousSpans $ fst (tokenizeUnicode "ཚ དྷ།།"))
         , testCase "unicode final token ends at input length" caseUnicodeEndsAtLength
         , testCase "wylie stream invariants on mixed input" caseWylieStreamInvariants
         , testCase "unicode stream invariants on mixed input" caseUnicodeStreamInvariants
-        , testCase "wylie stream invariants on empty input" (assertTokenStreamInvariants tokenizeWylie "")
-        , testCase "unicode stream invariants on empty input" (assertTokenStreamInvariants tokenizeUnicode "")
+        , testCase "wylie stream invariants on empty input" (assertTokenStreamInvariants (fst . tokenizeWylie) "")
+        , testCase "unicode stream invariants on empty input" (assertTokenStreamInvariants (fst . tokenizeUnicode) "")
         ]
 
 caseWylieMultiCharLen :: Assertion
 caseWylieMultiCharLen =
-    case tokenizeWylie "g+h" of
+    case fst (tokenizeWylie "g+h") of
         [tok, cont] -> do
             tokenSpan tok @?= mkSpan 0 3
             tokenRaw cont @?= ""
@@ -35,7 +35,7 @@ caseWylieMultiCharLen =
 caseUnicodeEndsAtLength :: Assertion
 caseUnicodeEndsAtLength =
     let input = "གཞོན"
-        toks = tokenizeUnicode input
+        toks = fst (tokenizeUnicode input)
         expectedEnd = fromIntegral (T.length input)
      in case reverse toks of
             [] -> error "Expected non-empty token stream"
@@ -43,11 +43,11 @@ caseUnicodeEndsAtLength =
 
 caseWylieStreamInvariants :: Assertion
 caseWylieStreamInvariants =
-    assertTokenStreamInvariants tokenizeWylie "gzhon // g+h O ~+`]-. x _ k+Sh"
+    assertTokenStreamInvariants (fst . tokenizeWylie) "gzhon // g+h O ~+`]-. x _ k+Sh"
 
 caseUnicodeStreamInvariants :: Assertion
 caseUnicodeStreamInvariants =
-    assertTokenStreamInvariants tokenizeUnicode "ཀིི ཀདྷ ཀxི ྆། ་"
+    assertTokenStreamInvariants (fst . tokenizeUnicode) "ཀིི ཀདྷ ཀxི ྆། ་"
 
 assertContiguousSpans :: [Token] -> Assertion
 assertContiguousSpans [] = pure ()

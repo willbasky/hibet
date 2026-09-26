@@ -47,7 +47,7 @@ rawsOf :: [SpellItem] -> [Text]
 rawsOf = concatMap itemRaws
 
 run :: Text -> [SpellItem]
-run = either (const []) id . parseEither pSentence . tokenizeUnicode
+run = either (const []) id . parseEither pSentence . (fst . tokenizeUnicode)
 
 simple :: TestTree
 simple =
@@ -135,7 +135,7 @@ roundtrip =
         mapM_ check inputs
   where
     check input =
-        rawsOf (run input) @?= map tokenRaw (tokenizeUnicode input)
+        rawsOf (run input) @?= map tokenRaw (fst (tokenizeUnicode input))
 
 longText :: Text
 longText =
@@ -155,7 +155,7 @@ counts = foldl step (0, 0, 0, 0)
 longTextParses :: TestTree
 longTextParses =
     testCase "long real text: every token preserved, no hang" $ do
-        let toks = tokenizeUnicode longText
+        let toks = fst (tokenizeUnicode longText)
         case parseEither pSentence toks of
             Left e -> assertFailure (show e)
             Right items -> do

@@ -56,7 +56,7 @@ caseRenderUnicodeToWylie =
 
 caseRenderWylieToUnicode :: Assertion
 caseRenderWylieToUnicode =
-    renderFromTokens OutUnicode (tokenizeWylie "ki ") @?= "ཀི་"
+    renderFromTokens OutUnicode (fst (tokenizeWylie "ki ")) @?= "ཀི་"
 
 caseRenderSameScriptKeepsRaw :: Assertion
 caseRenderSameScriptKeepsRaw =
@@ -64,7 +64,7 @@ caseRenderSameScriptKeepsRaw =
 
 caseRenderFvComposed :: Assertion
 caseRenderFvComposed =
-    renderFromTokens OutUnicode (tokenizeWylie "f v ") @?= "ཕ༹་བ༹་"
+    renderFromTokens OutUnicode (fst (tokenizeWylie "f v ")) @?= "ཕ༹་བ༹་"
 
 caseRenderCrossScriptCanonical :: Assertion
 caseRenderCrossScriptCanonical =
@@ -76,13 +76,13 @@ caseRenderUnicodeStubsToWylie =
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
-    renderFromTokens OutUnicode (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33") @?= "ཬྲྀ༒༳"
+    renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33")) @?= "ཬྲྀ༒༳"
 
 rawRoundtripWylie :: Text -> Text
-rawRoundtripWylie = T.concat . fmap tokenRaw . tokenizeWylie
+rawRoundtripWylie = T.concat . fmap tokenRaw . (fst . tokenizeWylie)
 
 rawRoundtripUnicode :: Text -> Text
-rawRoundtripUnicode = T.concat . fmap tokenRaw . tokenizeUnicode
+rawRoundtripUnicode = T.concat . fmap tokenRaw . (fst . tokenizeUnicode)
 
 renderInput :: OutputFormat -> Text -> Text
 renderInput fmt = either (error . T.unpack) (renderItems fmt) . splitSentences
@@ -91,10 +91,10 @@ renderFromTokens :: OutputFormat -> [Token] -> Text
 renderFromTokens fmt = renderItems fmt . map (Other . (: []))
 
 canonicalWylieFromWylie :: Text -> Text
-canonicalWylieFromWylie = T.concat . fmap canonicalPiece . tokenizeWylie
+canonicalWylieFromWylie = T.concat . fmap canonicalPiece . (fst . tokenizeWylie)
 
 canonicalWylieFromUnicode :: Text -> Text
-canonicalWylieFromUnicode = T.concat . fmap canonicalPiece . tokenizeUnicode
+canonicalWylieFromUnicode = T.concat . fmap canonicalPiece . (fst . tokenizeUnicode)
 
 canonicalPiece :: Token -> Text
 canonicalPiece tok =

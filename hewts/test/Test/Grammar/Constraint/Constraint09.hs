@@ -31,4 +31,4 @@ tests =
     ]
 
 parseRaws :: Parser [Token] -> Text -> Either Text [Text]
-parseRaws p input = fmap (map tokenRaw) $ parseEither p (tokenizeUnicode input)
+parseRaws p input = fmap (map tokenRaw) $ parseEither p (fst (tokenizeUnicode input))

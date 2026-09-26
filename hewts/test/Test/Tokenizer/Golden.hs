@@ -18,35 +18,35 @@ tests =
         [ goldenVsString
             "wylie token stream"
             "test/golden/wylie_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeWylie "gzhon nu'i dpe cha // +")
+            (pure $ renderTokensBS $ fst (tokenizeWylie "gzhon nu'i dpe cha // +"))
         , goldenVsString
             "unicode token stream"
             "test/golden/unicode_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeUnicode "གཞོན་ནུའི་དཔེ་ཆ།། ་x")
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "གཞོན་ནུའི་དཔེ་ཆ།། ་x"))
         , goldenVsString
             "wylie diagnostics token stream"
             "test/golden/wylie_diagnostics_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeWylie "gzhon // ~+`]-. x")
+            (pure $ renderTokensBS $ fst (tokenizeWylie "gzhon // ~+`]-. x"))
         , goldenVsString
             "unicode edge token stream"
             "test/golden/unicode_edge_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeUnicode "ཀིི ཀxི ྆།")
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "ཀིི ཀxི ྆།"))
         , goldenVsString
             "wylie dense stacks token stream"
             "test/golden/wylie_dense_stacks_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeWylie "k+Shra dz+ha -d+h'i b+lai ~M` //")
+            (pure $ renderTokensBS $ fst (tokenizeWylie "k+Shra dz+ha -d+h'i b+lai ~M` //"))
         , goldenVsString
             "wylie dense aliases token stream"
             "test/golden/wylie_dense_aliases_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeWylie "D+hO b+hU dzhai -sha ~Xa //")
+            (pure $ renderTokensBS $ fst (tokenizeWylie "D+hO b+hU dzhai -sha ~Xa //"))
         , goldenVsString
             "unicode punctuation and signs token stream"
             "test/golden/unicode_punctuation_signs_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeUnicode "༄༅།༎༏༑༔༈༉༊་ ༼ཀ༽")
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "༄༅།༎༏༑༔༈༉༊་ ༼ཀ༽"))
         , goldenVsString
             "unicode mixed garbage diagnostics token stream"
             "test/golden/unicode_mixed_garbage_tokens.golden"
-            (pure $ renderTokensBS $ tokenizeUnicode "ཀx?། @྆+་ི\n#ག")
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "ཀx?། @྆+་ི\n#ག"))
         ]
 
 renderTokensBS :: [Token] -> ByteString

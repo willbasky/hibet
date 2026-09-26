@@ -1,20 +1,33 @@
 # Ratchet baseline for Test.Parity: corpus <TAB> check <TAB> total <TAB> passing.
 #
 # `passing` is how many checks of that kind passed when this file was written.
-# The test fails when the current number is LOWER, so waves 2..6 lower these
-# numbers instead of touching the corpora. `total` must always equal the real
-# number of checks, which pins the corpus files against silent truncation.
+# The test fails when the current number is LOWER, so the later waves lower
+# these numbers instead of touching the corpora. `total` must always equal the
+# real number of checks, which pins the corpus files against silent truncation.
 #
-# Starting point, recorded right after Wave 1: hewts has the token layer and a
-# grammar, but no orthography rules and no stack resolution yet, so most
-# differences are real work for waves 2..6. Warnings are not checked at all —
-# hewts has no warning channel yet (see README.md).
-jsewts	w2u	210	24
+# Check kinds:
+#   w2u / u2w      - the converted text against the reference
+#   roundtrip      - our W->U->W->U must land where the reference lands
+#   w2u-warnings   - our warning TEXTS against the exported reference texts
+#   u2w-warnings   - whether we warn at all on the way back (the corpus records
+#                     only a count there, and the back-conversion texts are
+#                     not exported yet)
+#
+# Wave 2 brought w2u from 24 to 28 (jsewts) and 25 to 29 (Lingua): the
+# bracketed foreign text, the escapes and the dropped line breaks now match.
+# Almost every remaining warning gap is a syllable-level one ("Subjoined y not
+# expected after r", "Invalid prefix consonant", "more than one ^"), i.e. the
+# orthography rules of wave 3, plus "No Tibetan characters found!" from wave 4.
+jsewts	w2u	210	28
 jsewts	u2w	210	16
-jsewts	roundtrip	210	36
-lingua	w2u	218	25
+jsewts	roundtrip	210	37
+jsewts	w2u-warnings	210	172
+jsewts	u2w-warnings	210	201
+lingua	w2u	218	29
 lingua	u2w	218	15
-lingua	roundtrip	218	37
+lingua	roundtrip	218	38
+lingua	w2u-warnings	218	174
+lingua	u2w-warnings	218	208
 ewts-rs	w2u	16	0
 java	w2u	6	1
 java	u2w	2	0

@@ -1,5 +1,6 @@
 module Convert.Tokenizer.Unicode where
 
+import Convert.Diagnostic
 import Convert.Token
 import Control.Applicative (asum)
 import Data.Maybe (fromMaybe)
@@ -9,18 +10,32 @@ import qualified Data.Text as T
 -- | Tokenize Unicode Tibetan input to typed IR tokens. Deprecated
 -- precomposed characters (aspirates, long vowels, vocalic r/l) decompose
 -- into a token sequence; see 'unicodeDecompose'.
-tokenizeUnicode :: Text -> [Token]
-tokenizeUnicode input = go 0 input
+--
+-- A byte-order mark and a zero-width space are skipped without a word, the way
+-- the reference skips them. The diagnostics come back with the tokens; this
+-- direction has none of its own yet.
+tokenizeUnicode :: Text -> ([Token], Diagnostics)
+tokenizeUnicode input = (reverse tokensRev, diagnosticsInOrder diagsRev)
   where
-    go _ rest | T.null rest = []
-    go offset rest =
+    (tokensRev, diagsRev) = go [] mempty 0 input
+
+    go accT accD _ rest
+        | T.null rest = (accT, accD)
+    go accT accD offset rest =
         case T.uncons rest of
-            Nothing -> []
-            Just (c, next) ->
-                let raw = T.singleton c
-                    end = offset + 1
-                    span = mkSpan (fromIntegral offset) (fromIntegral end)
-                 in classifyChar span raw c <> go end next
+            Nothing -> (accT, accD)
+            Just (c, next)
+                | isSkippedChar c -> go accT accD (offset + 1) next
+                | otherwise ->
+                    let end = offset + 1
+                        span = mkSpan (fromIntegral offset) (fromIntegral end)
+                        toks = classifyChar span (T.singleton c) c
+                     in go (reverse toks <> accT) accD end next
+
+-- | The reference passes a byte-order mark and a zero-width space through
+-- without a word; so do we.
+isSkippedChar :: Char -> Bool
+isSkippedChar c = c == '\xfeff' || c == '\x200b'
 
 classifyChar :: Span -> Text -> Char -> [Token]
 classifyChar span raw ch =

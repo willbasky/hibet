@@ -48,7 +48,7 @@ parseU input =
 -- | Parse Wylie text and run the token-level grammar.
 parseW :: Text -> [SpellItem]
 parseW input =
-    case parseEither pSentence (tokenizeWylie input) of
+    case parseEither pSentence (fst (tokenizeWylie input)) of
         Left err -> error ("RoundTrip.parseW: " <> show err)
         Right items -> items
 

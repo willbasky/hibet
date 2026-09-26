@@ -1,0 +1,215 @@
+# Warning TEXTS from the jsewts reference (jsewts a3c8c6b), one row per corpus
+# row: the same caseLine the parity report uses (1-based physical line of
+# jsewts_parity.tsv), then the warning texts separated by tabs.
+# A row with only the number means: no warnings in this mode.
+# Generated with { check: true, check_strict: <see file name>, sloppy: true }.
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22	line 1: "bhrUM": Subjoined "r" not expected after "bh".
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32	line 1: "rya": Subjoined "y" not expected after "r".
+33	line 1: "mrya": Subjoined "y" not expected after "mr".
+34
+35
+36
+37
+38
+39
+40	line 1: "sya": Subjoined "y" not expected after "s".
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66	line 1: "cr-i": Subjoined "r" not expected after "c".
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102	No Tibetan characters found!
+103
+104
+105
+106	line 1: Unfinished [non-Wylie stuff].
+107
+108
+109	line 1: "\u01x3": invalid hex code.
+110	line 1: Unexpected character "x".	line 1: Unexpected character "x".	line 1: Unexpected character "x".	No Tibetan characters found!
+111	line 1: Unexpected character "x".
+112
+113	line 1: Unexpected character ".".	line 1: Unexpected character "?".	line 1: Unexpected character "?".	line 1: Unexpected character "?".
+114
+115	line 1: "sgrwa": Superscript "s" does not occur above combination "grw".	line 1: "sgrwa": Subjoined "w" not expected after "sgr".
+116	line 1: "tgra": Invalid prefix consonant: "t".
+117
+118	line 1: "g^r^a": Cannot have more than one "^" applied to the same stack.
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132	line 1: "c": Invalid prefix consonant: "c".
+133
+134
+135	line 1: "grywa": Subjoined "y" not expected after "gr".	line 1: "grywa": Prefix "g" does not occur before "ryw".	line 1: "grywa": Subjoined "y" not expected after "r".	line 1: "grywa": Subjoined "w" not expected after "ry".
+136	line 1: "grla": Prefix "g" does not occur before "rl".
+137
+138	line 1: "cla": Subjoined "l" not expected after "c".
+139	line 1: "rbya": Superscript "r" does not occur above combination "by".	line 1: "rbya": Subjoined "y" not expected after "rb".
+140
+141
+142
+143	line 1: "g+X": Expected vowel or consonant after "+".
+144	line 1: "ge+a": Cannot subjoin a-chen (a) after vowel (e) in same stack.
+145	line 1: "ge+r": Cannot subjoin consonant (r) after vowel (e) in same stack.
+146
+147	line 1: "oMM": Cannot have two "M" applied to the same stack.
+148
+149	line 1: "o~M`M": Cannot have "M" and "~M`" applied to the same stack.
+150
+151
+152	line 1: "g.": Prefix "g" does not occur before "".	line 1: "g.": Vowel expected after "g".	line 1: Unexpected character ".".	line 1: Unexpected character ".".	line 1: Unexpected character ".".
+153	line 1: "grglam": Prefix "g" does not occur before "rgl".	line 1: "grglam": Superscript "r" does not occur above combination "gl".	line 1: "grglam": Expected vowel after "r".
+154
+155
+156	line 1: "pgru": Invalid prefix consonant: "p".
+157
+158	line 1: "bdza": Prefix "b" does not occur before "dz".
+159	line 1: "bz": Expected vowel after "z".
+160	line 1: "az": Invalid suffix consonant: "z".
+161	line 1: "bars": Second suffix "s" does not occur after "r".
+162	line 1: "bart": Invalid 2nd suffix consonant: "t".
+163
+164	line 1: "gabsp": Cannot have another consonant "p" after 2nd suffix.
+165	line 1: "b": Prefix "b" does not occur before "".	line 1: "b": Vowel expected after "b".
+166
+167	line 1: "dga": Syllable should probably be "dag".
+168
+169
+170
+171
+172
+173
+174	line 1: "dags": Syllable should probably be "dgas".
+175	line 1: "'ags": Syllable should probably be "'gas".
+176	line 1: "dabs": Syllable should probably be "dbas".
+177	line 1: "dams": Syllable should probably be "dmas".
+178	line 1: "bgas": Syllable should probably be "bags".
+179	line 1: Unexpected character "M".
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193	No Tibetan characters found!
+194	line 1: "bo+ra": Cannot subjoin consonant (r) after vowel (o) in same stack.
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207	line 1: "bgrwa": Prefix "b" does not occur before "grw".
+208	line 1: "bgrya": Prefix "b" does not occur before "gry".	line 1: "bgrya": Subjoined "y" not expected after "gr".
+209
+210
+211
