@@ -59,11 +59,37 @@ pSubfixRa = satisfy (isSpecificSubConsonant SCr) <?> "Subfix ra token"
 pSubfixLa :: Parser Token
 pSubfixLa = satisfy (isSpecificSubConsonant SCl) <?> "Subfix la token"
 
+-- | Wylie writes the subfix letters with their full letters (@rky@ -> ཀྱ);
+-- the subjoined signs exist only in the Tibetan spelling, so each subfix slot
+-- has a Wylie twin that matches the plain letter.
+pSubfixYaWylie :: Parser Token
+pSubfixYaWylie = satisfy (isSpecificConsonant Cy) <?> "Wylie subfix ya letter"
+
+pSubfixRaWylie :: Parser Token
+pSubfixRaWylie = satisfy (isSpecificConsonant Cr) <?> "Wylie subfix ra letter"
+
+pSubfixLaWylie :: Parser Token
+pSubfixLaWylie = satisfy (isSpecificConsonant Cl) <?> "Wylie subfix la letter"
+
+pSubfixWaWylie :: Parser Token
+pSubfixWaWylie = satisfy (isSpecificConsonant Cw) <?> "Wylie subfix wa letter"
+
 pVowel :: Parser Token
 pVowel = satisfy isVowelToken <?> "Vowel token"
 
 pVowelLongA :: Parser Token
 pVowelLongA = satisfy isLongAVowelToken <?> "Long vowel token"
+
+-- | The letter @a@ where a vowel would be: written in every Wylie syllable
+-- and never printed. The Wylie arms of the structures and constraints that
+-- assemble their own vowel slot reach for it when the spelling has no vowel
+-- sign.
+pImplicitA :: Parser Token
+pImplicitA = satisfy isImplicitA
+
+isImplicitA :: Token -> Bool
+isImplicitA Token{tokenCanonical = TcConsonant Ca} = True
+isImplicitA _ = False
 
 pPrefixGa :: Parser Token
 pPrefixGa = satisfy (isSpecificConsonant Cg) <?> "Prefix ga token"
@@ -222,12 +248,36 @@ isSpecificSubConsonant _ _ = False
 
 rootConsonants :: [Consonant]
 rootConsonants =
-    [ Ck, Ckh, Cg, Cng
-    , Cc, Cch, Cj, Cny, Ct, Cth
-    , Cd, Cn, Cp, Cph
-    , Cb, Cm, Cts, Ctsh
-    , Cdz, Cw, Czh, Cz
-    , C', Cy, Cr, Cl, Csh, Cs, Ch, Ca
+    [ Ck
+    , Ckh
+    , Cg
+    , Cng
+    , Cc
+    , Cch
+    , Cj
+    , Cny
+    , Ct
+    , Cth
+    , Cd
+    , Cn
+    , Cp
+    , Cph
+    , Cb
+    , Cm
+    , Cts
+    , Ctsh
+    , Cdz
+    , Cw
+    , Czh
+    , Cz
+    , C'
+    , Cy
+    , Cr
+    , Cl
+    , Csh
+    , Cs
+    , Ch
+    , Ca
     ]
 
 sanskritConsonants :: [Consonant]

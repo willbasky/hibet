@@ -2,11 +2,10 @@ module Test.Convert (tests) where
 
 import Convert (SpellItem (..), splitSentences, syllables)
 import Convert.Token (tokenRaw)
-import Data.Either (either)
 import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), testCase)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 tests :: TestTree
 tests =

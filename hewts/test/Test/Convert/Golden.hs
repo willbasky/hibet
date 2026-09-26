@@ -1,6 +1,6 @@
 module Test.Convert.Golden (tests) where
 
-import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
+import Convert (OutputFormat (..), pSentence, renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import qualified Data.ByteString as BS

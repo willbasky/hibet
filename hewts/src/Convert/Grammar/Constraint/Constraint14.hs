@@ -6,32 +6,41 @@ module Convert.Grammar.Constraint.Constraint14 (pConstraint14) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
-import Data.Maybe (fromMaybe)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
-  ( Consonant (..)
-  , Token
-  , TokenCanonical (TcConsonant)
-  , tokenCanonical
-  )
+    ( Consonant (..)
+    , Token (..)
+    , TokenCanonical (TcConsonant)
+    , tokenCanonical
+    )
+import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
 pConstraint14 :: Spelling -> Parser TibetanWord
-pConstraint14 spelling =
-  MP.choice
-    [ MP.try $ parseConstraint14 spelling GP.pPrefixGa pRoots1
-    , MP.try $ parseConstraint14 spelling GP.pPrefixDa pRoots2
-    , MP.try $ parseConstraint14 spelling GP.pPrefixBa pRoots3
-    , MP.try $ parseConstraint14 spelling GP.pPrefixMa pRoots4
-    , MP.try $ parseConstraint14 spelling GP.pPrefixA pRoots5
-    ]
+pConstraint14 = \case
+    Tibetan ->
+        MP.choice
+            [ MP.try $ parseConstraintUnicode14 GP.pPrefixGa pRoots1
+            , MP.try $ parseConstraintUnicode14 GP.pPrefixDa pRoots2
+            , MP.try $ parseConstraintUnicode14 GP.pPrefixBa pRoots3
+            , MP.try $ parseConstraintUnicode14 GP.pPrefixMa pRoots4
+            , MP.try $ parseConstraintUnicode14 GP.pPrefixA pRoots5
+            ]
+    Wylie ->
+        MP.choice
+            [ MP.try $ parseConstraintWylie14 GP.pPrefixGa pRoots1
+            , MP.try $ parseConstraintWylie14 GP.pPrefixDa pRoots2
+            , MP.try $ parseConstraintWylie14 GP.pPrefixBa pRoots3
+            , MP.try $ parseConstraintWylie14 GP.pPrefixMa pRoots4
+            , MP.try $ parseConstraintWylie14 GP.pPrefixA pRoots5
+            ]
 
-parseConstraint14 :: Spelling -> Parser Token -> Parser Token -> Parser TibetanWord
-parseConstraint14 spelling parsePrefix parseRoot = do
-  prefix <- mark Prefix parsePrefix
-  root <- mark Root parseRoot
-  vowel <- MP.optional (vowelSlot spelling)
-  pure (prefix <> root <> fromMaybe mempty vowel)
+parseConstraintUnicode14 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintUnicode14 parsePrefix parseRoot = do
+    prefix <- mark Prefix parsePrefix
+    root <- mark Root parseRoot
+    vowel <- MP.optional (mark Vowel GP.pVowel)
+    pure (prefix <> root <> fromMaybe mempty vowel)
 
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག
 pRoots1 :: Parser Token
@@ -55,8 +64,18 @@ pRoots5 = pAllowedRoot [Ckh, Cg, Cch, Cj, Cth, Cd, Cph, Cb, Ctsh, Cdz]
 
 pAllowedRoot :: [Consonant] -> Parser Token
 pAllowedRoot allowed = do
-  tok <- GP.pConsonant
-  case tokenCanonical tok of
-    TcConsonant c
-      | c `elem` allowed -> pure tok
-    _ -> MP.empty
+    tok <- GP.pConsonant
+    case tokenCanonical tok of
+        TcConsonant c
+            | c `elem` allowed -> pure tok
+        _ -> MP.empty
+
+-- The Wylie arm: the prefix and the root are full letters either way, so only
+-- the vowel slot differs - Wylie writes it in every syllable.
+
+parseConstraintWylie14 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintWylie14 parsePrefix parseRoot = do
+    prefix <- mark Prefix parsePrefix
+    root <- mark Root parseRoot
+    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+    pure (prefix <> root <> vowel)

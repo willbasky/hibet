@@ -156,27 +156,28 @@ markWord = go True
         -- subjoining run after a forced one (g+mra), a caret and then finals. A
         -- dot ends the tail here; the next 'takeStack' consumes it.
         consumeTail :: [Token] -> ([(Position, Token)], [Token])
-        consumeTail = go False []
+        consumeTail = goTail False []
             where
                 -- After a real vowel the tail is over: a bare @a@ that follows (goang
                 -- གོཨང) is the root ཨ of a fresh stack, not the implicit vowel again.
-                go :: Bool -> [(Position, Token)] -> [Token] -> ([(Position, Token)], [Token])
-                go vowelSeen acc toks =
+                goTail ::
+                    Bool -> [(Position, Token)] -> [Token] -> ([(Position, Token)], [Token])
+                goTail vowelSeen acc toks =
                     case toks of
                         tok : more
-                            | isEatableVowel tok -> go True ((Vowel, tok) : acc) more
+                            | isEatableVowel tok -> goTail True ((Vowel, tok) : acc) more
                             | isCa tok ->
                                 if vowelSeen
                                     then (reverse acc, toks)
-                                    else go False ((ImplicitVowel, tok) : acc) more
-                            | isCaretLike tok -> go vowelSeen ((Final, tok) : acc) more
-                            | isFinalLike tok -> go vowelSeen ((Final, tok) : acc) more
+                                    else goTail False ((ImplicitVowel, tok) : acc) more
+                            | isCaretLike tok -> goTail vowelSeen ((Final, tok) : acc) more
+                            | isFinalLike tok -> goTail vowelSeen ((Final, tok) : acc) more
                             | isPlus tok ->
                                 case more of
                                     next : rest
                                         | isConsonantLike next || isSubConsonantLike next ->
                                             let (subs, caret, after) = takeSubs rest
-                                             in go
+                                             in goTail
                                                     vowelSeen
                                                     ( [(Subfix, s) | s <- subs]
                                                         <> [(Final, c) | c <- maybeToList caret]
@@ -184,8 +185,8 @@ markWord = go True
                                                         <> acc
                                                     )
                                                     after
-                                        | isEatableVowel next -> go True ((Vowel, next) : acc) rest
-                                        | isCa next -> go vowelSeen ((Subfix, next) : acc) rest
+                                        | isEatableVowel next -> goTail True ((Vowel, next) : acc) rest
+                                        | isCa next -> goTail vowelSeen ((Subfix, next) : acc) rest
                                         | otherwise -> (reverse acc, toks)
                                     [] -> (reverse acc, toks)
                             | otherwise -> (reverse acc, toks)

@@ -28,8 +28,9 @@ fromUnicodeEscape :: String -> String
 fromUnicodeEscape [] = []
 fromUnicodeEscape ('\\' : 'x' : a : b : c : d : rest)
     | all isHexDigit [a, b, c, d] =
-        let [(val, "")] = readHex [a, b, c, d]
-         in chr val : fromUnicodeEscape rest
+        case readHex [a, b, c, d] of
+            [(val, "")] -> chr val : fromUnicodeEscape rest
+            _ -> '\\' : fromUnicodeEscape ('x' : a : b : c : d : rest)
 fromUnicodeEscape (x : xs) = x : fromUnicodeEscape xs
 
 -- IR input source.
@@ -89,7 +90,7 @@ data Span = Span
     }
     deriving (Show, Eq, Ord)
 
--- Keep spans half-open and monotonic: [start, end), end >= start.
+-- Keep sps half-open and monotonic: [start, end), end >= start.
 mkSpan :: Natural -> Natural -> Span
 mkSpan start end =
     let end' = max start end
@@ -121,7 +122,7 @@ data TokenCanonical
 -- 2) tokenCanonical is always normalized to shared canonical domain values
 --    (compound forms; deprecated precomposed spellings never occur here).
 -- 3) tokenSpan is a half-open interval [start, end) over source offsets;
---    spans are monotonic and cover the whole input without gaps or overlap.
+--    sps are monotonic and cover the whole input without gaps or overlap.
 -- 4) tokenIssues only describe lexical/tokenization-level diagnostics.
 data Token = Token
     { tokenRaw :: Text
@@ -144,85 +145,85 @@ mkTokenWith ::
     -> AliasPolicy
     -> [TokenIssue]
     -> Token
-mkTokenWith source kind raw canonical span aliasPolicy issues =
+mkTokenWith source kind raw canonical sp aliasPolicy issues =
     Token
         { tokenRaw = raw
         , tokenCanonical = canonical
         , tokenKind = kind
         , tokenSource = source
-        , tokenSpan = mkSpan (offsetStart span) (offsetEnd span)
+        , tokenSpan = mkSpan (offsetStart sp) (offsetEnd sp)
         , tokenAliasPolicy = aliasPolicy
         , tokenIssues = issues
         }
 
 mkToken :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> Token
-mkToken source kind raw canonical span =
-    mkTokenWith source kind raw canonical span PreserveRaw []
+mkToken source kind raw canonical sp =
+    mkTokenWith source kind raw canonical sp PreserveRaw []
 
 mkConsonant :: TokenSource -> Span -> Text -> Consonant -> Token
-mkConsonant source span raw consonant =
-    mkToken source TkConsonant raw (TcConsonant consonant) span
+mkConsonant source sp raw consonant =
+    mkToken source TkConsonant raw (TcConsonant consonant) sp
 
 mkSubConsonant :: TokenSource -> Span -> Text -> SubConsonant -> Token
-mkSubConsonant source span raw subConsonant =
-    mkToken source TkSubConsonant raw (TcSubConsonant subConsonant) span
+mkSubConsonant source sp raw subConsonant =
+    mkToken source TkSubConsonant raw (TcSubConsonant subConsonant) sp
 
 mkVowel :: TokenSource -> Span -> Text -> Vowel -> Token
-mkVowel source span raw vowel =
-    mkToken source TkVowel raw (TcVowel vowel) span
+mkVowel source sp raw vowel =
+    mkToken source TkVowel raw (TcVowel vowel) sp
 
 mkFinal :: TokenSource -> Span -> Text -> FinalMark -> Token
-mkFinal source span raw finalMark =
-    mkToken source TkFinal raw (TcFinal finalMark) span
+mkFinal source sp raw finalMark =
+    mkToken source TkFinal raw (TcFinal finalMark) sp
 
 mkNumber :: TokenSource -> Span -> Text -> Number -> Token
-mkNumber source span raw number =
-    mkToken source TkNumber raw (TcNumber number) span
+mkNumber source sp raw number =
+    mkToken source TkNumber raw (TcNumber number) sp
 
 mkHalfNumber :: TokenSource -> Span -> Text -> HalfNumber -> Token
-mkHalfNumber source span raw halfNumber =
-    mkToken source TkHalfNumber raw (TcHalfNumber halfNumber) span
+mkHalfNumber source sp raw halfNumber =
+    mkToken source TkHalfNumber raw (TcHalfNumber halfNumber) sp
 
 mkPunctuation :: TokenSource -> Span -> Text -> PunctuationMark -> Token
-mkPunctuation source span raw punctuationMark =
-    mkToken source TkPunctuation raw (TcPunctuation punctuationMark) span
+mkPunctuation source sp raw punctuationMark =
+    mkToken source TkPunctuation raw (TcPunctuation punctuationMark) sp
 
 mkSign :: TokenSource -> Span -> Text -> SignMark -> Token
-mkSign source span raw signMark =
-    mkToken source TkSign raw (TcSign signMark) span
+mkSign source sp raw signMark =
+    mkToken source TkSign raw (TcSign signMark) sp
 
 mkSanskritMark :: TokenSource -> Span -> Text -> SanskritMark -> Token
-mkSanskritMark source span raw sanskritMark =
-    mkToken source TkSanskritMark raw (TcSanskritMark sanskritMark) span
+mkSanskritMark source sp raw sanskritMark =
+    mkToken source TkSanskritMark raw (TcSanskritMark sanskritMark) sp
 
 mkOrnament :: TokenSource -> Span -> Text -> OrnamentMark -> Token
-mkOrnament source span raw ornamentMark =
-    mkToken source TkOrnament raw (TcOrnament ornamentMark) span
+mkOrnament source sp raw ornamentMark =
+    mkToken source TkOrnament raw (TcOrnament ornamentMark) sp
 
 mkSpace :: TokenSource -> Span -> Text -> SpaceMark -> Token
-mkSpace source span raw spaceMark =
-    mkToken source TkSpace raw (TcSpace spaceMark) span
+mkSpace source sp raw spaceMark =
+    mkToken source TkSpace raw (TcSpace spaceMark) sp
 
 mkSymbol :: TokenSource -> Span -> Text -> SymbolMark -> Token
-mkSymbol source span raw symbolMark =
-    mkToken source TkSymbol raw (TcSymbol symbolMark) span
+mkSymbol source sp raw symbolMark =
+    mkToken source TkSymbol raw (TcSymbol symbolMark) sp
 
 mkUnknownWith :: TokenSource -> Span -> Text -> [TokenIssue] -> Token
-mkUnknownWith source span raw issues =
+mkUnknownWith source sp raw issues =
     mkTokenWith
         source
         TkUnknown
         raw
         (TcUnknown (UnknownMark raw))
-        span
+        sp
         PreserveRaw
         issues
 
 mkUnknown :: TokenSource -> Span -> Text -> Token
-mkUnknown source span raw =
+mkUnknown source sp raw =
     mkUnknownWith
         source
-        span
+        sp
         raw
         [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
 
@@ -230,28 +231,28 @@ mkUnknown source span raw =
 -- they stay in the raw slice (so the input remains fully covered), while the
 -- content - the text the token stands for - is what reaches the other script.
 mkNonTibetan :: TokenSource -> Span -> Text -> Text -> Token
-mkNonTibetan source span raw content =
-    mkToken source TkNonTibetan raw (TcUnknown (UnknownMark content)) span
+mkNonTibetan source sp raw content =
+    mkToken source TkNonTibetan raw (TcUnknown (UnknownMark content)) sp
 
 -- | Build a 'Token' from a decoded canonical payload, dispatching on its
 -- constructor. Used by both tokenizers when a raw chunk (e.g. a \\uXXXX
 -- escape) resolves to a known canonical.
 mkTokenFromCanonical :: TokenSource -> Span -> Text -> TokenCanonical -> Token
-mkTokenFromCanonical source span raw = \case
-    TcConsonant c -> mkConsonant source span raw c
-    TcSubConsonant s -> mkSubConsonant source span raw s
-    TcVowel v -> mkVowel source span raw v
-    TcFinal f -> mkFinal source span raw f
-    TcNumber n -> mkNumber source span raw n
-    TcHalfNumber h -> mkHalfNumber source span raw h
-    TcPunctuation p -> mkPunctuation source span raw p
-    TcSign s -> mkSign source span raw s
-    TcSanskritMark m -> mkSanskritMark source span raw m
-    TcOrnament o -> mkOrnament source span raw o
-    TcSpace m -> mkSpace source span raw m
-    TcSymbol s -> mkSymbol source span raw s
-    TcConSpec cs -> mkToken source TkConSpec raw (TcConSpec cs) span
-    TcUnknown _ -> mkUnknownWith source span raw []
+mkTokenFromCanonical source sp raw = \case
+    TcConsonant c -> mkConsonant source sp raw c
+    TcSubConsonant s -> mkSubConsonant source sp raw s
+    TcVowel v -> mkVowel source sp raw v
+    TcFinal f -> mkFinal source sp raw f
+    TcNumber n -> mkNumber source sp raw n
+    TcHalfNumber h -> mkHalfNumber source sp raw h
+    TcPunctuation p -> mkPunctuation source sp raw p
+    TcSign s -> mkSign source sp raw s
+    TcSanskritMark m -> mkSanskritMark source sp raw m
+    TcOrnament o -> mkOrnament source sp raw o
+    TcSpace m -> mkSpace source sp raw m
+    TcSymbol s -> mkSymbol source sp raw s
+    TcConSpec cs -> mkToken source TkConSpec raw (TcConSpec cs) sp
+    TcUnknown _ -> mkUnknownWith source sp raw []
 
 -- | Build the token stream for one source slice that decomposes or expands
 -- into several canonical tokens (e.g. "gh" -> [Cg, SCh], or a deprecated
@@ -260,13 +261,13 @@ mkTokenFromCanonical source span raw = \case
 -- sitting at the end of the slice, so that 'T.concat' over 'tokenRaw' always
 -- reproduces the input exactly.
 mkSequenceTokens :: TokenSource -> Span -> Text -> [TokenCanonical] -> [Token]
-mkSequenceTokens source span raw = \case
+mkSequenceTokens source sp raw = \case
     [] -> []
     c : cs ->
-        mkTokenFromCanonical source span raw c
+        mkTokenFromCanonical source sp raw c
             : [mkTokenFromCanonical source (mkSpan end end) mempty k | k <- cs]
     where
-        end = offsetEnd span
+        end = offsetEnd sp
 
 -- >>> import qualified Data.Text.Lazy as TL
 -- >>> import Text.Pretty.Simple

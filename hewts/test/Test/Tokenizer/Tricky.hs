@@ -2,6 +2,7 @@ module Test.Tokenizer.Tricky (tests) where
 
 import Convert.Diagnostic (renderDiagnostics)
 import Convert.Token
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie
     ( longTokenList
     , tokenizeWylie
@@ -15,12 +16,11 @@ import Convert.Tokenizer.Wylie
     , wylieSymbol
     , wylieVowel
     )
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), Assertion, assertBool, testCase)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 tests :: TestTree
 tests =
@@ -29,9 +29,13 @@ tests =
         [ testCase "wylie longest-match dzh stays one token" caseWylieDzh
         , testCase "wylie longest-match -d+h beats -d" caseWylieDashDH
         , testCase "wylie CRLF is a single lexical chunk" caseWylieCRLFChunk
-        , testCase "wylie bracketed non-tibetan block is a single token" caseWylieBracketedChunk
+        , testCase
+            "wylie bracketed non-tibetan block is a single token"
+            caseWylieBracketedChunk
         , testCase "wylie unicode escape chunk is a single token" caseWylieEscapeChunk
-        , testCase "wylie special marker carries InvalidSequence warning" caseWylieSpecialIssue
+        , testCase
+            "wylie special marker carries InvalidSequence warning"
+            caseWylieSpecialIssue
         , testCase "wylie longest-match k+Sh is single chunk" caseWylieKPlusShChunk
         , testCase "wylie longest-match dz+h then a" caseWylieDzPlusHThenA
         , testCase "wylie longest-match -d+h then a" caseWylieDashDPlusHThenA
@@ -43,20 +47,40 @@ tests =
         , testCase "wylie longest-match Sh then a" caseWylieShThenA
         , testCase "wylie longest-match th then a" caseWylieThThenA
         , testGroup "wylie prefix conflicts" (map mkPrefixCase wyliePrefixCases)
-        , testCase "wylie mixed special markers keep InvalidSequence diagnostics" caseWylieMixedSpecialDiagnostics
-        , testCase "wylie unknown latin keeps UnknownChar diagnostics" caseWylieUnknownDiagnostics
-        , testCase "unicode unexpected ASCII between Tibetan signs is isolated" caseUnicodeUnexpectedAsciiBetweenTibetan
-        , testCase "unicode repeated vowel marks are tokenized separately" caseUnicodeRepeatedVowels
-        , testCase "unicode rare combining mark is unknown with warning" caseUnicodeRareCombiningUnknown
-        , testCase "unicode mixed edge stream preserves per-token diagnostics" caseUnicodeMixedEdgeDiagnostics
-        , testCase "unicode tsheg and ASCII space are different kinds" caseUnicodeTshegVsSpace
+        , testCase
+            "wylie mixed special markers keep InvalidSequence diagnostics"
+            caseWylieMixedSpecialDiagnostics
+        , testCase
+            "wylie unknown latin keeps UnknownChar diagnostics"
+            caseWylieUnknownDiagnostics
+        , testCase
+            "unicode unexpected ASCII between Tibetan signs is isolated"
+            caseUnicodeUnexpectedAsciiBetweenTibetan
+        , testCase
+            "unicode repeated vowel marks are tokenized separately"
+            caseUnicodeRepeatedVowels
+        , testCase
+            "unicode rare combining mark is unknown with warning"
+            caseUnicodeRareCombiningUnknown
+        , testCase
+            "unicode mixed edge stream preserves per-token diagnostics"
+            caseUnicodeMixedEdgeDiagnostics
+        , testCase
+            "unicode tsheg and ASCII space are different kinds"
+            caseUnicodeTshegVsSpace
         , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
         , testGroup "wylie chunking contracts" wylieChunkingContractTests
-        , testGroup "unicode normalization matrix" (map mkUnicodeNormalizationCase unicodeNormalizationCases)
+        , testGroup
+            "unicode normalization matrix"
+            (map mkUnicodeNormalizationCase unicodeNormalizationCases)
         , testCase "unicode precomposed U+0F73 maps to VA+Vi" caseUnicodePrecomposed073
-        , testCase "unicode decomposed U+0F71 U+0F72 maps to VA+Vi" caseUnicodeDecomposed071072
+        , testCase
+            "unicode decomposed U+0F71 U+0F72 maps to VA+Vi"
+            caseUnicodeDecomposed071072
         , testCase "unicode precomposed U+0F75 maps to VA+Vu" caseUnicodePrecomposed075
-        , testCase "unicode decomposed U+0F71 U+0F74 maps to VA+Vu" caseUnicodeDecomposed071074
+        , testCase
+            "unicode decomposed U+0F71 U+0F74 maps to VA+Vu"
+            caseUnicodeDecomposed071074
         , testGroup "wylie lexical rules" (map mkLexCase wylieLexicalCases)
         ]
 
@@ -66,19 +90,47 @@ wylieLexicalCases :: [(String, Assertion)]
 wylieLexicalCases =
     [ ("BOM is skipped silently", wylieRaws "\xfeff" @?= [])
     , ("BOM does not split the word after it", wylieRaws "\xfeffka" @?= ["k", "a"])
-    , ("zero-width space is skipped silently", wylieRaws ("k\x200b" <> "a") @?= ["k", "a"])
+    ,
+        ( "zero-width space is skipped silently"
+        , wylieRaws ("k\x200b" <> "a") @?= ["k", "a"]
+        )
     , ("line breaks collapse", wylieRaws "a\r\nb\rc\nd" @?= ["a", "b", "c", "d"])
-    , ("a bare letter is unexpected", wylieWarnings "x" @?= ["line 1: Unexpected character \"x\"."])
-    , ("a special marker is unexpected", wylieWarnings "~" @?= ["line 1: Unexpected character \"~\"."])
+    ,
+        ( "a bare letter is unexpected"
+        , wylieWarnings "x" @?= ["line 1: Unexpected character \"x\"."]
+        )
+    ,
+        ( "a special marker is unexpected"
+        , wylieWarnings "~" @?= ["line 1: Unexpected character \"~\"."]
+        )
     , ("a foreign character passes quietly", wylieWarnings "\x2019a" @?= [])
-    , ("the second line is counted correctly", wylieWarnings "ka\nx" @?= ["line 2: Unexpected character \"x\"."])
-    , ("an escape stands for the character", escapedCharacter "de la \\3 yod/" @?= Just (TcNumber N3))
+    ,
+        ( "the second line is counted correctly"
+        , wylieWarnings "ka\nx" @?= ["line 2: Unexpected character \"x\"."]
+        )
+    ,
+        ( "an escape stands for the character"
+        , escapedCharacter "de la \\3 yod/" @?= Just (TcNumber N3)
+        )
     , ("an escape reports nothing", wylieWarnings "de la \\3 yod/" @?= [])
-    , ("a broken hex escape is reported", wylieWarnings "a\\u01x3a" @?= ["line 1: \"\\u01x3\": invalid hex code."])
+    ,
+        ( "a broken hex escape is reported"
+        , wylieWarnings "a\\u01x3a" @?= ["line 1: \"\\u01x3\": invalid hex code."]
+        )
     , ("a broken hex escape leaves no token", wylieRaws "a\\u01x3b" @?= ["a", "b"])
-    , ("a bracket block is one token", bracketShape "[New York]k" @?= ("[New York]", "k"))
-    , ("an unclosed bracket is reported", wylieWarnings "a [unfinished [comment]" @?= ["line 1: Unfinished [non-Wylie stuff]."])
-    , ("a closed bracket block is not reported", wylieWarnings "a [New York] b" @?= [])
+    ,
+        ( "a bracket block is one token"
+        , bracketShape "[New York]k" @?= ("[New York]", "k")
+        )
+    ,
+        ( "an unclosed bracket is reported"
+        , wylieWarnings "a [unfinished [comment]"
+            @?= ["line 1: Unfinished [non-Wylie stuff]."]
+        )
+    ,
+        ( "a closed bracket block is not reported"
+        , wylieWarnings "a [New York] b" @?= []
+        )
     ]
 
 mkLexCase :: (String, Assertion) -> TestTree
@@ -106,9 +158,12 @@ bracketShape input =
     case fst (tokenizeWylie input) of
         [blockTok, nextTok] ->
             ( tokenRaw blockTok
-            , if tokenKind blockTok == TkNonTibetan then tokenRaw nextTok else "<not a bracket>"
+            , if tokenKind blockTok == TkNonTibetan
+                then tokenRaw nextTok
+                else "<not a bracket>"
             )
         [] -> ("<no token>", "")
+        _ -> ("<unexpected token count>", "")
 
 mkPrefixCase :: (String, Text, [Text]) -> TestTree
 mkPrefixCase (name, input, expected) =
@@ -150,11 +205,13 @@ wyliePrefixCases =
 
 caseWylieDzh :: Assertion
 caseWylieDzh =
-    map tokenCanonical (fst (tokenizeWylie "dzh")) @?= [TcConsonant Cdz, TcSubConsonant SCh]
+    map tokenCanonical (fst (tokenizeWylie "dzh"))
+        @?= [TcConsonant Cdz, TcSubConsonant SCh]
 
 caseWylieDashDH :: Assertion
 caseWylieDashDH =
-    map tokenCanonical (fst (tokenizeWylie "-d+h")) @?= [TcSubConsonant SCD, TcSubConsonant SCh]
+    map tokenCanonical (fst (tokenizeWylie "-d+h"))
+        @?= [TcSubConsonant SCD, TcSubConsonant SCh]
 
 caseWylieCRLFChunk :: Assertion
 caseWylieCRLFChunk =
@@ -183,7 +240,9 @@ caseWylieEscapeChunk =
 caseWylieSpecialIssue :: Assertion
 caseWylieSpecialIssue =
     case fst (tokenizeWylie "~") of
-        [tok] -> tokenIssues tok @?= [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+        [tok] ->
+            tokenIssues tok
+                @?= [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
 caseWylieKPlusShChunk :: Assertion
@@ -232,17 +291,18 @@ caseWylieMixedSpecialDiagnostics =
         expectedIssue = [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
      in do
             map tokenRaw toks @?= ["~", "+", "`", "]", "-", "."]
-            map tokenKind toks @?= [TkUnknown, TkConSpec, TkUnknown, TkUnknown, TkUnknown, TkConSpec]
+            map tokenKind toks
+                @?= [TkUnknown, TkConSpec, TkUnknown, TkUnknown, TkUnknown, TkConSpec]
             map tokenCanonical toks
-                @?=
-                    [ TcUnknown (UnknownMark "~")
+                @?= [ TcUnknown (UnknownMark "~")
                     , TcConSpec CSPlus
                     , TcUnknown (UnknownMark "`")
                     , TcUnknown (UnknownMark "]")
                     , TcUnknown (UnknownMark "-")
                     , TcConSpec CSDot
                     ]
-            map tokenIssues toks @?= [expectedIssue, [], expectedIssue, expectedIssue, expectedIssue, []]
+            map tokenIssues toks
+                @?= [expectedIssue, [], expectedIssue, expectedIssue, expectedIssue, []]
 
 caseWylieUnknownDiagnostics :: Assertion
 caseWylieUnknownDiagnostics =
@@ -288,8 +348,7 @@ caseUnicodeMixedEdgeDiagnostics =
     let toks = fst (tokenizeUnicode "ཀིི ཀxི ྆།")
         issuesByRaw = map (\tok -> (tokenRaw tok, tokenIssues tok)) toks
      in issuesByRaw
-            @?=
-                [ ("ཀ", [])
+            @?= [ ("ཀ", [])
                 , ("ི", [])
                 , ("ི", [])
                 , (" ", [])
@@ -325,7 +384,9 @@ assertWylieRawTokens input expected =
 
 wylieChunkingContractTests :: [TestTree]
 wylieChunkingContractTests =
-    [ testCase "all multi-char tokenizer keys are listed in longTokenList" caseAllMultiCharKeysListed
+    [ testCase
+        "all multi-char tokenizer keys are listed in longTokenList"
+        caseAllMultiCharKeysListed
     , testCase "no dead multi-char tokenizer keys" caseNoDeadMultiCharKeys
     ]
 

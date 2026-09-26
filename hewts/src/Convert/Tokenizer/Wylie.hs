@@ -2,22 +2,21 @@
 
 module Convert.Tokenizer.Wylie where
 
-import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
-import Data.Char (chr, isHexDigit)
+import Control.Applicative (asum, (<|>))
 import Convert.Diagnostic
 import Convert.Token
 import Convert.Tokenizer.Unicode (canonicalSeq)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
+import Data.Char (chr, isHexDigit)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import Control.Applicative (asum, (<|>))
-import Data.Maybe (fromMaybe)
 import qualified Data.Trie as Trie
 import Numeric (readHex)
-
 
 -- special characters: flag those if they occur out of context.
 -- '+' and '.' are ConSpec tokens, so they are not flagged here any more.
@@ -35,17 +34,17 @@ longTokenList :: [Text]
 longTokenList =
     HS.toList . HS.fromList $
         concat
-            [ [ s | s <- map wylieConsonant [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieVowel [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieFinal [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieNumber [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieHalfNumber [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wyliePunctuation [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieSign [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieSanskritMark [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieOrnament [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1 ]
-            , [ s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1 ]
+            [ [s | s <- map wylieConsonant [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieVowel [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieFinal [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieNumber [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieHalfNumber [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wyliePunctuation [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieSign [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieSanskritMark [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieOrnament [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1]
+            , [s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1]
             , map fst wylieConsonantAliases
             , map fst wylieExpansions
             , ["b+l", "\r\n"]
@@ -62,22 +61,22 @@ longTokenList =
 -- later, in 'Convert.Diagnostic'.
 tokenizeWylie :: Text -> ([Token], Diagnostics)
 tokenizeWylie input = (reverse tokensRev, diagnosticsInOrder diagsRev)
-  where
-    (tokensRev, diagsRev) = go [] mempty 0 input
+    where
+        (tokensRev, diagsRev) = go [] mempty 0 input
 
-    go accT accD _ rest
-        | T.null rest = (accT, accD)
-    go accT accD offset rest
-        | isSkipped rest = go accT accD (offset + 1) (T.drop 1 rest)
-        | brk > 0 = go accT accD (offset + brk) (T.drop brk rest)
-        | otherwise =
-            let (chunk, next, commentClosed) = nextChunk rest
-                end = offset + T.length chunk
-                sp = mkSpan (fromIntegral offset) (fromIntegral end)
-                (toks, diags) = classifyTokens sp chunk commentClosed
-             in go (reverse toks <> accT) (diags <> accD) end next
-      where
-        brk = lineBreakLen rest
+        go accT accD _ rest
+            | T.null rest = (accT, accD)
+        go accT accD offset rest
+            | isSkipped rest = go accT accD (offset + 1) (T.drop 1 rest)
+            | brk > 0 = go accT accD (offset + brk) (T.drop brk rest)
+            | otherwise =
+                let (chunk, next, commentClosed) = nextChunk rest
+                    end = offset + T.length chunk
+                    sp = mkSpan (fromIntegral offset) (fromIntegral end)
+                    (toks, diags) = classifyTokens sp chunk commentClosed
+                 in go (reverse toks <> accT) (diags <> accD) end next
+            where
+                brk = lineBreakLen rest
 
 -- | The reference skips a byte-order mark and a zero-width space without
 -- saying anything about them.
@@ -113,31 +112,31 @@ nextChunk source
                 | not (BS.null prefix) ->
                     (TE.decodeUtf8 prefix, TE.decodeUtf8 rest, Nothing)
             _ -> (T.take 1 source, T.drop 1 source, Nothing)
-  where
-    sourceBytes :: ByteString
-    sourceBytes = TE.encodeUtf8 source
+    where
+        sourceBytes :: ByteString
+        sourceBytes = TE.encodeUtf8 source
 
 consumeBracketed :: Text -> (Text, Text, Bool)
 consumeBracketed txt =
     case closeAt 1 1 False of
         Just end -> (T.take end txt, T.drop end txt, True)
         Nothing -> (txt, T.empty, False)
-  where
-    txtLen = T.length txt
+    where
+        txtLen = T.length txt
 
-    closeAt :: Int -> Int -> Bool -> Maybe Int
-    closeAt i depth escaped
-        | i >= txtLen = Nothing
-        | escaped = closeAt (i + 1) depth False
-        | otherwise =
-            case T.index txt i of
-                '\\' -> closeAt (i + 1) depth True
-                '[' -> closeAt (i + 1) (depth + 1) False
-                ']' ->
-                    if depth == 1
-                        then Just (i + 1)
-                        else closeAt (i + 1) (depth - 1) False
-                _ -> closeAt (i + 1) depth False
+        closeAt :: Int -> Int -> Bool -> Maybe Int
+        closeAt i depth escaped
+            | i >= txtLen = Nothing
+            | escaped = closeAt (i + 1) depth False
+            | otherwise =
+                case T.index txt i of
+                    '\\' -> closeAt (i + 1) depth True
+                    '[' -> closeAt (i + 1) (depth + 1) False
+                    ']' ->
+                        if depth == 1
+                            then Just (i + 1)
+                            else closeAt (i + 1) (depth - 1) False
+                    _ -> closeAt (i + 1) depth False
 
 -- | One escape chunk. A \\uXXXX / \\UXXXXXXXX sequence is swallowed whole even
 -- when its digits are not hexadecimal, so that the invalid one can be quoted
@@ -160,54 +159,53 @@ classifyTokens sp raw commentClosed
     | Just closed <- commentClosed = nonTibetanComment closed
     | isEscapeChunk raw = decodeEscape sp raw
     | otherwise = classifyPlain
-  where
-    -- a bracketed block of foreign text: one token covering the whole block,
-    -- plus a warning when the closing bracket never arrives
-    nonTibetanComment closed =
-        ( [mkNonTibetan TsWylie sp raw (commentText closed raw)]
-        , if closed then mempty else addDiagnostic (unfinishedComment sp) mempty
-        )
+    where
+        -- a bracketed block of foreign text: one token covering the whole block,
+        -- plus a warning when the closing bracket never arrives
+        nonTibetanComment closed =
+            ( [mkNonTibetan TsWylie sp raw (commentText closed raw)]
+            , if closed then mempty else addDiagnostic (unfinishedComment sp) mempty
+            )
 
-    classifyPlain =
-        case lookup raw wylieExpansions of
-            Just canons -> (mkSequenceTokens TsWylie sp raw canons, mempty)
-            Nothing ->
-                case lookupTable raw of
-                    Just tok -> ([tok], mempty)
-                    Nothing
-                        | isSpecial raw -> ([specialToken], unexpected)
-                        | otherwise -> ([mkUnknown TsWylie sp raw], unexpected)
+        classifyPlain =
+            case lookup raw wylieExpansions of
+                Just canons -> (mkSequenceTokens TsWylie sp raw canons, mempty)
+                Nothing ->
+                    case lookupTable raw of
+                        Just tok -> ([tok], mempty)
+                        Nothing
+                            | isSpecial raw -> ([specialToken], unexpected)
+                            | otherwise -> ([mkUnknown TsWylie sp raw], unexpected)
 
-    specialToken =
-        mkUnknownWith
-            TsWylie
-            sp
-            raw
-            [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+        specialToken =
+            mkUnknownWith
+                TsWylie
+                sp
+                raw
+                [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
 
-    -- the reference reports a bare ASCII letter or a special marker that
-    -- occurs where nothing expects it; anything else (a quotation mark, a
-    -- foreign letter) passes through without a word
-    unexpected
-        | needsReport = addDiagnostic (unexpectedCharacter sp c) mempty
-        | otherwise = mempty
-      where
-        Just (c, _) = T.uncons raw
-        needsReport = isAsciiLetter c || HS.member raw special
+        -- the reference reports a bare ASCII letter or a special marker that
+        -- occurs where nothing expects it; anything else (a quotation mark, a
+        -- foreign letter) passes through without a word
+        unexpected
+            | Just (c, _) <- T.uncons raw
+            , isAsciiLetter c || HS.member raw special =
+                addDiagnostic (unexpectedCharacter sp c) mempty
+            | otherwise = mempty
 
-    isAsciiLetter c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+        isAsciiLetter c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 
-    lookupTable key = lookupSpelling sp raw key
+        lookupTable key = lookupSpelling sp raw key
 
-    isSpecial key = HS.member key special
+        isSpecial key = HS.member key special
 
-    -- an escape of the right shape; whether its code is valid hex is decided
-    -- in 'decodeEscape', which reports it when it is not
-    isEscapeChunk chunk
-        | T.length chunk == 2 && T.head chunk == '\\' = True
-        | T.length chunk == 6 && T.isPrefixOf "\\u" chunk = True
-        | T.length chunk == 10 && T.isPrefixOf "\\U" chunk = True
-        | otherwise = False
+        -- an escape of the right shape; whether its code is valid hex is decided
+        -- in 'decodeEscape', which reports it when it is not
+        isEscapeChunk chunk
+            | T.length chunk == 2 && T.head chunk == '\\' = True
+            | T.length chunk == 6 && T.isPrefixOf "\\u" chunk = True
+            | T.length chunk == 10 && T.isPrefixOf "\\U" chunk = True
+            | otherwise = False
 
 -- | Look a Wylie spelling up in the render tables. The token's raw slice is
 -- always the whole chunk, which may be a different spelling of the key (an
@@ -223,8 +221,8 @@ lookupSpelling sp raw key =
         , mkSymbol TsWylie sp raw <$> inverseWylieSymbol key
         , mkSpace TsWylie sp raw <$> inverseWylieSpace key
         ]
-  where
-    withAliases inverseLookup x = inverseLookup x <|> lookup x wylieConsonantAliases
+    where
+        withAliases inverseLookup x = inverseLookup x <|> lookup x wylieConsonantAliases
 
 -- | Render a canonical token to its Wylie spelling.
 wylieOf :: TokenCanonical -> Maybe Text
@@ -272,22 +270,24 @@ decodeEscape sp raw
             -- "\3" and friends: the escaped character stands for itself, while
             -- the raw slice stays the whole escape
             Nothing -> ([escapedCharacter], mempty)
-  where
-    escapedCharacter =
-        case T.uncons (T.drop 1 raw) of
-            Nothing -> mkUnknownWith TsWylie sp raw []
-            Just (c, _) ->
-                fromMaybe
-                    (mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark (T.singleton c))) sp)
-                    (lookupSpelling sp raw (T.singleton c))
+    where
+        escapedCharacter =
+            case T.uncons (T.drop 1 raw) of
+                Nothing -> mkUnknownWith TsWylie sp raw []
+                Just (c, _) ->
+                    fromMaybe
+                        (mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark (T.singleton c))) sp)
+                        (lookupSpelling sp raw (T.singleton c))
 
 -- | A \\uXXXX / \\UXXXXXXXX escape whose digits are not all hexadecimal: the
 -- reference's tokenizer still swallows the whole sequence, so the message can
 -- quote it.
 isBrokenHexEscape :: Text -> Bool
 isBrokenHexEscape raw
-    | T.length raw == 6 && T.isPrefixOf "\\u" raw = not (T.all isHexDigit (T.drop 2 raw))
-    | T.length raw == 10 && T.isPrefixOf "\\U" raw = not (T.all isHexDigit (T.drop 2 raw))
+    | T.length raw == 6 && T.isPrefixOf "\\u" raw =
+        not (T.all isHexDigit (T.drop 2 raw))
+    | T.length raw == 10 && T.isPrefixOf "\\U" raw =
+        not (T.all isHexDigit (T.drop 2 raw))
     | otherwise = False
 
 decodeHexCode :: Text -> Maybe Char
@@ -295,11 +295,11 @@ decodeHexCode raw
     | T.isPrefixOf "\\u" raw && T.length raw == 6 = readHexCode (T.drop 2 raw)
     | T.isPrefixOf "\\U" raw && T.length raw == 10 = readHexCode (T.drop 2 raw)
     | otherwise = Nothing
-  where
-    readHexCode hex =
-        case readHex (T.unpack hex) of
-            [(n, "")] | n <= 0x10FFFF -> Just (chr n)
-            _ -> Nothing
+    where
+        readHexCode hex =
+            case readHex (T.unpack hex) of
+                [(n, "")] | n <= 0x10FFFF -> Just (chr n)
+                _ -> Nothing
 
 -- | The content of a bracketed block of foreign text, which is what reaches
 -- the output: the outer brackets are Wylie-only syntax, and escapes inside are
@@ -307,19 +307,19 @@ decodeHexCode raw
 -- so the flag has to be passed in rather than guessed from the last character.
 commentText :: Bool -> Text -> Text
 commentText closed raw = T.pack (go body)
-  where
-    body
-        | closed = T.dropEnd 1 (T.drop 1 raw)
-        | otherwise = T.drop 1 raw
-    go t
-        | T.null t = []
-        | T.head t == '\\' && isEscape t =
-            maybe id (:) (escapedChar t) (go (T.drop (escapeLen t) t))
-        | otherwise =
-            case T.uncons t of
-                Just (c, rest) -> c : go rest
-                Nothing -> []
-    isEscape t = escapeLen t /= 1
+    where
+        body
+            | closed = T.dropEnd 1 (T.drop 1 raw)
+            | otherwise = T.drop 1 raw
+        go t
+            | T.null t = []
+            | T.head t == '\\' && isEscape t =
+                maybe id (:) (escapedChar t) (go (T.drop (escapeLen t) t))
+            | otherwise =
+                case T.uncons t of
+                    Just (c, rest) -> c : go rest
+                    Nothing -> []
+        isEscape t = escapeLen t /= 1
 
 -- | The character a Wylie escape stands for: a hex escape decodes to its code
 -- point, a backslash before anything else stands for that character itself.
@@ -334,8 +334,14 @@ isHexEscape t = escapeLen t /= 2 && T.length t >= 2
 
 escapeLen :: Text -> Int
 escapeLen t
-    | T.isPrefixOf "\\u" t && T.length t >= 6 && T.all isHexDigit (T.take 4 (T.drop 2 t)) = 6
-    | T.isPrefixOf "\\U" t && T.length t >= 10 && T.all isHexDigit (T.take 8 (T.drop 2 t)) = 10
+    | T.isPrefixOf "\\u" t
+        && T.length t >= 6
+        && T.all isHexDigit (T.take 4 (T.drop 2 t)) =
+        6
+    | T.isPrefixOf "\\U" t
+        && T.length t >= 10
+        && T.all isHexDigit (T.take 8 (T.drop 2 t)) =
+        10
     | T.length t >= 2 = 2
     | otherwise = 1
 
@@ -344,8 +350,8 @@ codePoint t =
     case readHex (T.unpack (T.take (len - 2) (T.drop 2 t))) of
         [(n, "")] | n <= 0x10FFFF -> Just (chr n)
         _ -> Nothing
-  where
-    len = escapeLen t
+    where
+        len = escapeLen t
 
 wylieConsonant :: Consonant -> Text
 wylieConsonant = \case

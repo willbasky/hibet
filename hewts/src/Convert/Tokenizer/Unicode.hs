@@ -1,9 +1,8 @@
 module Convert.Tokenizer.Unicode where
 
+import Control.Applicative (asum)
 import Convert.Diagnostic
 import Convert.Token
-import Control.Applicative (asum)
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 
@@ -16,21 +15,21 @@ import qualified Data.Text as T
 -- direction has none of its own yet.
 tokenizeUnicode :: Text -> ([Token], Diagnostics)
 tokenizeUnicode input = (reverse tokensRev, diagnosticsInOrder diagsRev)
-  where
-    (tokensRev, diagsRev) = go [] mempty 0 input
+    where
+        (tokensRev, diagsRev) = go [] mempty (0 :: Int) input
 
-    go accT accD _ rest
-        | T.null rest = (accT, accD)
-    go accT accD offset rest =
-        case T.uncons rest of
-            Nothing -> (accT, accD)
-            Just (c, next)
-                | isSkippedChar c -> go accT accD (offset + 1) next
-                | otherwise ->
-                    let end = offset + 1
-                        span = mkSpan (fromIntegral offset) (fromIntegral end)
-                        toks = classifyChar span (T.singleton c) c
-                     in go (reverse toks <> accT) accD end next
+        go accT accD _ rest
+            | T.null rest = (accT, accD)
+        go accT accD offset rest =
+            case T.uncons rest of
+                Nothing -> (accT, accD)
+                Just (c, next)
+                    | isSkippedChar c -> go accT accD (offset + 1) next
+                    | otherwise ->
+                        let end = offset + 1
+                            sp = mkSpan (fromIntegral offset) (fromIntegral end)
+                            toks = classifyChar sp (T.singleton c) c
+                         in go (reverse toks <> accT) accD end next
 
 -- | The reference passes a byte-order mark and a zero-width space through
 -- without a word; so do we.
@@ -38,10 +37,10 @@ isSkippedChar :: Char -> Bool
 isSkippedChar c = c == '\xfeff' || c == '\x200b'
 
 classifyChar :: Span -> Text -> Char -> [Token]
-classifyChar span raw ch =
+classifyChar sp raw ch =
     case canonicalSeq ch of
-        Just canons -> mkSequenceTokens TsUnicode span raw canons
-        Nothing -> [mkUnknown TsUnicode span raw]
+        Just canons -> mkSequenceTokens TsUnicode sp raw canons
+        Nothing -> [mkUnknown TsUnicode sp raw]
 
 -- | Canonical token sequence for a single character: either one canonical or
 -- a decomposition into several (deprecated precomposed forms).
@@ -95,8 +94,8 @@ classifyCanonical ch =
         , TcSymbol <$> inverseUnicodeSymbol raw
         , TcSpace <$> inverseUnicodeSpace raw
         ]
-  where
-    raw = T.singleton ch
+    where
+        raw = T.singleton ch
 
 -- | Render a canonical token to its Unicode spelling.
 unicodeOf :: TokenCanonical -> Maybe Text

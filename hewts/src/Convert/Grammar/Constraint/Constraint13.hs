@@ -6,32 +6,55 @@ module Convert.Grammar.Constraint.Constraint13 (pConstraint13) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
-import Data.Maybe (fromMaybe)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
-  ( SubConsonant (..)
-  , Token
-  , TokenCanonical (TcSubConsonant)
-  , tokenCanonical
-  )
+    ( Consonant (..)
+    , SubConsonant (..)
+    , Token (..)
+    , TokenCanonical (TcConsonant, TcSubConsonant)
+    , tokenCanonical
+    )
+import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
 pConstraint13 :: Spelling -> Parser TibetanWord
-pConstraint13 spelling =
-  MP.choice
-    [ MP.try $ parseConstraint13 spelling GP.pPrefixBa GP.pSuperfixSa (GP.pSubfixYa <|> GP.pSubfixRa)
-    , MP.try $ parseConstraint13 spelling GP.pPrefixBa GP.pSuperfixRa GP.pSubfixYa
-    ]
+pConstraint13 = \case
+    Tibetan ->
+        MP.choice
+            [ MP.try $
+                parseConstraintUnicode13
+                    GP.pPrefixBa
+                    GP.pSuperfixSa
+                    pRoot
+                    (GP.pSubfixYa <|> GP.pSubfixRa)
+            , MP.try $ parseConstraintUnicode13 GP.pPrefixBa GP.pSuperfixRa pRoot GP.pSubfixYa
+            ]
+    Wylie ->
+        MP.choice
+            [ MP.try $
+                parseConstraintWylie13
+                    GP.pPrefixBa
+                    GP.pSuperfixSa
+                    pRootWylie
+                    (GP.pSubfixYaWylie <|> GP.pSubfixRaWylie)
+            , MP.try $
+                parseConstraintWylie13 GP.pPrefixBa GP.pSuperfixRa pRootWylie GP.pSubfixYaWylie
+            ]
 
-parseConstraint13 :: Spelling -> Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
-parseConstraint13 spelling parsePrefix parseSuperfix parseSubfix = do
-  prefix <- mark Prefix parsePrefix
-  superfix <- mark Superfix parseSuperfix
-  root <- mark Root pRoot
-  subfix <- mark Subfix parseSubfix
-  vowel <- MP.optional (vowelSlot spelling)
-  pure (prefix <> superfix <> root <> subfix <> fromMaybe mempty vowel)
+parseConstraintUnicode13 ::
+    Parser Token
+    -> Parser Token
+    -> Parser Token
+    -> Parser Token
+    -> Parser TibetanWord
+parseConstraintUnicode13 parsePrefix parseSuperfix parseRoot parseSubfix = do
+    prefix <- mark Prefix parsePrefix
+    superfix <- mark Superfix parseSuperfix
+    root <- mark Root parseRoot
+    subfix <- mark Subfix parseSubfix
+    vowel <- MP.optional (mark Vowel GP.pVowel)
+    pure (prefix <> superfix <> root <> subfix <> fromMaybe mempty vowel)
 
 -- root group [ 'ཀ', 'ག' ]
 pRoot :: Parser Token
@@ -39,8 +62,37 @@ pRoot = pAllowedRoot [SCk, SCg]
 
 pAllowedRoot :: [SubConsonant] -> Parser Token
 pAllowedRoot allowed = do
-  tok <- GP.pSubConsonant
-  case tokenCanonical tok of
-    TcSubConsonant sc
-      | sc `elem` allowed -> pure tok
-    _ -> MP.empty
+    tok <- GP.pSubConsonant
+    case tokenCanonical tok of
+        TcSubConsonant sc
+            | sc `elem` allowed -> pure tok
+        _ -> MP.empty
+
+-- The Wylie arm: the root under the superfix is a full letter and the subfix
+-- is a plain letter, so each has a full-letter twin; the vowel is always
+-- written.
+
+parseConstraintWylie13 ::
+    Parser Token
+    -> Parser Token
+    -> Parser Token
+    -> Parser Token
+    -> Parser TibetanWord
+parseConstraintWylie13 parsePrefix parseSuperfix parseRoot parseSubfix = do
+    prefix <- mark Prefix parsePrefix
+    superfix <- mark Superfix parseSuperfix
+    root <- mark Root parseRoot
+    subfix <- mark Subfix parseSubfix
+    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+    pure (prefix <> superfix <> root <> subfix <> vowel)
+
+pRootWylie :: Parser Token
+pRootWylie = pAllowedRootWylie [Ck, Cg]
+
+pAllowedRootWylie :: [Consonant] -> Parser Token
+pAllowedRootWylie allowed = do
+    tok <- GP.pConsonant
+    case tokenCanonical tok of
+        TcConsonant c
+            | c `elem` allowed -> pure tok
+        _ -> MP.empty

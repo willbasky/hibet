@@ -118,6 +118,7 @@ test-suite hewts-test
     Test.Grammar.Constraint.Constraint20
     Test.Grammar.Stack
     Test.Grammar.Structure
+    Test.Grammar.Wylie
     Test.Parity
     Test.Tokenizer.Golden
     Test.Tokenizer.Integration

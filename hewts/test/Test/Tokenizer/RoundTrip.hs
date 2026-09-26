@@ -2,7 +2,6 @@ module Test.Tokenizer.RoundTrip (tests) where
 
 import Control.Monad (when)
 import qualified Data.HashSet as HS
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 
@@ -18,7 +17,7 @@ import Convert
     )
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token
-import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
+import Convert.Tokenizer.Unicode (unicodeOf)
 import Convert.Tokenizer.Wylie
     ( tokenizeWylie
     , wylieConsonant
@@ -67,14 +66,6 @@ renderW = renderItems OutWylie
 
 renderU :: [SpellItem] -> Text
 renderU = renderItems OutUnicode
-
--- | Full pipeline: Unicode -> Wylie -> Unicode.
-rtU :: Text -> Text
-rtU input = renderU (parseW (renderW (parseU input)))
-
--- | Full pipeline: Wylie -> Unicode -> Wylie.
-rtW :: Text -> Text
-rtW input = renderW (parseU (renderU (parseW input)))
 
 -- | Every canonical with both a Unicode spelling and a Wylie spelling.
 -- @SubConsonant@ is handled in the later waves: subjoined letters have no
@@ -166,29 +157,28 @@ checkSpelling spelling wasAlias = do
         s1 = renderW (parseU u)
         u1 = renderU (parseW s1)
         s2 = renderW (parseU u1)
-    -- "u" and "i" spell the a-chen plus the vowel; their stable Wylie
-    -- "au"/"ai" then reads back as the diphthongs ཽ/ཻ, an inherent Wylie
-    -- ambiguity shared with the references, so for these two the chain never
-    -- re-enters the same glyphs. Their canonical representative is still
-    -- pinned below; the stability legs just do not apply.
-    when (spelling `notElem` ["u", "i"]) $ do
-        assertBool
-            (unwords ["unicode leg unstable:", show spelling, show u, show s1, show u1])
-            (u == u1)
-        assertBool
-            (unwords ["wylie leg unstable:", show spelling, show u, show s1, show s2])
-            (s1 == s2)
+    assertBool
+        (unwords ["unicode leg unstable:", show spelling, show u, show s1, show u1])
+        (u == u1)
+    assertBool
+        (unwords ["wylie leg unstable:", show spelling, show u, show s1, show s2])
+        (s1 == s2)
     when (not wasAlias) $
         assertBool
             ("canonical representative changed: " <> show spelling <> " -> " <> show s1)
-            (s1 == stableVowel spelling)
+            (s1 == canonicalRepresentative spelling)
 
--- | A lone vowel spelling normalizes through Unicode to the a-chen prefixed
--- form ("i" -> "ai"): the stack renderer writes the a-chen before a
--- word-initial vowel, exactly like jsewts does.
-stableVowel :: Text -> Text
-stableVowel s
-    | s `elem` [wylieVowel v | v <- [minBound .. maxBound :: Vowel]] = "a" <> s
+-- | The stable Wylie spelling of a lone mark (the spelling the renderer
+-- keeps returning once a chain enters it). A lone a-chen stays "a"; the
+-- ordinary vowels keep their own spelling (the a-chen that carries them
+-- in Unicode is written back out, not forward: "A" -> ཨཱ -> "A"); a mark
+-- a bare a-chen does not absorb keeps the a-chen in front ("ai" -> ཨཻ ->
+-- "aai"); and a lone consonant keeps its own spelling - the renderer
+-- never appends an implicit vowel to a closing letter (ས -> "s"),
+-- matching what the Wylie arms read back.
+canonicalRepresentative :: Text -> Text
+canonicalRepresentative s
+    | s `elem` ["ai", "au", "-i"] = "a" <> s
     | otherwise = s
 
 -- | Compound (expanded) spellings: R"gh" -> R"གྷ" -> [Cg, SCh] -> R"གྷ".

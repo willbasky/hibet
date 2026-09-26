@@ -22,7 +22,6 @@ import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
-import Data.List (foldl')
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, mapMaybe)
@@ -68,7 +67,6 @@ data Case = Case
     , caseNote :: !(Maybe Text)
     , caseWylie :: !Text
     , caseUnicode :: !Text
-    , caseWarnsW2U :: !(Maybe Int)
     , caseWylieBack :: !(Maybe Text)
     , caseWarnsU2W :: !(Maybe Int)
     , caseRoundtripDiffers :: !(Maybe Bool)
@@ -114,7 +112,7 @@ kangItems = do
             ("line " <> T.pack (show n) <> " " <> oneLine (T.take 20 raw))
             KRoundtrip
             (checkKangLine raw)
-        | (n, raw) <- zip [1 ..] (T.lines (dropBom text))
+        | (n, raw) <- zip [1 :: Int ..] (T.lines (dropBom text))
         , not (T.null raw)
         ]
 
@@ -155,7 +153,8 @@ readWarns (Just path) = do
                     (n : rest) | Just i <- readNumber n -> Just (i, rest)
                     _ -> Nothing
         readNumber t
-            | not (T.null t) && T.all (\c -> c >= '0' && c <= '9') t = Just (read (T.unpack t))
+            | not (T.null t) && T.all (\c -> c >= '0' && c <= '9') t =
+                Just (read (T.unpack t))
             | otherwise = Nothing
 
 baselineFile :: FilePath
@@ -203,17 +202,17 @@ readCorpus txt = zipWith applyNote (rowNotes txt) (mapMaybe row (zip [1 ..] (T.l
             | T.null line = (note, acc)
             | "#" `T.isPrefixOf` line = (T.stripPrefix "# Rule " (T.strip line), acc)
             | otherwise = (note, note : acc)
-        applyNote note c = c {caseNote = note}
+        applyNote note c = c{caseNote = note}
         row (n, line)
             | T.null line = Nothing
             | "#" `T.isPrefixOf` line = Nothing
             | otherwise =
                 case T.splitOn "\t" line of
-                    [w, u] -> Just (Case n Nothing w u Nothing Nothing Nothing Nothing)
-                    [w, u, ws] -> Just (Case n Nothing w u (count ws) Nothing Nothing Nothing)
-                    [w, u, ws, b] -> Just (Case n Nothing w u (count ws) (Just b) Nothing Nothing)
-                    [w, u, ws, b, wsb] -> Just (Case n Nothing w u (count ws) (Just b) (count wsb) Nothing)
-                    [w, u, ws, b, wsb, rt] -> Just (Case n Nothing w u (count ws) (Just b) (count wsb) (differs rt))
+                    [w, u] -> Just (Case n Nothing w u Nothing Nothing Nothing)
+                    [w, u, _ws] -> Just (Case n Nothing w u Nothing Nothing Nothing)
+                    [w, u, _ws, b] -> Just (Case n Nothing w u (Just b) Nothing Nothing)
+                    [w, u, _ws, b, wsb] -> Just (Case n Nothing w u (Just b) (count wsb) Nothing)
+                    [w, u, _ws, b, wsb, rt] -> Just (Case n Nothing w u (Just b) (count wsb) (differs rt))
                     fields ->
                         error
                             ( "parity corpus: row "
@@ -240,18 +239,20 @@ differs t
     | not (T.null t) && T.all (\c -> c >= '0' && c <= '9') t = Just True
     | otherwise = Nothing
 
+-- | Wylie input parses under the Wylie arms of the grammar (the @a@ is written
+-- and consumed as the implicit vowel), Unicode input under the Tibetan arms.
 convertW2U :: Text -> (Either Text Text, Diagnostics)
-convertW2U input = (fmap (renderItems OutUnicode) (parseItems tokens), diags)
+convertW2U input = (fmap (renderItems OutUnicode) (parseItems Wylie tokens), diags)
     where
         (tokens, diags) = tokenizeWylie input
 
 convertU2W :: Text -> (Either Text Text, Diagnostics)
-convertU2W input = (fmap (renderItems OutWylie) (parseItems tokens), diags)
+convertU2W input = (fmap (renderItems OutWylie) (parseItems Tibetan tokens), diags)
     where
         (tokens, diags) = tokenizeUnicode input
 
-parseItems :: [Token] -> Either Text [SpellItem]
-parseItems = parseEither (pSentence Tibetan)
+parseItems :: Spelling -> [Token] -> Either Text [SpellItem]
+parseItems spelling = parseEither (pSentence spelling)
 
 -- | Wylie -> Unicode -> Wylie -> Unicode, all with our own converter.
 roundTripW2U :: Text -> Either Text Text
@@ -316,7 +317,10 @@ checkU2WWarns c =
 
 listDiff :: [Text] -> [Text] -> Text
 listDiff actual expected =
-    "got " <> T.unwords (map quoted actual) <> " want " <> T.unwords (map quoted expected)
+    "got "
+        <> T.unwords (map quoted actual)
+        <> " want "
+        <> T.unwords (map quoted expected)
 
 checkRoundtrip :: Case -> Outcome
 checkRoundtrip c =
@@ -352,7 +356,8 @@ checkKangLine raw =
 -- | One line of the reference's own corpus, named by its rule where the corpus
 -- names it, and by its line otherwise.
 label :: Case -> Text
-label c = maybe byLine (\n -> "rule " <> n) (caseNote c) <> " " <> oneLine (caseWylie c)
+label c =
+    maybe byLine (\n -> "rule " <> n) (caseNote c) <> " " <> oneLine (caseWylie c)
     where
         byLine = "line " <> T.pack (show (caseLine c))
 
@@ -524,17 +529,17 @@ writeReport = do
     where
         render corpusItems baselines = concatMap (one baselines) corpusItems
             where
-                one baselines (c, items) =
+                one bs (c, items) =
                     [ T.pack (corpusName c)
                         <> " ("
                         <> T.pack (show (length (dedup [itemLabel item | item <- items])))
                         <> " cases)"
                     ]
-                        <> concatMap (row baselines c) (grouped items)
+                        <> concatMap (row bs c) (grouped items)
                         <> [""]
-                row baselines c (kind, group) =
+                row bs c (kind, group) =
                     let (total, passed) = counts group
-                        floor' = fromMaybe "-" (T.pack . show . basePass <$> lookupBase baselines c kind)
+                        floor' = fromMaybe "-" (T.pack . show . basePass <$> lookupBase bs c kind)
                      in [ "  "
                             <> T.pack (kindName kind)
                             <> "  "

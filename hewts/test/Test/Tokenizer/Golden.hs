@@ -67,8 +67,8 @@ renderToken tok =
         <> issuesText (tokenIssues tok)
 
 spanText :: Span -> Text
-spanText span =
-    T.pack (show (offsetStart span)) <> ":" <> T.pack (show (offsetEnd span))
+spanText spP =
+    T.pack (show (offsetStart spP)) <> ":" <> T.pack (show (offsetEnd spP))
 
 issuesText :: [TokenIssue] -> Text
 issuesText [] = "[]"

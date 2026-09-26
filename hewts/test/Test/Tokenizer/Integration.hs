@@ -8,7 +8,7 @@ import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), Assertion, testCase)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 tests :: TestTree
 tests =
@@ -18,14 +18,20 @@ tests =
         , testCase "unicode raw roundtrip through tokens" caseUnicodeRawRoundtrip
         , testCase "wylie canonical rendering" caseWylieCanonicalRender
         , testCase "wylie f and v keep canonical distinction" caseWylieFvCanonicalDistinct
-        , testCase "unicode aliases normalize to canonical rendering" caseUnicodeCanonicalRender
+        , testCase
+            "unicode aliases normalize to canonical rendering"
+            caseUnicodeCanonicalRender
         , testCase "render to wylie from unicode" caseRenderUnicodeToWylie
         , testCase "render to unicode from wylie" caseRenderWylieToUnicode
         , testCase "same-script render keeps everything raw" caseRenderSameScriptKeepsRaw
         , testCase "cross-script render f and v compose" caseRenderFvComposed
-        , testCase "cross-script render normalizes to canonical" caseRenderCrossScriptCanonical
+        , testCase
+            "cross-script render normalizes to canonical"
+            caseRenderCrossScriptCanonical
         , testCase "unicode stubs render to \\u0fxx escapes" caseRenderUnicodeStubsToWylie
-        , testCase "escape input renders back to unicode (lossless)" caseRenderEscapeToUnicode
+        , testCase
+            "escape input renders back to unicode (lossless)"
+            caseRenderEscapeToUnicode
         ]
 
 caseWylieRawRoundtrip :: Assertion
@@ -72,11 +78,13 @@ caseRenderCrossScriptCanonical =
 
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =
-    renderInput OutWylie "ཫཬཷ༐༪྆࿐" @?= "\\u0f6b\\u0f6cཷA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
+    renderInput OutWylie "ཫཬཷ༐༪྆࿐"
+        @?= "\\u0f6ba\\u0f6cཷA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
-    renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33")) @?= "ཬྲྀ༒༳"
+    renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33"))
+        @?= "ཬྲྀ༒༳"
 
 rawRoundtripWylie :: Text -> Text
 rawRoundtripWylie = T.concat . fmap tokenRaw . (fst . tokenizeWylie)

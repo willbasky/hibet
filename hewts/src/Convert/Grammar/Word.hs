@@ -15,19 +15,12 @@ module Convert.Grammar.Word
     ( Position (..)
     , TibetanWord
     , mark
-    , vowelSlot
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
-import qualified Convert.Grammar.Parser as GP
-import Convert.Token
-  ( Consonant (Ca)
-  , Token (..)
-  , TokenCanonical (TcConsonant)
-  )
+import Convert.Grammar.Parser (Parser)
+import Convert.Token (Token)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
-import qualified Text.Megaparsec as MP
 
 -- | The place a character occupies in a Tibetan word.
 --
@@ -46,12 +39,6 @@ data Position
     | Final
     | ImplicitVowel
     deriving (Show, Eq, Ord)
-
--- | 'ImplicitVowel' is ours, not the book's: in Wylie the letter @a@ is always
--- written where a vowel would be, and it never reaches the output. The book
--- describes Tibetan spelling, where the @a@ is simply not written and so needs
--- no position of its own. We keep the letter in the word - the input stays
--- covered - and mark it, so the renderer knows to skip it.
 
 -- | A Tibetan word (Def 4.10) as a flat list of marked tokens.
 --
@@ -77,19 +64,3 @@ mark :: Position -> Parser a -> Parser (Seq (Position, a))
 mark position parser = do
     value <- parser
     pure (Seq.singleton (position, value))
-
--- | The vowel slot. In both spellings the vowel itself is the same letter; what
--- differs is that Wylie writes the @a@ out. It is kept in the word - the input
--- stays covered - and marked 'ImplicitVowel', which prints nothing.
-vowelSlot :: Spelling -> Parser TibetanWord
-vowelSlot Tibetan = mark Vowel GP.pVowel
-vowelSlot Wylie = MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel pImplicitA]
-
--- | The letter @a@ where a vowel would be: written in every Wylie syllable and
--- never printed.
-pImplicitA :: Parser Token
-pImplicitA = MP.satisfy isImplicitA
-
-isImplicitA :: Token -> Bool
-isImplicitA Token{tokenCanonical = TcConsonant Ca} = True
-isImplicitA _ = False

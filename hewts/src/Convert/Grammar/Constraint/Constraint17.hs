@@ -9,37 +9,55 @@ module Convert.Grammar.Constraint.Constraint17
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
-import Data.Maybe (fromMaybe)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
-  ( Consonant (..)
-  , Token
-  , TokenCanonical (TcConsonant)
-  , tokenCanonical
-  )
+    ( Consonant (..)
+    , Token (..)
+    , TokenCanonical (TcConsonant)
+    , tokenCanonical
+    )
+import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
 -- (1) root group [ 'ག', 'ད' ] above the subfix ར.
 pConstraint17Ra :: Spelling -> Parser TibetanWord
-pConstraint17Ra spelling = do
-  root <- mark Root (pRootConsonant [Cg, Cd])
-  ra <- mark Subfix GP.pSubfixRa
-  wa <- mark Subfix GP.pSubfixWa
-  vowel <- MP.optional (vowelSlot spelling)
-  pure (root <> ra <> wa <> fromMaybe mempty vowel)
+pConstraint17Ra = \case
+    Tibetan -> do
+        root <- mark Root (pRootConsonant [Cg, Cd])
+        ra <- mark Subfix GP.pSubfixRa
+        wa <- mark Subfix GP.pSubfixWa
+        vowel <- MP.optional (mark Vowel GP.pVowel)
+        pure (root <> ra <> wa <> fromMaybe mempty vowel)
+    Wylie -> do
+        root <- mark Root (pRootConsonant [Cg, Cd])
+        ra <- mark Subfix GP.pSubfixRaWylie
+        wa <- mark Subfix GP.pSubfixWaWylie
+        vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+        pure (root <> ra <> wa <> vowel)
 
 -- (2) root ཕ above the subfix ཡ.
 pConstraint17Ya :: Spelling -> Parser TibetanWord
-pConstraint17Ya spelling = do
-  root <- mark Root (pRootConsonant [Cph])
-  ya <- mark Subfix GP.pSubfixYa
-  wa <- mark Subfix GP.pSubfixWa
-  vowel <- MP.optional (vowelSlot spelling)
-  pure (root <> ya <> wa <> fromMaybe mempty vowel)
+pConstraint17Ya = \case
+    Tibetan -> do
+        root <- mark Root (pRootConsonant [Cph])
+        ya <- mark Subfix GP.pSubfixYa
+        wa <- mark Subfix GP.pSubfixWa
+        vowel <- MP.optional (mark Vowel GP.pVowel)
+        pure (root <> ya <> wa <> fromMaybe mempty vowel)
+    Wylie -> do
+        root <- mark Root (pRootConsonant [Cph])
+        ya <- mark Subfix GP.pSubfixYaWylie
+        wa <- mark Subfix GP.pSubfixWaWylie
+        vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+        pure (root <> ya <> wa <> vowel)
 
 pRootConsonant :: [Consonant] -> Parser Token
 pRootConsonant allowed = do
-  tok <- GP.pConsonant
-  case tokenCanonical tok of
-    TcConsonant c | c `elem` allowed -> pure tok
-    _ -> MP.empty
+    tok <- GP.pConsonant
+    case tokenCanonical tok of
+        TcConsonant c | c `elem` allowed -> pure tok
+        _ -> MP.empty
+
+-- The Wylie arm: the root is a full letter either way; the subfixes are plain
+-- letters and the vowel is always written, so each arm writs its letters in
+-- full.

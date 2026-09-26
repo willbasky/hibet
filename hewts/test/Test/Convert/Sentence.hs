@@ -4,11 +4,10 @@ import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Data.Either (either)
 import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (assertFailure, (@?=), testCase)
+import Test.Tasty.HUnit (assertFailure, testCase, (@?=))
 
 tests :: TestTree
 tests =
@@ -48,7 +47,8 @@ rawsOf :: [SpellItem] -> [Text]
 rawsOf = concatMap itemRaws
 
 run :: Text -> [SpellItem]
-run = either (const []) id . parseEither (pSentence Tibetan) . (fst . tokenizeUnicode)
+run =
+    either (const []) id . parseEither (pSentence Tibetan) . (fst . tokenizeUnicode)
 
 simple :: TestTree
 simple =
@@ -134,9 +134,9 @@ roundtrip =
                 , "དེ་xyz་༡༢ ཊཱ"
                 ]
         mapM_ check inputs
-  where
-    check input =
-        rawsOf (run input) @?= map tokenRaw (fst (tokenizeUnicode input))
+    where
+        check input =
+            rawsOf (run input) @?= map tokenRaw (fst (tokenizeUnicode input))
 
 longText :: Text
 longText =
@@ -146,12 +146,12 @@ longText =
 
 counts :: [SpellItem] -> (Int, Int, Int, Int)
 counts = foldl step (0, 0, 0, 0)
-  where
-    step (s, n, p, o) i = case i of
-        Syllable _ -> (s + 1, n, p, o)
-        Number _ -> (s, n + 1, p, o)
-        Punct _ -> (s, n, p + 1, o)
-        Other _ -> (s, n, p, o + 1)
+    where
+        step (s, n, p, o) i = case i of
+            Syllable _ -> (s + 1, n, p, o)
+            Number _ -> (s, n + 1, p, o)
+            Punct _ -> (s, n, p + 1, o)
+            Other _ -> (s, n, p, o + 1)
 
 longTextParses :: TestTree
 longTextParses =
@@ -181,7 +181,8 @@ doubleShad =
 
 newline :: TestTree
 newline =
-    testCase "དེ\nདུ -> newline is Other, keeps following syllable grouped (round-trip intact)" $
+    testCase
+        "དེ\nདུ -> newline is Other, keeps following syllable grouped (round-trip intact)" $
         tagged (run "དེ\nདུ")
             @?= [ ("S", ["ད", "ེ"])
                 , ("O", ["\n", "ད", "ུ"])

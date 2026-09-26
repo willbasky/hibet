@@ -8,25 +8,51 @@ module Convert.Grammar.Constraint.Constraint01
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Data.Maybe (fromMaybe)
-import Convert.Token (Token)
 import Text.Megaparsec (choice, optional)
+import qualified Text.Megaparsec as MP
 
 pConstraint01 :: Spelling -> Parser TibetanWord
-pConstraint01 spelling = do
-    root <- mark Root GP.pRootConsonant
-    vowel <- optional (vowelSlot spelling)
-    pure (root <> fromMaybe mempty vowel)
+pConstraint01 = \case
+    Tibetan -> do
+        root <- mark Root GP.pRootConsonant
+        vowel <- optional (mark Vowel GP.pVowel)
+        pure (root <> fromMaybe mempty vowel)
+    Wylie -> do
+        root <- mark Root GP.pRootConsonant
+        vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+        pure (root <> vowel)
 
 pConstraint01WithLong :: Spelling -> Parser TibetanWord
-pConstraint01WithLong spelling = do
-    root <- mark Root GP.pRootConsonant
-    vowel <- optional $ choice [vowelSlot spelling, mark Vowel GP.pVowelLongA]
-    pure (root <> fromMaybe mempty vowel)
+pConstraint01WithLong = \case
+    Tibetan -> do
+        root <- mark Root GP.pRootConsonant
+        vowel <-
+            optional
+                (choice [mark Vowel GP.pVowel, mark Vowel GP.pVowelLongA])
+        pure (root <> fromMaybe mempty vowel)
+    Wylie -> do
+        root <- mark Root GP.pRootConsonant
+        vowel <-
+            MP.choice
+                [ mark Vowel GP.pVowel
+                , mark Vowel GP.pVowelLongA
+                , mark ImplicitVowel GP.pImplicitA
+                ]
+        pure (root <> vowel)
 
 pConstraint01Sanskrit :: Spelling -> Parser TibetanWord
-pConstraint01Sanskrit spelling = do
-    root <- mark Root GP.pSanskrit
-    vowel <- optional (vowelSlot spelling)
-    pure (root <> fromMaybe mempty vowel)
+pConstraint01Sanskrit = \case
+    Tibetan -> do
+        root <- mark Root GP.pSanskrit
+        vowel <- optional (mark Vowel GP.pVowel)
+        pure (root <> fromMaybe mempty vowel)
+    Wylie -> do
+        root <- mark Root GP.pSanskrit
+        vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+        pure (root <> vowel)
+
+-- The Wylie arm: the vowel slot is the only difference - every Wylie syllable
+-- writes its vowel, either as a vowel letter or as the letter @a@ that never
+-- prints, so it is obligatory.

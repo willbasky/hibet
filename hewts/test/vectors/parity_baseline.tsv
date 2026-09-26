@@ -27,17 +27,37 @@
 # gains (37->175 / 38->177) are the same shapes proving stable through
 # W->U->W->U. Remaining w2u gaps are reference quirks (repeated tshegs,
 # vowel-only escapes, "blaxbla" splitting) and the warning texts.
+#
+# Wave 3.4 (per-spelling grammar arms): w2u now parses under the Wylie arms
+# instead of the Tibetan arms + generic stack. Every reference corpus holds
+# its numbers unchanged, and ewts-rs gains one check (14->15). The kangyur
+# round-trip loses 12 lines (251->239): the u2w leg still emits "blind"
+# Wylie - no dots (g.yul -> "gyul"), no implicit @a@ (མུན་གནག -> "mun gng"),
+# no "sa'i" (སའི -> "s'i") - and the strict Wylie arms read those differently
+# (gyul -> གྱུལ, gng -> གང, pStack s'i -> སྰི) than the permissive old path
+# did.
+#
+# Wave 3.5 (mark-aware Wylie renderer, kangyur corpus): the u2w leg now
+# writes dots before subjoinable stacks (གཡུལ -> "g.yul"), an implicit @a@
+# before a following full letter (སའི -> "sa'i", མུན་གནག -> "mun gnag")
+# and drops a leading a-chen that only carries a vowel (ཨུ -> "u"). The
+# kangyur round-trip climbs back to 254, and the u2w legs gain the same
+# shapes: jsewts 16->50, Lingua 15->47, java 0->1. No implicit vowel is
+# written after a syllable's closing letter (ས -> "s", མངའ -> "mnga'"):
+# per the spelling rules a closing mark never takes an explicit vowel, and
+# writing one leaks a fresh a-chen through the back leg (ཁྱེའུས ->
+# "khྱe'usa" -> ཁྱེའུསཨ).
 jsewts	w2u	210	185
-jsewts	u2w	210	16
-jsewts	roundtrip	210	175
+jsewts	u2w	210	50
+jsewts	roundtrip	210	179
 jsewts	w2u-warnings	210	172
 jsewts	u2w-warnings	210	201
 lingua	w2u	218	188
-lingua	u2w	218	15
-lingua	roundtrip	218	177
+lingua	u2w	218	47
+lingua	roundtrip	218	181
 lingua	w2u-warnings	218	174
 lingua	u2w-warnings	218	208
-ewts-rs	w2u	16	14
+ewts-rs	w2u	16	15
 java	w2u	6	4
-java	u2w	2	0
-kangyur	roundtrip	254	251
+java	u2w	2	1
+kangyur	roundtrip	254	254

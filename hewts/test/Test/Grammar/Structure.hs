@@ -4,7 +4,7 @@ import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Structure
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Convert.Sentence (SpellItem (..), pSentence)
-import Convert.Token (Token, tokenRaw)
+import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
