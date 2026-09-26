@@ -22,7 +22,7 @@ run = either (const []) id . splitSentences
 
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    Syllable ts -> ("S", map tokenRaw ts)
+    Syllable ts -> ("S", map (tokenRaw . snd) ts)
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)

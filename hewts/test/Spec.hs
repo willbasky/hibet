@@ -1,6 +1,7 @@
 module Main (main) where
 
 import qualified Test.Convert as Convert
+import qualified Test.Convert.Golden as ConvertGolden
 import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
 import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
@@ -56,5 +57,6 @@ tests =
         , Structures.tests
         , Sentence.tests
         , Convert.tests
+        , ConvertGolden.tests
         , Parity.tests
         ]

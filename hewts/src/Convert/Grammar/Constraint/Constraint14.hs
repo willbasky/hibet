@@ -6,16 +6,17 @@ module Convert.Grammar.Constraint.Constraint14 (pConstraint14) where
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
   ( Consonant (..)
   , Token
   , TokenCanonical (TcConsonant)
   , tokenCanonical
   )
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint14 :: Parser [Token]
+pConstraint14 :: Parser TibetanWord
 pConstraint14 =
   MP.choice
     [ MP.try $ parseConstraint14 GP.pPrefixGa pRoots1
@@ -25,12 +26,12 @@ pConstraint14 =
     , MP.try $ parseConstraint14 GP.pPrefixA pRoots5
     ]
 
-parseConstraint14 :: Parser Token -> Parser Token -> Parser [Token]
+parseConstraint14 :: Parser Token -> Parser Token -> Parser TibetanWord
 parseConstraint14 parsePrefix parseRoot = do
-  prefix <- parsePrefix
-  root <- parseRoot
-  vowel <- MP.optional GP.pVowel
-  pure $ [prefix, root] <> maybeToList vowel
+  prefix <- mark Prefix parsePrefix
+  root <- mark Root parseRoot
+  vowel <- MP.optional (mark Vowel GP.pVowel)
+  pure (prefix <> root <> fromMaybe [] vowel)
 
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག
 pRoots1 :: Parser Token

@@ -9,6 +9,7 @@ module Convert.Grammar.Constraint.Constraint17
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
   ( Consonant (..)
   , Token
@@ -16,25 +17,25 @@ import Convert.Token
   , tokenCanonical
   )
 import qualified Text.Megaparsec as MP
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe)
 
 -- (1) root group [ 'ག', 'ད' ] above the subfix ར.
-pConstraint17Ra :: Parser [Token]
+pConstraint17Ra :: Parser TibetanWord
 pConstraint17Ra = do
-  root <- pRootConsonant [Cg, Cd]
-  ra <- GP.pSubfixRa
-  wa <- GP.pSubfixWa
-  vowel <- MP.optional GP.pVowel
-  pure (root : ra : wa : maybeToList vowel)
+  root <- mark Root (pRootConsonant [Cg, Cd])
+  ra <- mark Subfix GP.pSubfixRa
+  wa <- mark Subfix GP.pSubfixWa
+  vowel <- MP.optional (mark Vowel GP.pVowel)
+  pure (root <> ra <> wa <> fromMaybe [] vowel)
 
 -- (2) root ཕ above the subfix ཡ.
-pConstraint17Ya :: Parser [Token]
+pConstraint17Ya :: Parser TibetanWord
 pConstraint17Ya = do
-  root <- pRootConsonant [Cph]
-  ya <- GP.pSubfixYa
-  wa <- GP.pSubfixWa
-  vowel <- MP.optional GP.pVowel
-  pure (root : ya : wa : maybeToList vowel)
+  root <- mark Root (pRootConsonant [Cph])
+  ya <- mark Subfix GP.pSubfixYa
+  wa <- mark Subfix GP.pSubfixWa
+  vowel <- MP.optional (mark Vowel GP.pVowel)
+  pure (root <> ya <> wa <> fromMaybe [] vowel)
 
 pRootConsonant :: [Consonant] -> Parser Token
 pRootConsonant allowed = do

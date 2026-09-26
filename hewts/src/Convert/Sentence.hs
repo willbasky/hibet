@@ -52,11 +52,12 @@ import Convert.Grammar.Structure
   , pStructure36
   , pStructure37
   )
+import Convert.Grammar.Word (TibetanWord)
 import Convert.Token (Token)
 import qualified Text.Megaparsec as MP
 
 data SpellItem
-    = Syllable [Token]
+    = Syllable TibetanWord
     | Number [Token]
     | Punct [Token]
     | Other [Token]
@@ -80,7 +81,7 @@ pItem =
 -- and པོགས is structure 21, not 17 + 1). All structures are probed in
 -- lookahead and the one with the longest match is then run for real, so
 -- that input is actually consumed.
-pStructure :: Parser [Token]
+pStructure :: Parser TibetanWord
 pStructure = do
     start <- MP.getInput
     let probe p = do

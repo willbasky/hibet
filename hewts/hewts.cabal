@@ -59,6 +59,7 @@ library
     Convert.Grammar.Constraint
     Convert.Grammar.Parser
     Convert.Grammar.Structure
+    Convert.Grammar.Word
     Convert.Sentence
     Convert.Token
     Convert.Tokenizer.Unicode
@@ -98,6 +99,7 @@ test-suite hewts-test
   main-is: Spec.hs
   other-modules:
     Test.Convert
+    Test.Convert.Golden
     Test.Convert.Sentence
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08

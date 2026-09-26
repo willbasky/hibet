@@ -6,6 +6,7 @@ module Convert.Grammar.Constraint.Constraint15 (pConstraint15) where
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
   ( Consonant (..)
   , Token
@@ -14,10 +15,8 @@ import Convert.Token
   )
 import qualified Text.Megaparsec as MP
 
-pConstraint15 :: Parser [Token]
-pConstraint15 = do
-  tok <- pAllowedSuffix
-  pure [tok]
+pConstraint15 :: Parser TibetanWord
+pConstraint15 = mark Suffix pAllowedSuffix
 
 -- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ]
 pAllowedSuffix :: Parser Token

@@ -8,6 +8,7 @@ module Convert.Grammar.Constraint.Constraint18
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
   ( Consonant (..)
   , SubConsonant (..)
@@ -15,11 +16,11 @@ import Convert.Token
   )
 import qualified Text.Megaparsec as MP
 import Text.Megaparsec ((<?>))
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe)
 
-pConstraint18 :: Parser [Token]
+pConstraint18 :: Parser TibetanWord
 pConstraint18 = do
-    root <- MP.satisfy (GP.isSpecificConsonant Ch) <?> "A root ཧ"
-    subRoot <- MP.satisfy (GP.isSpecificSubConsonant SCph) <?> "A subRoot ཕ"
-    vowel <- MP.optional GP.pVowel
-    pure (root : subRoot : maybeToList vowel)
+    root <- mark Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
+    subRoot <- mark Root (MP.satisfy (GP.isSpecificSubConsonant SCph) MP.<?> "A subRoot ཕ")
+    vowel <- MP.optional (mark Vowel GP.pVowel)
+    pure (root <> subRoot <> fromMaybe [] vowel)

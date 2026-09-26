@@ -50,6 +50,7 @@ module Convert.Grammar.Structure
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import qualified Convert.Grammar.Constraint.Constraint01 as C01
 import qualified Convert.Grammar.Constraint.Constraint08 as C08
 import qualified Convert.Grammar.Constraint.Constraint09 as C09
@@ -65,12 +66,12 @@ import qualified Convert.Grammar.Constraint.Constraint18 as C18
 import qualified Convert.Grammar.Constraint.Constraint19 as C19
 import qualified Convert.Grammar.Constraint.Constraint20 as C20
 import Convert.Token (Token)
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
 -- Tibetan spelling structure 1
 -- On the basis of the Tibetan spelling grammar 4.1
-pStructure1 :: Parser [Token]
+pStructure1 :: Parser TibetanWord
 pStructure1 = MP.choice
     [ MP.try C01.pConstraint01WithLong
     , MP.try C01.pConstraint01Sanskrit
@@ -78,62 +79,62 @@ pStructure1 = MP.choice
 
 -- Tibetan spelling structure 2
 -- On the basis of the Tibetan spelling grammar 4.8
-pStructure2 :: Parser [Token]
+pStructure2 :: Parser TibetanWord
 pStructure2 = C08.pConstraint08
 
 -- Tibetan spelling structure 3
 -- On the basis of the Tibetan spelling grammar 4.9
-pStructure3 :: Parser [Token]
+pStructure3 :: Parser TibetanWord
 pStructure3 = C09.pConstraint09
 
 -- Tibetan spelling structure 4
 -- On the basis of the Tibetan spelling grammar 4.10
-pStructure4 :: Parser [Token]
+pStructure4 :: Parser TibetanWord
 pStructure4 = C10.pConstraint10
 
 -- Tibetan spelling structure 5
 -- On the basis of the Tibetan spelling grammar 4.11
-pStructure5 :: Parser [Token]
+pStructure5 :: Parser TibetanWord
 pStructure5 = C11.pConstraint11
 
 -- Tibetan spelling structure 6
 -- On the basis of the Tibetan spelling grammar 4.12
-pStructure6 :: Parser [Token]
+pStructure6 :: Parser TibetanWord
 pStructure6 = C12.pConstraint12
 
 -- Tibetan spelling structure 7
 -- On the basis of the Tibetan spelling grammar 4.13
-pStructure7 :: Parser [Token]
+pStructure7 :: Parser TibetanWord
 pStructure7 = C13.pConstraint13
 
 -- Tibetan spelling structure 8
 -- On the basis of the Tibetan spelling grammar 4.14
-pStructure8 :: Parser [Token]
+pStructure8 :: Parser TibetanWord
 pStructure8 = C14.pConstraint14
 
 -- Tibetan spelling structure 9
 -- On the basis of the Tibetan spelling grammar 4.14 and 4.15
-pStructure9 :: Parser [Token]
+pStructure9 :: Parser TibetanWord
 pStructure9 = C14.pConstraint14 <> C15.pConstraint15
 
 -- Tibetan spelling structure 10
 -- On the basis of the Tibetan spelling grammar 4.11 and 4.15
-pStructure10 :: Parser [Token]
+pStructure10 :: Parser TibetanWord
 pStructure10 = C11.pConstraint11 <> C15.pConstraint15
 
 -- Tibetan spelling structure 11
 -- On the basis of the Tibetan spelling grammar 4.12 and 4.15
-pStructure11 :: Parser [Token]
+pStructure11 :: Parser TibetanWord
 pStructure11 = C12.pConstraint12 <> C15.pConstraint15
 
 -- Tibetan spelling structure 12
 -- On the basis of the Tibetan spelling grammar 4.13 and 4.15
-pStructure12 :: Parser [Token]
+pStructure12 :: Parser TibetanWord
 pStructure12 = C13.pConstraint13 <> C15.pConstraint15
 
 -- Tibetan spelling structure 13
 -- On the basis of the Tibetan spelling grammar 4.14, 4.15, 4.16
-pStructure13 :: Parser [Token]
+pStructure13 :: Parser TibetanWord
 pStructure13 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C14.pConstraint14 C16.pConstraint16Da GP.pPostfixDa
@@ -142,7 +143,7 @@ pStructure13 =
 
 -- Tibetan spelling structure 14
 -- On the basis of the Tibetan spelling grammar 4.11, 4.15, 4.16
-pStructure14 :: Parser [Token]
+pStructure14 :: Parser TibetanWord
 pStructure14 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C11.pConstraint11 C16.pConstraint16Da GP.pPostfixDa
@@ -151,7 +152,7 @@ pStructure14 =
 
 -- Tibetan spelling structure 15
 -- On the basis of the Tibetan spelling grammar 4.12, 4.15, 4.16
-pStructure15 :: Parser [Token]
+pStructure15 :: Parser TibetanWord
 pStructure15 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C12.pConstraint12 C16.pConstraint16Da GP.pPostfixDa
@@ -160,47 +161,47 @@ pStructure15 =
 
 -- Tibetan spelling structure 16
 -- On the basis of the Tibetan spelling grammar 4.13, 4.15, 4.16
-pStructure16 :: Parser [Token]
+pStructure16 :: Parser TibetanWord
 pStructure16 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C13.pConstraint13 C16.pConstraint16Da GP.pPostfixDa
         , MP.try $ parseSuffixPostfix C13.pConstraint13 C16.pConstraint16Sa GP.pPostfixSa
         ]
 
-parseSuffixPostfix :: Parser [Token] -> Parser [Token] -> Parser Token -> Parser [Token]
+parseSuffixPostfix :: Parser TibetanWord -> Parser TibetanWord -> Parser Token -> Parser TibetanWord
 parseSuffixPostfix base suffix post = do
     b <- base
     s <- suffix
-    p <- post
-    pure (b <> s <> [p])
+    p <- mark Postfix post
+    pure (b <> s <> p)
 
 -- Tibetan spelling structure 17
 -- On the basis of the Tibetan spelling grammar 4.15
-pStructure17 :: Parser [Token]
+pStructure17 :: Parser TibetanWord
 pStructure17 = do
-    root <- GP.pRootConsonant
-    vowel <- MP.optional GP.pVowel
+    root <- mark Root GP.pRootConsonant
+    vowel <- MP.optional (mark Vowel GP.pVowel)
     suffix <- C15.pConstraint15
-    pure (root : maybeToList vowel <> suffix)
+    pure (root <> fromMaybe [] vowel <> suffix)
 
 -- Tibetan spelling structure 18
 -- On the basis of the Tibetan spelling grammar 4.8 and 4.15
-pStructure18 :: Parser [Token]
+pStructure18 :: Parser TibetanWord
 pStructure18 = C08.pConstraint08 <> C15.pConstraint15
 
 -- Tibetan spelling structure 19
 -- On the basis of the Tibetan spelling grammar 4.9 and 4.15
-pStructure19 :: Parser [Token]
+pStructure19 :: Parser TibetanWord
 pStructure19 = C09.pConstraint09 <> C15.pConstraint15
 
 -- Tibetan spelling structure 20
 -- On the basis of the Tibetan spelling grammar 4.10 and 4.15
-pStructure20 :: Parser [Token]
+pStructure20 :: Parser TibetanWord
 pStructure20 = C10.pConstraint10 <> C15.pConstraint15
 
 -- Tibetan spelling structure 21
 -- On the basis of the Tibetan spelling grammar 4.1, 4.14, 4.15
-pStructure21 :: Parser [Token]
+pStructure21 :: Parser TibetanWord
 pStructure21 =
     MP.choice
         [ MP.try $ rootSuffixPostfix C16.pConstraint16Da GP.pPostfixDa
@@ -209,7 +210,7 @@ pStructure21 =
 
 -- Tibetan spelling structure 22
 -- On the basis of the Tibetan spelling grammar 4.8, 4.14, 4.15
-pStructure22 :: Parser [Token]
+pStructure22 :: Parser TibetanWord
 pStructure22 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C08.pConstraint08 C16.pConstraint16Da GP.pPostfixDa
@@ -218,7 +219,7 @@ pStructure22 =
 
 -- Tibetan spelling structure 23
 -- On the basis of the Tibetan spelling grammar 4.9, 4.14, 4.15
-pStructure23 :: Parser [Token]
+pStructure23 :: Parser TibetanWord
 pStructure23 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C09.pConstraint09 C16.pConstraint16Da GP.pPostfixDa
@@ -227,24 +228,24 @@ pStructure23 =
 
 -- Tibetan spelling structure 24
 -- On the basis of the Tibetan spelling grammar 4.10, 4.14, 4.15
-pStructure24 :: Parser [Token]
+pStructure24 :: Parser TibetanWord
 pStructure24 =
     MP.choice
         [ MP.try $ parseSuffixPostfix C10.pConstraint10 C16.pConstraint16Da GP.pPostfixDa
         , MP.try $ parseSuffixPostfix C10.pConstraint10 C16.pConstraint16Sa GP.pPostfixSa
         ]
 
-rootSuffixPostfix :: Parser [Token] -> Parser Token -> Parser [Token]
+rootSuffixPostfix :: Parser TibetanWord -> Parser Token -> Parser TibetanWord
 rootSuffixPostfix suffix post = do
-    root <- GP.pRootConsonant
-    vowel <- MP.optional GP.pVowel
+    root <- mark Root GP.pRootConsonant
+    vowel <- MP.optional (mark Vowel GP.pVowel)
     s <- suffix
-    p <- post
-    pure (root : maybeToList vowel <> s <> [p])
+    p <- mark Postfix post
+    pure (root <> fromMaybe [] vowel <> s <> p)
 
 -- Tibetan spelling structure 25
 -- On the basis of the Tibetan spelling grammar 4.17
-pStructure25 :: Parser [Token]
+pStructure25 :: Parser TibetanWord
 pStructure25 =
     MP.choice
         [ MP.try C17.pConstraint17Ra
@@ -253,57 +254,57 @@ pStructure25 =
 
 -- Tibetan spelling structure 26
 -- On the basis of the Tibetan spelling grammar 4.18
-pStructure26 :: Parser [Token]
+pStructure26 :: Parser TibetanWord
 pStructure26 = C18.pConstraint18
 
 -- Tibetan spelling structure 27
 -- On the basis of the Tibetan spelling grammar 4.19
-pStructure27 :: Parser [Token]
+pStructure27 :: Parser TibetanWord
 pStructure27 = C19.pConstraint19
 
 -- Tibetan spelling structure 28
 -- On the basis of the Tibetan spelling grammar 4.1 and 4.20
-pStructure28 :: Parser [Token]
+pStructure28 :: Parser TibetanWord
 pStructure28 = C01.pConstraint01 <> C20.pConstraint20
 
 -- Tibetan spelling structure 29
 -- On the basis of the Tibetan spelling grammar 4.8 and 4.20
-pStructure29 :: Parser [Token]
+pStructure29 :: Parser TibetanWord
 pStructure29 = C08.pConstraint08 <> C20.pConstraint20
 
 -- Tibetan spelling structure 30
 -- On the basis of the Tibetan spelling grammar 4.9 and 4.20
-pStructure30 :: Parser [Token]
+pStructure30 :: Parser TibetanWord
 pStructure30 = C09.pConstraint09 <> C20.pConstraint20
 
 -- Tibetan spelling structure 31
 -- On the basis of the Tibetan spelling grammar 4.10 and 4.20
-pStructure31 :: Parser [Token]
+pStructure31 :: Parser TibetanWord
 pStructure31 = C10.pConstraint10 <> C20.pConstraint20
 
 -- Tibetan spelling structure 32
 -- On the basis of the Tibetan spelling grammar 4.11 and 4.20
-pStructure32 :: Parser [Token]
+pStructure32 :: Parser TibetanWord
 pStructure32 = C11.pConstraint11 <> C20.pConstraint20
 
 -- Tibetan spelling structure 33
 -- On the basis of the Tibetan spelling grammar 4.12 and 4.20
-pStructure33 :: Parser [Token]
+pStructure33 :: Parser TibetanWord
 pStructure33 = C12.pConstraint12 <> C20.pConstraint20
 
 -- Tibetan spelling structure 34
 -- On the basis of the Tibetan spelling grammar 4.13 and 4.20
-pStructure34 :: Parser [Token]
+pStructure34 :: Parser TibetanWord
 pStructure34 = C13.pConstraint13 <> C20.pConstraint20
 
 -- Tibetan spelling structure 35
 -- On the basis of the Tibetan spelling grammar 4.14 and 4.20
-pStructure35 :: Parser [Token]
+pStructure35 :: Parser TibetanWord
 pStructure35 = C14.pConstraint14 <> C20.pConstraint20
 
 -- Tibetan spelling structure 36
 -- On the basis of the Tibetan spelling grammar 4.17 and 4.20
-pStructure36 :: Parser [Token]
+pStructure36 :: Parser TibetanWord
 pStructure36 =
     (MP.choice
         [ MP.try C17.pConstraint17Ra
@@ -313,5 +314,5 @@ pStructure36 =
 
 -- Tibetan spelling structure 37
 -- On the basis of the Tibetan spelling grammar 4.18 and 4.20
-pStructure37 :: Parser [Token]
+pStructure37 :: Parser TibetanWord
 pStructure37 = C18.pConstraint18 <> C20.pConstraint20

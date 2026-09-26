@@ -2,6 +2,7 @@ module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Structure
 import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Word (TibetanWord)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Either (isLeft)
@@ -516,5 +517,5 @@ structure37 =
         isLeft (parseRaws pStructure37 "ཧྥ") @?= True
     ]
 
-parseRaws :: Parser [Token] -> Text -> Either Text [Text]
-parseRaws p input = fmap (map tokenRaw) $ parseEither p (fst (tokenizeUnicode input))
+parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]
+parseRaws p input = fmap (map (tokenRaw . snd)) $ parseEither p (fst (tokenizeUnicode input))

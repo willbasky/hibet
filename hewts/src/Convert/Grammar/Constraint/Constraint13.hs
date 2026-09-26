@@ -6,31 +6,32 @@ module Convert.Grammar.Constraint.Constraint13 (pConstraint13) where
 
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Word (Position (..), TibetanWord, mark)
 import Convert.Token
   ( SubConsonant (..)
   , Token
   , TokenCanonical (TcSubConsonant)
   , tokenCanonical
   )
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint13 :: Parser [Token]
+pConstraint13 :: Parser TibetanWord
 pConstraint13 =
   MP.choice
     [ MP.try $ parseConstraint13 GP.pPrefixBa GP.pSuperfixSa (GP.pSubfixYa <|> GP.pSubfixRa)
     , MP.try $ parseConstraint13 GP.pPrefixBa GP.pSuperfixRa GP.pSubfixYa
     ]
 
-parseConstraint13 :: Parser Token -> Parser Token -> Parser Token -> Parser [Token]
+parseConstraint13 :: Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
 parseConstraint13 parsePrefix parseSuperfix parseSubfix = do
-  prefix <- parsePrefix
-  superfix <- parseSuperfix
-  root <- pRoot
-  subfix <- parseSubfix
-  vowel <- MP.optional GP.pVowel
-  pure $ [prefix, superfix, root, subfix] <> maybeToList vowel
+  prefix <- mark Prefix parsePrefix
+  superfix <- mark Superfix parseSuperfix
+  root <- mark Root pRoot
+  subfix <- mark Subfix parseSubfix
+  vowel <- MP.optional (mark Vowel GP.pVowel)
+  pure (prefix <> superfix <> root <> subfix <> fromMaybe [] vowel)
 
 -- root group [ 'ཀ', 'ག' ]
 pRoot :: Parser Token

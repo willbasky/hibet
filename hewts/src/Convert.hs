@@ -42,7 +42,7 @@ splitSentencesWith input = do
 syllables :: Text -> Either Text [Text]
 syllables input = do
     items <- splitSentences input
-    pure [T.concat (map tokenRaw ts) | Syllable ts <- items]
+    pure [T.concat (map (tokenRaw . snd) ts) | Syllable ts <- items]
 
 -- | The script used for 'renderItems' conversion.
 data OutputFormat
@@ -57,7 +57,7 @@ data OutputFormat
 renderItems :: OutputFormat -> [SpellItem] -> Text
 renderItems fmt = T.concat . map renderItem
   where
-    renderItem (Syllable ts) = T.concat (map (renderToken fmt) ts)
+    renderItem (Syllable ts) = T.concat (map (renderToken fmt . snd) ts)
     renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
     renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
     renderItem (Other ts) = T.concat (map (renderToken fmt) ts)

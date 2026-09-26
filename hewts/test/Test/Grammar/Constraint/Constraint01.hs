@@ -2,6 +2,7 @@ module Test.Grammar.Constraint.Constraint01 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Word (Position (..), TibetanWord)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Text (Text)
@@ -24,7 +25,14 @@ tests =
             parseRaws pConstraint01Sanskrit "ཌ" @?= Right ["ཌ"]
         , testCase "pConstraint01Sanskrit parses sanskrit root+vowel" $
             parseRaws pConstraint01Sanskrit "ཌོ" @?= Right ["ཌ", "ོ"]
+        , testCase "marks each letter of the word" $
+            parsePositions pConstraint01 "སུ" @?= Right [Root, Vowel]
         ]
 
-parseRaws :: Parser [Token] -> Text -> Either Text [Text]
-parseRaws p input = fmap (map tokenRaw) $ parseEither p (fst (tokenizeUnicode input))
+parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]
+parseRaws p input = fmap (map (tokenRaw . snd)) $ parseEither p (fst (tokenizeUnicode input))
+
+-- | The positions the rule gives each letter of the word: the marks the
+-- renderer will read in wave 3, step 3.3.
+parsePositions :: Parser TibetanWord -> Text -> Either Text [Position]
+parsePositions p input = fmap (map fst) $ parseEither p (fst (tokenizeUnicode input))
