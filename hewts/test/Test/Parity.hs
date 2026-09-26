@@ -17,7 +17,7 @@ module Test.Parity (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
 import Convert.Diagnostic (Diagnostics, renderDiagnostics)
-import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -251,7 +251,7 @@ convertU2W input = (fmap (renderItems OutWylie) (parseItems tokens), diags)
         (tokens, diags) = tokenizeUnicode input
 
 parseItems :: [Token] -> Either Text [SpellItem]
-parseItems = parseEither pSentence
+parseItems = parseEither (pSentence Tibetan)
 
 -- | Wylie -> Unicode -> Wylie -> Unicode, all with our own converter.
 roundTripW2U :: Text -> Either Text Text

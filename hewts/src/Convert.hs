@@ -9,7 +9,7 @@ module Convert
     ) where
 
 import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token
     ( TokenCanonical (..)
@@ -41,7 +41,7 @@ splitSentences input =
 splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
 splitSentencesWith input = do
     let (tokens, diagnostics) = tokenizeUnicode input
-    items <- parseEither pSentence tokens
+    items <- parseEither (pSentence Tibetan) tokens
     pure (items, diagnostics)
 
 -- | Extract only the recognized syllables from Tibetan text, each as its

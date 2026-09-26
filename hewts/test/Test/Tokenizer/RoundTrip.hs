@@ -10,7 +10,7 @@ import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, testCase)
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems, splitSentences)
-import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token
 import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
 import Convert.Tokenizer.Wylie
@@ -46,9 +46,13 @@ parseU input =
         Right items -> items
 
 -- | Parse Wylie text and run the token-level grammar.
+--
+-- Wylie text is read with the Wylie spelling, which is what lets the letter
+-- @a@ stand for "no vowel here" and be kept in the word as an
+-- 'ImplicitVowel' - the spelling is fully covered, and the renderer skips it.
 parseW :: Text -> [SpellItem]
 parseW input =
-    case parseEither pSentence (fst (tokenizeWylie input)) of
+    case parseEither (pSentence Wylie) (fst (tokenizeWylie input)) of
         Left err -> error ("RoundTrip.parseW: " <> show err)
         Right items -> items
 

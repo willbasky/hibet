@@ -4,27 +4,27 @@ Tibetan spelling grammar 4.8 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint08 (pConstraint08) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
 import Data.Maybe (fromMaybe)
 import Convert.Token (SubConsonant (..), Token, TokenCanonical (TcSubConsonant), tokenCanonical)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint08 :: Parser TibetanWord
-pConstraint08 =
+pConstraint08 :: Spelling -> Parser TibetanWord
+pConstraint08 spelling =
     MP.choice
-        [ MP.try $ parseConstraint08 GP.pSuperfixRa pRaSuperfixRoot
-        , MP.try $ parseConstraint08 GP.pSuperfixLa pLaSuperfixRoot
-        , MP.try $ parseConstraint08 GP.pSuperfixSa pSaSuperfixRoot
+        [ MP.try $ parseConstraint08 spelling GP.pSuperfixRa pRaSuperfixRoot
+        , MP.try $ parseConstraint08 spelling GP.pSuperfixLa pLaSuperfixRoot
+        , MP.try $ parseConstraint08 spelling GP.pSuperfixSa pSaSuperfixRoot
         ]
 
-parseConstraint08 :: Parser Token -> Parser Token -> Parser TibetanWord
-parseConstraint08 parseSuperfix parseRoot = do
+parseConstraint08 :: Spelling -> Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraint08 spelling parseSuperfix parseRoot = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot
-    vowel <- MP.optional (mark Vowel GP.pVowel)
+    vowel <- MP.optional (vowelSlot spelling)
     pure (superfix <> root <> fromMaybe mempty vowel)
 
 pRaSuperfixRoot :: Parser Token

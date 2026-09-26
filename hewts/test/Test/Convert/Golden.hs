@@ -1,7 +1,7 @@
 module Test.Convert.Golden (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
-import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
@@ -38,7 +38,7 @@ entry n raw = T.pack (show n) <> "\t" <> converted raw
 
 converted :: Text -> Text
 converted input =
-    case parseEither pSentence (fst (tokenizeUnicode input)) of
+    case parseEither (pSentence Tibetan) (fst (tokenizeUnicode input)) of
         Left err -> "<parse error: " <> err <> ">"
         Right items -> renderItems OutWylie items
 

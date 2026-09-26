@@ -4,9 +4,9 @@ Tibetan spelling grammar 4.12 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint12 (pConstraint12) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
 import Data.Maybe (fromMaybe)
 import Convert.Token
   ( Consonant (..)
@@ -17,25 +17,25 @@ import Convert.Token
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint12 :: Parser TibetanWord
-pConstraint12 =
+pConstraint12 :: Spelling -> Parser TibetanWord
+pConstraint12 spelling =
   MP.choice
-    [ MP.try $ parseConstraint12 GP.pPrefixDa pRoots1 GP.pSubfixYa
-    , MP.try $ parseConstraint12 GP.pPrefixDa pRoots2 GP.pSubfixRa
-    , MP.try $ parseConstraint12 GP.pPrefixBa pRoots3 GP.pSubfixYa
-    , MP.try $ parseConstraint12 GP.pPrefixBa pRoots4 GP.pSubfixRa
-    , MP.try $ parseConstraint12 GP.pPrefixBa pRoots5 GP.pSubfixLa
-    , MP.try $ parseConstraint12 GP.pPrefixMa pRoots6 (GP.pSubfixYa <|> GP.pSubfixRa)
-    , MP.try $ parseConstraint12 GP.pPrefixA pRoots7 GP.pSubfixYa
-    , MP.try $ parseConstraint12 GP.pPrefixA pRoots8 GP.pSubfixRa
+    [ MP.try $ parseConstraint12 spelling GP.pPrefixDa pRoots1 GP.pSubfixYa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixDa pRoots2 GP.pSubfixRa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixBa pRoots3 GP.pSubfixYa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixBa pRoots4 GP.pSubfixRa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixBa pRoots5 GP.pSubfixLa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixMa pRoots6 (GP.pSubfixYa <|> GP.pSubfixRa)
+    , MP.try $ parseConstraint12 spelling GP.pPrefixA pRoots7 GP.pSubfixYa
+    , MP.try $ parseConstraint12 spelling GP.pPrefixA pRoots8 GP.pSubfixRa
     ]
 
-parseConstraint12 :: Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
-parseConstraint12 parsePrefix parseRoot parseSubfix = do
+parseConstraint12 :: Spelling -> Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraint12 spelling parsePrefix parseRoot parseSubfix = do
   prefix <- mark Prefix parsePrefix
   root <- mark Root parseRoot
   subfix <- mark Subfix parseSubfix
-  vowel <- MP.optional (mark Vowel GP.pVowel)
+  vowel <- MP.optional (vowelSlot spelling)
   pure (prefix <> root <> subfix <> fromMaybe mempty vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] with prefix ད under subfix ཡ

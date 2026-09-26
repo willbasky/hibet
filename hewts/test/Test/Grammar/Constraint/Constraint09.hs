@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint09 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -15,23 +15,23 @@ tests =
   testGroup
     "grammar rule 09"
     [ testCase "wa-subfix without vowel" $
-        parseRaws pConstraint09 "ཀྭ" @?= Right ["ཀ", "ྭ"]
+        parseRaws (pConstraint09 Tibetan) "ཀྭ" @?= Right ["ཀ", "ྭ"]
     , testCase "wa-subfix with vowel" $
-        parseRaws pConstraint09 "ཀྭུ" @?= Right ["ཀ", "ྭ", "ུ"]
+        parseRaws (pConstraint09 Tibetan) "ཀྭུ" @?= Right ["ཀ", "ྭ", "ུ"]
     , testCase "ya-subfix without vowel" $
-        parseRaws pConstraint09 "ཀྱ" @?= Right ["ཀ", "ྱ"]
+        parseRaws (pConstraint09 Tibetan) "ཀྱ" @?= Right ["ཀ", "ྱ"]
     , testCase "ya-subfix with vowel" $
-        parseRaws pConstraint09 "ཀྱི" @?= Right ["ཀ", "ྱ", "ི"]
+        parseRaws (pConstraint09 Tibetan) "ཀྱི" @?= Right ["ཀ", "ྱ", "ི"]
     , testCase "ra-subfix without vowel" $
-        parseRaws pConstraint09 "ཀྲ" @?= Right ["ཀ", "ྲ"]
+        parseRaws (pConstraint09 Tibetan) "ཀྲ" @?= Right ["ཀ", "ྲ"]
     , testCase "ra-subfix with vowel" $
-        parseRaws pConstraint09 "ཀྲེ" @?= Right ["ཀ", "ྲ", "ེ"]
+        parseRaws (pConstraint09 Tibetan) "ཀྲེ" @?= Right ["ཀ", "ྲ", "ེ"]
     , testCase "la-subfix without vowel" $
-        parseRaws pConstraint09 "ཀླ" @?= Right ["ཀ", "ླ"]
+        parseRaws (pConstraint09 Tibetan) "ཀླ" @?= Right ["ཀ", "ླ"]
     , testCase "la-subfix with vowel" $
-        parseRaws pConstraint09 "ཀླེ" @?= Right ["ཀ", "ླ", "ེ"]
+        parseRaws (pConstraint09 Tibetan) "ཀླེ" @?= Right ["ཀ", "ླ", "ེ"]
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint09 "ཀྭུ" @?= Right [Root, Subfix, Vowel]
+        parsePositions (pConstraint09 Tibetan) "ཀྭུ" @?= Right [Root, Subfix, Vowel]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

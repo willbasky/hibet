@@ -32,6 +32,33 @@ pRootConsonant = satisfy isRootConsonantToken <?> "One of 30 Tibetan root conson
 pSanskrit :: Parser Token
 pSanskrit = satisfy isSanskritConsonantToken <?> "One of 5 Sanskrit consonants"
 
+-- | The four subfix letters. The sets are the book's (rules 4.5, 4.6: subfixes
+-- are @w y r l@, superfixes @r l s@). Wylie writes the bare letter where
+-- Tibetan has a separate sign, so each gets a spelling: the letter is the same
+-- token either way, only its canonical form differs.
+-- | Which spelling the input is written in. The two agree on almost everything
+-- - @i u e o@ are the same letters either way, a prefix is a prefix, a final is
+-- a final - and differ where Tibetan lets a mark carry the meaning and Wylie
+-- writes it out in letters: a bare @r y l w@ is the subjoined letter in Wylie
+-- and a separate sign in Tibetan. So the switch changes which tokens fill a
+-- slot, never what the slot means.
+data Spelling
+    = Tibetan
+    | Wylie
+    deriving (Show, Eq, Ord)
+
+pSubfixWa :: Parser Token
+pSubfixWa = satisfy (isSpecificSubConsonant SCw) <?> "Subfix wa token"
+
+pSubfixYa :: Parser Token
+pSubfixYa = satisfy (isSpecificSubConsonant SCy) <?> "Subfix ya token"
+
+pSubfixRa :: Parser Token
+pSubfixRa = satisfy (isSpecificSubConsonant SCr) <?> "Subfix ra token"
+
+pSubfixLa :: Parser Token
+pSubfixLa = satisfy (isSpecificSubConsonant SCl) <?> "Subfix la token"
+
 pVowel :: Parser Token
 pVowel = satisfy isVowelToken <?> "Vowel token"
 
@@ -64,18 +91,6 @@ pSuperfixSa = satisfy (isSpecificConsonant Cs) <?> "Superfix sa token"
 
 pSubConsonant :: Parser Token
 pSubConsonant = satisfy isSubConsonantToken <?> "Subconsonant token"
-
-pSubfixWa :: Parser Token
-pSubfixWa = satisfy (isSpecificSubConsonant SCw) <?> "Subfix wa token"
-
-pSubfixYa :: Parser Token
-pSubfixYa = satisfy (isSpecificSubConsonant SCy) <?> "Subfix ya token"
-
-pSubfixRa :: Parser Token
-pSubfixRa = satisfy (isSpecificSubConsonant SCr) <?> "Subfix ra token"
-
-pSubfixLa :: Parser Token
-pSubfixLa = satisfy (isSpecificSubConsonant SCl) <?> "Subfix la token"
 
 pSuffix :: Parser Token
 pSuffix = satisfy isSuffixConsonantToken <?> "Suffix token"

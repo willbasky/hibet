@@ -53,6 +53,7 @@ import Convert.Grammar.Structure
   , pStructure37
   )
 import Convert.Grammar.Word (TibetanWord)
+import Convert.Grammar.Parser (Spelling (..))
 import Convert.Token (Token)
 import qualified Text.Megaparsec as MP
 
@@ -63,15 +64,15 @@ data SpellItem
     | Other [Token]
     deriving (Show, Eq)
 
-pSentence :: Parser [SpellItem]
-pSentence = MP.many pItem <* MP.eof
+pSentence :: Spelling -> Parser [SpellItem]
+pSentence spelling = MP.many (pItem spelling) <* MP.eof
 
-pItem :: Parser SpellItem
-pItem =
+pItem :: Spelling -> Parser SpellItem
+pItem spelling =
     MP.choice
         [ Punct <$> MP.some pPunctuation
         , Number <$> MP.some pNumber
-        , Syllable <$> MP.try pStructure
+        , Syllable <$> MP.try (pStructure spelling)
         , Other <$> MP.some (MP.satisfy (not . isPunctuationLike))
         ]
 
@@ -81,8 +82,8 @@ pItem =
 -- and པོགས is structure 21, not 17 + 1). All structures are probed in
 -- lookahead and the one with the longest match is then run for real, so
 -- that input is actually consumed.
-pStructure :: Parser TibetanWord
-pStructure = do
+pStructure :: Spelling -> Parser TibetanWord
+pStructure spelling = do
     start <- MP.getInput
     let probe p = do
             r <-
@@ -101,13 +102,17 @@ pStructure = do
         | m >= n = acc
         | otherwise = c
     parses =
-        [ pStructure28, pStructure29, pStructure30, pStructure31, pStructure32
-        , pStructure33, pStructure34, pStructure35, pStructure36, pStructure37
-        , pStructure21, pStructure22, pStructure23, pStructure24
-        , pStructure13, pStructure14, pStructure15, pStructure16
-        , pStructure17, pStructure18, pStructure19, pStructure20
-        , pStructure9, pStructure10, pStructure11, pStructure12
-        , pStructure27, pStructure26, pStructure25
-        , pStructure4, pStructure5, pStructure6, pStructure7, pStructure8
-        , pStructure1, pStructure2, pStructure3
+        [ pStructure28 spelling, pStructure29 spelling, pStructure30 spelling
+        , pStructure31 spelling, pStructure32 spelling, pStructure33 spelling
+        , pStructure34 spelling, pStructure35 spelling, pStructure36 spelling
+        , pStructure37 spelling, pStructure21 spelling, pStructure22 spelling
+        , pStructure23 spelling, pStructure24 spelling, pStructure13 spelling
+        , pStructure14 spelling, pStructure15 spelling, pStructure16 spelling
+        , pStructure17 spelling, pStructure18 spelling, pStructure19 spelling
+        , pStructure20 spelling, pStructure9 spelling, pStructure10 spelling
+        , pStructure11 spelling, pStructure12 spelling, pStructure27 spelling
+        , pStructure26 spelling, pStructure25 spelling, pStructure4 spelling
+        , pStructure5 spelling, pStructure6 spelling, pStructure7 spelling
+        , pStructure8 spelling, pStructure1 spelling, pStructure2 spelling
+        , pStructure3 spelling
         ]

@@ -4,9 +4,9 @@ Tibetan spelling grammar 4.15 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint15 (pConstraint15) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
 import Data.Maybe (fromMaybe)
 import Convert.Token
   ( Consonant (..)
@@ -16,8 +16,8 @@ import Convert.Token
   )
 import qualified Text.Megaparsec as MP
 
-pConstraint15 :: Parser TibetanWord
-pConstraint15 = mark Suffix pAllowedSuffix
+pConstraint15 :: Spelling -> Parser TibetanWord
+pConstraint15 spelling = mark Suffix pAllowedSuffix
 
 -- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ]
 pAllowedSuffix :: Parser Token

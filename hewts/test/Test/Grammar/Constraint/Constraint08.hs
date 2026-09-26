@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint08 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -15,19 +15,19 @@ tests =
     testGroup
         "grammar rule 08"
         [ testCase "ra-superfix form without vowel" $
-            parseRaws pConstraint08 "རྒ" @?= Right ["ར", "ྒ"]
+            parseRaws (pConstraint08 Tibetan) "རྒ" @?= Right ["ར", "ྒ"]
         , testCase "ra-superfix form with vowel" $
-            parseRaws pConstraint08 "རྒོ" @?= Right ["ར", "ྒ", "ོ"]
+            parseRaws (pConstraint08 Tibetan) "རྒོ" @?= Right ["ར", "ྒ", "ོ"]
         , testCase "la-superfix form without vowel" $
-            parseRaws pConstraint08 "ལྤ" @?= Right ["ལ", "ྤ"]
+            parseRaws (pConstraint08 Tibetan) "ལྤ" @?= Right ["ལ", "ྤ"]
         , testCase "la-superfix form with vowel" $
-            parseRaws pConstraint08 "ལྤོ" @?= Right ["ལ", "ྤ", "ོ"]
+            parseRaws (pConstraint08 Tibetan) "ལྤོ" @?= Right ["ལ", "ྤ", "ོ"]
         , testCase "sa-superfix form without vowel" $
-            parseRaws pConstraint08 "སྨ" @?= Right ["ས", "ྨ"]
+            parseRaws (pConstraint08 Tibetan) "སྨ" @?= Right ["ས", "ྨ"]
         , testCase "sa-superfix form with vowel" $
-            parseRaws pConstraint08 "སྨོ" @?= Right ["ས", "ྨ", "ོ"]
+            parseRaws (pConstraint08 Tibetan) "སྨོ" @?= Right ["ས", "ྨ", "ོ"]
         , testCase "marks each letter of the word" $
-            parsePositions pConstraint08 "རྒོ" @?= Right [Superfix, Root, Vowel]
+            parsePositions (pConstraint08 Tibetan) "རྒོ" @?= Right [Superfix, Root, Vowel]
         ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

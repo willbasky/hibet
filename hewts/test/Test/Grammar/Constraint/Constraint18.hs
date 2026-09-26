@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint18 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -16,15 +16,15 @@ tests =
   testGroup
     "grammar rule 18"
     [ testCase "parses root ཧ above subroot ཕ" $
-        parseRaws pConstraint18 "ཧྥ" @?= Right ["ཧ", "ྥ"]
+        parseRaws (pConstraint18 Tibetan) "ཧྥ" @?= Right ["ཧ", "ྥ"]
     , testCase "parses root ཧ with vowel above subroot ཕ" $
-        parseRaws pConstraint18 "ཧྥི" @?= Right ["ཧ", "ྥ", "ི"]
+        parseRaws (pConstraint18 Tibetan) "ཧྥི" @?= Right ["ཧ", "ྥ", "ི"]
     , testCase "rejects wrong subroot above ཧ" $
-        isLeft (parseRaws pConstraint18 "ཧྲ") @?= True
+        isLeft (parseRaws (pConstraint18 Tibetan) "ཧྲ") @?= True
     , testCase "rejects root ཀ above subroot ཕ" $
-        isLeft (parseRaws pConstraint18 "ཀྥ") @?= True
+        isLeft (parseRaws (pConstraint18 Tibetan) "ཀྥ") @?= True
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint18 "ཧྥི" @?= Right [Root, Root, Vowel]
+        parsePositions (pConstraint18 Tibetan) "ཧྥི" @?= Right [Root, Root, Vowel]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

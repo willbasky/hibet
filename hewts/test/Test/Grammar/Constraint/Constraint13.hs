@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint13 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -15,19 +15,19 @@ tests =
   testGroup
     "grammar rule 13"
     [ testCase "ba-prefix + sa-superfix + roots + ya-subfix without vowel" $
-        parseRaws pConstraint13 "བསྐྱ" @?= Right ["བ", "ས", "ྐ", "ྱ"]
+        parseRaws (pConstraint13 Tibetan) "བསྐྱ" @?= Right ["བ", "ས", "ྐ", "ྱ"]
     , testCase "ba-prefix + sa-superfix + roots + ya-subfix with vowel" $
-        parseRaws pConstraint13 "བསྐྱུ" @?= Right ["བ", "ས", "ྐ", "ྱ", "ུ"]
+        parseRaws (pConstraint13 Tibetan) "བསྐྱུ" @?= Right ["བ", "ས", "ྐ", "ྱ", "ུ"]
     , testCase "ba-prefix + sa-superfix + roots + ra-subfix without vowel" $
-        parseRaws pConstraint13 "བསྐྲ" @?= Right ["བ", "ས", "ྐ", "ྲ"]
+        parseRaws (pConstraint13 Tibetan) "བསྐྲ" @?= Right ["བ", "ས", "ྐ", "ྲ"]
     , testCase "ba-prefix + sa-superfix + roots + ra-subfix with vowel" $
-        parseRaws pConstraint13 "བསྐྲོ" @?= Right ["བ", "ས", "ྐ", "ྲ", "ོ"]
+        parseRaws (pConstraint13 Tibetan) "བསྐྲོ" @?= Right ["བ", "ས", "ྐ", "ྲ", "ོ"]
     , testCase "ba-prefix + ra-superfix + roots + ya-subfix without vowel" $
-        parseRaws pConstraint13 "བརྐྱ" @?= Right ["བ", "ར", "ྐ", "ྱ"]
+        parseRaws (pConstraint13 Tibetan) "བརྐྱ" @?= Right ["བ", "ར", "ྐ", "ྱ"]
     , testCase "ba-prefix + ra-superfix + roots + ya-subfix with vowel" $
-        parseRaws pConstraint13 "བརྐྱུ" @?= Right ["བ", "ར", "ྐ", "ྱ", "ུ"]
+        parseRaws (pConstraint13 Tibetan) "བརྐྱུ" @?= Right ["བ", "ར", "ྐ", "ྱ", "ུ"]
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint13 "བསྐྱུ" @?= Right [Prefix, Superfix, Root, Subfix, Vowel]
+        parsePositions (pConstraint13 Tibetan) "བསྐྱུ" @?= Right [Prefix, Superfix, Root, Subfix, Vowel]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

@@ -1,6 +1,6 @@
 module Test.Convert.Sentence (tests) where
 
-import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -48,7 +48,7 @@ rawsOf :: [SpellItem] -> [Text]
 rawsOf = concatMap itemRaws
 
 run :: Text -> [SpellItem]
-run = either (const []) id . parseEither pSentence . (fst . tokenizeUnicode)
+run = either (const []) id . parseEither (pSentence Tibetan) . (fst . tokenizeUnicode)
 
 simple :: TestTree
 simple =
@@ -157,7 +157,7 @@ longTextParses :: TestTree
 longTextParses =
     testCase "long real text: every token preserved, no hang" $ do
         let toks = fst (tokenizeUnicode longText)
-        case parseEither pSentence toks of
+        case parseEither (pSentence Tibetan) toks of
             Left e -> assertFailure (show e)
             Right items -> do
                 rawsOf items @?= map tokenRaw toks

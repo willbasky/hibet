@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint11 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -15,19 +15,19 @@ tests =
   testGroup
     "grammar rule 11"
     [ testCase "ba-prefix + ra-superfix + roots1 without vowel" $
-        parseRaws pConstraint11 "བརྐ" @?= Right ["བ", "ར", "ྐ"]
+        parseRaws (pConstraint11 Tibetan) "བརྐ" @?= Right ["བ", "ར", "ྐ"]
     , testCase "ba-prefix + ra-superfix + roots1 with vowel" $
-        parseRaws pConstraint11 "བརྐུ" @?= Right ["བ", "ར", "ྐ", "ུ"]
+        parseRaws (pConstraint11 Tibetan) "བརྐུ" @?= Right ["བ", "ར", "ྐ", "ུ"]
     , testCase "ba-prefix + la-superfix + roots2 without vowel" $
-        parseRaws pConstraint11 "བལྟ" @?= Right ["བ", "ལ", "ྟ"]
+        parseRaws (pConstraint11 Tibetan) "བལྟ" @?= Right ["བ", "ལ", "ྟ"]
     , testCase "ba-prefix + la-superfix + roots2 with vowel" $
-        parseRaws pConstraint11 "བལྟོ" @?= Right ["བ", "ལ", "ྟ", "ོ"]
+        parseRaws (pConstraint11 Tibetan) "བལྟོ" @?= Right ["བ", "ལ", "ྟ", "ོ"]
     , testCase "ba-prefix + sa-superfix + roots3 without vowel" $
-        parseRaws pConstraint11 "བསྐ" @?= Right ["བ", "ས", "ྐ"]
+        parseRaws (pConstraint11 Tibetan) "བསྐ" @?= Right ["བ", "ས", "ྐ"]
     , testCase "ba-prefix + sa-superfix + roots3 with vowel" $
-        parseRaws pConstraint11 "བསྐུ" @?= Right ["བ", "ས", "ྐ", "ུ"]
+        parseRaws (pConstraint11 Tibetan) "བསྐུ" @?= Right ["བ", "ས", "ྐ", "ུ"]
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint11 "བརྐུ" @?= Right [Prefix, Superfix, Root, Vowel]
+        parsePositions (pConstraint11 Tibetan) "བརྐུ" @?= Right [Prefix, Superfix, Root, Vowel]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

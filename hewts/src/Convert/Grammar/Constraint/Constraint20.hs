@@ -6,9 +6,9 @@ module Convert.Grammar.Constraint.Constraint20
     ( pConstraint20
     ) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
 import Data.Maybe (fromMaybe)
 import Convert.Token
   ( Consonant (..)
@@ -17,8 +17,8 @@ import Convert.Token
   )
 import qualified Text.Megaparsec as MP
 
-pConstraint20 :: Parser TibetanWord
-pConstraint20 = do
+pConstraint20 :: Spelling -> Parser TibetanWord
+pConstraint20 spelling = do
     root <- mark Root (MP.satisfy (GP.isSpecificConsonant C') MP.<?> "A root འ")
     -- འ takes either a vowel, or a second root (Def 4.10's special case:
     -- "a consonant alphabet with a consonant alphabet"), so ང and མ are roots here

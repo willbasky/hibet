@@ -1,13 +1,16 @@
 module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Structure
-import Convert.Grammar.Parser (Parser, parseEither)
-import Convert.Grammar.Word (TibetanWord)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
+import Convert.Grammar.Word (Position (..), TibetanWord)
+import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
 import Data.Foldable (toList)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit ((@?=), testCase)
 
@@ -52,7 +55,76 @@ tests =
     , structure35
     , structure36
     , structure37
+    , wylieSpelling
     ]
+
+-- | Wave 3, step 3.2: the Wylie spelling.
+--
+-- The letter @a@ is written in Wylie wherever a vowel would be, and it means
+-- "no vowel here". It is kept in the word as an 'ImplicitVowel' so that the
+-- spelling stays covered, and the renderer skips it. Before this step the same
+-- input came out as two syllables, the second one being the letter ཨ read as
+-- a root of its own - so these cases are the regression guard for the step.
+wylieSpelling :: TestTree
+wylieSpelling =
+  testGroup
+    "wylie spelling"
+    [ testCase "ka is one syllable in Wylie" $
+        syllableCount Wylie "ka" @?= Right 1
+    , testCase "ka is two syllables in Tibetan (the a read as a root)" $
+        syllableCount Tibetan "ka" @?= Right 2
+    , testCase "the a is kept in the word as an implicit vowel" $
+        wordMarks Wylie "ka" @?= Right [Root, ImplicitVowel]
+    , testCase "ga likewise" $
+        wordMarks Wylie "ga" @?= Right [Root, ImplicitVowel]
+    , testCase "dangs is one syllable in Wylie" $
+        syllableCount Wylie "dangs" @?= Right 1
+    , testCase "an explicit vowel still wins over the implicit a" $
+        wordMarks Wylie "ki" @?= Right [Root, Vowel]
+    , testCase "the word still covers the input" $
+        wordSpelling Wylie "ka" @?= Right "ka"
+    , testCase "the implicit vowel is a letter of the word, not a lost one" $
+        wordRaws Wylie "ka" @?= Right ["k", "a"]
+    ]
+
+-- | How many syllables the text came out as. One Wylie word is one syllable,
+-- so this is the count that the implicit vowel changes.
+syllableCount :: Spelling -> Text -> Either Text Int
+syllableCount spelling input =
+    fmap (length . filter isSyllable) (parseWylie spelling input)
+
+-- | The marks of the single syllable in the text, which is what the renderer
+-- will read: an 'ImplicitVowel' is a letter that prints nothing.
+wordMarks :: Spelling -> Text -> Either Text [Position]
+wordMarks spelling input =
+    case parseWylie spelling input of
+        Left err -> Left err
+        Right items -> case [w | Syllable w <- items] of
+            [w] -> Right (toList (fmap fst w))
+            _ -> Left "expected the text to be exactly one syllable"
+
+-- | The letters of the single syllable, spelled as they came in.
+wordRaws :: Spelling -> Text -> Either Text [Text]
+wordRaws spelling input =
+    case parseWylie spelling input of
+        Left err -> Left err
+        Right items -> case [w | Syllable w <- items] of
+            [w] -> Right (toList (fmap (tokenRaw . snd) w))
+            _ -> Left "expected the text to be exactly one syllable"
+
+-- | The syllable spelled back as it came in. This is the coverage invariant:
+-- however the grammar cuts a word up, the letters must add up to the input,
+-- which is why the implicit vowel is kept rather than swallowed.
+wordSpelling :: Spelling -> Text -> Either Text Text
+wordSpelling spelling input = fmap T.concat (wordRaws spelling input)
+
+parseWylie :: Spelling -> Text -> Either Text [SpellItem]
+parseWylie spelling input =
+    parseEither (pSentence spelling) (fst (tokenizeWylie input))
+
+isSyllable :: SpellItem -> Bool
+isSyllable (Syllable _) = True
+isSyllable _ = False
 
 structure1 :: TestTree
 structure1 =
@@ -518,5 +590,11 @@ structure37 =
         isLeft (parseRaws pStructure37 "ཧྥ") @?= True
     ]
 
-parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]
-parseRaws p input = fmap (toList . fmap (tokenRaw . snd)) $ parseEither p (fst (tokenizeUnicode input))
+-- | Every structure is written for both spellings, so the helper takes the
+-- rule as it is declared and says here which spelling to run it in. All 37
+-- call sites above therefore read @parseRaws pStructure7@ and stay free of
+-- spelling noise; the wave 3 tests pass 'Wylie' and add their own cases.
+parseRaws :: (Spelling -> Parser TibetanWord) -> Text -> Either Text [Text]
+parseRaws p input =
+    fmap (toList . fmap (tokenRaw . snd)) $
+        parseEither (p Tibetan) (fst (tokenizeUnicode input))

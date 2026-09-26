@@ -4,9 +4,9 @@ Tibetan spelling grammar 4.10 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint10 (pConstraint10) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Word (Position (..), TibetanWord, mark, vowelSlot)
 import Data.Maybe (fromMaybe)
 import Convert.Token
   ( SubConsonant (..)
@@ -17,21 +17,21 @@ import Convert.Token
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint10 :: Parser TibetanWord
-pConstraint10 =
+pConstraint10 :: Spelling -> Parser TibetanWord
+pConstraint10 spelling =
   MP.choice
-    [ MP.try $ parseConstraint10 GP.pSuperfixRa pRoots1 GP.pSubfixYa
-    , MP.try $ parseConstraint10 GP.pSuperfixSa pRoots2 (GP.pSubfixYa <|> GP.pSubfixRa)
-    , MP.try $ parseConstraint10 GP.pSuperfixSa pRoot3 GP.pSubfixRa
-    , MP.try $ parseConstraint10 GP.pSuperfixRa pRoot4 GP.pSubfixWa
+    [ MP.try $ parseConstraint10 spelling GP.pSuperfixRa pRoots1 GP.pSubfixYa
+    , MP.try $ parseConstraint10 spelling GP.pSuperfixSa pRoots2 (GP.pSubfixYa <|> GP.pSubfixRa)
+    , MP.try $ parseConstraint10 spelling GP.pSuperfixSa pRoot3 GP.pSubfixRa
+    , MP.try $ parseConstraint10 spelling GP.pSuperfixRa pRoot4 GP.pSubfixWa
     ]
 
-parseConstraint10 :: Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
-parseConstraint10 parseSuperfix parseRoot parseSubfix = do
+parseConstraint10 :: Spelling -> Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraint10 spelling parseSuperfix parseRoot parseSubfix = do
   superfix <- mark Superfix parseSuperfix
   root <- mark Root parseRoot
   subfix <- mark Subfix parseSubfix
-  vowel <- MP.optional (mark Vowel GP.pVowel)
+  vowel <- MP.optional (vowelSlot spelling)
   pure (superfix <> root <> subfix <> fromMaybe mempty vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ

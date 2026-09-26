@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint16 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -16,25 +16,25 @@ tests =
   testGroup
     "grammar rule 16"
     [ testCase "parses suffix ན before postfix ད" $
-        parseRaws pConstraint16Da "ན" @?= Right ["ན"]
+        parseRaws (pConstraint16Da Tibetan) "ན" @?= Right ["ན"]
     , testCase "parses suffix ར before postfix ད" $
-        parseRaws pConstraint16Da "ར" @?= Right ["ར"]
+        parseRaws (pConstraint16Da Tibetan) "ར" @?= Right ["ར"]
     , testCase "parses suffix ལ before postfix ད" $
-        parseRaws pConstraint16Da "ལ" @?= Right ["ལ"]
+        parseRaws (pConstraint16Da Tibetan) "ལ" @?= Right ["ལ"]
     , testCase "rejects ག for postfix ད rule" $
-        isLeft (parseRaws pConstraint16Da "ག") @?= True
+        isLeft (parseRaws (pConstraint16Da Tibetan) "ག") @?= True
     , testCase "parses suffix ག before postfix ས" $
-        parseRaws pConstraint16Sa "ག" @?= Right ["ག"]
+        parseRaws (pConstraint16Sa Tibetan) "ག" @?= Right ["ག"]
     , testCase "parses suffix ང before postfix ས" $
-        parseRaws pConstraint16Sa "ང" @?= Right ["ང"]
+        parseRaws (pConstraint16Sa Tibetan) "ང" @?= Right ["ང"]
     , testCase "parses suffix བ before postfix ས" $
-        parseRaws pConstraint16Sa "བ" @?= Right ["བ"]
+        parseRaws (pConstraint16Sa Tibetan) "བ" @?= Right ["བ"]
     , testCase "parses suffix མ before postfix ས" $
-        parseRaws pConstraint16Sa "མ" @?= Right ["མ"]
+        parseRaws (pConstraint16Sa Tibetan) "མ" @?= Right ["མ"]
     , testCase "rejects ན for postfix ས rule" $
-        isLeft (parseRaws pConstraint16Sa "ན") @?= True
+        isLeft (parseRaws (pConstraint16Sa Tibetan) "ན") @?= True
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint16Da "ན" @?= Right [Suffix]
+        parsePositions (pConstraint16Da Tibetan) "ན" @?= Right [Suffix]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

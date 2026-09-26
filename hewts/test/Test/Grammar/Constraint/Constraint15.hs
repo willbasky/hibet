@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint15 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -16,29 +16,29 @@ tests =
   testGroup
     "grammar rule 15"
     [ testCase "parses suffix ག" $
-        parseRaws pConstraint15 "ག" @?= Right ["ག"]
+        parseRaws (pConstraint15 Tibetan) "ག" @?= Right ["ག"]
     , testCase "parses suffix ང" $
-        parseRaws pConstraint15 "ང" @?= Right ["ང"]
+        parseRaws (pConstraint15 Tibetan) "ང" @?= Right ["ང"]
     , testCase "parses suffix ད" $
-        parseRaws pConstraint15 "ད" @?= Right ["ད"]
+        parseRaws (pConstraint15 Tibetan) "ད" @?= Right ["ད"]
     , testCase "parses suffix ན" $
-        parseRaws pConstraint15 "ན" @?= Right ["ན"]
+        parseRaws (pConstraint15 Tibetan) "ན" @?= Right ["ན"]
     , testCase "parses suffix བ" $
-        parseRaws pConstraint15 "བ" @?= Right ["བ"]
+        parseRaws (pConstraint15 Tibetan) "བ" @?= Right ["བ"]
     , testCase "parses suffix མ" $
-        parseRaws pConstraint15 "མ" @?= Right ["མ"]
+        parseRaws (pConstraint15 Tibetan) "མ" @?= Right ["མ"]
     , testCase "parses suffix འ" $
-        parseRaws pConstraint15 "འ" @?= Right ["འ"]
+        parseRaws (pConstraint15 Tibetan) "འ" @?= Right ["འ"]
     , testCase "parses suffix ར" $
-        parseRaws pConstraint15 "ར" @?= Right ["ར"]
+        parseRaws (pConstraint15 Tibetan) "ར" @?= Right ["ར"]
     , testCase "parses suffix ལ" $
-        parseRaws pConstraint15 "ལ" @?= Right ["ལ"]
+        parseRaws (pConstraint15 Tibetan) "ལ" @?= Right ["ལ"]
     , testCase "parses suffix ས" $
-        parseRaws pConstraint15 "ས" @?= Right ["ས"]
+        parseRaws (pConstraint15 Tibetan) "ས" @?= Right ["ས"]
     , testCase "rejects non-suffix consonant ཀ" $
-        isLeft (parseRaws pConstraint15 "ཀ") @?= True
+        isLeft (parseRaws (pConstraint15 Tibetan) "ཀ") @?= True
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint15 "ག" @?= Right [Suffix]
+        parsePositions (pConstraint15 Tibetan) "ག" @?= Right [Suffix]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

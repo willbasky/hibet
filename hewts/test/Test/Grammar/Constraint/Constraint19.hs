@@ -1,7 +1,7 @@
 module Test.Grammar.Constraint.Constraint19 (tests) where
 
 import Convert.Grammar.Constraint
-import Convert.Grammar.Parser (Parser, parseEither)
+import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Data.Foldable (toList)
 import Convert.Token (Token, tokenRaw)
@@ -16,15 +16,15 @@ tests =
   testGroup
     "grammar rule 19"
     [ testCase "parses root ཧ subroot ཕ with suffix ག" $
-        parseRaws pConstraint19 "ཧྥག" @?= Right ["ཧ", "ྥ", "ག"]
+        parseRaws (pConstraint19 Tibetan) "ཧྥག" @?= Right ["ཧ", "ྥ", "ག"]
     , testCase "parses struct with vowel and suffix ས" $
-        parseRaws pConstraint19 "ཧྥིས" @?= Right ["ཧ", "ྥ", "ི", "ས"]
+        parseRaws (pConstraint19 Tibetan) "ཧྥིས" @?= Right ["ཧ", "ྥ", "ི", "ས"]
     , testCase "rejects suffix ཀ not in grammar 15" $
-        isLeft (parseRaws pConstraint19 "ཧྥཀ") @?= True
+        isLeft (parseRaws (pConstraint19 Tibetan) "ཧྥཀ") @?= True
     , testCase "rejects missing suffix" $
-        isLeft (parseRaws pConstraint19 "ཧྥ") @?= True
+        isLeft (parseRaws (pConstraint19 Tibetan) "ཧྥ") @?= True
     , testCase "marks each letter of the word" $
-        parsePositions pConstraint19 "ཧྥིས" @?= Right [Root, Root, Vowel, Suffix]
+        parsePositions (pConstraint19 Tibetan) "ཧྥིས" @?= Right [Root, Root, Vowel, Suffix]
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]

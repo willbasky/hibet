@@ -3,9 +3,6 @@ cradle:
     - path: "hewts/src"
       component: "lib:hewts"
 
-    - path: "hewts/app/Main.hs"
-      component: "hewts:exe:hewts"
-
     - path: "hewts/test"
       component: "hewts:test:hewts-test"
 
