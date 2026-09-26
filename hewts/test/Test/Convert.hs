@@ -3,6 +3,7 @@ module Test.Convert (tests) where
 import Convert (SpellItem (..), splitSentences, syllables)
 import Convert.Token (tokenRaw)
 import Data.Either (either)
+import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit ((@?=), testCase)
@@ -22,7 +23,7 @@ run = either (const []) id . splitSentences
 
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    Syllable ts -> ("S", map (tokenRaw . snd) ts)
+    Syllable ts -> ("S", toList (fmap (tokenRaw . snd) ts))
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)

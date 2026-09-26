@@ -182,7 +182,7 @@ pStructure17 = do
     root <- mark Root GP.pRootConsonant
     vowel <- MP.optional (mark Vowel GP.pVowel)
     suffix <- C15.pConstraint15
-    pure (root <> fromMaybe [] vowel <> suffix)
+    pure (root <> fromMaybe mempty vowel <> suffix)
 
 -- Tibetan spelling structure 18
 -- On the basis of the Tibetan spelling grammar 4.8 and 4.15
@@ -241,7 +241,7 @@ rootSuffixPostfix suffix post = do
     vowel <- MP.optional (mark Vowel GP.pVowel)
     s <- suffix
     p <- mark Postfix post
-    pure (root <> fromMaybe [] vowel <> s <> p)
+    pure (root <> fromMaybe mempty vowel <> s <> p)
 
 -- Tibetan spelling structure 25
 -- On the basis of the Tibetan spelling grammar 4.17

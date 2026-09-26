@@ -6,6 +6,7 @@ import Convert.Grammar.Word (TibetanWord)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Either (isLeft)
+import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit ((@?=), testCase)
@@ -518,4 +519,4 @@ structure37 =
     ]
 
 parseRaws :: Parser TibetanWord -> Text -> Either Text [Text]
-parseRaws p input = fmap (map (tokenRaw . snd)) $ parseEither p (fst (tokenizeUnicode input))
+parseRaws p input = fmap (toList . fmap (tokenRaw . snd)) $ parseEither p (fst (tokenizeUnicode input))

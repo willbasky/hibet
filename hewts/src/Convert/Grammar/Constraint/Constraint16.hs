@@ -10,6 +10,7 @@ module Convert.Grammar.Constraint.Constraint16
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Data.Maybe (fromMaybe)
 import Convert.Token
   ( Consonant (..)
   , Token

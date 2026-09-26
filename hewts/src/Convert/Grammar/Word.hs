@@ -19,6 +19,8 @@ module Convert.Grammar.Word
 
 import Convert.Grammar.Parser (Parser)
 import Convert.Token (Token)
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 
 -- | The place a character occupies in a Tibetan word.
 --
@@ -44,12 +46,20 @@ data Position
 -- (@g.yag@ gives གཡག, three roots in a row), so a closed type would need an
 -- escape hatch anyway - and then the shape rules would live in the types as
 -- well as in the tables.
-type TibetanWord = [(Position, Token)]
+--
+-- A 'Seq' rather than a list because the word is built by appending pieces
+-- (a prefix, a root, a subfix, a vowel) and read from both ends by the legality
+-- rules of wave 3.4. Be aware that this buys clarity more than speed: a word
+-- holds one to six letters, and at that size 'Seq' and a list append in the
+-- same handful of steps. The real cost in this layer is elsewhere - see
+-- 'Convert.Sentence.pStructure', which probes all 37 structures in lookahead,
+-- so every syllable is parsed 37 times over.
+type TibetanWord = Seq (Position, Token)
 
 -- | Give a parser a position, so it yields a one-element word. Marking at the
 -- point of binding keeps the token parsers themselves unchanged: they parse
 -- letters, they know nothing about words.
-mark :: Position -> Parser a -> Parser [(Position, a)]
+mark :: Position -> Parser a -> Parser (Seq (Position, a))
 mark position parser = do
     value <- parser
-    pure [(position, value)]
+    pure (Seq.singleton (position, value))

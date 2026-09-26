@@ -11,9 +11,17 @@ module Convert
 import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (parseEither)
 import Convert.Sentence (SpellItem (..), pSentence)
-import Convert.Token (TokenCanonical (..), TokenSource (..), UnknownMark (..), tokenCanonical, tokenRaw, tokenSource)
+import Convert.Token
+    ( TokenCanonical (..)
+    , TokenSource (..)
+    , UnknownMark (..)
+    , tokenCanonical
+    , tokenRaw
+    , tokenSource
+    )
 import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
 import Convert.Tokenizer.Wylie (wylieOf)
+import Data.Foldable (toList)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -42,7 +50,7 @@ splitSentencesWith input = do
 syllables :: Text -> Either Text [Text]
 syllables input = do
     items <- splitSentences input
-    pure [T.concat (map (tokenRaw . snd) ts) | Syllable ts <- items]
+    pure [T.concat (toList (fmap (tokenRaw . snd) ts)) | Syllable ts <- items]
 
 -- | The script used for 'renderItems' conversion.
 data OutputFormat
@@ -56,26 +64,26 @@ data OutputFormat
 -- tokens without a cross-script spelling fall back to their raw spelling.
 renderItems :: OutputFormat -> [SpellItem] -> Text
 renderItems fmt = T.concat . map renderItem
-  where
-    renderItem (Syllable ts) = T.concat (map (renderToken fmt . snd) ts)
-    renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
-    renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
-    renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
+    where
+        renderItem (Syllable ts) = T.concat (toList (fmap (renderToken fmt . snd) ts))
+        renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
+        renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
+        renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
 
-    renderToken fmt tok
-        | tokenSource tok == sourceOf fmt = tokenRaw tok
-        -- a token without a cross-script spelling falls back to the text it
-        -- stands for: the content of a bracket block, the character of an
-        -- escape, and otherwise the raw slice
-        | otherwise = fromMaybe (unknownText tok) (scriptOf fmt (tokenCanonical tok))
+        renderToken fmt tok
+            | tokenSource tok == sourceOf fmt = tokenRaw tok
+            -- a token without a cross-script spelling falls back to the text it
+            -- stands for: the content of a bracket block, the character of an
+            -- escape, and otherwise the raw slice
+            | otherwise = fromMaybe (unknownText tok) (scriptOf fmt (tokenCanonical tok))
 
-    unknownText tok =
-        case tokenCanonical tok of
-            TcUnknown (UnknownMark text) -> text
-            _ -> tokenRaw tok
+        unknownText tok =
+            case tokenCanonical tok of
+                TcUnknown (UnknownMark text) -> text
+                _ -> tokenRaw tok
 
-    sourceOf OutUnicode = TsUnicode
-    sourceOf OutWylie = TsWylie
+        sourceOf OutUnicode = TsUnicode
+        sourceOf OutWylie = TsWylie
 
-    scriptOf OutUnicode = unicodeOf
-    scriptOf OutWylie = wylieOf
+        scriptOf OutUnicode = unicodeOf
+        scriptOf OutWylie = wylieOf

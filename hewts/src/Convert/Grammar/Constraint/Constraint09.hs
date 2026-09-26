@@ -7,6 +7,7 @@ module Convert.Grammar.Constraint.Constraint09 (pConstraint09) where
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Data.Maybe (fromMaybe)
 import Convert.Token
   ( Consonant (..)
   , Token
@@ -14,7 +15,6 @@ import Convert.Token
   , tokenCanonical
   )
 
-import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
@@ -32,7 +32,7 @@ parseConstraint09 parseSubfix parseRoot = do
   root <- mark Root parseRoot
   subfix <- mark Subfix parseSubfix
   vowel <- MP.optional (mark Vowel GP.pVowel)
-  pure (root <> subfix <> fromMaybe [] vowel)
+  pure (root <> subfix <> fromMaybe mempty vowel)
 
 -- Roots above subfix 'ཝ' are [ 'ཀ', 'ཁ', 'ག', 'ཉ', 'ད', 'ཚ', 'ཞ', 'ཟ', 'ར', 'ལ', 'ཤ', 'ཧ' ]
 pRootSubfixWa :: Parser Token

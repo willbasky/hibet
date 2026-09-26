@@ -5,6 +5,7 @@ import Convert.Sentence (SpellItem (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Either (either)
+import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (assertFailure, (@?=), testCase)
@@ -31,14 +32,14 @@ tests =
         ]
 
 itemRaws :: SpellItem -> [Text]
-itemRaws (Syllable ts) = map (tokenRaw . snd) ts
+itemRaws (Syllable ts) = toList (fmap (tokenRaw . snd) ts)
 itemRaws (Number ts) = map tokenRaw ts
 itemRaws (Punct ts) = map tokenRaw ts
 itemRaws (Other ts) = map tokenRaw ts
 
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    Syllable ts -> ("S", map (tokenRaw . snd) ts)
+    Syllable ts -> ("S", toList (fmap (tokenRaw . snd) ts))
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)

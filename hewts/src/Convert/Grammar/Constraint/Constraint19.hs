@@ -10,6 +10,7 @@ import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Constraint.Constraint15 as C15
 import qualified Convert.Grammar.Constraint.Constraint18 as C18
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Data.Maybe (fromMaybe)
 import Convert.Token (Token)
 
 pConstraint19 :: Parser TibetanWord

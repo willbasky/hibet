@@ -7,13 +7,13 @@ module Convert.Grammar.Constraint.Constraint13 (pConstraint13) where
 import Convert.Grammar.Parser (Parser)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Data.Maybe (fromMaybe)
 import Convert.Token
   ( SubConsonant (..)
   , Token
   , TokenCanonical (TcSubConsonant)
   , tokenCanonical
   )
-import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
@@ -31,7 +31,7 @@ parseConstraint13 parsePrefix parseSuperfix parseSubfix = do
   root <- mark Root pRoot
   subfix <- mark Subfix parseSubfix
   vowel <- MP.optional (mark Vowel GP.pVowel)
-  pure (prefix <> superfix <> root <> subfix <> fromMaybe [] vowel)
+  pure (prefix <> superfix <> root <> subfix <> fromMaybe mempty vowel)
 
 -- root group [ 'ཀ', 'ག' ]
 pRoot :: Parser Token
