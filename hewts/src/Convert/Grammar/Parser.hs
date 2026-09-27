@@ -115,24 +115,42 @@ pCaret = satisfy isCaretLike
 -- Returns the chosen letters and the one caret that survives; stops at the
 -- first token that is neither, leaving it in place.
 pSubjoinRun :: Parser ([Token], Maybe Token)
-pSubjoinRun = go 0 [] Nothing
+pSubjoinRun = continueRun [] Nothing
     where
-        go :: Int -> [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
-        go n subs caret =
+        -- One more piece of the run: a caret, a letter, or its end.
+        continueRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
+        continueRun subjoined caret =
             MP.choice
-                [ MP.try $ do
-                    t <- pCaret
-                    go n subs (firstCaret caret t)
-                , MP.try $ do
-                    t <- MP.satisfy isSubjoinCandidate
-                    if n < 2 && not (n == 1 && isL t)
-                        then go (n + 1) (subs <> [t]) caret
-                        else MP.empty
-                , pure (subs, caret)
+                [ swallowCaretInRun subjoined caret
+                , takeLetterInRun subjoined caret
+                , pure (subjoined, caret)
                 ]
-        firstCaret :: Maybe Token -> Token -> Maybe Token
-        firstCaret Nothing tok = Just tok
-        firstCaret kept _ = kept
+
+        -- A caret between the subjoined letters is transparent, but the first
+        -- one is kept and prints below the run.
+        swallowCaretInRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
+        swallowCaretInRun subjoined caret = MP.try $ do
+            t <- pCaret
+            continueRun subjoined (keepFirstCaret caret t)
+
+        -- One more bare letter below the base, when the run has room for it.
+        takeLetterInRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
+        takeLetterInRun subjoined caret = MP.try $ do
+            t <- MP.satisfy isSubjoinCandidate
+            if fitsBelow subjoined t
+                then continueRun (subjoined <> [t]) caret
+                else MP.empty
+
+        -- A stack carries at most two subjoined letters, and @l@ never fills
+        -- the second slot; without room the run simply ends here.
+        fitsBelow :: [Token] -> Token -> Bool
+        fitsBelow subjoined next =
+            length subjoined < 2 && not (length subjoined == 1 && isL next)
+
+        -- Only the first caret of the run prints.
+        keepFirstCaret :: Maybe Token -> Token -> Maybe Token
+        keepFirstCaret Nothing caret = Just caret
+        keepFirstCaret kept _ = kept
 
 -- | Whether a vowel token belongs to a stack (see 'pVowelAny').
 isEatableVowel :: Token -> Bool

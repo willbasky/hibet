@@ -1,13 +1,13 @@
--- | Public interface for the spelling grammar constraints.
+-- | Public interface of the spelling grammar constraints - the single entry
+-- point of the constraint layer.
 --
 -- Re-exports the individual constraint parsers ('pConstraint01' … 'pConstraint20')
+-- and the generic-word parsers ('pConstraint21First'/'pConstraint21Rest'),
 -- composed out of the token-level parser primitives in 'Convert.Grammar.Parser'.
 -- The constraint parsers are building blocks (prefix / root / vowel / suffix /
--- postfix / basic-syllable fragments) that are combined by 'Convert.Grammar.Structure'
--- into complete syllable spelling structures.
---
--- This module is internal; the structures in 'Convert.Grammar.Structure' compose
--- the constraint parsers into complete syllable spellings.
+-- postfix / basic-syllable fragments) composed by 'Convert.Grammar.Structure'
+-- into complete syllable spelling structures; the generic-word parsers spell
+-- whatever the book's structures leave unspelled.
 module Convert.Grammar.Constraint
     ( pConstraint01
     , pConstraint01WithLong
@@ -27,6 +27,8 @@ module Convert.Grammar.Constraint
     , pConstraint18
     , pConstraint19
     , pConstraint20
+    , pConstraint21First
+    , pConstraint21Rest
     ) where
 
 import Convert.Grammar.Constraint.Constraint01
@@ -53,3 +55,7 @@ import Convert.Grammar.Constraint.Constraint17
 import Convert.Grammar.Constraint.Constraint18 (pConstraint18)
 import Convert.Grammar.Constraint.Constraint19 (pConstraint19)
 import Convert.Grammar.Constraint.Constraint20 (pConstraint20)
+import Convert.Grammar.Constraint.Constraint21
+    ( pConstraint21First
+    , pConstraint21Rest
+    )

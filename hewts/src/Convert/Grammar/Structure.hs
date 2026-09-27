@@ -4,7 +4,7 @@
 The 37 syllable structures ('pStructure1' … 'pStructure37'), each composed from
 constraint parsers in 'Convert.Grammar.Constraint' and the token-level parser
 primitives in 'Convert.Grammar.Parser', and the generic word 'pStructure38',
-all of whose pieces live in 'Convert.Grammar.Constraint.Constraint21'.
+composed from the same module's generic-word parsers.
 Structures recognize a single syllable out of a 'Token' stream; punctuation is
 left unconsumed so it survives and is handled separately by 'Convert.Sentence'.
 -}
@@ -50,21 +50,7 @@ module Convert.Grammar.Structure
     , pStructure38
     ) where
 
-import qualified Convert.Grammar.Constraint.Constraint01 as C01
-import qualified Convert.Grammar.Constraint.Constraint08 as C08
-import qualified Convert.Grammar.Constraint.Constraint09 as C09
-import qualified Convert.Grammar.Constraint.Constraint10 as C10
-import qualified Convert.Grammar.Constraint.Constraint11 as C11
-import qualified Convert.Grammar.Constraint.Constraint12 as C12
-import qualified Convert.Grammar.Constraint.Constraint13 as C13
-import qualified Convert.Grammar.Constraint.Constraint14 as C14
-import qualified Convert.Grammar.Constraint.Constraint15 as C15
-import qualified Convert.Grammar.Constraint.Constraint16 as C16
-import qualified Convert.Grammar.Constraint.Constraint17 as C17
-import qualified Convert.Grammar.Constraint.Constraint18 as C18
-import qualified Convert.Grammar.Constraint.Constraint19 as C19
-import qualified Convert.Grammar.Constraint.Constraint20 as C20
-import qualified Convert.Grammar.Constraint.Constraint21 as C21
+import qualified Convert.Grammar.Constraint as C
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
@@ -77,64 +63,64 @@ import qualified Text.Megaparsec as MP
 pStructure1 :: Spelling -> Parser TibetanWord
 pStructure1 spelling =
     MP.choice
-        [ MP.try (C01.pConstraint01WithLong spelling)
-        , MP.try (C01.pConstraint01Sanskrit spelling)
+        [ MP.try (C.pConstraint01WithLong spelling)
+        , MP.try (C.pConstraint01Sanskrit spelling)
         ]
 
 -- Tibetan spelling structure 2
 -- On the basis of the Tibetan spelling grammar 4.8
 pStructure2 :: Spelling -> Parser TibetanWord
-pStructure2 spelling = C08.pConstraint08 spelling
+pStructure2 spelling = C.pConstraint08 spelling
 
 -- Tibetan spelling structure 3
 -- On the basis of the Tibetan spelling grammar 4.9
 pStructure3 :: Spelling -> Parser TibetanWord
-pStructure3 spelling = C09.pConstraint09 spelling
+pStructure3 spelling = C.pConstraint09 spelling
 
 -- Tibetan spelling structure 4
 -- On the basis of the Tibetan spelling grammar 4.10
 pStructure4 :: Spelling -> Parser TibetanWord
-pStructure4 spelling = C10.pConstraint10 spelling
+pStructure4 spelling = C.pConstraint10 spelling
 
 -- Tibetan spelling structure 5
 -- On the basis of the Tibetan spelling grammar 4.11
 pStructure5 :: Spelling -> Parser TibetanWord
-pStructure5 spelling = C11.pConstraint11 spelling
+pStructure5 spelling = C.pConstraint11 spelling
 
 -- Tibetan spelling structure 6
 -- On the basis of the Tibetan spelling grammar 4.12
 pStructure6 :: Spelling -> Parser TibetanWord
-pStructure6 spelling = C12.pConstraint12 spelling
+pStructure6 spelling = C.pConstraint12 spelling
 
 -- Tibetan spelling structure 7
 -- On the basis of the Tibetan spelling grammar 4.13
 pStructure7 :: Spelling -> Parser TibetanWord
-pStructure7 spelling = C13.pConstraint13 spelling
+pStructure7 spelling = C.pConstraint13 spelling
 
 -- Tibetan spelling structure 8
 -- On the basis of the Tibetan spelling grammar 4.14
 pStructure8 :: Spelling -> Parser TibetanWord
-pStructure8 spelling = C14.pConstraint14 spelling
+pStructure8 spelling = C.pConstraint14 spelling
 
 -- Tibetan spelling structure 9
 -- On the basis of the Tibetan spelling grammar 4.14 and 4.15
 pStructure9 :: Spelling -> Parser TibetanWord
-pStructure9 spelling = C14.pConstraint14 spelling <> C15.pConstraint15 spelling
+pStructure9 spelling = C.pConstraint14 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 10
 -- On the basis of the Tibetan spelling grammar 4.11 and 4.15
 pStructure10 :: Spelling -> Parser TibetanWord
-pStructure10 spelling = C11.pConstraint11 spelling <> C15.pConstraint15 spelling
+pStructure10 spelling = C.pConstraint11 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 11
 -- On the basis of the Tibetan spelling grammar 4.12 and 4.15
 pStructure11 :: Spelling -> Parser TibetanWord
-pStructure11 spelling = C12.pConstraint12 spelling <> C15.pConstraint15 spelling
+pStructure11 spelling = C.pConstraint12 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 12
 -- On the basis of the Tibetan spelling grammar 4.13 and 4.15
 pStructure12 :: Spelling -> Parser TibetanWord
-pStructure12 spelling = C13.pConstraint13 spelling <> C15.pConstraint15 spelling
+pStructure12 spelling = C.pConstraint13 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 13
 -- On the basis of the Tibetan spelling grammar 4.14, 4.15, 4.16
@@ -144,14 +130,14 @@ pStructure13 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C14.pConstraint14 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint14 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C14.pConstraint14 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint14 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -163,14 +149,14 @@ pStructure14 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C11.pConstraint11 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint11 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C11.pConstraint11 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint11 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -182,14 +168,14 @@ pStructure15 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C12.pConstraint12 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint12 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C12.pConstraint12 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint12 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -201,14 +187,14 @@ pStructure16 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C13.pConstraint13 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint13 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C13.pConstraint13 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint13 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -231,36 +217,36 @@ pStructure17 = \case
     Tibetan -> do
         root <- mark Root GP.pRootConsonant
         vowel <- MP.optional (mark Vowel GP.pVowel)
-        suffix <- C15.pConstraint15 Tibetan
+        suffix <- C.pConstraint15 Tibetan
         pure (root <> fromMaybe mempty vowel <> suffix)
     Wylie -> do
         root <- mark Root GP.pRootConsonant
         vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
-        suffix <- C15.pConstraint15 Wylie
+        suffix <- C.pConstraint15 Wylie
         pure (root <> vowel <> suffix)
 
 -- Tibetan spelling structure 18
 -- On the basis of the Tibetan spelling grammar 4.8 and 4.15
 pStructure18 :: Spelling -> Parser TibetanWord
-pStructure18 spelling = C08.pConstraint08 spelling <> C15.pConstraint15 spelling
+pStructure18 spelling = C.pConstraint08 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 19
 -- On the basis of the Tibetan spelling grammar 4.9 and 4.15
 pStructure19 :: Spelling -> Parser TibetanWord
-pStructure19 spelling = C09.pConstraint09 spelling <> C15.pConstraint15 spelling
+pStructure19 spelling = C.pConstraint09 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 20
 -- On the basis of the Tibetan spelling grammar 4.10 and 4.15
 pStructure20 :: Spelling -> Parser TibetanWord
-pStructure20 spelling = C10.pConstraint10 spelling <> C15.pConstraint15 spelling
+pStructure20 spelling = C.pConstraint10 spelling <> C.pConstraint15 spelling
 
 -- Tibetan spelling structure 21
 -- On the basis of the Tibetan spelling grammar 4.1, 4.14, 4.15
 pStructure21 :: Spelling -> Parser TibetanWord
 pStructure21 spelling =
     MP.choice
-        [ MP.try $ rootSuffixPostfix spelling (C16.pConstraint16Da spelling) GP.pPostfixDa
-        , MP.try $ rootSuffixPostfix spelling (C16.pConstraint16Sa spelling) GP.pPostfixSa
+        [ MP.try $ rootSuffixPostfix spelling (C.pConstraint16Da spelling) GP.pPostfixDa
+        , MP.try $ rootSuffixPostfix spelling (C.pConstraint16Sa spelling) GP.pPostfixSa
         ]
 
 -- Tibetan spelling structure 22
@@ -271,14 +257,14 @@ pStructure22 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C08.pConstraint08 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint08 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C08.pConstraint08 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint08 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -290,14 +276,14 @@ pStructure23 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C09.pConstraint09 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint09 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C09.pConstraint09 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint09 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -309,14 +295,14 @@ pStructure24 spelling =
         [ MP.try $
             parseSuffixPostfix
                 spelling
-                (C10.pConstraint10 spelling)
-                (C16.pConstraint16Da spelling)
+                (C.pConstraint10 spelling)
+                (C.pConstraint16Da spelling)
                 GP.pPostfixDa
         , MP.try $
             parseSuffixPostfix
                 spelling
-                (C10.pConstraint10 spelling)
-                (C16.pConstraint16Sa spelling)
+                (C.pConstraint10 spelling)
+                (C.pConstraint16Sa spelling)
                 GP.pPostfixSa
         ]
 
@@ -341,75 +327,75 @@ rootSuffixPostfix spelling suffix post = case spelling of
 pStructure25 :: Spelling -> Parser TibetanWord
 pStructure25 spelling =
     MP.choice
-        [ MP.try (C17.pConstraint17Ra spelling)
-        , MP.try (C17.pConstraint17Ya spelling)
+        [ MP.try (C.pConstraint17Ra spelling)
+        , MP.try (C.pConstraint17Ya spelling)
         ]
 
 -- Tibetan spelling structure 26
 -- On the basis of the Tibetan spelling grammar 4.18
 pStructure26 :: Spelling -> Parser TibetanWord
-pStructure26 spelling = C18.pConstraint18 spelling
+pStructure26 spelling = C.pConstraint18 spelling
 
 -- Tibetan spelling structure 27
 -- On the basis of the Tibetan spelling grammar 4.19
 pStructure27 :: Spelling -> Parser TibetanWord
-pStructure27 spelling = C19.pConstraint19 spelling
+pStructure27 spelling = C.pConstraint19 spelling
 
 -- Tibetan spelling structure 28
 -- On the basis of the Tibetan spelling grammar 4.1 and 4.20
 pStructure28 :: Spelling -> Parser TibetanWord
-pStructure28 spelling = C01.pConstraint01 spelling <> C20.pConstraint20 spelling
+pStructure28 spelling = C.pConstraint01 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 29
 -- On the basis of the Tibetan spelling grammar 4.8 and 4.20
 pStructure29 :: Spelling -> Parser TibetanWord
-pStructure29 spelling = C08.pConstraint08 spelling <> C20.pConstraint20 spelling
+pStructure29 spelling = C.pConstraint08 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 30
 -- On the basis of the Tibetan spelling grammar 4.9 and 4.20
 pStructure30 :: Spelling -> Parser TibetanWord
-pStructure30 spelling = C09.pConstraint09 spelling <> C20.pConstraint20 spelling
+pStructure30 spelling = C.pConstraint09 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 31
 -- On the basis of the Tibetan spelling grammar 4.10 and 4.20
 pStructure31 :: Spelling -> Parser TibetanWord
-pStructure31 spelling = C10.pConstraint10 spelling <> C20.pConstraint20 spelling
+pStructure31 spelling = C.pConstraint10 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 32
 -- On the basis of the Tibetan spelling grammar 4.11 and 4.20
 pStructure32 :: Spelling -> Parser TibetanWord
-pStructure32 spelling = C11.pConstraint11 spelling <> C20.pConstraint20 spelling
+pStructure32 spelling = C.pConstraint11 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 33
 -- On the basis of the Tibetan spelling grammar 4.12 and 4.20
 pStructure33 :: Spelling -> Parser TibetanWord
-pStructure33 spelling = C12.pConstraint12 spelling <> C20.pConstraint20 spelling
+pStructure33 spelling = C.pConstraint12 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 34
 -- On the basis of the Tibetan spelling grammar 4.13 and 4.20
 pStructure34 :: Spelling -> Parser TibetanWord
-pStructure34 spelling = C13.pConstraint13 spelling <> C20.pConstraint20 spelling
+pStructure34 spelling = C.pConstraint13 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 35
 -- On the basis of the Tibetan spelling grammar 4.14 and 4.20
 pStructure35 :: Spelling -> Parser TibetanWord
-pStructure35 spelling = C14.pConstraint14 spelling <> C20.pConstraint20 spelling
+pStructure35 spelling = C.pConstraint14 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 36
 -- On the basis of the Tibetan spelling grammar 4.17 and 4.20
 pStructure36 :: Spelling -> Parser TibetanWord
 pStructure36 spelling =
     ( MP.choice
-        [ MP.try (C17.pConstraint17Ra spelling)
-        , MP.try (C17.pConstraint17Ya spelling)
+        [ MP.try (C.pConstraint17Ra spelling)
+        , MP.try (C.pConstraint17Ya spelling)
         ]
     )
-        <> C20.pConstraint20 spelling
+        <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 37
 -- On the basis of the Tibetan spelling grammar 4.18 and 4.20
 pStructure37 :: Spelling -> Parser TibetanWord
-pStructure37 spelling = C18.pConstraint18 spelling <> C20.pConstraint20 spelling
+pStructure37 spelling = C.pConstraint18 spelling <> C.pConstraint20 spelling
 
 -- Tibetan spelling structure 38
 -- The generic word: whatever the book structures do not name. Many stacks -
@@ -418,12 +404,12 @@ pStructure37 spelling = C18.pConstraint18 spelling <> C20.pConstraint20 spelling
 -- གཡོན, sat+t+wa -> སཏྟྭ). Probed last: a word the book spells keeps the book's
 -- marks, a word it does not gets the closest thing the references agree on.
 -- Both spellings read identically here: the piece parsers live in
--- 'Convert.Grammar.Constraint.Constraint21' and decide everything per token,
--- exactly as the old 'Convert.Grammar.Stack' ignored its 'Spelling' argument.
+-- 'Convert.Grammar.Constraint' (its generic-word parsers) and decide
+-- everything per token, exactly as the old 'Convert.Grammar.Stack' ignored its 'Spelling' argument.
 -- A @+@ the stack already closed still reads as a join: the letter after it
 -- belongs to the same word (u+e -> ཨེུ), as it does in the references.
 pStructure38 :: Spelling -> Parser TibetanWord
 pStructure38 _spelling = do
-    first <- C21.pConstraint21First
-    rest <- MP.many C21.pConstraint21Rest
+    first <- C.pConstraint21First
+    rest <- MP.many C.pConstraint21Rest
     pure (first <> mconcat rest)

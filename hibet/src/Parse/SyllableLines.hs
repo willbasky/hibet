@@ -8,6 +8,7 @@ import Parse.Type
 import Type ( HibetError(..) )
 
 import Control.Applicative (Alternative (some))
+import Control.Monad (void)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lines as Line
@@ -29,6 +30,6 @@ splitSyllables
 parseSyllables :: Parser (Script 'Wylie, Script 'Tibet)
 parseSyllables = do
     w <- some $ M.anySingleBut '|'
-    _ <- MC.char '|'
+    void (MC.char '|')
     t <- some M.anySingle
     pure (Script $ T.pack w, Script $ T.pack t)

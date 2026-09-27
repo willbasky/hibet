@@ -4,6 +4,7 @@ import Parse.Type (Parser, parseEither)
 import Type (HibetError (..))
 
 import Control.Applicative (Alternative (many, some, (<|>)))
+import Control.Monad (void)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Prelude hiding (lookup)
@@ -156,7 +157,7 @@ walParens = MC.char '(' <* M.notFollowedBy afterParen <|> MC.char ')'
 
 afterParen :: Parser Char
 afterParen = do
-    _ <- ML.decimal :: Parser Int
+    void (ML.decimal :: Parser Int)
     MC.char ')'
 
 walSentEnd :: Parser Text

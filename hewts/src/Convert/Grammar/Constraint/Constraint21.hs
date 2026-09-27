@@ -37,6 +37,7 @@ import Convert.Grammar.Word
 import Convert.Token (Token)
 import qualified Data.Sequence as Seq
 import qualified Text.Megaparsec as MP
+import Control.Monad (void)
 
 -- | The word lead: a consonant-led or a vowel-led stack (the old pStack @t0@).
 -- The lead stack is the only one that may open on a prefix letter (bsgribs ->
@@ -78,19 +79,23 @@ pStackBody atStart = do
     next0 <- MP.lookAhead (MP.skipMany GP.pCaret *> MP.optional GP.pToken)
     let baseMark = Seq.singleton (markBase atStart base next0)
     MP.choice
-        [ -- the stack reaches a vowel or a @+@: complete it
-          MP.try $ do
-            (subs, caret) <- GP.pSubjoinRun
-            decision <- MP.lookAhead (MP.optional GP.pToken)
-            case decision of
+        [ completeStack baseMark
+        , pure baseMark
+        ]
+    where
+        -- The subjoining run under the base is over and the stack next meets
+        -- a vowel or a @+@: spell the whole stack - the base, the subjoined
+        -- letters, the caret, and the whole tail. Fails and rolls back to the
+        -- bare base when neither follows.
+        completeStack :: TibetanWord -> Parser TibetanWord
+        completeStack baseMark = MP.try $ do
+            (subjoined, caret) <- GP.pSubjoinRun
+            next <- MP.lookAhead (MP.optional GP.pToken)
+            case next of
                 Just t | GP.isVowelLike t || GP.isPlus t -> do
                     tailMarks <- pConsumeTail False
-                    pure (baseMark <> subfixMarks subs <> caretMark caret <> tailMarks)
+                    pure (baseMark <> subfixMarks subjoined <> caretMark caret <> tailMarks)
                 _ -> MP.empty
-        , -- no vowel in sight: keep only the base and let the word parse the
-          -- rest afresh
-          pure baseMark
-        ]
 
 -- | The rest of a complete stack - consecutive vowels (@a@ among them, the
 -- letter that never prints), the caret and then finals, and forced subjoins
@@ -101,66 +106,72 @@ pStackBody atStart = do
 pConsumeTail :: Bool -> Parser TibetanWord
 pConsumeTail vowelSeen =
     MP.choice
-        [ MP.try $ do
-            v <- mark Vowel GP.pVowelAny
-            rest <- pConsumeTail True
-            pure (v <> rest)
-        , MP.try $ do
-            if vowelSeen
-                then MP.empty
-                else do
-                    a <- mark ImplicitVowel GP.pImplicitA
-                    rest <- pConsumeTail False
-                    pure (a <> rest)
-        , MP.try $ do
-            f <- mark Final GP.pFinal
-            rest <- pConsumeTail vowelSeen
-            pure (f <> rest)
-        , MP.try $ do
-            step <- pForcedJoin
-            rest <- pConsumeTail (vowelSeen || startsWithVowel step)
-            pure (step <> rest)
+        [ pTailMark (mark Vowel GP.pVowelAny) True
+        , pImplicitABranch
+        , pTailMark (mark Final GP.pFinal) vowelSeen
+        , pForcedJoinBranch
         , pure mempty
         ]
     where
-        -- A forced join may be a vowel (@+e@): the stack already had one, so the
-        -- tail is over after the sign's own mark.
+        -- One more mark of the tail, then the rest of it under the flag this
+        -- mark leaves for the continuation.
+        pTailMark :: Parser TibetanWord -> Bool -> Parser TibetanWord
+        pTailMark step flag =
+            MP.try $ do
+                marks <- step
+                rest <- pConsumeTail flag
+                pure (marks <> rest)
+
+        -- The bare @a@ only fits before the first real vowel of the stack.
+        pImplicitABranch :: Parser TibetanWord
+        pImplicitABranch
+            | vowelSeen = MP.empty
+            | otherwise = pTailMark (mark ImplicitVowel GP.pImplicitA) False
+
+        -- A forced join may itself be a vowel (@+e@): the tail after it then
+        -- continues as after any real vowel.
+        pForcedJoinBranch :: Parser TibetanWord
+        pForcedJoinBranch = MP.try $ do
+            marks <- pForcedJoin
+            rest <- pConsumeTail (vowelSeen || startsWithVowel marks)
+            pure (marks <> rest)
+
+        -- Whether a forced join ended in a vowel (@+e@).
         startsWithVowel :: TibetanWord -> Bool
         startsWithVowel w = case Seq.lookup 0 w of
             Just (Vowel, _) -> True
             _ -> False
 
--- | The forced subjoin sign @+@ (Wylie syntax only): the letter after it is
--- joined below the stack as a subfix and pulls its own subjoining run after
--- it (g+mra). The pile is pushed on the tail's accumulator and flips on the
--- way out, so the forced letter leads and the letters of the run that follows
--- it come after, in reverse. A vowel after the sign is simply the stack's
--- vowel (bru+e -> བྲེུ); the a-chen (s+a -> སྸ) is a consonant like any other,
--- so the join below falls into the consonant arm. The same parser reads a
--- sign the stack already closed, because the references read it the same way
--- the open stack does: the vowel or consonant after it still belongs to the
--- same word (u+e -> ཨེུ, rH+e -> རཿེ). 'pConstraint21Rest' reaches for it there.
+-- | The forced join sign @+@ (Wylie syntax only), with two readings: the
+-- letter after it is dragged below the stack as a subfix together with its
+-- own subjoining run ('pSubjoinBelow', g+mra -> གྨྲ), or - when the stack
+-- already had its vowel - the sign is followed by that stack's vowel
+-- (bru+e -> བྲེུ). The a-chen (s+a -> སྸ) is a consonant like any other, so
+-- it falls into the join-below reading. The same parser reads a sign the
+-- stack already closed, because the references read it the same way the open
+-- stack does: the vowel or consonant after it still belongs to the same word
+-- (u+e -> ཨེུ, rH+e -> རཿེ). 'pConstraint21Rest' reaches for it there.
 pForcedJoin :: Parser TibetanWord
-pForcedJoin =
-    MP.try $ do
-        _ <- GP.pPlus
-        MP.choice
-            [ MP.try pForcedSubjoin
-            , mark Vowel GP.pVowelAny
-            ]
-
--- | The consonant arm of a forced join: the letter the @+@ drags below the
--- stack, with the subjoining run under it. The forced letter leads and the
--- run's letters trail in reverse, exactly where they print (g+mra -> གྨྲ); a
--- caret that survived the run lands between them (f+ra -> ཕ༹ྲ).
-pForcedSubjoin :: Parser TibetanWord
-pForcedSubjoin = do
-    next <- MP.choice [GP.pConsonant, GP.pSubConsonant]
-    (subs, caret) <- GP.pSubjoinRun
-    pure $ Seq.singleton (Subfix, next)
-        <> caretMark caret
-        <> Seq.fromList [(Subfix, s) | s <- reverse subs]
-        
+pForcedJoin = MP.try $ do
+    void GP.pPlus
+    MP.choice
+        [ MP.try pSubjoinBelow
+        , mark Vowel GP.pVowelAny
+        ]
+    where 
+        -- | The letter a forced join drags below the stack - a consonant or the
+        -- a-chen, already subjoined or not - with the subjoining run under it. The
+        -- forced letter leads and the run's letters trail in reverse, exactly where
+        -- they print (g+mra -> གྨྲ); a caret that survived the run lands between them
+        -- (f+ra -> ཕ༹ྲ).
+        pSubjoinBelow :: Parser TibetanWord
+        pSubjoinBelow = do
+            next <- MP.choice [GP.pConsonant, GP.pSubConsonant]
+            (subjoined, caret) <- GP.pSubjoinRun
+            pure $
+                Seq.singleton (Subfix, next)
+                    <> caretMark caret
+                    <> Seq.fromList [(Subfix, s) | s <- reverse subjoined]
 
 -- | Where the base stands: a word-initial prefix letter over a consonant is a
 -- Prefix (bsgribs -> བ), a superfix letter over a non-subfix consonant is a

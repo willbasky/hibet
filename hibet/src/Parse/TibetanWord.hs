@@ -7,6 +7,7 @@ module Parse.TibetanWord
 import Parse.Type (Parser, end, dot)
 
 import Control.Applicative (Alternative (many, some, (<|>)))
+import Control.Monad (void)
 import Data.Char (isMark)
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -47,7 +48,7 @@ tibetanSyl :: Parser Text
 tibetanSyl = do
   MC.space
   s <- tibetanString
-  _ <- many tibetanEnds
+  void (many tibetanEnds)
   MC.space
   pure s
 
