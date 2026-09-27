@@ -58,7 +58,6 @@ library
     Convert.Diagnostic
     Convert.Grammar.Constraint
     Convert.Grammar.Parser
-    Convert.Grammar.Stack
     Convert.Grammar.Structure
     Convert.Grammar.Word
     Convert.Sentence
@@ -81,6 +80,7 @@ library
     Convert.Grammar.Constraint.Constraint18
     Convert.Grammar.Constraint.Constraint19
     Convert.Grammar.Constraint.Constraint20
+    Convert.Grammar.Constraint.Constraint21
 
   build-depends:
     bytestring,

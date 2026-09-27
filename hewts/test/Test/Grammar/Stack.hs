@@ -2,7 +2,7 @@ module Test.Grammar.Stack (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
-import Convert.Grammar.Stack (pStack)
+import Convert.Grammar.Structure (pStructure38)
 import Convert.Grammar.Word (Position (..), TibetanWord)
 import Convert.Token (Token)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -46,6 +46,10 @@ tests =
             wylRender "R+ya" @?= Right "ཪྱ"
         , testCase "bru+e renders two vowels བྲེུ" $
             wylRender "bru+e" @?= Right "བྲེུ"
+        , testCase "u+e keeps both vowels in one word ཨེུ" $
+            wylRender "u+e" @?= Right "ཨེུ"
+        , testCase "rH+e keeps the final and the vowel in one word རཿེ" $
+            wylRender "rH+e" @?= Right "རཿེ"
         , testCase "ge+a renders གེྸ" $
             wylRender "ge+a" @?= Right "གེྸ"
         , testCase "ba+a renders བྸ" $
@@ -71,19 +75,22 @@ tests =
         , testCase "a+yo renders ཨྱོ" $
             wylRender "a+yo" @?= Right "ཨྱོ"
         , testCase "a stack cannot start on a subjoined letter (r-i stays Other)" $
-            isLeft (wylParse (pStack Wylie) "r-i") @?= True
+            isLeft (wylParse (pStructure38 Wylie) "r-i") @?= True
         , testCase "a stack cannot start on a plus" $
-            isLeft (wylParse (pStack Wylie) "+a") @?= True
+            isLeft (wylParse (pStructure38 Wylie) "+a") @?= True
         ]
 
 wylParse :: Parser TibetanWord -> Text -> Either Text TibetanWord
 wylParse p input = parseEither p (fst (tokenizeWylie input))
 
 wylPositions :: Text -> Either Text [Position]
-wylPositions = fmap (toList . fmap fst) . wylParse (pStack Wylie)
+wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38 Wylie)
 
 wylRender :: Text -> Either Text Text
-wylRender w = fmap (renderItems OutUnicode . pure . Syllable) (wylParse (pStack Wylie) w)
+wylRender w =
+    fmap
+        (renderItems OutUnicode . pure . Syllable)
+        (wylParse (pStructure38 Wylie) w)
 
 -- | The tokens of a Wylie spelling, for the tests that want to see them.
 _wylTokens :: Text -> [Token]

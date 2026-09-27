@@ -17,7 +17,6 @@ import Convert.Grammar.Parser
     , pNumber
     , pPunctuation
     )
-import Convert.Grammar.Stack (pStack)
 import Convert.Grammar.Structure
     ( pStructure1
     , pStructure10
@@ -50,6 +49,7 @@ import Convert.Grammar.Structure
     , pStructure35
     , pStructure36
     , pStructure37
+    , pStructure38
     , pStructure4
     , pStructure5
     , pStructure6
@@ -143,5 +143,5 @@ pStructure spelling = do
             , pStructure1 spelling
             , pStructure2 spelling
             , pStructure3 spelling
-            , pStack spelling
+            , pStructure38 spelling
             ]

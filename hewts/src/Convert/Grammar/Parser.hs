@@ -5,6 +5,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Void (Void)
 import Text.Megaparsec hiding (Token)
+import qualified Text.Megaparsec as MP
 
 type Parser = Parsec Void [Token]
 
@@ -13,12 +14,6 @@ parseEither p ts =
     case runParser p "" ts of
         Left _ -> Left (T.pack "Token parser error")
         Right v -> Right v
-
-recovering :: Parser a -> Parser a
-recovering p = withRecovery (\e -> registerParseError e *> skipGarbage *> p) p
-
-skipGarbage :: Parser ()
-skipGarbage = skipMany (satisfy (not . isPunctuationLike)) <* optional pPunctuation
 
 pToken :: Parser Token
 pToken = anySingle
@@ -90,6 +85,105 @@ pImplicitA = satisfy isImplicitA
 isImplicitA :: Token -> Bool
 isImplicitA Token{tokenCanonical = TcConsonant Ca} = True
 isImplicitA _ = False
+
+-- | A vowel the generic stack can absorb. Wylie writes the long letters as
+-- their two short parts (@AH@, @mA@, @oM@), so every vowel token is absorbable
+-- there; Tibetan spells a long a explicitly (0x0f71) and a root written next
+-- to it must not swallow it into the same word, so the Tibetan side takes only
+-- the short vowels. The lattice is decided per token, by 'tokenSource', not by
+-- the 'Spelling' label: the parity runs Wylie token lists under 'Tibetan' as
+-- well.
+pVowelAny :: Parser Token
+pVowelAny = satisfy isEatableVowel
+
+-- | The forced subjoin sign @+@: the letter after it is pushed below the base.
+pPlus :: Parser Token
+pPlus = satisfy isPlus
+
+-- | The stack-breaking dot: ends a stack (@g.yon@ -> གཡོན).
+pDot :: Parser Token
+pDot = satisfy isDot
+
+-- | The caret @^@ (0x0f39): a final mark that prints between the subfixes and
+-- the vowel.
+pCaret :: Parser Token
+pCaret = satisfy isCaretLike
+
+-- | The subjoining run below a base: the letters @{y, w, r, l}@ (bare in
+-- Wylie, already-joined signs in Tibetan), at most two with @l@ never second,
+-- and the carets in between, which are transparent while the scan goes on.
+-- Returns the chosen letters and the one caret that survives; stops at the
+-- first token that is neither, leaving it in place.
+pSubjoinRun :: Parser ([Token], Maybe Token)
+pSubjoinRun = go 0 [] Nothing
+    where
+        go :: Int -> [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
+        go n subs caret =
+            MP.choice
+                [ MP.try $ do
+                    t <- pCaret
+                    go n subs (firstCaret caret t)
+                , MP.try $ do
+                    t <- MP.satisfy isSubjoinCandidate
+                    if n < 2 && not (n == 1 && isL t)
+                        then go (n + 1) (subs <> [t]) caret
+                        else MP.empty
+                , pure (subs, caret)
+                ]
+        firstCaret :: Maybe Token -> Token -> Maybe Token
+        firstCaret Nothing tok = Just tok
+        firstCaret kept _ = kept
+
+-- | Whether a vowel token belongs to a stack (see 'pVowelAny').
+isEatableVowel :: Token -> Bool
+isEatableVowel tok@Token{tokenCanonical = TcVowel v}
+    | tokenSource tok == TsUnicode = v `elem` [Vi, Ve, Vo, Vu]
+    | otherwise = True
+isEatableVowel _ = False
+
+-- | A vowel-shaped token: an eatable vowel or the letter @a@ where a vowel
+-- would be.
+isVowelLike :: Token -> Bool
+isVowelLike tok = isEatableVowel tok || isImplicitA tok
+
+-- | The caret sign, wherever the scan of a stack meets it.
+isCaretLike :: Token -> Bool
+isCaretLike Token{tokenCanonical = TcFinal FMCaret} = True
+isCaretLike _ = False
+
+isPlus :: Token -> Bool
+isPlus Token{tokenCanonical = TcConSpec CSPlus} = True
+isPlus _ = False
+
+isDot :: Token -> Bool
+isDot Token{tokenCanonical = TcConSpec CSDot} = True
+isDot _ = False
+
+-- | The subjoining letter @l@, however it is spelled: bare in Wylie, a
+-- subconsonant sign in Tibetan. It never sits below two consonants (grla is
+-- ག + ར + ླ, not གྲླ).
+isL :: Token -> Bool
+isL Token{tokenCanonical = TcConsonant Cl} = True
+isL Token{tokenCanonical = TcSubConsonant SCl} = True
+isL _ = False
+
+-- | A letter that can sit below another one: the bare @{y, w, r, l}@ a Wylie
+-- writer spells in full letters, or a subconsonant token Tibetan spells
+-- already joined. A Tibetan bare letter is a real letter and never a subjoin.
+isSubjoinCandidate :: Token -> Bool
+isSubjoinCandidate tok@Token{tokenCanonical = TcConsonant c}
+    | tokenSource tok == TsWylie = c `elem` [Cl, Cr, Cw, Cy]
+    | otherwise = False
+isSubjoinCandidate Token{tokenCanonical = TcSubConsonant _} = True
+isSubjoinCandidate _ = False
+
+isPrefixLetter :: Token -> Bool
+isPrefixLetter Token{tokenCanonical = TcConsonant c} = c `elem` [C', Cb, Cd, Cg, Cm]
+isPrefixLetter _ = False
+
+isSuperfixLetter :: Token -> Bool
+isSuperfixLetter Token{tokenCanonical = TcConsonant c} = c `elem` [Cl, Cr, Cs]
+isSuperfixLetter _ = False
 
 pPrefixGa :: Parser Token
 pPrefixGa = satisfy (isSpecificConsonant Cg) <?> "Prefix ga token"

@@ -3,9 +3,10 @@
 
 The 37 syllable structures ('pStructure1' … 'pStructure37'), each composed from
 constraint parsers in 'Convert.Grammar.Constraint' and the token-level parser
-primitives in 'Convert.Grammar.Parser'. Structures recognize a single syllable
-out of a 'Token' stream; punctuation is left unconsumed so it survives and is
-handled separately by 'Convert.Sentence'.
+primitives in 'Convert.Grammar.Parser', and the generic word 'pStructure38',
+all of whose pieces live in 'Convert.Grammar.Constraint.Constraint21'.
+Structures recognize a single syllable out of a 'Token' stream; punctuation is
+left unconsumed so it survives and is handled separately by 'Convert.Sentence'.
 -}
 
 module Convert.Grammar.Structure
@@ -46,6 +47,7 @@ module Convert.Grammar.Structure
     , pStructure35
     , pStructure36
     , pStructure37
+    , pStructure38
     ) where
 
 import qualified Convert.Grammar.Constraint.Constraint01 as C01
@@ -62,6 +64,7 @@ import qualified Convert.Grammar.Constraint.Constraint17 as C17
 import qualified Convert.Grammar.Constraint.Constraint18 as C18
 import qualified Convert.Grammar.Constraint.Constraint19 as C19
 import qualified Convert.Grammar.Constraint.Constraint20 as C20
+import qualified Convert.Grammar.Constraint.Constraint21 as C21
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Word (Position (..), TibetanWord, mark)
@@ -407,3 +410,20 @@ pStructure36 spelling =
 -- On the basis of the Tibetan spelling grammar 4.18 and 4.20
 pStructure37 :: Spelling -> Parser TibetanWord
 pStructure37 spelling = C18.pConstraint18 spelling <> C20.pConstraint20 spelling
+
+-- Tibetan spelling structure 38
+-- The generic word: whatever the book structures do not name. Many stacks -
+-- consonant-led or vowel-led, with a stack-breaking dot, a lone final mark and
+-- a lone subjoined letter as continued words - against one probe (g.yon ->
+-- གཡོན, sat+t+wa -> སཏྟྭ). Probed last: a word the book spells keeps the book's
+-- marks, a word it does not gets the closest thing the references agree on.
+-- Both spellings read identically here: the piece parsers live in
+-- 'Convert.Grammar.Constraint.Constraint21' and decide everything per token,
+-- exactly as the old 'Convert.Grammar.Stack' ignored its 'Spelling' argument.
+-- A @+@ the stack already closed still reads as a join: the letter after it
+-- belongs to the same word (u+e -> ཨེུ), as it does in the references.
+pStructure38 :: Spelling -> Parser TibetanWord
+pStructure38 _spelling = do
+    first <- C21.pConstraint21First
+    rest <- MP.many C21.pConstraint21Rest
+    pure (first <> mconcat rest)

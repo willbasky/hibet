@@ -15,10 +15,13 @@ module Convert.Grammar.Word
     ( Position (..)
     , TibetanWord
     , mark
+    , subfixMarks
+    , caretMark
     ) where
 
 import Convert.Grammar.Parser (Parser)
 import Convert.Token (Token)
+import Data.Maybe (maybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
@@ -64,3 +67,12 @@ mark :: Position -> Parser a -> Parser (Seq (Position, a))
 mark position parser = do
     value <- parser
     pure (Seq.singleton (position, value))
+
+-- | The subfix letters of one stack, marked in order.
+subfixMarks :: [Token] -> TibetanWord
+subfixMarks = Seq.fromList . map (Subfix,)
+
+-- | The one caret that survives a subjoining scan, marked 'Final', or nothing
+-- when the scan kept no caret.
+caretMark :: Maybe Token -> TibetanWord
+caretMark = maybe mempty (Seq.singleton . (Final,))
