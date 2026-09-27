@@ -8,6 +8,7 @@
 -- recomputed inside the tokenizers.
 module Convert.Diagnostic
     ( Severity (..)
+    , DiagnosticCode (..)
     , Diagnostic (..)
     , Diagnostics
     , addDiagnostic
@@ -30,8 +31,19 @@ data Severity
     | SevError
     deriving (Show, Eq, Ord, Enum, Bounded)
 
+-- | The kind of problem a 'Diagnostic' reports. The catalogue of codes lives
+-- here, in one place: the UI can map a code to its help text, and a converter
+-- stops inventing parallel channels for the same finding. Spelling checks
+-- (Wave 3.4) add their codes here as the rules land.
+data DiagnosticCode
+    = UnexpectedCharacter
+    | UnfinishedComment
+    | InvalidHexCode
+    deriving (Show, Eq, Ord, Enum, Bounded)
+
 data Diagnostic = Diagnostic
-    { diagSeverity :: !Severity
+    { diagCode :: !DiagnosticCode
+    , diagSeverity :: !Severity
     , diagSpan :: !Span
     , diagWord :: !(Maybe Span)
     , diagMessage :: !Text
@@ -69,6 +81,7 @@ diagnosticList (Diagnostics ds) = ds
 unexpectedCharacter :: Span -> Char -> Diagnostic
 unexpectedCharacter sp c =
     Diagnostic
+        UnexpectedCharacter
         SevWarning
         sp
         Nothing
@@ -77,14 +90,25 @@ unexpectedCharacter sp c =
 -- | @Unfinished [non-Wylie stuff].@ - a bracketed foreign-text block that is
 -- never closed; the reference reports it and stops reading.
 unfinishedComment :: Span -> Diagnostic
-unfinishedComment sp = Diagnostic SevWarning sp Nothing "Unfinished [non-Wylie stuff]."
+unfinishedComment sp =
+    Diagnostic
+        UnfinishedComment
+        SevWarning
+        sp
+        Nothing
+        "Unfinished [non-Wylie stuff]."
 
 -- | @"\u01x3": invalid hex code.@ - a \\uXXXX escape whose code is not a valid
 -- hexadecimal number. The reference drops such an escape entirely, and so do
 -- we; the message quotes the escape exactly as it was written.
 invalidHexCode :: Span -> Text -> Diagnostic
 invalidHexCode sp raw =
-    Diagnostic SevWarning sp Nothing ("\"" <> raw <> "\": invalid hex code.")
+    Diagnostic
+        InvalidHexCode
+        SevWarning
+        sp
+        Nothing
+        ("\"" <> raw <> "\": invalid hex code.")
 
 -- | One message in the reference's format: @line N: "word": message@, where
 -- the word is quoted only when the diagnostic blames a specific word.

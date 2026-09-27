@@ -10,7 +10,7 @@
 -- The mark lives in the list rather than in 'Token': a letter is superfix or
 -- subfix because of where it stands, not because of what it is - the same @r@ is a
 -- root in one word and a subfix in another. Leaving 'Token' alone also leaves its
--- invariants alone (input coverage, 'TokenIssue').
+-- invariants alone (input coverage).
 module Convert.Grammar.Word
     ( Position (..)
     , TibetanWord

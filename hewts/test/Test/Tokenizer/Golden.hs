@@ -63,13 +63,7 @@ renderToken tok =
         <> tokenRaw tok
         <> "|span="
         <> spanText (tokenSpan tok)
-        <> "|issues="
-        <> issuesText (tokenIssues tok)
 
 spanText :: Span -> Text
 spanText spP =
     T.pack (show (offsetStart spP)) <> ":" <> T.pack (show (offsetEnd spP))
-
-issuesText :: [TokenIssue] -> Text
-issuesText [] = "[]"
-issuesText xs = T.pack (show xs)

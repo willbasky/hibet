@@ -17,6 +17,7 @@ module Test.Parity (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
 import Convert.Diagnostic (Diagnostics, renderDiagnostics)
+import Convert.Grammar.Legality (legality)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -241,15 +242,21 @@ differs t
 
 -- | Wylie input parses under the Wylie arms of the grammar (the @a@ is written
 -- and consumed as the implicit vowel), Unicode input under the Tibetan arms.
+-- Both directions hand back the tokenizer's diagnostics plus the spelling
+-- grammar's own (wave 3.4), so the corpus checkers compare the lot.
 convertW2U :: Text -> (Either Text Text, Diagnostics)
-convertW2U input = (fmap (renderItems OutUnicode) (parseItems Wylie tokens), diags)
+convertW2U input = go (parseItems Wylie tokens)
     where
         (tokens, diags) = tokenizeWylie input
+        go (Left err) = (Left err, diags)
+        go (Right items) = (Right (renderItems OutUnicode items), diags <> legality tokens items)
 
 convertU2W :: Text -> (Either Text Text, Diagnostics)
-convertU2W input = (fmap (renderItems OutWylie) (parseItems Tibetan tokens), diags)
+convertU2W input = go (parseItems Tibetan tokens)
     where
         (tokens, diags) = tokenizeUnicode input
+        go (Left err) = (Left err, diags)
+        go (Right items) = (Right (renderItems OutWylie items), diags <> legality tokens items)
 
 parseItems :: Spelling -> [Token] -> Either Text [SpellItem]
 parseItems spelling = parseEither (pSentence spelling)

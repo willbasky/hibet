@@ -57,6 +57,7 @@ library
     Convert
     Convert.Diagnostic
     Convert.Grammar.Constraint
+    Convert.Grammar.Legality
     Convert.Grammar.Parser
     Convert.Grammar.Structure
     Convert.Grammar.Word
@@ -116,6 +117,7 @@ test-suite hewts-test
     Test.Grammar.Constraint.Constraint18
     Test.Grammar.Constraint.Constraint19
     Test.Grammar.Constraint.Constraint20
+    Test.Grammar.Legality
     Test.Grammar.Stack
     Test.Grammar.Structure
     Test.Grammar.Wylie

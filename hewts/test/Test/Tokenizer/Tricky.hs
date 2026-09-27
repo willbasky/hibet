@@ -34,7 +34,7 @@ tests =
             caseWylieBracketedChunk
         , testCase "wylie unicode escape chunk is a single token" caseWylieEscapeChunk
         , testCase
-            "wylie special marker carries InvalidSequence warning"
+            "wylie stray special marker stays an unknown token"
             caseWylieSpecialIssue
         , testCase "wylie longest-match k+Sh is single chunk" caseWylieKPlusShChunk
         , testCase "wylie longest-match dz+h then a" caseWylieDzPlusHThenA
@@ -48,11 +48,11 @@ tests =
         , testCase "wylie longest-match th then a" caseWylieThThenA
         , testGroup "wylie prefix conflicts" (map mkPrefixCase wyliePrefixCases)
         , testCase
-            "wylie mixed special markers keep InvalidSequence diagnostics"
-            caseWylieMixedSpecialDiagnostics
+            "wylie mixed special markers stay unknown tokens"
+            caseWylieMixedSpecial
         , testCase
-            "wylie unknown latin keeps UnknownChar diagnostics"
-            caseWylieUnknownDiagnostics
+            "wylie unknown latin stays an unknown token"
+            caseWylieUnknownLatin
         , testCase
             "unicode unexpected ASCII between Tibetan signs is isolated"
             caseUnicodeUnexpectedAsciiBetweenTibetan
@@ -60,11 +60,11 @@ tests =
             "unicode repeated vowel marks are tokenized separately"
             caseUnicodeRepeatedVowels
         , testCase
-            "unicode rare combining mark is unknown with warning"
+            "unicode rare combining mark stays unknown"
             caseUnicodeRareCombiningUnknown
         , testCase
-            "unicode mixed edge stream preserves per-token diagnostics"
-            caseUnicodeMixedEdgeDiagnostics
+            "unicode mixed edge stream keeps raws intact"
+            caseUnicodeMixedEdge
         , testCase
             "unicode tsheg and ASCII space are different kinds"
             caseUnicodeTshegVsSpace
@@ -224,7 +224,6 @@ caseWylieBracketedChunk =
     case fst (tokenizeWylie "[ab[cd]e]k") of
         [blockTok, kTok] -> do
             tokenRaw blockTok @?= "[ab[cd]e]"
-            tokenIssues blockTok @?= []
             tokenRaw kTok @?= "k"
         xs -> error $ "Expected 2 tokens, got " <> show (length xs)
 
@@ -233,16 +232,15 @@ caseWylieEscapeChunk =
     case fst (tokenizeWylie "\\u0f40a") of
         [escTok, aTok] -> do
             tokenRaw escTok @?= "\\u0f40"
-            tokenIssues escTok @?= []
             tokenRaw aTok @?= "a"
         xs -> error $ "Expected 2 tokens, got " <> show (length xs)
 
 caseWylieSpecialIssue :: Assertion
 caseWylieSpecialIssue =
     case fst (tokenizeWylie "~") of
-        [tok] ->
-            tokenIssues tok
-                @?= [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
+        [tok] -> do
+            tokenKind tok @?= TkUnknown
+            tokenCanonical tok @?= TcUnknown (UnknownMark "~")
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
 caseWylieKPlusShChunk :: Assertion
@@ -285,10 +283,9 @@ caseWylieThThenA :: Assertion
 caseWylieThThenA =
     assertWylieRawTokens "tha" ["th", "a"]
 
-caseWylieMixedSpecialDiagnostics :: Assertion
-caseWylieMixedSpecialDiagnostics =
+caseWylieMixedSpecial :: Assertion
+caseWylieMixedSpecial =
     let toks = fst (tokenizeWylie "~+`]-.")
-        expectedIssue = [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
      in do
             map tokenRaw toks @?= ["~", "+", "`", "]", "-", "."]
             map tokenKind toks
@@ -301,13 +298,11 @@ caseWylieMixedSpecialDiagnostics =
                     , TcUnknown (UnknownMark "-")
                     , TcConSpec CSDot
                     ]
-            map tokenIssues toks
-                @?= [expectedIssue, [], expectedIssue, expectedIssue, expectedIssue, []]
 
-caseWylieUnknownDiagnostics :: Assertion
-caseWylieUnknownDiagnostics =
+caseWylieUnknownLatin :: Assertion
+caseWylieUnknownLatin =
     case fst (tokenizeWylie "x") of
-        [tok] -> tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        [tok] -> tokenCanonical tok @?= TcUnknown (UnknownMark "x")
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
 caseUnicodeUnexpectedAsciiBetweenTibetan :: Assertion
@@ -318,7 +313,6 @@ caseUnicodeUnexpectedAsciiBetweenTibetan =
             tokenKind xTok @?= TkUnknown
             tokenKind iTok @?= TkVowel
             tokenCanonical xTok @?= TcUnknown (UnknownMark "x")
-            tokenIssues xTok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
         xs -> error $ "Expected 3 tokens, got " <> show (length xs)
 
 caseUnicodeRepeatedVowels :: Assertion
@@ -330,8 +324,6 @@ caseUnicodeRepeatedVowels =
             tokenKind i2Tok @?= TkVowel
             tokenCanonical i1Tok @?= TcVowel Vi
             tokenCanonical i2Tok @?= TcVowel Vi
-            tokenIssues i1Tok @?= []
-            tokenIssues i2Tok @?= []
         xs -> error $ "Expected 3 tokens, got " <> show (length xs)
 
 caseUnicodeRareCombiningUnknown :: Assertion
@@ -340,25 +332,12 @@ caseUnicodeRareCombiningUnknown =
         [tok] -> do
             tokenKind tok @?= TkSanskritMark
             tokenCanonical tok @?= TcSanskritMark SMiLciRtags
-            tokenIssues tok @?= []
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
-caseUnicodeMixedEdgeDiagnostics :: Assertion
-caseUnicodeMixedEdgeDiagnostics =
-    let toks = fst (tokenizeUnicode "ཀིི ཀxི ྆།")
-        issuesByRaw = map (\tok -> (tokenRaw tok, tokenIssues tok)) toks
-     in issuesByRaw
-            @?= [ ("ཀ", [])
-                , ("ི", [])
-                , ("ི", [])
-                , (" ", [])
-                , ("ཀ", [])
-                , ("x", [TokenIssue UnknownChar TisWarning "Unknown token"])
-                , ("ི", [])
-                , (" ", [])
-                , ("྆", [])
-                , ("།", [])
-                ]
+caseUnicodeMixedEdge :: Assertion
+caseUnicodeMixedEdge =
+    map tokenRaw (fst (tokenizeUnicode "ཀིི ཀxི ྆།"))
+        @?= ["ཀ", "ི", "ི", " ", "ཀ", "x", "ི", " ", "྆", "།"]
 
 caseUnicodeTshegVsSpace :: Assertion
 caseUnicodeTshegVsSpace =
@@ -371,9 +350,7 @@ caseUnicodeTshegVsSpace =
 caseUnicodeUnknownPreserved :: Assertion
 caseUnicodeUnknownPreserved =
     case fst (tokenizeUnicode "x") of
-        [tok] -> do
-            tokenCanonical tok @?= TcUnknown (UnknownMark "x")
-            tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
+        [tok] -> tokenCanonical tok @?= TcUnknown (UnknownMark "x")
         xs -> error $ "Expected 1 token, got " <> show (length xs)
 
 assertWylieRawTokens :: Text -> [Text] -> Assertion
@@ -435,9 +412,8 @@ assertUnicodeNormalizationCase input expectedUnknownRaws = do
     mapM_ assertUnknownShape unknowns
 
 assertUnknownShape :: Token -> Assertion
-assertUnknownShape tok = do
+assertUnknownShape tok =
     tokenCanonical tok @?= TcUnknown (UnknownMark (tokenRaw tok))
-    tokenIssues tok @?= [TokenIssue UnknownChar TisWarning "Unknown token"]
 
 unicodeNormalizationCases :: [(String, Text, [Text])]
 unicodeNormalizationCases =

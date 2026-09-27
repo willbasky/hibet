@@ -3,7 +3,6 @@ module Convert.Token where
 import Data.Char (chr, isHexDigit, ord)
 import qualified Data.Map.Strict as M
 import Data.Text (Text)
-import qualified Data.Text as T
 import Numeric (readHex)
 import Numeric.Natural (Natural)
 import Text.Printf (printf)
@@ -64,25 +63,6 @@ data AliasPolicy
     | Canonicalized
     deriving (Show, Eq, Ord)
 
-data TokenIssueCode
-    = UnknownChar
-    | InvalidSequence
-    | AmbiguousAlias
-    | AutoNormalized
-    deriving (Show, Eq, Ord)
-
-data TokenIssueSeverity
-    = TisWarning
-    | TisError
-    deriving (Show, Eq, Ord)
-
-data TokenIssue = TokenIssue
-    { issueCode :: TokenIssueCode
-    , issueSeverity :: TokenIssueSeverity
-    , issueMessage :: Text
-    }
-    deriving (Show, Eq, Ord)
-
 -- Character offsets in the original input, half-open interval [start, end).
 data Span = Span
     { offsetStart :: Natural
@@ -123,7 +103,6 @@ data TokenCanonical
 --    (compound forms; deprecated precomposed spellings never occur here).
 -- 3) tokenSpan is a half-open interval [start, end) over source offsets;
 --    sps are monotonic and cover the whole input without gaps or overlap.
--- 4) tokenIssues only describe lexical/tokenization-level diagnostics.
 data Token = Token
     { tokenRaw :: Text
     , tokenCanonical :: TokenCanonical
@@ -131,7 +110,6 @@ data Token = Token
     , tokenSource :: TokenSource
     , tokenSpan :: Span
     , tokenAliasPolicy :: AliasPolicy
-    , tokenIssues :: [TokenIssue]
     }
     deriving (Show, Eq, Ord)
 
@@ -143,9 +121,8 @@ mkTokenWith ::
     -> TokenCanonical
     -> Span
     -> AliasPolicy
-    -> [TokenIssue]
     -> Token
-mkTokenWith source kind raw canonical sp aliasPolicy issues =
+mkTokenWith source kind raw canonical sp aliasPolicy =
     Token
         { tokenRaw = raw
         , tokenCanonical = canonical
@@ -153,12 +130,11 @@ mkTokenWith source kind raw canonical sp aliasPolicy issues =
         , tokenSource = source
         , tokenSpan = mkSpan (offsetStart sp) (offsetEnd sp)
         , tokenAliasPolicy = aliasPolicy
-        , tokenIssues = issues
         }
 
 mkToken :: TokenSource -> TokenKind -> Text -> TokenCanonical -> Span -> Token
 mkToken source kind raw canonical sp =
-    mkTokenWith source kind raw canonical sp PreserveRaw []
+    mkTokenWith source kind raw canonical sp PreserveRaw
 
 mkConsonant :: TokenSource -> Span -> Text -> Consonant -> Token
 mkConsonant source sp raw consonant =
@@ -208,24 +184,9 @@ mkSymbol :: TokenSource -> Span -> Text -> SymbolMark -> Token
 mkSymbol source sp raw symbolMark =
     mkToken source TkSymbol raw (TcSymbol symbolMark) sp
 
-mkUnknownWith :: TokenSource -> Span -> Text -> [TokenIssue] -> Token
-mkUnknownWith source sp raw issues =
-    mkTokenWith
-        source
-        TkUnknown
-        raw
-        (TcUnknown (UnknownMark raw))
-        sp
-        PreserveRaw
-        issues
-
 mkUnknown :: TokenSource -> Span -> Text -> Token
 mkUnknown source sp raw =
-    mkUnknownWith
-        source
-        sp
-        raw
-        [TokenIssue UnknownChar TisWarning (T.pack "Unknown token")]
+    mkToken source TkUnknown raw (TcUnknown (UnknownMark raw)) sp
 
 -- | A bracketed block of non-Wylie text. The brackets are Wylie-only syntax:
 -- they stay in the raw slice (so the input remains fully covered), while the
@@ -252,7 +213,7 @@ mkTokenFromCanonical source sp raw = \case
     TcSpace m -> mkSpace source sp raw m
     TcSymbol s -> mkSymbol source sp raw s
     TcConSpec cs -> mkToken source TkConSpec raw (TcConSpec cs) sp
-    TcUnknown _ -> mkUnknownWith source sp raw []
+    TcUnknown _ -> mkUnknown source sp raw
 
 -- | Build the token stream for one source slice that decomposes or expands
 -- into several canonical tokens (e.g. "gh" -> [Cg, SCh], or a deprecated

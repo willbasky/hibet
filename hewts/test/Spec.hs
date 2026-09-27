@@ -17,6 +17,7 @@ import qualified Test.Grammar.Constraint.Constraint17 as Constraint17
 import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
 import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
+import qualified Test.Grammar.Legality as Legality
 import qualified Test.Grammar.Stack as Stack
 import qualified Test.Grammar.Structure as Structures
 import qualified Test.Grammar.Wylie as Wylie
@@ -56,6 +57,7 @@ tests =
         , Constraint18.tests
         , Constraint19.tests
         , Constraint20.tests
+        , Legality.tests
         , Stack.tests
         , Structures.tests
         , Wylie.tests

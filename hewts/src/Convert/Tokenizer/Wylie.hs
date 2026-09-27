@@ -174,15 +174,8 @@ classifyTokens sp raw commentClosed
                     case lookupTable raw of
                         Just tok -> ([tok], mempty)
                         Nothing
-                            | isSpecial raw -> ([specialToken], unexpected)
+                            | isSpecial raw -> ([mkUnknown TsWylie sp raw], unexpected)
                             | otherwise -> ([mkUnknown TsWylie sp raw], unexpected)
-
-        specialToken =
-            mkUnknownWith
-                TsWylie
-                sp
-                raw
-                [TokenIssue InvalidSequence TisWarning "Special marker out of context"]
 
         -- the reference reports a bare ASCII letter or a special marker that
         -- occurs where nothing expects it; anything else (a quotation mark, a
@@ -262,7 +255,7 @@ decodeEscape sp raw
         case decodeHexCode raw of
             Just c ->
                 ( maybe
-                    [mkUnknownWith TsWylie sp raw []]
+                    [mkUnknown TsWylie sp raw]
                     (mkSequenceTokens TsWylie sp raw)
                     (canonicalSeq c)
                 , mempty
@@ -273,7 +266,7 @@ decodeEscape sp raw
     where
         escapedCharacter =
             case T.uncons (T.drop 1 raw) of
-                Nothing -> mkUnknownWith TsWylie sp raw []
+                Nothing -> mkUnknown TsWylie sp raw
                 Just (c, _) ->
                     fromMaybe
                         (mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark (T.singleton c))) sp)
