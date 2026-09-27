@@ -1,9 +1,11 @@
 module Test.Grammar.Stack (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
+import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Structure (pStructure38)
-import Convert.Grammar.Word (Position (..), TibetanWord)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Sentence (Syllable (..))
 import Convert.Token (Token)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
@@ -80,7 +82,7 @@ tests =
             isLeft (wylParse (pStructure38 Wylie) "+a") @?= True
         ]
 
-wylParse :: Parser TibetanWord -> Text -> Either Text TibetanWord
+wylParse :: Parser TibetanSyllable -> Text -> Either Text TibetanSyllable
 wylParse p input = parseEither p (fst (tokenizeWylie input))
 
 wylPositions :: Text -> Either Text [Position]
@@ -89,8 +91,12 @@ wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38 Wylie)
 wylRender :: Text -> Either Text Text
 wylRender w =
     fmap
-        (renderItems OutUnicode . pure . Syllable)
+        (renderItems OutUnicode . pure . SyllableItem . liftMarks)
         (wylParse (pStructure38 Wylie) w)
+    where
+        liftMarks :: TibetanSyllable -> Syllable
+        liftMarks marks =
+            Syllable (fmap (\(p, t) -> (Just p, t)) marks) (mempty :: Diagnostics)
 
 -- | The tokens of a Wylie spelling, for the tests that want to see them.
 _wylTokens :: Text -> [Token]

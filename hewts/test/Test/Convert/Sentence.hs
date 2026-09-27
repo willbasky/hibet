@@ -1,7 +1,7 @@
 module Test.Convert.Sentence (tests) where
 
 import Convert.Grammar.Parser (Spelling (..), parseEither)
-import Convert.Sentence (SpellItem (..), pSentence)
+import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Foldable (toList)
@@ -31,14 +31,16 @@ tests =
         ]
 
 itemRaws :: SpellItem -> [Text]
-itemRaws (Syllable ts) = toList (fmap (tokenRaw . snd) ts)
+itemRaws (SyllableItem s) = toList (fmap (tokenRaw . snd) (syllableTokens s))
+itemRaws (InvalidSyllableItem s) = toList (fmap (tokenRaw . snd) (syllableTokens s))
 itemRaws (Number ts) = map tokenRaw ts
 itemRaws (Punct ts) = map tokenRaw ts
 itemRaws (Other ts) = map tokenRaw ts
 
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    Syllable ts -> ("S", toList (fmap (tokenRaw . snd) ts))
+    SyllableItem s -> ("S", toList (fmap (tokenRaw . snd) (syllableTokens s)))
+    InvalidSyllableItem s -> ("O", toList (fmap (tokenRaw . snd) (syllableTokens s)))
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)
@@ -52,12 +54,10 @@ run =
 
 simple :: TestTree
 simple =
-    testCase "དེ་དུ་ -> syllables around tsheg" $
+    testCase "དེ་དུ་ -> syllables carry their trailing tsheg" $
         tagged (run "དེ་དུ་")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", ["་"])
-                , ("S", ["ད", "ུ"])
-                , ("P", ["་"])
+            @?= [ ("S", ["ད", "ེ", "་"])
+                , ("S", ["ད", "ུ", "་"])
                 ]
 
 leadingPunct :: TestTree
@@ -70,10 +70,9 @@ leadingPunct =
 
 spaceRun :: TestTree
 spaceRun =
-    testCase "དེ དུ -> space is punctuation-like" $
+    testCase "དེ དུ -> the space joins the first run" $
         tagged (run "དེ དུ")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", [" "])
+            @?= [ ("S", ["ད", "ེ", " "])
                 , ("S", ["ད", "ུ"])
                 ]
 
@@ -81,28 +80,20 @@ realWords :: TestTree
 realWords =
     testCase "མཆོག་དེ་རིང་ཕྱི་ཚེས་དུ་སུ་ -> every syllable recognized" $
         tagged (run "མཆོག་དེ་རིང་ཕྱི་ཚེས་དུ་སུ་")
-            @?= [ ("S", ["མ", "ཆ", "ོ", "ག"])
-                , ("P", ["་"])
-                , ("S", ["ད", "ེ"])
-                , ("P", ["་"])
-                , ("S", ["ར", "ི", "ང"])
-                , ("P", ["་"])
-                , ("S", ["ཕ", "ྱ", "ི"])
-                , ("P", ["་"])
-                , ("S", ["ཚ", "ེ", "ས"])
-                , ("P", ["་"])
-                , ("S", ["ད", "ུ"])
-                , ("P", ["་"])
-                , ("S", ["ས", "ུ"])
-                , ("P", ["་"])
+            @?= [ ("S", ["མ", "ཆ", "ོ", "ག", "་"])
+                , ("S", ["ད", "ེ", "་"])
+                , ("S", ["ར", "ི", "ང", "་"])
+                , ("S", ["ཕ", "ྱ", "ི", "་"])
+                , ("S", ["ཚ", "ེ", "ས", "་"])
+                , ("S", ["ད", "ུ", "་"])
+                , ("S", ["ས", "ུ", "་"])
                 ]
 
 unknownAscii :: TestTree
 unknownAscii =
     testCase "དེ་xyz་ -> unrecognized tokens kept as Other" $
         tagged (run "དེ་xyz་")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", ["་"])
+            @?= [ ("S", ["ད", "ེ", "་"])
                 , ("O", ["x", "y", "z"])
                 , ("P", ["་"])
                 ]
@@ -111,18 +102,16 @@ numbers :: TestTree
 numbers =
     testCase "དེ་༡༢་ -> number tokens grouped as Number" $
         tagged (run "དེ་༡༢་")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", ["་"])
+            @?= [ ("S", ["ད", "ེ", "་"])
                 , ("N", ["༡", "༢"])
                 , ("P", ["་"])
                 ]
 
 longA :: TestTree
 longA =
-    testCase "ཊཱ -> long vowel of a Sanskrit root is not swallowed" $
+    testCase "ཊཱ -> long vowel of a Sanskrit root joins the run" $
         tagged (run "ཊཱ")
-            @?= [ ("S", ["ཊ"])
-                , ("O", ["ཱ"])
+            @?= [ ("S", ["ཊ", "ཱ"])
                 ]
 
 roundtrip :: TestTree
@@ -148,7 +137,8 @@ counts :: [SpellItem] -> (Int, Int, Int, Int)
 counts = foldl step (0, 0, 0, 0)
     where
         step (s, n, p, o) i = case i of
-            Syllable _ -> (s + 1, n, p, o)
+            SyllableItem _ -> (s + 1, n, p, o)
+            InvalidSyllableItem _ -> (s, n, p, o + 1)
             Number _ -> (s, n + 1, p, o)
             Punct _ -> (s, n, p + 1, o)
             Other _ -> (s, n, p, o + 1)
@@ -161,7 +151,7 @@ longTextParses =
             Left e -> assertFailure (show e)
             Right items -> do
                 rawsOf items @?= map tokenRaw toks
-                counts items @?= (59, 1, 62, 2)
+                counts items @?= (59, 1, 3, 2)
 
 leadingShad :: TestTree
 leadingShad =
@@ -173,27 +163,25 @@ leadingShad =
 
 doubleShad :: TestTree
 doubleShad =
-    testCase "དེ།། -> consecutive shads grouped" $
+    testCase "དེ།། -> the shads join the run" $
         tagged (run "དེ།།")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", ["།", "།"])
+            @?= [ ("S", ["ད", "ེ", "།", "།"])
                 ]
 
 newline :: TestTree
 newline =
     testCase
-        "དེ\nདུ -> newline is Other, keeps following syllable grouped (round-trip intact)" $
-        tagged (run "དེ\nདུ")
+        "དེ\nདུ -> newline is Other, keeps following run grouped (round-trip intact)"
+        $ tagged (run "དེ\nདུ")
             @?= [ ("S", ["ད", "ེ"])
                 , ("O", ["\n", "ད", "ུ"])
                 ]
 
 digtsAfterSpace :: TestTree
 digtsAfterSpace =
-    testCase "སྒོ་ ༩༩ -> digits after space become Number" $
+    testCase "སྒོ་ ༩༩ -> the space joins the run, digits become Number" $
         tagged (run "སྒོ་ ༩༩")
-            @?= [ ("S", ["ས", "ྒ", "ོ"])
-                , ("P", ["་", " "])
+            @?= [ ("S", ["ས", "ྒ", "ོ", "་", " "])
                 , ("N", ["༩", "༩"])
                 ]
 

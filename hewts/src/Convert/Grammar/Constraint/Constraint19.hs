@@ -9,9 +9,9 @@ module Convert.Grammar.Constraint.Constraint19
 import qualified Convert.Grammar.Constraint.Constraint15 as C15
 import qualified Convert.Grammar.Constraint.Constraint18 as C18
 import Convert.Grammar.Parser (Parser, Spelling (..))
-import Convert.Grammar.Word (TibetanWord)
+import Convert.Grammar.Syllable (TibetanSyllable)
 
-pConstraint19 :: Spelling -> Parser TibetanWord
+pConstraint19 :: Spelling -> Parser TibetanSyllable
 pConstraint19 spelling = do
     struct <- C18.pConstraint18 spelling
     suffix <- C15.pConstraint15 spelling

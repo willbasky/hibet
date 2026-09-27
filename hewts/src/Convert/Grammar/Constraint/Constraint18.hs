@@ -8,7 +8,7 @@ module Convert.Grammar.Constraint.Constraint18
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
@@ -16,7 +16,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint18 :: Spelling -> Parser TibetanWord
+pConstraint18 :: Spelling -> Parser TibetanSyllable
 pConstraint18 = \case
     Tibetan -> do
         root <- mark Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")

@@ -17,6 +17,8 @@ module Convert.Diagnostic
     , unexpectedCharacter
     , unfinishedComment
     , invalidHexCode
+    , invalidPrefixConsonant
+    , prefixNotBefore
     , renderDiagnostic
     , renderDiagnostics
     ) where
@@ -39,6 +41,8 @@ data DiagnosticCode
     = UnexpectedCharacter
     | UnfinishedComment
     | InvalidHexCode
+    | InvalidPrefixConsonant
+    | PrefixNotBefore
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -109,6 +113,29 @@ invalidHexCode sp raw =
         sp
         Nothing
         ("\"" <> raw <> "\": invalid hex code.")
+
+-- | @Invalid prefix consonant: "t".@ - a word opens with a consonant that is
+-- no prefix letter at all, so nothing it leads can be legal. The word is
+-- quoted whole, the way the reference quotes it.
+invalidPrefixConsonant :: Span -> Maybe Span -> Text -> Diagnostic
+invalidPrefixConsonant sp word letter =
+    Diagnostic
+        InvalidPrefixConsonant
+        SevWarning
+        sp
+        word
+        ("Invalid prefix consonant: \"" <> letter <> "\".")
+
+-- | @Prefix "g" does not occur before "r".@ - a prefix letter leads a letter
+-- its table (section 4.2) does not allow.
+prefixNotBefore :: Span -> Maybe Span -> Text -> Text -> Diagnostic
+prefixNotBefore sp word prefix next =
+    Diagnostic
+        PrefixNotBefore
+        SevWarning
+        sp
+        word
+        ("Prefix \"" <> prefix <> "\" does not occur before \"" <> next <> "\".")
 
 -- | One message in the reference's format: @line N: "word": message@, where
 -- the word is quoted only when the diagnostic blames a specific word.

@@ -60,7 +60,7 @@ library
     Convert.Grammar.Legality
     Convert.Grammar.Parser
     Convert.Grammar.Structure
-    Convert.Grammar.Word
+    Convert.Grammar.Syllable
     Convert.Sentence
     Convert.Token
     Convert.Tokenizer.Unicode

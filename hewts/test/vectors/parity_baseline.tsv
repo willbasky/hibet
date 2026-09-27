@@ -47,15 +47,22 @@
 # per the spelling rules a closing mark never takes an explicit vowel, and
 # writing one leaks a fresh a-chen through the back leg (ཁྱེའུས ->
 # "khྱe'usa" -> ཁྱེའུསཨ).
+#
+# Wave 3.4.2 (the prefix position): the checker's first rule lands. Words that
+# open with a consonant in the reference's PREFIX state now earn "Invalid
+# prefix consonant" (tgra, c, pgru) or "Prefix ... does not occur before ..."
+# (grla, bdza) exactly like the reference: jsewts w2u-warnings 172->177,
+# Lingua 174->179. The three still-red rows (g....yag, grglam, grywa) now
+# report only their prefix part; the rest of the texts wait for 3.4.3/3.4.4.
 jsewts	w2u	210	185
 jsewts	u2w	210	50
 jsewts	roundtrip	210	179
-jsewts	w2u-warnings	210	172
+jsewts	w2u-warnings	210	177
 jsewts	u2w-warnings	210	201
 lingua	w2u	218	188
 lingua	u2w	218	47
 lingua	roundtrip	218	181
-lingua	w2u-warnings	218	174
+lingua	w2u-warnings	218	179
 lingua	u2w-warnings	218	208
 ewts-rs	w2u	16	15
 java	w2u	6	4

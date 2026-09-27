@@ -8,12 +8,12 @@ module Convert.Grammar.Constraint.Constraint01
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Data.Maybe (fromMaybe)
 import Text.Megaparsec (choice, optional)
 import qualified Text.Megaparsec as MP
 
-pConstraint01 :: Spelling -> Parser TibetanWord
+pConstraint01 :: Spelling -> Parser TibetanSyllable
 pConstraint01 = \case
     Tibetan -> do
         root <- mark Root GP.pRootConsonant
@@ -24,7 +24,7 @@ pConstraint01 = \case
         vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
         pure (root <> vowel)
 
-pConstraint01WithLong :: Spelling -> Parser TibetanWord
+pConstraint01WithLong :: Spelling -> Parser TibetanSyllable
 pConstraint01WithLong = \case
     Tibetan -> do
         root <- mark Root GP.pRootConsonant
@@ -42,7 +42,7 @@ pConstraint01WithLong = \case
                 ]
         pure (root <> vowel)
 
-pConstraint01Sanskrit :: Spelling -> Parser TibetanWord
+pConstraint01Sanskrit :: Spelling -> Parser TibetanSyllable
 pConstraint01Sanskrit = \case
     Tibetan -> do
         root <- mark Root GP.pSanskrit

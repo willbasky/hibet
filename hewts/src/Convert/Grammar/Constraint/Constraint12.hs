@@ -6,7 +6,7 @@ module Convert.Grammar.Constraint.Constraint12 (pConstraint12) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -17,7 +17,7 @@ import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint12 :: Spelling -> Parser TibetanWord
+pConstraint12 :: Spelling -> Parser TibetanSyllable
 pConstraint12 = \case
     Tibetan ->
         MP.choice
@@ -48,7 +48,7 @@ pConstraint12 = \case
             ]
 
 parseConstraintUnicode12 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
+    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintUnicode12 parsePrefix parseRoot parseSubfix = do
     prefix <- mark Prefix parsePrefix
     root <- mark Root parseRoot
@@ -101,7 +101,7 @@ pAllowedRoot allowed = do
 -- always written.
 
 parseConstraintWylie12 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanWord
+    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie12 parsePrefix parseRoot parseSubfix = do
     prefix <- mark Prefix parsePrefix
     root <- mark Root parseRoot

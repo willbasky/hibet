@@ -6,7 +6,7 @@ module Convert.Grammar.Constraint.Constraint09 (pConstraint09) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -16,7 +16,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint09 :: Spelling -> Parser TibetanWord
+pConstraint09 :: Spelling -> Parser TibetanSyllable
 pConstraint09 = \case
     Tibetan ->
         MP.choice
@@ -33,7 +33,8 @@ pConstraint09 = \case
             , MP.try $ parseConstraintWylie09 GP.pSubfixLaWylie pRootSubfixLa
             ]
 
-parseConstraintUnicode09 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintUnicode09 ::
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintUnicode09 parseSubfix parseRoot = do
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix
@@ -68,7 +69,7 @@ pAllowedRoot allowed = do
 -- - only the subfix itself is a plain letter here, so both arms share the
 -- root groups - and the vowel is always written.
 
-parseConstraintWylie09 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintWylie09 :: Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie09 parseSubfix parseRoot = do
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix

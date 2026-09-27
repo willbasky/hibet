@@ -15,8 +15,8 @@ module Test.Grammar.Wylie (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
-import Convert.Grammar.Word (Position (..))
-import Convert.Sentence (pSentence)
+import Convert.Grammar.Syllable (Position (..))
+import Convert.Sentence (Syllable (..), pSentence)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
 import Data.Text (Text)
@@ -93,8 +93,8 @@ wylMarks :: Text -> Either Text [Position]
 wylMarks input =
     case parseW input of
         Left err -> Left err
-        Right items -> case [w | Syllable w <- items] of
-            [w] -> Right (toList (fmap fst w))
+        Right items -> case [s | SyllableItem s <- items] of
+            [s] -> Right [p | (Just p, _) <- toList (syllableTokens s)]
             _ -> Left "expected the text to be exactly one syllable"
 
 wylRender :: Text -> Either Text Text
@@ -102,7 +102,7 @@ wylRender input =
     case parseW input of
         Left err -> Left err
         Right items -> case items of
-            [Syllable _] -> Right (renderItems OutUnicode items)
+            [SyllableItem _] -> Right (renderItems OutUnicode items)
             _ -> Left "expected the text to be exactly one syllable"
 
 -- | The Wylie input through the tokenizer and the Wylie arm of the grammar.

@@ -15,9 +15,14 @@ module Test.Parity (tests) where
 -- baseline, not deleting the corpora. @test/vectors/parity_report.txt@ always
 -- holds the current full list of differences.
 
-import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
+import Convert
+    ( OutputFormat (..)
+    , SpellItem (..)
+    , legality
+    , pSentence
+    , renderItems
+    )
 import Convert.Diagnostic (Diagnostics, renderDiagnostics)
-import Convert.Grammar.Legality (legality)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -249,14 +254,14 @@ convertW2U input = go (parseItems Wylie tokens)
     where
         (tokens, diags) = tokenizeWylie input
         go (Left err) = (Left err, diags)
-        go (Right items) = (Right (renderItems OutUnicode items), diags <> legality tokens items)
+        go (Right items) = (Right (renderItems OutUnicode items), diags <> legality items)
 
 convertU2W :: Text -> (Either Text Text, Diagnostics)
 convertU2W input = go (parseItems Tibetan tokens)
     where
         (tokens, diags) = tokenizeUnicode input
         go (Left err) = (Left err, diags)
-        go (Right items) = (Right (renderItems OutWylie items), diags <> legality tokens items)
+        go (Right items) = (Right (renderItems OutWylie items), diags <> legality items)
 
 parseItems :: Spelling -> [Token] -> Either Text [SpellItem]
 parseItems spelling = parseEither (pSentence spelling)

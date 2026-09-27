@@ -9,7 +9,7 @@ module Convert.Grammar.Constraint.Constraint17
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -20,7 +20,7 @@ import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
 -- (1) root group [ 'ག', 'ད' ] above the subfix ར.
-pConstraint17Ra :: Spelling -> Parser TibetanWord
+pConstraint17Ra :: Spelling -> Parser TibetanSyllable
 pConstraint17Ra = \case
     Tibetan -> do
         root <- mark Root (pRootConsonant [Cg, Cd])
@@ -36,7 +36,7 @@ pConstraint17Ra = \case
         pure (root <> ra <> wa <> vowel)
 
 -- (2) root ཕ above the subfix ཡ.
-pConstraint17Ya :: Spelling -> Parser TibetanWord
+pConstraint17Ya :: Spelling -> Parser TibetanSyllable
 pConstraint17Ya = \case
     Tibetan -> do
         root <- mark Root (pRootConsonant [Cph])

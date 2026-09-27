@@ -2,8 +2,8 @@ module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
 import Convert.Grammar.Structure
-import Convert.Grammar.Word (Position (..), TibetanWord)
-import Convert.Sentence (SpellItem (..), pSentence)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -103,8 +103,8 @@ wordMarks :: Spelling -> Text -> Either Text [Position]
 wordMarks spelling input =
     case parseWylie spelling input of
         Left err -> Left err
-        Right items -> case [w | Syllable w <- items] of
-            [w] -> Right (toList (fmap fst w))
+        Right items -> case [s | SyllableItem s <- items] of
+            [s] -> Right [p | (Just p, _) <- toList (syllableTokens s)]
             _ -> Left "expected the text to be exactly one syllable"
 
 -- | The letters of the single syllable, spelled as they came in.
@@ -112,8 +112,8 @@ wordRaws :: Spelling -> Text -> Either Text [Text]
 wordRaws spelling input =
     case parseWylie spelling input of
         Left err -> Left err
-        Right items -> case [w | Syllable w <- items] of
-            [w] -> Right (toList (fmap (tokenRaw . snd) w))
+        Right items -> case [s | SyllableItem s <- items] of
+            [s] -> Right [tokenRaw t | (_, t) <- toList (syllableTokens s)]
             _ -> Left "expected the text to be exactly one syllable"
 
 -- | The syllable spelled back as it came in. This is the coverage invariant:
@@ -127,7 +127,7 @@ parseWylie spelling input =
     parseEither (pSentence spelling) (fst (tokenizeWylie input))
 
 isSyllable :: SpellItem -> Bool
-isSyllable (Syllable _) = True
+isSyllable (SyllableItem _) = True
 isSyllable _ = False
 
 structure1 :: TestTree
@@ -598,7 +598,7 @@ structure37 =
 -- rule as it is declared and says here which spelling to run it in. All 37
 -- call sites above therefore read @parseRaws pStructure7@ and stay free of
 -- spelling noise; the wave 3 tests pass 'Wylie' and add their own cases.
-parseRaws :: (Spelling -> Parser TibetanWord) -> Text -> Either Text [Text]
+parseRaws :: (Spelling -> Parser TibetanSyllable) -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
         parseEither (p Tibetan) (fst (tokenizeUnicode input))

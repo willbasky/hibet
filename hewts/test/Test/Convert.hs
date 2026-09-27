@@ -1,6 +1,7 @@
 module Test.Convert (tests) where
 
 import Convert (SpellItem (..), splitSentences, syllables)
+import Convert.Sentence (Syllable (..))
 import Convert.Token (tokenRaw)
 import Data.Foldable (toList)
 import Data.Text (Text)
@@ -22,7 +23,8 @@ run = either (const []) id . splitSentences
 
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    Syllable ts -> ("S", toList (fmap (tokenRaw . snd) ts))
+    SyllableItem s -> ("S", toList (fmap (tokenRaw . snd) (syllableTokens s)))
+    InvalidSyllableItem s -> ("O", toList (fmap (tokenRaw . snd) (syllableTokens s)))
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)
@@ -31,8 +33,7 @@ splitSentencesWorks :: TestTree
 splitSentencesWorks =
     testCase "splitSentences tags every item" $
         tagged (run "དེ་༡༢།")
-            @?= [ ("S", ["ད", "ེ"])
-                , ("P", ["་"])
+            @?= [ ("S", ["ད", "ེ", "་"])
                 , ("N", ["༡", "༢"])
                 , ("P", ["།"])
                 ]

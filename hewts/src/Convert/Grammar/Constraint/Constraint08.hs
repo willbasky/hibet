@@ -8,7 +8,7 @@ module Convert.Grammar.Constraint.Constraint08
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
@@ -19,7 +19,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint08 :: Spelling -> Parser TibetanWord
+pConstraint08 :: Spelling -> Parser TibetanSyllable
 pConstraint08 = \case
     Tibetan ->
         MP.choice
@@ -34,7 +34,8 @@ pConstraint08 = \case
             , MP.try $ parseConstraintWylie08 GP.pSuperfixSa pSaSuperfixRootWylie
             ]
 
-parseConstraintUnicode08 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintUnicode08 ::
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintUnicode08 parseSuperfix parseRoot = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot
@@ -69,7 +70,7 @@ pAllowedSubConsonant allowed = do
 -- unicode arm above.
 
 -- | The Wylie skeleton: the vowel slot is obligatory (see 'parseConstraintWylie08').
-parseConstraintWylie08 :: Parser Token -> Parser Token -> Parser TibetanWord
+parseConstraintWylie08 :: Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie08 parseSuperfix parseRoot = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot

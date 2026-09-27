@@ -6,7 +6,7 @@ module Convert.Grammar.Constraint.Constraint15 (pConstraint15) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Word (Position (..), TibetanWord, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , Token
@@ -15,7 +15,7 @@ import Convert.Token
     )
 import qualified Text.Megaparsec as MP
 
-pConstraint15 :: Spelling -> Parser TibetanWord
+pConstraint15 :: Spelling -> Parser TibetanSyllable
 pConstraint15 _spelling = mark Suffix pAllowedSuffix
 
 -- Suffix group [ 'ག', 'ང', 'ད', 'ན', 'བ', 'མ', 'འ', 'ར', 'ལ', 'ས' ]
