@@ -4,22 +4,40 @@ Tibetan spelling grammar 4.8 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint08
     ( pConstraint08
+    , lSuperfixRoots
+    , rSuperfixRoots
+    , sSuperfixRoots
     ) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
     , Token (..)
     , TokenCanonical (TcConsonant, TcSubConsonant)
+    , toSubjoined
     , tokenCanonical
     )
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, mapMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint08 :: Spelling -> SpellParser TibetanSyllable
+-- | The roots the superfix ར may gate (rule 4.8). The same set is the data of
+-- the generic word's superfix window
+-- ('Convert.Grammar.Constraint.Constraint21'), so the rule lives here once.
+rSuperfixRoots :: [Consonant]
+rSuperfixRoots = [Ck, Cg, Cng, Cj, Cny, Ct, Cd, Cn, Cb, Cm, Cts, Cdz]
+
+-- | The roots the superfix ལ may gate (rule 4.8); shared the same way.
+lSuperfixRoots :: [Consonant]
+lSuperfixRoots = [Ck, Cg, Cng, Cc, Cj, Ct, Cd, Cp, Cb, Ch]
+
+-- | The roots the superfix ས may gate (rule 4.8); shared the same way.
+sSuperfixRoots :: [Consonant]
+sSuperfixRoots = [Ck, Cg, Cng, Cny, Ct, Cd, Cn, Cp, Cb, Cm, Cts]
+
+pConstraint08 :: Spelling -> Parser TibetanSyllable
 pConstraint08 = \case
     Tibetan ->
         MP.choice
@@ -35,27 +53,23 @@ pConstraint08 = \case
             ]
 
 parseConstraintUnicode08 ::
-    Parser Token -> Parser Token -> SpellParser TibetanSyllable
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintUnicode08 parseSuperfix parseRoot = do
-    superfix <- markS Superfix parseSuperfix
-    root <- markS Root parseRoot
-    vowel <- MP.optional (markS Vowel GP.pVowel)
+    superfix <- mark Superfix parseSuperfix
+    root <- mark Root parseRoot
+    vowel <- MP.optional (mark Vowel GP.pVowel)
     pure (superfix <> root <> fromMaybe mempty vowel)
 
+-- | The root groups under the superfix, as subjoined signs: the full-letter
+-- groups of the rule mapped to their joined forms.
 pRaSuperfixRootUnicode :: Parser Token
-pRaSuperfixRootUnicode =
-    pAllowedSubConsonant
-        [SCk, SCg, SCng, SCj, SCny, SCt, SCd, SCn, SCb, SCm, SCts, SCdz]
+pRaSuperfixRootUnicode = pAllowedSubConsonant (mapMaybe toSubjoined rSuperfixRoots)
 
 pLaSuperfixRootUnicode :: Parser Token
-pLaSuperfixRootUnicode =
-    pAllowedSubConsonant
-        [SCk, SCg, SCng, SCc, SCj, SCt, SCd, SCp, SCb, SCh]
+pLaSuperfixRootUnicode = pAllowedSubConsonant (mapMaybe toSubjoined lSuperfixRoots)
 
 pSaSuperfixRootUnicode :: Parser Token
-pSaSuperfixRootUnicode =
-    pAllowedSubConsonant
-        [SCk, SCg, SCng, SCny, SCt, SCd, SCn, SCp, SCb, SCm, SCts]
+pSaSuperfixRootUnicode = pAllowedSubConsonant (mapMaybe toSubjoined sSuperfixRoots)
 
 pAllowedSubConsonant :: [SubConsonant] -> Parser Token
 pAllowedSubConsonant allowed = do
@@ -71,29 +85,23 @@ pAllowedSubConsonant allowed = do
 
 -- | The Wylie skeleton: the vowel slot is obligatory (see 'parseConstraintWylie08').
 parseConstraintWylie08 ::
-    Parser Token -> Parser Token -> SpellParser TibetanSyllable
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie08 parseSuperfix parseRoot = do
-    superfix <- markS Superfix parseSuperfix
-    root <- markS Root parseRoot
-    vowel <- MP.choice [markS Vowel GP.pVowel, markS ImplicitVowel GP.pImplicitA]
+    superfix <- mark Superfix parseSuperfix
+    root <- mark Root parseRoot
+    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
     pure (superfix <> root <> vowel)
 
 -- | The same root groups for Wylie spelling: the root under the superfix is a
 -- full letter ("rka" -> རྐ), where Tibetan writes the joined sign.
 pRaSuperfixRootWylie :: Parser Token
-pRaSuperfixRootWylie =
-    pAllowedConsonant
-        [Ck, Cg, Cng, Cj, Cny, Ct, Cd, Cn, Cb, Cm, Cts, Cdz]
+pRaSuperfixRootWylie = pAllowedConsonant rSuperfixRoots
 
 pLaSuperfixRootWylie :: Parser Token
-pLaSuperfixRootWylie =
-    pAllowedConsonant
-        [Ck, Cg, Cng, Cc, Cj, Ct, Cd, Cp, Cb, Ch]
+pLaSuperfixRootWylie = pAllowedConsonant lSuperfixRoots
 
 pSaSuperfixRootWylie :: Parser Token
-pSaSuperfixRootWylie =
-    pAllowedConsonant
-        [Ck, Cg, Cng, Cny, Ct, Cd, Cn, Cp, Cb, Cm, Cts]
+pSaSuperfixRootWylie = pAllowedConsonant sSuperfixRoots
 
 -- | A full consonant letter from a group (Wylie spells stack letters in full).
 pAllowedConsonant :: [Consonant] -> Parser Token

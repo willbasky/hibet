@@ -238,68 +238,83 @@ pSyllable spelling = do
 -- A syllable must match the structure that consumes the most tokens: a
 -- Tibetan syllable extends until the boundary marked by punctuation, exactly
 -- as the char-level grammar selected it (e.g. ཕྱི is structure 3, not 1,
--- and པོགས is structure 21, not 17 + 1). All structures are probed in
--- lookahead and the one with the longest match is then run for real, so
--- that input is actually consumed. Every probe runs in the pure projection
--- 'runSpell': a probed structure writes no state, so the probes leave
--- nothing behind, and only the real run of the winning structure does; the
--- stateful generic word ('pStructure38') probes the same way as the rest.
+-- and པོགས is structure 21, not 17 + 1). The 37 book structures are strict
+-- parsers, so they probe as plain parsers in lookahead - no state enters and
+-- the pure projection trains no findings; the generic word is the one
+-- stateful structure, and its probe goes through its pure projection
+-- 'runSpell', so a probe can never write findings the real run of the winner
+-- would own. The longest match is then run for real. On equal length the
+-- earlier (book) structure wins, exactly as the book's order did.
 pStructure :: Spelling -> SpellParser TibetanSyllable
 pStructure spelling = do
     start <- MP.getInput
-    let probe p = do
+    let probeStrict p = do
             r <-
                 MP.option
                     Nothing
-                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (runSpell p) <*> MP.getInput)))
+                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (p spelling) <*> MP.getInput)))
             pure $ case r of
                 Nothing -> Nothing
-                Just (_, end) -> Just (length start - length end, p)
-    best <- foldl' better Nothing <$> mapM probe parses
-    maybe MP.empty snd best
+                Just (_, end) -> Just (length start - length end, Left p)
+        probeSoft p = do
+            r <-
+                MP.option
+                    Nothing
+                    ( Just
+                        <$> MP.try (MP.lookAhead ((,) <$> liftP (runSpell (p spelling)) <*> MP.getInput))
+                    )
+            pure $ case r of
+                Nothing -> Nothing
+                Just (_, end) -> Just (length start - length end, Right p)
+    bestStrict <- foldl' better Nothing <$> mapM probeStrict strictParses
+    bestSoft <- probeSoft pStructure38
+    case better bestStrict bestSoft of
+        Nothing -> MP.empty
+        Just (_, Left p) -> liftP (p spelling)
+        Just (_, Right p) -> p spelling
     where
         better Nothing c = c
         better c Nothing = c
         better acc@(Just (m, _)) c@(Just (n, _))
             | m >= n = acc
             | otherwise = c
-        parses =
-            [ pStructure28 spelling
-            , pStructure29 spelling
-            , pStructure30 spelling
-            , pStructure31 spelling
-            , pStructure32 spelling
-            , pStructure33 spelling
-            , pStructure34 spelling
-            , pStructure35 spelling
-            , pStructure36 spelling
-            , pStructure37 spelling
-            , pStructure21 spelling
-            , pStructure22 spelling
-            , pStructure23 spelling
-            , pStructure24 spelling
-            , pStructure13 spelling
-            , pStructure14 spelling
-            , pStructure15 spelling
-            , pStructure16 spelling
-            , pStructure17 spelling
-            , pStructure18 spelling
-            , pStructure19 spelling
-            , pStructure20 spelling
-            , pStructure9 spelling
-            , pStructure10 spelling
-            , pStructure11 spelling
-            , pStructure12 spelling
-            , pStructure27 spelling
-            , pStructure26 spelling
-            , pStructure25 spelling
-            , pStructure4 spelling
-            , pStructure5 spelling
-            , pStructure6 spelling
-            , pStructure7 spelling
-            , pStructure8 spelling
-            , pStructure1 spelling
-            , pStructure2 spelling
-            , pStructure3 spelling
-            , pStructure38 spelling
+        strictParses :: [Spelling -> Parser TibetanSyllable]
+        strictParses =
+            [ pStructure28
+            , pStructure29
+            , pStructure30
+            , pStructure31
+            , pStructure32
+            , pStructure33
+            , pStructure34
+            , pStructure35
+            , pStructure36
+            , pStructure37
+            , pStructure21
+            , pStructure22
+            , pStructure23
+            , pStructure24
+            , pStructure13
+            , pStructure14
+            , pStructure15
+            , pStructure16
+            , pStructure17
+            , pStructure18
+            , pStructure19
+            , pStructure20
+            , pStructure9
+            , pStructure10
+            , pStructure11
+            , pStructure12
+            , pStructure27
+            , pStructure26
+            , pStructure25
+            , pStructure4
+            , pStructure5
+            , pStructure6
+            , pStructure7
+            , pStructure8
+            , pStructure1
+            , pStructure2
+            , pStructure3
             ]

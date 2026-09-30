@@ -22,6 +22,13 @@ module Convert.Diagnostic
     , invalidHexCode
     , invalidPrefix
     , prefixCannotLead
+    , repeatedCaret
+    , duplicateFinal
+    , forcedJoinAfterVowel
+    , badSuperfixCombination
+    , missingVowelAfterPrefix
+    , invalidSecondSuffix
+    , consonantAfterSecondSuffix
     , Finding (..)
     , resolveFinding
     , findingsDiagnostics
@@ -49,6 +56,13 @@ data DiagnosticCode
     | InvalidHexCode
     | InvalidPrefix
     | PrefixCannotLead
+    | RepeatedCaret
+    | DuplicateFinal
+    | ForcedJoinAfterVowel
+    | IllegalSuperfixCombination
+    | MissingVowelAfterPrefix
+    | InvalidSecondSuffix
+    | ConsonantAfterSecondSuffix
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -142,6 +156,103 @@ prefixCannotLead sp word prefix next =
         word
         ("The prefix \"" <> prefix <> "\" does not allow \"" <> next <> "\" after it.")
 
+-- | A second caret in the same subjoining run: only the first prints below
+-- the run (g^r^a), and a second one is exactly what the rule of the repeated
+-- caret names.
+repeatedCaret :: Span -> Maybe Span -> Diagnostic
+repeatedCaret sp word =
+    Diagnostic
+        RepeatedCaret
+        SevWarning
+        sp
+        word
+        "The caret \"^\" occurs more than once in this stack."
+
+-- | Two finals of the same orthographic class in one stack's tail (kaMM):
+-- the classes of the nine final marks group the variants that never repeat,
+-- so the duplicate window is decided by class, not by mark.
+duplicateFinal :: Span -> Maybe Span -> Text -> Diagnostic
+duplicateFinal sp word cls =
+    Diagnostic
+        DuplicateFinal
+        SevWarning
+        sp
+        word
+        ("Two finals of the \"" <> cls <> "\" class in one stack.")
+
+-- | A forced join @+@ drags a consonant below a stack whose vowel is already
+-- placed (ku+k): the join after the stack's own vowel should bring a vowel,
+-- not a consonant.
+forcedJoinAfterVowel :: Span -> Maybe Span -> Text -> Diagnostic
+forcedJoinAfterVowel sp word letter =
+    Diagnostic
+        ForcedJoinAfterVowel
+        SevWarning
+        sp
+        word
+        ( "The join \"+\" places \""
+            <> letter
+            <> "\" below a stack that already has its vowel."
+        )
+
+-- | A superfix letter gates a root with subjoined letters that its tables
+-- (4.8, 5.1) do not name (rkwa, lkya, rpa): the rule of the superfix
+-- combination.
+badSuperfixCombination ::
+    Span -> Maybe Span -> Text -> Text -> [Text] -> Diagnostic
+badSuperfixCombination sp word sf root subs =
+    Diagnostic
+        IllegalSuperfixCombination
+        SevWarning
+        sp
+        word
+        ( "The superfix \""
+            <> sf
+            <> "\" does not occur above \""
+            <> root
+            <> "\""
+            <> case subs of
+                [] -> "."
+                _ -> " with \"" <> T.concat subs <> "\" below it."
+        )
+
+-- | A prefix opens a word whose root stack never reaches a vowel (bk): the
+-- rule of the vowel after the prefix.
+missingVowelAfterPrefix :: Span -> Maybe Span -> Text -> Diagnostic
+missingVowelAfterPrefix sp word pre =
+    Diagnostic
+        MissingVowelAfterPrefix
+        SevWarning
+        sp
+        word
+        ("The stack the prefix \"" <> pre <> "\" leads carries no vowel.")
+
+-- | The second suffix slot: a consonant that is no 2nd-suffix letter at all
+-- (thabg), or one of the postfix letters over a first suffix it does not
+-- pair with (kabd).
+invalidSecondSuffix :: Span -> Maybe Span -> Text -> Maybe Text -> Diagnostic
+invalidSecondSuffix sp word c2 first =
+    Diagnostic
+        InvalidSecondSuffix
+        SevWarning
+        sp
+        word
+        ( case first of
+            Just c1 -> "The second suffix \"" <> c2 <> "\" does not occur after \"" <> c1 <> "\"."
+            Nothing -> "The consonant \"" <> c2 <> "\" cannot be a second suffix."
+        )
+
+-- | A consonant after a legal second suffix (dagsg): nothing may follow the
+-- word's last slot.
+consonantAfterSecondSuffix :: Span -> Maybe Span -> Text -> Diagnostic
+consonantAfterSecondSuffix sp word letter =
+    Diagnostic
+        ConsonantAfterSecondSuffix
+        SevWarning
+        sp
+        word
+        ("The consonant \"" <> letter <> "\" cannot follow a second suffix.")
+
 -- | A finding a constraint window of the grammar records before the run is
 -- over: the run's whole span is only known once the structures have claimed
 -- it, so the window records the pieces and 'Convert.Sentence' resolves them
@@ -154,12 +265,37 @@ data Finding
     | -- | A prefix letter leads a letter its table does not allow; both the
       -- prefix and the blamed letter.
       HeadPrefixCannotLead !Text !Text
+    | -- | The second caret of a subjoining run (g^r^a): only the first one
+      -- prints.
+      SecondCaret
+    | -- | Two finals of the same orthographic class in one stack (kaMM).
+      DuplicateFinalClass !Text
+    | -- | A forced join's consonant under a stack whose vowel is already
+      -- placed (ku+k).
+      JoinAfterVowel !Text
+    | -- | A superfix letter over a root and subjoined letters outside its
+      -- tables; the blamed root and the subjoined letters it carried.
+      BadSuperfixCombination !Text !Text ![Text]
+    | -- | A prefix whose root stack carried no vowel (bk).
+      NoVowelAfterPrefix !Text
+    | -- | The second suffix slot: a consonant that is no 2nd-suffix letter,
+      -- or one that does not pair with the first suffix before it.
+      BadSecondSuffix !Text !(Maybe Text)
+    | -- | A consonant after a legal second suffix (dagsg).
+      ConsonantAfter2ndSuffix !Text
     deriving (Show, Eq)
 
 -- | A 'Finding' with the span of the whole syllable run it names.
 resolveFinding :: Span -> Finding -> Diagnostic
 resolveFinding sp (HeadNotAPrefix letter) = invalidPrefix sp (Just sp) letter
 resolveFinding sp (HeadPrefixCannotLead prefix' next) = prefixCannotLead sp (Just sp) prefix' next
+resolveFinding sp SecondCaret = repeatedCaret sp (Just sp)
+resolveFinding sp (DuplicateFinalClass cls) = duplicateFinal sp (Just sp) cls
+resolveFinding sp (JoinAfterVowel letter) = forcedJoinAfterVowel sp (Just sp) letter
+resolveFinding sp (BadSuperfixCombination sf root subs) = badSuperfixCombination sp (Just sp) sf root subs
+resolveFinding sp (NoVowelAfterPrefix pre) = missingVowelAfterPrefix sp (Just sp) pre
+resolveFinding sp (BadSecondSuffix c2 first) = invalidSecondSuffix sp (Just sp) c2 first
+resolveFinding sp (ConsonantAfter2ndSuffix c) = consonantAfterSecondSuffix sp (Just sp) c
 
 -- | The finished diagnostics of a run's findings, in the order the windows
 -- recorded them ('foldr' + 'addDiagnostic', which prepends, keeps that

@@ -1,10 +1,9 @@
 module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Parser
-    ( SpellParser
+    ( Parser
     , Spelling (..)
     , parseEither
-    , runSpell
     )
 import Convert.Grammar.Structure
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
@@ -604,7 +603,7 @@ structure37 =
 -- call sites above therefore read @parseRaws pStructure7@ and stay free of
 -- spelling noise; the wave 3 tests pass 'Wylie' and add their own cases.
 parseRaws ::
-    (Spelling -> SpellParser TibetanSyllable) -> Text -> Either Text [Text]
+    (Spelling -> Parser TibetanSyllable) -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither (runSpell (p Tibetan)) (fst (tokenizeUnicode input))
+        parseEither (p Tibetan) (fst (tokenizeUnicode input))

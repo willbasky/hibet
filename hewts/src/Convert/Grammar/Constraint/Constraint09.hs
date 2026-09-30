@@ -4,9 +4,9 @@ Tibetan spelling grammar 4.9 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint09 (pConstraint09) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -16,7 +16,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint09 :: Spelling -> SpellParser TibetanSyllable
+pConstraint09 :: Spelling -> Parser TibetanSyllable
 pConstraint09 = \case
     Tibetan ->
         MP.choice
@@ -34,11 +34,11 @@ pConstraint09 = \case
             ]
 
 parseConstraintUnicode09 ::
-    Parser Token -> Parser Token -> SpellParser TibetanSyllable
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintUnicode09 parseSubfix parseRoot = do
-    root <- markS Root parseRoot
-    subfix <- markS Subfix parseSubfix
-    vowel <- MP.optional (markS Vowel GP.pVowel)
+    root <- mark Root parseRoot
+    subfix <- mark Subfix parseSubfix
+    vowel <- MP.optional (mark Vowel GP.pVowel)
     pure (root <> subfix <> fromMaybe mempty vowel)
 
 -- Roots above subfix 'ཝ' are [ 'ཀ', 'ཁ', 'ག', 'ཉ', 'ད', 'ཚ', 'ཞ', 'ཟ', 'ར', 'ལ', 'ཤ', 'ཧ' ]
@@ -70,9 +70,9 @@ pAllowedRoot allowed = do
 -- root groups - and the vowel is always written.
 
 parseConstraintWylie09 ::
-    Parser Token -> Parser Token -> SpellParser TibetanSyllable
+    Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie09 parseSubfix parseRoot = do
-    root <- markS Root parseRoot
-    subfix <- markS Subfix parseSubfix
-    vowel <- MP.choice [markS Vowel GP.pVowel, markS ImplicitVowel GP.pImplicitA]
+    root <- mark Root parseRoot
+    subfix <- mark Subfix parseSubfix
+    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
     pure (root <> subfix <> vowel)

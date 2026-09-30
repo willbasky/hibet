@@ -2,10 +2,9 @@ module Test.Grammar.Constraint.Constraint01 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( SpellParser
+    ( Parser
     , Spelling (..)
     , parseEither
-    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -35,14 +34,14 @@ tests =
             parsePositions (pConstraint01 Tibetan) "སུ" @?= Right [Root, Vowel]
         ]
 
-parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither (runSpell p) (fst (tokenizeUnicode input))
+        parseEither p (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither (runSpell p) (fst (tokenizeUnicode input))
+        parseEither p (fst (tokenizeUnicode input))

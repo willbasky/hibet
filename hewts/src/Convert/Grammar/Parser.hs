@@ -13,14 +13,35 @@ import qualified Text.Megaparsec as MP
 type Parser = Parsec Void [Token]
 
 -- | The spelling state that lives in the grammar parsers: the findings the
--- constraint windows recorded for the syllable run being parsed. The bare
--- finding list is all the state carries - every rule's window in every
--- constraint writes through 'noteFinding' and the run's edge collects them
--- with 'takeFindings', so a new wave-3.4 rule adds a constructor to
--- 'Finding' and a window, never a field here.
+-- constraint windows recorded for the syllable run being parsed, plus the
+-- two context bits the rules of wave 3.4.4 thread across the stacks of one
+-- word - the bare prefix or superfix the word opened on, still waiting for
+-- the stack it leads ('scanLeading'), and the consonant positions of the
+-- word tail after its last vowel ('scanTail'). A new wave-3.4 rule adds a
+-- constructor to 'Finding' and a window; these two fields are the only
+-- context the windows of a run share.
 data ScanState = ScanState
     { scanFindings :: [Finding]
+    , scanLeading :: Maybe (LeadRole, Token)
+    , scanTail :: WordTail
     }
+
+-- | The head letter a word opened on and that still waits for the stack it
+-- leads: a superfix that must gate a root with a vowel, or a prefix whose
+-- root stack has to reach a vowel.
+data LeadRole
+    = LeadSuperfix
+    | LeadPrefix
+    deriving (Show, Eq)
+
+-- | The consonant positions of the word tail after its last vowel: no vowel
+-- placed yet ('TailVoid'), or the first and the second suffix slot standing
+-- after it. The second holds only the one postfix pair rule 4.16 allows; a
+-- third consonant can follow none of them.
+data WordTail
+    = TailVoid
+    | TailOpen (Maybe Token) (Maybe Token)
+    deriving (Show, Eq)
 
 -- | The spell parser: the grammar runs in 'StateT' over the token parser, so
 -- the state lives in the parsers themselves. Megaparsec's @MonadParsec@
@@ -33,7 +54,7 @@ data ScanState = ScanState
 type SpellParser = StateT ScanState Parser
 
 initialScanState :: ScanState
-initialScanState = ScanState{scanFindings = []}
+initialScanState = ScanState{scanFindings = [], scanLeading = Nothing, scanTail = TailVoid}
 
 -- | Run a stateful spelling parse as a plain one, discarding the state: the
 -- entry point of the sentence runner and the pure projection of every probe.
@@ -56,11 +77,17 @@ peekFindings = gets scanFindings
 
 -- | The findings the current run's windows recorded, in order; the state is
 -- cleared for the next run ('pSyllable' collects the ones of the run it
--- finished).
+-- finished). The leading-letter and word-tail context belongs to the run
+-- too: no bare prefix or superfix survives into the next word.
 takeFindings :: SpellParser [Finding]
 takeFindings = do
     fs <- gets scanFindings
-    modify $ \s -> s{scanFindings = []}
+    modify $ \s ->
+        s
+            { scanFindings = []
+            , scanLeading = Nothing
+            , scanTail = TailVoid
+            }
     pure (reverse fs)
 
 parseEither :: Parser a -> [Token] -> Either Text a
@@ -166,33 +193,35 @@ pCaret = satisfy isCaretLike
 -- | The subjoining run below a base: the letters @{y, w, r, l}@ (bare in
 -- Wylie, already-joined signs in Tibetan), at most two with @l@ never second,
 -- and the carets in between, which are transparent while the scan goes on.
--- Returns the chosen letters and the one caret that survives; stops at the
--- first token that is neither, leaving it in place.
-pSubjoinRun :: Parser ([Token], Maybe Token)
-pSubjoinRun = continueRun [] Nothing
+-- Returns the chosen letters and every caret the run passed - the window
+-- that keeps the first (it prints below the run) counts the rest and blames
+-- a second one. Stops at the first token that is neither, leaving it in
+-- place.
+pSubjoinRun :: Parser ([Token], [Token])
+pSubjoinRun = continueRun [] []
     where
         -- One more piece of the run: a caret, a letter, or its end.
-        continueRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
-        continueRun subjoined caret =
+        continueRun :: [Token] -> [Token] -> Parser ([Token], [Token])
+        continueRun subjoined carets =
             MP.choice
-                [ swallowCaretInRun subjoined caret
-                , takeLetterInRun subjoined caret
-                , pure (subjoined, caret)
+                [ swallowCaretInRun subjoined carets
+                , takeLetterInRun subjoined carets
+                , pure (subjoined, carets)
                 ]
 
-        -- A caret between the subjoined letters is transparent, but the first
-        -- one is kept and prints below the run.
-        swallowCaretInRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
-        swallowCaretInRun subjoined caret = MP.try $ do
+        -- A caret between the subjoined letters is transparent; the list of
+        -- the run's carets keeps every one of them for the window.
+        swallowCaretInRun :: [Token] -> [Token] -> Parser ([Token], [Token])
+        swallowCaretInRun subjoined carets = MP.try $ do
             t <- pCaret
-            continueRun subjoined (keepFirstCaret caret t)
+            continueRun subjoined (carets <> [t])
 
         -- One more bare letter below the base, when the run has room for it.
-        takeLetterInRun :: [Token] -> Maybe Token -> Parser ([Token], Maybe Token)
-        takeLetterInRun subjoined caret = MP.try $ do
+        takeLetterInRun :: [Token] -> [Token] -> Parser ([Token], [Token])
+        takeLetterInRun subjoined carets = MP.try $ do
             t <- MP.satisfy isSubjoinCandidate
             if fitsBelow subjoined t
-                then continueRun (subjoined <> [t]) caret
+                then continueRun (subjoined <> [t]) carets
                 else MP.empty
 
         -- A stack carries at most two subjoined letters, and @l@ never fills
@@ -200,11 +229,6 @@ pSubjoinRun = continueRun [] Nothing
         fitsBelow :: [Token] -> Token -> Bool
         fitsBelow subjoined next =
             length subjoined < 2 && not (length subjoined == 1 && isL next)
-
-        -- Only the first caret of the run prints.
-        keepFirstCaret :: Maybe Token -> Token -> Maybe Token
-        keepFirstCaret Nothing caret = Just caret
-        keepFirstCaret kept _ = kept
 
 -- | Whether a vowel token belongs to a stack (see 'pVowelAny').
 isEatableVowel :: Token -> Bool
