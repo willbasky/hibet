@@ -2,6 +2,11 @@ module Test.Parity (tests) where
 
 -- \| Parity against the reference corpora (see @test/vectors/README.md@).
 --
+-- Parity covers conversion only (30.09.2026): the reference's exported warning
+-- texts and the corpus warn columns are not read and not compared, because the
+-- diagnostics channel, its codes and its wording are our own (see
+-- 'Convert.Diagnostic').
+--
 -- Every corpus file uses the reference's own six-column layout:
 --
 -- > wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> roundtrip_differs
@@ -22,14 +27,12 @@ import Convert
     , pSentence
     , renderItems
     )
-import Convert.Diagnostic (Diagnostics, renderDiagnostics)
+import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -63,8 +66,6 @@ data Kind
     = KW2U
     | KU2W
     | KRoundtrip
-    | KW2UWarns
-    | KU2WWarns
     deriving (Eq, Ord, Show, Enum, Bounded)
 
 -- | What a reference states about one corpus.
@@ -74,7 +75,6 @@ data Case = Case
     , caseWylie :: !Text
     , caseUnicode :: !Text
     , caseWylieBack :: !(Maybe Text)
-    , caseWarnsU2W :: !(Maybe Int)
     , caseRoundtripDiffers :: !(Maybe Bool)
     }
 
@@ -95,17 +95,14 @@ itemsFor :: Corpus -> IO [Item]
 itemsFor CKang = kangItems
 itemsFor corpus = do
     text <- readUtf8File (corpusFile corpus)
-    warns <- readWarns (warnsFile corpus)
-    pure (concatMap (caseItems warns) (readCorpus text))
+    pure (concatMap caseItems (readCorpus text))
     where
-        caseItems warns c =
+        caseItems c =
             concat
                 [ [Item (label c) KW2U (checkW2U c)]
                 , [Item (label c) KU2W (checkU2W c) | caseWylieBack c /= Nothing]
                 , [ Item (label c) KRoundtrip (checkRoundtrip c) | caseRoundtripDiffers c /= Nothing
                   ]
-                , [Item (label c) KW2UWarns (checkW2UWarns warns c) | hasWarnTexts corpus]
-                , [Item (label c) KU2WWarns (checkU2WWarns c) | caseWarnsU2W c /= Nothing]
                 ]
 
 -- | The Kangyur corpus states no expected output: the reference checks itself
@@ -130,38 +127,6 @@ corpusFile corpus =
         CRules -> "test/vectors/ewts_rs_rules.tsv"
         CJava -> "test/vectors/java_ewts.tsv"
         CKang -> "test/vectors/kang.txt"
-
--- | The warning TEXTS the reference produced for the same rows, exported once
--- from the reference itself (the corpus itself only stores counts). The
--- non-strict mode is the one we compare against: the strict-only warnings
--- belong to the modes, which arrive with the later waves.
-warnsFile :: Corpus -> Maybe FilePath
-warnsFile corpus =
-    case corpus of
-        CJsewts -> Just "test/vectors/jsewts_warns.tsv"
-        CLingua -> Just "test/vectors/lingua_warns.tsv"
-        _ -> Nothing
-
-hasWarnTexts :: Corpus -> Bool
-hasWarnTexts corpus = warnsFile corpus /= Nothing
-
--- | Exported warning texts by corpus row; a row with only a number has none.
-readWarns :: Maybe FilePath -> IO (Map Int [Text])
-readWarns Nothing = pure M.empty
-readWarns (Just path) = do
-    text <- readUtf8File path
-    pure (M.fromList (mapMaybe row (T.lines text)))
-    where
-        row line
-            | T.null line || "#" `T.isPrefixOf` line = Nothing
-            | otherwise =
-                case T.splitOn "\t" line of
-                    (n : rest) | Just i <- readNumber n -> Just (i, rest)
-                    _ -> Nothing
-        readNumber t
-            | not (T.null t) && T.all (\c -> c >= '0' && c <= '9') t =
-                Just (read (T.unpack t))
-            | otherwise = Nothing
 
 baselineFile :: FilePath
 baselineFile = "test/vectors/parity_baseline.tsv"
@@ -214,11 +179,11 @@ readCorpus txt = zipWith applyNote (rowNotes txt) (mapMaybe row (zip [1 ..] (T.l
             | "#" `T.isPrefixOf` line = Nothing
             | otherwise =
                 case T.splitOn "\t" line of
-                    [w, u] -> Just (Case n Nothing w u Nothing Nothing Nothing)
-                    [w, u, _ws] -> Just (Case n Nothing w u Nothing Nothing Nothing)
-                    [w, u, _ws, b] -> Just (Case n Nothing w u (Just b) Nothing Nothing)
-                    [w, u, _ws, b, wsb] -> Just (Case n Nothing w u (Just b) (count wsb) Nothing)
-                    [w, u, _ws, b, wsb, rt] -> Just (Case n Nothing w u (Just b) (count wsb) (differs rt))
+                    [w, u] -> Just (Case n Nothing w u Nothing Nothing)
+                    [w, u, _ws] -> Just (Case n Nothing w u Nothing Nothing)
+                    [w, u, _ws, b] -> Just (Case n Nothing w u (Just b) Nothing)
+                    [w, u, _ws, b, _wsb] -> Just (Case n Nothing w u (Just b) Nothing)
+                    [w, u, _ws, b, _wsb, rt] -> Just (Case n Nothing w u (Just b) (differs rt))
                     fields ->
                         error
                             ( "parity corpus: row "
@@ -228,14 +193,6 @@ readCorpus txt = zipWith applyNote (rowNotes txt) (mapMaybe row (zip [1 ..] (T.l
                                 <> " fields, expected 2..6: "
                                 <> show line
                             )
-
--- | A numeric expectation; anything else (@?@) means "not specified".
-count :: Text -> Maybe Int
-count t
-    | not (T.null t) && T.all isDigit t = Just (read (T.unpack t))
-    | otherwise = Nothing
-    where
-        isDigit c = c >= '0' && c <= '9'
 
 -- | The round-trip flag: @0@ means the reference round-trips back to the same
 -- Unicode, anything else numeric means it differs.
@@ -248,7 +205,8 @@ differs t
 -- | Wylie input parses under the Wylie arms of the grammar (the @a@ is written
 -- and consumed as the implicit vowel), Unicode input under the Tibetan arms.
 -- Both directions hand back the tokenizer's diagnostics plus the spelling
--- grammar's own (wave 3.4), so the corpus checkers compare the lot.
+-- walk's own (wave 3.4), which our own tests read; the corpus checkers compare
+-- the converted text only (30.09.2026).
 convertW2U :: Text -> (Either Text Text, Diagnostics)
 convertW2U input = go (parseItems Wylie tokens)
     where
@@ -296,44 +254,9 @@ checkU2W c =
     where
         want = fromMaybe "" (caseWylieBack c)
 
--- | The warning messages we produce must match the reference's, text and all.
-checkW2UWarns :: Map Int [Text] -> Case -> Outcome
-checkW2UWarns warns c =
-    case M.lookup (caseLine c) warns of
-        Nothing -> Fail "no exported warning texts for this row"
-        Just expected
-            | actual == expected -> Pass
-            | otherwise -> Fail (listDiff actual expected)
-    where
-        actual = renderDiagnostics (caseWylie c) (snd (convertW2U (caseWylie c)))
-
--- | For the back conversion the corpus records only whether the reference
--- warned at all, and that is all we can check.
-checkU2WWarns :: Case -> Outcome
-checkU2WWarns c =
-    case (caseWarnsU2W c, length actual) of
-        (Just 0, 0) -> Pass
-        (Just n, got)
-            | n > 0 && got > 0 -> Pass
-        _ ->
-            Fail
-                ( T.pack
-                    ( "want "
-                        <> show (caseWarnsU2W c)
-                        <> " warning(s), got "
-                        <> show (length actual)
-                    )
-                )
-    where
-        actual = renderDiagnostics (caseUnicode c) (snd (convertU2W (caseUnicode c)))
-
-listDiff :: [Text] -> [Text] -> Text
-listDiff actual expected =
-    "got "
-        <> T.unwords (map quoted actual)
-        <> " want "
-        <> T.unwords (map quoted expected)
-
+-- | The warning messages we used to compare against the reference's exported
+-- texts (and, for the back leg, its counts) are gone: parity covers conversion
+-- only, the diagnostics are our own.
 checkRoundtrip :: Case -> Outcome
 checkRoundtrip c =
     case roundTripW2U (caseWylie c) of
@@ -388,8 +311,6 @@ kindName kind =
         KW2U -> "w2u"
         KU2W -> "u2w"
         KRoundtrip -> "roundtrip"
-        KW2UWarns -> "w2u-warnings"
-        KU2WWarns -> "u2w-warnings"
 
 corpusName :: Corpus -> String
 corpusName corpus =

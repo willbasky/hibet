@@ -6,9 +6,9 @@ module Convert.Grammar.Constraint.Constraint18
     ( pConstraint18
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (SpellParser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
@@ -16,19 +16,19 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint18 :: Spelling -> Parser TibetanSyllable
+pConstraint18 :: Spelling -> SpellParser TibetanSyllable
 pConstraint18 = \case
     Tibetan -> do
-        root <- mark Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
+        root <- markS Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
         subRoot <-
-            mark Root (MP.satisfy (GP.isSpecificSubConsonant SCph) MP.<?> "A subroot ཕ")
-        vowel <- MP.optional (mark Vowel GP.pVowel)
+            markS Root (MP.satisfy (GP.isSpecificSubConsonant SCph) MP.<?> "A subroot ཕ")
+        vowel <- MP.optional (markS Vowel GP.pVowel)
         pure (root <> subRoot <> fromMaybe mempty vowel)
     Wylie -> do
-        root <- mark Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
+        root <- markS Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
         subRoot <-
-            mark Root (MP.satisfy (GP.isSpecificConsonant Cph) MP.<?> "A subroot ཕ")
-        vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+            markS Root (MP.satisfy (GP.isSpecificConsonant Cph) MP.<?> "A subroot ཕ")
+        vowel <- MP.choice [markS Vowel GP.pVowel, markS ImplicitVowel GP.pImplicitA]
         pure (root <> subRoot <> vowel)
 
 -- The Wylie arm: ཧྥ is written in full letters ("hpha"), so the subroot is the

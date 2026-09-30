@@ -6,9 +6,9 @@ module Convert.Grammar.Constraint.Constraint08
     ( pConstraint08
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
@@ -19,7 +19,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint08 :: Spelling -> Parser TibetanSyllable
+pConstraint08 :: Spelling -> SpellParser TibetanSyllable
 pConstraint08 = \case
     Tibetan ->
         MP.choice
@@ -35,11 +35,11 @@ pConstraint08 = \case
             ]
 
 parseConstraintUnicode08 ::
-    Parser Token -> Parser Token -> Parser TibetanSyllable
+    Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraintUnicode08 parseSuperfix parseRoot = do
-    superfix <- mark Superfix parseSuperfix
-    root <- mark Root parseRoot
-    vowel <- MP.optional (mark Vowel GP.pVowel)
+    superfix <- markS Superfix parseSuperfix
+    root <- markS Root parseRoot
+    vowel <- MP.optional (markS Vowel GP.pVowel)
     pure (superfix <> root <> fromMaybe mempty vowel)
 
 pRaSuperfixRootUnicode :: Parser Token
@@ -70,11 +70,12 @@ pAllowedSubConsonant allowed = do
 -- unicode arm above.
 
 -- | The Wylie skeleton: the vowel slot is obligatory (see 'parseConstraintWylie08').
-parseConstraintWylie08 :: Parser Token -> Parser Token -> Parser TibetanSyllable
+parseConstraintWylie08 ::
+    Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraintWylie08 parseSuperfix parseRoot = do
-    superfix <- mark Superfix parseSuperfix
-    root <- mark Root parseRoot
-    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+    superfix <- markS Superfix parseSuperfix
+    root <- markS Root parseRoot
+    vowel <- MP.choice [markS Vowel GP.pVowel, markS ImplicitVowel GP.pImplicitA]
     pure (superfix <> root <> vowel)
 
 -- | The same root groups for Wylie spelling: the root under the superfix is a

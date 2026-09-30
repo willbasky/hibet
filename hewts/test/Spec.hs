@@ -3,6 +3,7 @@ module Main (main) where
 import qualified Test.Convert as Convert
 import qualified Test.Convert.Golden as ConvertGolden
 import qualified Test.Convert.Sentence as Sentence
+import qualified Test.Diagnostic as Diagnostic
 import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
 import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
 import qualified Test.Grammar.Constraint.Constraint09 as Constraint09
@@ -17,7 +18,6 @@ import qualified Test.Grammar.Constraint.Constraint17 as Constraint17
 import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
 import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
-import qualified Test.Grammar.Legality as Legality
 import qualified Test.Grammar.Stack as Stack
 import qualified Test.Grammar.Structure as Structures
 import qualified Test.Grammar.Wylie as Wylie
@@ -57,7 +57,7 @@ tests =
         , Constraint18.tests
         , Constraint19.tests
         , Constraint20.tests
-        , Legality.tests
+        , Diagnostic.tests
         , Stack.tests
         , Structures.tests
         , Wylie.tests

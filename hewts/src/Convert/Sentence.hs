@@ -14,14 +14,18 @@ module Convert.Sentence
     , pSentence
     ) where
 
-import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Legality (checkWord)
+import Control.Monad (void)
+import Convert.Diagnostic (Diagnostics, findingsDiagnostics)
 import Convert.Grammar.Parser
     ( Parser
+    , SpellParser
     , Spelling (..)
     , isPunctuationLike
+    , liftP
     , pNumber
     , pPunctuation
+    , runSpell
+    , takeFindings
     )
 import Convert.Grammar.Structure
     ( pStructure1
@@ -65,24 +69,27 @@ import Convert.Grammar.Structure
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
-    ( ConSpec (..)
+    ( Span (..)
     , Token
     , TokenCanonical (..)
+    , offsetEnd
+    , offsetStart
     , tokenCanonical
+    , tokenSpan
     )
 import Data.Foldable (toList)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
 import qualified Text.Megaparsec as MP
-import Control.Monad (void)
 
 -- | A syllable as the wave-3.4 dispatcher sees it: the tokens of the whole
 -- run up to and including its trailing boundary, each tagged with the place
 -- the grammar gave it - 'Nothing' for stack separators the grammar ate
 -- without marking and for the boundary itself - plus the spelling warnings
--- 'checkWord' found for the run (without the trailing boundary, so the quoted
--- span still covers exactly what the reference blames).
+-- the grammar's constraint windows recorded for the run (without the
+-- trailing boundary, so the quoted span still covers exactly what the
+-- warning blames).
 data Syllable = Syllable
     { syllableTokens :: Seq (Maybe Position, Token)
     , syllableDiags :: Diagnostics
@@ -91,9 +98,9 @@ data Syllable = Syllable
 
 -- | One piece of a parsed sentence. A recognized run is a 'SyllableItem'; a
 -- run that opens like a syllable but that no structure claims is an
--- 'InvalidSyllableItem' (the whole run unmarked, 'syllableDiags' carries what
--- 'checkWord' found for it) - such runs stay visible and diagnosable instead
--- of silently falling into 'Other'.
+-- 'InvalidSyllableItem' (the whole run unmarked; with no winning structure no
+-- constraint window was hosted, so no warning fires for it) - such runs stay
+-- visible and diagnosable instead of silently falling into 'Other'.
 data SpellItem
     = SyllableItem Syllable
     | InvalidSyllableItem Syllable
@@ -102,22 +109,35 @@ data SpellItem
     | Other [Token]
     deriving (Show, Eq)
 
+-- | The sentence parse as a plain token parse: the stateful grammar
+-- ('pSentenceS') runs with a fresh state and the state is discarded - the
+-- warnings the constraint windows produced are already spelled into each
+-- run's 'syllableDiags' - so the entry point stays as the pure 'Parser' the
+-- converter and the tests drive.
 pSentence :: Spelling -> Parser [SpellItem]
-pSentence spelling = MP.many (pItem spelling) <* MP.eof
+pSentence spelling = runSpell (pSentenceS spelling)
 
-pItem :: Spelling -> Parser SpellItem
+-- | The stateful sentence parse: 'StateT ScanState Parser' threads the
+-- grammar state across the runs, and each 'pSyllable' takes the findings of
+-- the run it owns.
+pSentenceS :: Spelling -> SpellParser [SpellItem]
+pSentenceS spelling = MP.many (pItem spelling) <* MP.eof
+
+pItem :: Spelling -> SpellParser SpellItem
 pItem spelling =
     MP.choice
-        [ Punct <$> MP.some pPunctuation
-        , Number <$> MP.some pNumber
+        [ Punct <$> MP.some (liftP pPunctuation)
+        , Number <$> MP.some (liftP pNumber)
         , MP.try (pSyllable spelling)
         , Other <$> MP.some (MP.satisfy (not . isPunctuationLike))
         ]
 
 -- | One syllable run: a run-starting token, the structure that claims the
 -- most of it, everything the run swallows up to the next boundary, and the
--- boundary itself. 'checkWord' sees the run without the boundary.
-pSyllable :: Spelling -> Parser SpellItem
+-- boundary itself. The warnings of the constraint windows name the run
+-- without the boundary: their span is resolved here from the run's own
+-- tokens, once the run is over.
+pSyllable :: Spelling -> SpellParser SpellItem
 pSyllable spelling = do
     start <- MP.getInput
     -- 'lookAhead' only guards the run: the head token must be a possible
@@ -129,18 +149,31 @@ pSyllable spelling = do
     endOfStructure <- MP.getInput
     let claimed = length start - length endOfStructure
     tailToks <- MP.many (MP.satisfy isSyllableTail)
-    boundary <- MP.many pPunctuation
+    boundary <- MP.many (liftP pPunctuation)
+    findings <- takeFindings
     let content = take claimed start <> tailToks
+        markedContent = runItems (toList marked) content
+        runSpan = wordSpan content
         syllable =
             Syllable
-                { syllableTokens = Seq.fromList (runItems (toList marked) (content <> boundary))
-                , syllableDiags = checkWord content
+                { syllableTokens = Seq.fromList (markedContent <> [(Nothing, t) | t <- boundary])
+                , syllableDiags = findingsDiagnostics runSpan findings
                 }
     pure $
         if claimed == 0
             then InvalidSyllableItem syllable
             else SyllableItem syllable
     where
+        -- The span of the whole syllable run, from its first to its last
+        -- token: the anchor both head warnings quote whole (@tgra@), resolved
+        -- here at the end of the run.
+        wordSpan :: [Token] -> Span
+        wordSpan word@(first : _) =
+            Span
+                (offsetStart (tokenSpan first))
+                (offsetEnd (tokenSpan (foldl (\_ t -> t) first word)))
+        wordSpan [] = Span 0 0
+
         -- The marks the grammar emitted keep their emission order and the
         -- unmarked tokens - separators it ate, the unclaimed tail, the
         -- boundary - splice back into their source positions. The grammar
@@ -173,7 +206,7 @@ pSyllable spelling = do
         matchedIndices :: [Token] -> [(Position, Token)] -> [(Int, Position, Token)]
         matchedIndices run marked = go (zip [0 ..] run) marked []
             where
-                go indexeds [] acc = reverse acc
+                go _ [] acc = reverse acc
                 go indexeds ((pos, tok) : more) acc =
                     let (before, after) = break ((== tok) . snd) indexeds
                      in case after of
@@ -207,15 +240,18 @@ pSyllable spelling = do
 -- as the char-level grammar selected it (e.g. ཕྱི is structure 3, not 1,
 -- and པོགས is structure 21, not 17 + 1). All structures are probed in
 -- lookahead and the one with the longest match is then run for real, so
--- that input is actually consumed.
-pStructure :: Spelling -> Parser TibetanSyllable
+-- that input is actually consumed. Every probe runs in the pure projection
+-- 'runSpell': a probed structure writes no state, so the probes leave
+-- nothing behind, and only the real run of the winning structure does; the
+-- stateful generic word ('pStructure38') probes the same way as the rest.
+pStructure :: Spelling -> SpellParser TibetanSyllable
 pStructure spelling = do
     start <- MP.getInput
     let probe p = do
             r <-
                 MP.option
                     Nothing
-                    (Just <$> MP.try (MP.lookAhead ((,) <$> p <*> MP.getInput)))
+                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (runSpell p) <*> MP.getInput)))
             pure $ case r of
                 Nothing -> Nothing
                 Just (_, end) -> Just (length start - length end, p)

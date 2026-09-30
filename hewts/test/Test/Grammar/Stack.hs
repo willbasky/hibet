@@ -2,7 +2,12 @@ module Test.Grammar.Stack (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Parser (Parser, Spelling (..), parseEither)
+import Convert.Grammar.Parser
+    ( SpellParser
+    , Spelling (..)
+    , parseEither
+    , runSpell
+    )
 import Convert.Grammar.Structure (pStructure38)
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Sentence (Syllable (..))
@@ -82,8 +87,8 @@ tests =
             isLeft (wylParse (pStructure38 Wylie) "+a") @?= True
         ]
 
-wylParse :: Parser TibetanSyllable -> Text -> Either Text TibetanSyllable
-wylParse p input = parseEither p (fst (tokenizeWylie input))
+wylParse :: SpellParser TibetanSyllable -> Text -> Either Text TibetanSyllable
+wylParse p input = parseEither (runSpell p) (fst (tokenizeWylie input))
 
 wylPositions :: Text -> Either Text [Position]
 wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38 Wylie)

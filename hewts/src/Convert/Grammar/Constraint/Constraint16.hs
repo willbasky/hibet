@@ -7,9 +7,9 @@ module Convert.Grammar.Constraint.Constraint16
     , pConstraint16Sa
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
 import Convert.Token
     ( Consonant (..)
     , Token
@@ -18,11 +18,11 @@ import Convert.Token
     )
 import qualified Text.Megaparsec as MP
 
-pConstraint16Da :: Spelling -> Parser TibetanSyllable
-pConstraint16Da _spelling = mark Suffix pAllowedSuffix16Da
+pConstraint16Da :: Spelling -> SpellParser TibetanSyllable
+pConstraint16Da _spelling = markS Suffix pAllowedSuffix16Da
 
-pConstraint16Sa :: Spelling -> Parser TibetanSyllable
-pConstraint16Sa _spelling = mark Suffix pAllowedSuffix16Sa
+pConstraint16Sa :: Spelling -> SpellParser TibetanSyllable
+pConstraint16Sa _spelling = markS Suffix pAllowedSuffix16Sa
 
 -- Suffix group [ 'ན', 'ར', 'ལ' ] before postfix ད.
 pAllowedSuffix16Da :: Parser Token

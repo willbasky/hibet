@@ -44,7 +44,8 @@ splitSentences input =
         Right (items, _) -> Right items
 
 -- | Like 'splitSentences', but also hands back what the tokenizer noticed
--- while reading the text and what 'checkWord' found for each syllable run.
+-- while reading the text and what the grammar's constraint windows found for
+-- each syllable run.
 splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
 splitSentencesWith input = do
     let (tokens, diagnostics) = tokenizeUnicode input
@@ -139,6 +140,10 @@ renderItems fmt = T.concat . map renderItem
                 renderMark (Just ImplicitVowel, _) = ""
                 renderMark (Just Subfix, tok) = subjoinedGlyph tok
                 renderMark (Just _, tok) = renderToken OutUnicode tok
+                -- Unmarked tokens never reach the renderer ('go' prints the
+                -- unmarked tail and the boundary itself); the clause keeps the
+                -- definition total.
+                renderMark (Nothing, tok) = renderToken OutUnicode tok
 
                 -- The letters under a superfix print subjoined (rka -> རྐ, sgra ->
                 -- སྒྲ): jsewts writes every letter after the superscript in its
@@ -156,7 +161,7 @@ renderItems fmt = T.concat . map renderItem
                     | otherwise = renderMark m : go False rest
                 go _ (m@(Just Superfix, _) : rest) = renderMark m : go True rest
                 go _ (m@(Just _, _) : rest) = renderMark m : go False rest
-                go _ (m@(Nothing, tok) : rest)
+                go _ ((Nothing, tok) : rest)
                     -- An unmarked token the grammar ate in the middle of a claimed
                     -- stack prints nothing (a stack dot, a doubled caret); only
                     -- the unmarked tail and the boundary print their raw slices.

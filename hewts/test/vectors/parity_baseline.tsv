@@ -8,16 +8,17 @@
 # Check kinds:
 #   w2u / u2w      - the converted text against the reference
 #   roundtrip      - our W->U->W->U must land where the reference lands
-#   w2u-warnings   - our warning TEXTS against the exported reference texts
-#   u2w-warnings   - whether we warn at all on the way back (the corpus records
-#                     only a count there, and the back-conversion texts are
-#                     not exported yet)
+#
+# Parity covers conversion only (30.09.2026): the warning kinds (w2u-warnings,
+# u2w-warnings) left the ratchet with the strategy change. The diagnostics
+# channel, its codes and its wording are our own - tested in Test.Diagnostic -
+# so nothing about warnings is compared against the reference anymore.
 #
 # Wave 2 brought w2u from 24 to 28 (jsewts) and 25 to 29 (Lingua): the
 # bracketed foreign text, the escapes and the dropped line breaks now match.
-# Almost every remaining warning gap is a syllable-level one ("Subjoined y not
-# expected after r", "Invalid prefix consonant", "more than one ^"), i.e. the
-# orthography rules of wave 3, plus "No Tibetan characters found!" from wave 4.
+# Almost every remaining conversion gap is a syllable-level one, i.e. the
+# orthography territory of wave 3, plus "No Tibetan characters found!" from
+# wave 4.
 #
 # Wave 3.3 (the generic stack renderer) brought w2u from 28 to 185 (jsewts),
 # 29 to 188 (Lingua), 0 to 14 (ewts-rs) and 1 to 4 (java): syllables the book
@@ -26,7 +27,7 @@
 # is untouched by that wave (it does not run the generic stack). The roundtrip
 # gains (37->175 / 38->177) are the same shapes proving stable through
 # W->U->W->U. Remaining w2u gaps are reference quirks (repeated tshegs,
-# vowel-only escapes, "blaxbla" splitting) and the warning texts.
+# vowel-only escapes, "blaxbla" splitting).
 #
 # Wave 3.4 (per-spelling grammar arms): w2u now parses under the Wylie arms
 # instead of the Tibetan arms + generic stack. Every reference corpus holds
@@ -48,22 +49,16 @@
 # writing one leaks a fresh a-chen through the back leg (ཁྱེའུས ->
 # "khྱe'usa" -> ཁྱེའུསཨ).
 #
-# Wave 3.4.2 (the prefix position): the checker's first rule lands. Words that
-# open with a consonant in the reference's PREFIX state now earn "Invalid
-# prefix consonant" (tgra, c, pgru) or "Prefix ... does not occur before ..."
-# (grla, bdza) exactly like the reference: jsewts w2u-warnings 172->177,
-# Lingua 174->179. The three still-red rows (g....yag, grglam, grywa) now
-# report only their prefix part; the rest of the texts wait for 3.4.3/3.4.4.
+# Wave 3.4.2/3.4.3 (the prefix position in the single-pass parse): the warning
+# checks left this ratchet on 30.09.2026. The prefix rule fires inline in the
+# grammar's head window now, with our own records and wording under
+# Test.Diagnostic; the conversion numbers below are untouched.
 jsewts	w2u	210	185
 jsewts	u2w	210	50
 jsewts	roundtrip	210	179
-jsewts	w2u-warnings	210	177
-jsewts	u2w-warnings	210	201
 lingua	w2u	218	188
 lingua	u2w	218	47
 lingua	roundtrip	218	181
-lingua	w2u-warnings	218	179
-lingua	u2w-warnings	218	208
 ewts-rs	w2u	16	15
 java	w2u	6	4
 java	u2w	2	1

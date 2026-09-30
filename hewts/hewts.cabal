@@ -57,7 +57,6 @@ library
     Convert
     Convert.Diagnostic
     Convert.Grammar.Constraint
-    Convert.Grammar.Legality
     Convert.Grammar.Parser
     Convert.Grammar.Structure
     Convert.Grammar.Syllable
@@ -92,6 +91,7 @@ library
     megaparsec,
     pretty-simple,
     text,
+    transformers,
     unordered-containers,
 
 test-suite hewts-test
@@ -103,6 +103,7 @@ test-suite hewts-test
     Test.Convert
     Test.Convert.Golden
     Test.Convert.Sentence
+    Test.Diagnostic
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
     Test.Grammar.Constraint.Constraint09
@@ -117,7 +118,6 @@ test-suite hewts-test
     Test.Grammar.Constraint.Constraint18
     Test.Grammar.Constraint.Constraint19
     Test.Grammar.Constraint.Constraint20
-    Test.Grammar.Legality
     Test.Grammar.Stack
     Test.Grammar.Structure
     Test.Grammar.Wylie

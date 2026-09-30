@@ -15,13 +15,13 @@ module Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
     , mark
+    , markS
     , subfixMarks
     , caretMark
     ) where
 
-import Convert.Grammar.Parser (Parser)
+import Convert.Grammar.Parser (Parser, SpellParser, liftP)
 import Convert.Token (Token)
-import Data.Maybe (maybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
@@ -67,6 +67,11 @@ mark :: Position -> Parser a -> Parser (Seq (Position, a))
 mark position parser = do
     value <- parser
     pure (Seq.singleton (position, value))
+
+-- | 'mark' in the spell parser: the constraint windows that run statefully peg
+-- their tokens the same way, then write whatever rule fires at the window.
+markS :: Position -> Parser a -> SpellParser (Seq (Position, a))
+markS position parser = liftP (mark position parser)
 
 -- | The subfix letters of one stack, marked in order.
 subfixMarks :: [Token] -> TibetanSyllable

@@ -1,5 +1,8 @@
--- | Non-fatal diagnostics: what the converter noticed while reading input,
--- following the reference's own message formats.
+-- | Non-fatal diagnostics: what the converter noticed while reading input.
+--
+-- The wording, the codes and the composition of the channel are our own (wave
+-- 3.4, 30.09.2026): the reference comparisons cover conversion only, never the
+-- warnings.
 --
 -- A 'Diagnostic' carries *positions*, not text: the 'Span' where the problem was
 -- found, and optionally the 'Span' of the word to blame. Line numbers and the
@@ -17,8 +20,11 @@ module Convert.Diagnostic
     , unexpectedCharacter
     , unfinishedComment
     , invalidHexCode
-    , invalidPrefixConsonant
-    , prefixNotBefore
+    , invalidPrefix
+    , prefixCannotLead
+    , Finding (..)
+    , resolveFinding
+    , findingsDiagnostics
     , renderDiagnostic
     , renderDiagnostics
     ) where
@@ -41,8 +47,8 @@ data DiagnosticCode
     = UnexpectedCharacter
     | UnfinishedComment
     | InvalidHexCode
-    | InvalidPrefixConsonant
-    | PrefixNotBefore
+    | InvalidPrefix
+    | PrefixCannotLead
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -114,31 +120,55 @@ invalidHexCode sp raw =
         Nothing
         ("\"" <> raw <> "\": invalid hex code.")
 
--- | @Invalid prefix consonant: "t".@ - a word opens with a consonant that is
--- no prefix letter at all, so nothing it leads can be legal. The word is
--- quoted whole, the way the reference quotes it.
-invalidPrefixConsonant :: Span -> Maybe Span -> Text -> Diagnostic
-invalidPrefixConsonant sp word letter =
+-- | A run opens with a consonant in the reference's PREFIX state that is no
+-- prefix letter at all, so nothing it leads can be legal. The word is quoted
+-- whole.
+invalidPrefix :: Span -> Maybe Span -> Text -> Diagnostic
+invalidPrefix sp word letter =
     Diagnostic
-        InvalidPrefixConsonant
+        InvalidPrefix
         SevWarning
         sp
         word
-        ("Invalid prefix consonant: \"" <> letter <> "\".")
+        ("The letter \"" <> letter <> "\" cannot be a prefix.")
 
--- | @Prefix "g" does not occur before "r".@ - a prefix letter leads a letter
--- its table (section 4.2) does not allow.
-prefixNotBefore :: Span -> Maybe Span -> Text -> Text -> Diagnostic
-prefixNotBefore sp word prefix next =
+-- | A prefix letter leads a letter its table (section 4.2) does not allow.
+prefixCannotLead :: Span -> Maybe Span -> Text -> Text -> Diagnostic
+prefixCannotLead sp word prefix next =
     Diagnostic
-        PrefixNotBefore
+        PrefixCannotLead
         SevWarning
         sp
         word
-        ("Prefix \"" <> prefix <> "\" does not occur before \"" <> next <> "\".")
+        ("The prefix \"" <> prefix <> "\" does not allow \"" <> next <> "\" after it.")
 
--- | One message in the reference's format: @line N: "word": message@, where
--- the word is quoted only when the diagnostic blames a specific word.
+-- | A finding a constraint window of the grammar records before the run is
+-- over: the run's whole span is only known once the structures have claimed
+-- it, so the window records the pieces and 'Convert.Sentence' resolves them
+-- into finished 'Diagnostic's with the run's span, through 'resolveFinding'.
+-- The sum grows one constructor per wave-3.4 rule as the windows land; the
+-- words are quoted whole, as the reference quotes @tgra@.
+data Finding
+    = -- | The head letter is no prefix letter at all.
+      HeadNotAPrefix !Text
+    | -- | A prefix letter leads a letter its table does not allow; both the
+      -- prefix and the blamed letter.
+      HeadPrefixCannotLead !Text !Text
+    deriving (Show, Eq)
+
+-- | A 'Finding' with the span of the whole syllable run it names.
+resolveFinding :: Span -> Finding -> Diagnostic
+resolveFinding sp (HeadNotAPrefix letter) = invalidPrefix sp (Just sp) letter
+resolveFinding sp (HeadPrefixCannotLead prefix' next) = prefixCannotLead sp (Just sp) prefix' next
+
+-- | The finished diagnostics of a run's findings, in the order the windows
+-- recorded them ('foldr' + 'addDiagnostic', which prepends, keeps that
+-- order).
+findingsDiagnostics :: Span -> [Finding] -> Diagnostics
+findingsDiagnostics sp = foldr (addDiagnostic . resolveFinding sp) mempty
+
+-- | One message in the converter's channel format: @line N: "word": message@,
+-- where the word is quoted only when the diagnostic blames a specific word.
 renderDiagnostic :: Text -> Diagnostic -> Text
 renderDiagnostic input d =
     "line " <> T.pack (show (lineOf offset)) <> ": " <> body

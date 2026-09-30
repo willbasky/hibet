@@ -1,5 +1,8 @@
 module Convert.Grammar.Parser where
 
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
+import Convert.Diagnostic (Finding)
 import Convert.Token
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -8,6 +11,57 @@ import Text.Megaparsec hiding (Token)
 import qualified Text.Megaparsec as MP
 
 type Parser = Parsec Void [Token]
+
+-- | The spelling state that lives in the grammar parsers: the findings the
+-- constraint windows recorded for the syllable run being parsed. The bare
+-- finding list is all the state carries - every rule's window in every
+-- constraint writes through 'noteFinding' and the run's edge collects them
+-- with 'takeFindings', so a new wave-3.4 rule adds a constructor to
+-- 'Finding' and a window, never a field here.
+data ScanState = ScanState
+    { scanFindings :: [Finding]
+    }
+
+-- | The spell parser: the grammar runs in 'StateT' over the token parser, so
+-- the state lives in the parsers themselves. Megaparsec's @MonadParsec@
+-- instances for 'StateT' (its own README: wrap @ParsecT@ in these monads to
+-- add backtracking state) give us the usual combinators, with its semantics:
+-- @lookAhead@ resets the state, @try@ does not and @<|>@ runs the second arm
+-- from the state before the first. Probes run their parsers in a pure
+-- projection ('runSpell'), so only the real run of the winning structure
+-- writes state.
+type SpellParser = StateT ScanState Parser
+
+initialScanState :: ScanState
+initialScanState = ScanState{scanFindings = []}
+
+-- | Run a stateful spelling parse as a plain one, discarding the state: the
+-- entry point of the sentence runner and the pure projection of every probe.
+runSpell :: SpellParser a -> Parser a
+runSpell = flip evalStateT initialScanState
+
+-- | Lift a plain token parser into the spell parser.
+liftP :: Parser a -> SpellParser a
+liftP = lift
+
+-- | Record one finding of a constraint window in the running state, before
+-- the run's span is known.
+noteFinding :: Finding -> SpellParser ()
+noteFinding f = modify $ \s -> s{scanFindings = f : scanFindings s}
+
+-- | The findings the current run's windows recorded, without clearing them:
+-- for a window that wants to know whether a sibling already warned.
+peekFindings :: SpellParser [Finding]
+peekFindings = gets scanFindings
+
+-- | The findings the current run's windows recorded, in order; the state is
+-- cleared for the next run ('pSyllable' collects the ones of the run it
+-- finished).
+takeFindings :: SpellParser [Finding]
+takeFindings = do
+    fs <- gets scanFindings
+    modify $ \s -> s{scanFindings = []}
+    pure (reverse fs)
 
 parseEither :: Parser a -> [Token] -> Either Text a
 parseEither p ts =

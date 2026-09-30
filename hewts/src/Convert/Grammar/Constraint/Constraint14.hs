@@ -4,9 +4,9 @@ Tibetan spelling grammar 4.14 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint14 (pConstraint14) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, markS)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -16,7 +16,7 @@ import Convert.Token
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
-pConstraint14 :: Spelling -> Parser TibetanSyllable
+pConstraint14 :: Spelling -> SpellParser TibetanSyllable
 pConstraint14 = \case
     Tibetan ->
         MP.choice
@@ -36,11 +36,11 @@ pConstraint14 = \case
             ]
 
 parseConstraintUnicode14 ::
-    Parser Token -> Parser Token -> Parser TibetanSyllable
+    Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraintUnicode14 parsePrefix parseRoot = do
-    prefix <- mark Prefix parsePrefix
-    root <- mark Root parseRoot
-    vowel <- MP.optional (mark Vowel GP.pVowel)
+    prefix <- markS Prefix parsePrefix
+    root <- markS Root parseRoot
+    vowel <- MP.optional (markS Vowel GP.pVowel)
     pure (prefix <> root <> fromMaybe mempty vowel)
 
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག
@@ -74,9 +74,10 @@ pAllowedRoot allowed = do
 -- The Wylie arm: the prefix and the root are full letters either way, so only
 -- the vowel slot differs - Wylie writes it in every syllable.
 
-parseConstraintWylie14 :: Parser Token -> Parser Token -> Parser TibetanSyllable
+parseConstraintWylie14 ::
+    Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraintWylie14 parsePrefix parseRoot = do
-    prefix <- mark Prefix parsePrefix
-    root <- mark Root parseRoot
-    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
+    prefix <- markS Prefix parsePrefix
+    root <- markS Root parseRoot
+    vowel <- MP.choice [markS Vowel GP.pVowel, markS ImplicitVowel GP.pImplicitA]
     pure (prefix <> root <> vowel)
