@@ -29,6 +29,7 @@ module Convert.Diagnostic
     , missingVowelAfterPrefix
     , invalidSecondSuffix
     , consonantAfterSecondSuffix
+    , ambiguousSpelling
     , Finding (..)
     , resolveFinding
     , findingsDiagnostics
@@ -63,6 +64,7 @@ data DiagnosticCode
     | MissingVowelAfterPrefix
     | InvalidSecondSuffix
     | ConsonantAfterSecondSuffix
+    | AmbiguousSpelling
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -253,6 +255,23 @@ consonantAfterSecondSuffix sp word letter =
         word
         ("The consonant \"" <> letter <> "\" cannot follow a second suffix.")
 
+-- | A syllable whose letters stand the same way in two readings, one of which
+-- the corpus prefers (dga reads as prefix ད + root ག, while དག is root ད +
+-- suffix ག; dags against dgas): the preferred spelling the recommendation
+-- quotes. The syllable itself is not wrong, so the word is quoted whole and
+-- the severity stays a warning.
+ambiguousSpelling :: Span -> Maybe Span -> Text -> Diagnostic
+ambiguousSpelling sp word preferred =
+    Diagnostic
+        AmbiguousSpelling
+        SevWarning
+        sp
+        word
+        ( "The syllable is ambiguous; the preferred spelling is \""
+            <> preferred
+            <> "\"."
+        )
+
 -- | A finding a constraint window of the grammar records before the run is
 -- over: the run's whole span is only known once the structures have claimed
 -- it, so the window records the pieces and 'Convert.Sentence' resolves them
@@ -283,6 +302,9 @@ data Finding
       BadSecondSuffix !Text !(Maybe Text)
     | -- | A consonant after a legal second suffix (dagsg).
       ConsonantAfter2ndSuffix !Text
+    | -- | A syllable whose letters read either way, and the spelling the
+      -- corpus prefers of it.
+      PreferredSpelling !Text
     deriving (Show, Eq)
 
 -- | A 'Finding' with the span of the whole syllable run it names.
@@ -296,6 +318,7 @@ resolveFinding sp (BadSuperfixCombination sf root subs) = badSuperfixCombination
 resolveFinding sp (NoVowelAfterPrefix pre) = missingVowelAfterPrefix sp (Just sp) pre
 resolveFinding sp (BadSecondSuffix c2 first) = invalidSecondSuffix sp (Just sp) c2 first
 resolveFinding sp (ConsonantAfter2ndSuffix c) = consonantAfterSecondSuffix sp (Just sp) c
+resolveFinding sp (PreferredSpelling preferred) = ambiguousSpelling sp (Just sp) preferred
 
 -- | The finished diagnostics of a run's findings, in the order the windows
 -- recorded them ('foldr' + 'addDiagnostic', which prepends, keeps that

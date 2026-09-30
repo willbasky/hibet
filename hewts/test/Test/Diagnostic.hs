@@ -22,6 +22,7 @@ import Convert.Grammar.Parser
     )
 import Convert.Sentence (Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
 import Data.Text (Text)
@@ -38,6 +39,7 @@ tests =
         , invalidPrefixWording
         , prefixCannotLeadWording
         , wave344
+        , wave345
         , records
         ]
 
@@ -203,6 +205,73 @@ wave344 =
             rendered "kand" @?= Right []
         ]
 
+-- | The wave-3.4.5 recommendation: a syllable whose letters stand the same way
+-- in two readings, where the corpus prefers one of them.
+--
+-- The rule speaks in Wylie, so every case here is a Wylie input: the Tibetan
+-- spelling of the same syllable carries no implicit vowel and stays silent.
+-- The two discriminators are covered here as well, because both are what keeps
+-- the rule off the right words - a real vowel (dgi is དགི, a different
+-- syllable, not དག) and a form the corpus does not list.
+wave345 :: TestTree
+wave345 =
+    testGroup
+        "the ambiguous syllable (3.4.5)"
+        [ testCase "the two-letter form is recommended with the root first" $
+            recommendations "dga" @?= Right ["dag"]
+        , testCase "the two-letter rule is the whole suffix group" $
+            recommendations "dba" @?= Right ["dab"]
+        , testCase "a root letter that is no suffix letter recommends nothing" $
+            recommendations "dka" @?= Right []
+        , testCase "dags is recommended dgas" $
+            recommendations "dags" @?= Right ["dgas"]
+        , testCase "dabs is recommended dbas" $
+            recommendations "dabs" @?= Right ["dbas"]
+        , testCase "dams is recommended dmas" $
+            recommendations "dams" @?= Right ["dmas"]
+        , testCase "'ags is recommended 'gas" $
+            recommendations "'ags" @?= Right ["'gas"]
+        , testCase "'abs is recommended 'bas" $
+            recommendations "'abs" @?= Right ["'bas"]
+        , testCase "bgas is recommended bags" $
+            recommendations "bgas" @?= Right ["bags"]
+        , testCase "mgas is recommended mags" $
+            recommendations "mgas" @?= Right ["mags"]
+        , testCase "the two-letter preferred form recommends nothing" $
+            recommendations "dag" @?= Right []
+        , testCase "the prefix-first preferred form recommends nothing" $
+            recommendations "dgas" @?= Right []
+        , testCase "the postfix-first preferred form recommends nothing" $
+            recommendations "bags" @?= Right []
+        , testCase "the preferred reading is quiet in every other pair" $
+            recommendations "dbas dmas mags 'gas 'bas" @?= Right []
+        , testCase "a real vowel is no ambiguous form" $
+            recommendations "dgi bgis" @?= Right []
+        , testCase "a letter outside the table is no ambiguous form" $
+            recommendations "dngs mngs" @?= Right []
+        , testCase
+            "a three-letter form not ending in the postfix letter recommends nothing"
+            $ recommendations "dgam" @?= Right []
+        , testCase "the Tibetan spelling of the same syllable recommends nothing" $
+            tibetanRecommendations "དག་དགས་བགས་དབས" @?= Right []
+        , testCase "the recommendation is quoted inside the run's word" $
+            rendered "dga" @?= Right [recommendsLine "dga" "dag"]
+        , testCase "each run is read and recommended on its own" $
+            rendered "dga dag dags"
+                @?= Right [recommendsLine "dga" "dag", recommendsLine "dags" "dgas"]
+        , testCase "the recommendation carries its code and severity" $
+            recordsOf "dga" @?= Right [(AmbiguousSpelling, SevWarning)]
+        ]
+
+-- | The whole run a recommendation is recorded on, as one line of the channel.
+recommendsLine :: Text -> Text -> Text
+recommendsLine word preferred =
+    "line 1: \""
+        <> word
+        <> "\": The syllable is ambiguous; the preferred spelling is \""
+        <> preferred
+        <> "\"."
+
 -- | The diagnostic record: the code, the severity and the quoted word, so the
 -- UI maps codes to help text without parsing messages.
 records :: TestTree
@@ -246,6 +315,45 @@ rendered :: Text -> Either Text [Text]
 rendered input = do
     items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
     pure (renderDiagnostics input (legality items))
+
+-- | Every preferred spelling a Wylie input is recommended, so that a form
+-- which must stay quiet is checked by what it recommends and not by the whole
+-- channel: the word may still be blamed by another rule, and the gate the
+-- recommendation carries ('noteAmbiguous') is there precisely to keep the two
+-- apart.
+recommendations :: Text -> Either Text [Text]
+recommendations = recommended Wylie
+
+-- | The same for a Tibetan-script input. The rule speaks in Wylie, and the
+-- Tibetan spelling writes no implicit vowel, so the same syllable read the
+-- other way round is left alone.
+tibetanRecommendations :: Text -> Either Text [Text]
+tibetanRecommendations = recommended Tibetan
+
+recommended :: Spelling -> Text -> Either Text [Text]
+recommended spelling input = do
+    items <- parseEither (pSentence spelling) (fst (tokenize input))
+    pure
+        [ prefers d
+        | d <- diagnosticList (legality items)
+        , diagCode d == AmbiguousSpelling
+        ]
+    where
+        tokenize = case spelling of
+            Wylie -> tokenizeWylie
+            Tibetan -> tokenizeUnicode
+
+-- | The spelling one recommendation names: our own message with the prefix and
+-- the closing quote and period taken off, so a form reads as the word the rule
+-- quotes and nothing else.
+prefers :: Diagnostic -> Text
+prefers d =
+    case T.stripPrefix messagePrefix (diagMessage d) of
+        Just quoted -> T.dropWhileEnd (== '"') (T.dropEnd 1 quoted)
+        Nothing -> "unreadable recommendation"
+    where
+        messagePrefix :: Text
+        messagePrefix = "The syllable is ambiguous; the preferred spelling is \""
 
 -- | The codes and severities of the walk's messages, in order.
 recordsOf :: Text -> Either Text [(DiagnosticCode, Severity)]

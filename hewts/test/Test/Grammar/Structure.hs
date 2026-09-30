@@ -2,8 +2,10 @@ module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Parser
     ( Parser
+    , SpellParser
     , Spelling (..)
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Structure
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
@@ -235,11 +237,11 @@ structure8 =
     testGroup
         "structure 8"
         [ testCase "བཏ" $
-            parseRaws pStructure8 "བཏ" @?= Right ["བ", "ཏ"]
+            parseRawsStateful pStructure8 "བཏ" @?= Right ["བ", "ཏ"]
         , testCase "གཏ" $
-            parseRaws pStructure8 "གཏ" @?= Right ["ག", "ཏ"]
+            parseRawsStateful pStructure8 "གཏ" @?= Right ["ག", "ཏ"]
         , testCase "rejects root ང above prefix བ" $
-            isLeft (parseRaws pStructure8 "བང") @?= True
+            isLeft (parseRawsStateful pStructure8 "བང") @?= True
         ]
 
 structure9 :: TestTree
@@ -247,11 +249,11 @@ structure9 =
     testGroup
         "structure 9"
         [ testCase "བཏག" $
-            parseRaws pStructure9 "བཏག" @?= Right ["བ", "ཏ", "ག"]
+            parseRawsStateful pStructure9 "བཏག" @?= Right ["བ", "ཏ", "ག"]
         , testCase "བཏིག" $
-            parseRaws pStructure9 "བཏིག" @?= Right ["བ", "ཏ", "ི", "ག"]
+            parseRawsStateful pStructure9 "བཏིག" @?= Right ["བ", "ཏ", "ི", "ག"]
         , testCase "rejects missing suffix" $
-            isLeft (parseRaws pStructure9 "བཏ") @?= True
+            isLeft (parseRawsStateful pStructure9 "བཏ") @?= True
         ]
 
 structure10 :: TestTree
@@ -395,11 +397,11 @@ structure21 =
     testGroup
         "structure 21"
         [ testCase "བགས" $
-            parseRaws pStructure21 "བགས" @?= Right ["བ", "ག", "ས"]
+            parseRawsStateful pStructure21 "བགས" @?= Right ["བ", "ག", "ས"]
         , testCase "པོགས" $
-            parseRaws pStructure21 "པོགས" @?= Right ["པ", "ོ", "ག", "ས"]
+            parseRawsStateful pStructure21 "པོགས" @?= Right ["པ", "ོ", "ག", "ས"]
         , testCase "rejects missing postfix" $
-            isLeft (parseRaws pStructure21 "པོག") @?= True
+            isLeft (parseRawsStateful pStructure21 "པོག") @?= True
         ]
 
 structure22 :: TestTree
@@ -607,3 +609,13 @@ parseRaws ::
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
         parseEither (p Tibetan) (fst (tokenizeUnicode input))
+
+-- | The same helper for the three structures that host a window (8, 9, 21):
+-- they run statefully, and what these tests read is the marks their parse
+-- emitted, so the state is projected away here exactly as a probe projects it.
+-- The finding the window records is a matter of 'Test.Diagnostic'.
+parseRawsStateful ::
+    (Spelling -> SpellParser TibetanSyllable) -> Text -> Either Text [Text]
+parseRawsStateful p input =
+    fmap (toList . fmap (tokenRaw . snd)) $
+        parseEither (runSpell (p Tibetan)) (fst (tokenizeUnicode input))

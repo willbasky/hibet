@@ -238,25 +238,34 @@ pSyllable spelling = do
 -- A syllable must match the structure that consumes the most tokens: a
 -- Tibetan syllable extends until the boundary marked by punctuation, exactly
 -- as the char-level grammar selected it (e.g. ཕྱི is structure 3, not 1,
--- and པོགས is structure 21, not 17 + 1). The 37 book structures are strict
--- parsers, so they probe as plain parsers in lookahead - no state enters and
--- the pure projection trains no findings; the generic word is the one
--- stateful structure, and its probe goes through its pure projection
--- 'runSpell', so a probe can never write findings the real run of the winner
--- would own. The longest match is then run for real. On equal length the
--- earlier (book) structure wins, exactly as the book's order did.
+-- and པོགས is structure 21, not 17 + 1). The 34 stateless book structures
+-- probe as plain parsers in lookahead - no state enters and the pure projection
+-- trains no findings; the four stateful ones (8, 9, 21 and the generic word)
+-- probe through their pure projection 'runSpell', so a probe can never write
+-- findings the real run of the winner would own. The longest match is then run
+-- for real. On equal length the earlier (book) structure wins, exactly as the
+-- book's order did - the two kinds are therefore probed in one book-ordered
+-- list, not one kind after the other.
 pStructure :: Spelling -> SpellParser TibetanSyllable
 pStructure spelling = do
     start <- MP.getInput
-    let probeStrict p = do
+    best <- foldl' better Nothing <$> mapM (probe start) candidates
+    case best of
+        Nothing -> MP.empty
+        Just (_, Stateless p) -> liftP (p spelling)
+        Just (_, Stateful p) -> p spelling
+    where
+        probe start (Stateless p) = probeStateless start p
+        probe start (Stateful p) = probeStateful start p
+        probeStateless start p = do
             r <-
                 MP.option
                     Nothing
                     (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (p spelling) <*> MP.getInput)))
             pure $ case r of
                 Nothing -> Nothing
-                Just (_, end) -> Just (length start - length end, Left p)
-        probeSoft p = do
+                Just (_, end) -> Just (length start - length end, Stateless p)
+        probeStateful start p = do
             r <-
                 MP.option
                     Nothing
@@ -265,56 +274,59 @@ pStructure spelling = do
                     )
             pure $ case r of
                 Nothing -> Nothing
-                Just (_, end) -> Just (length start - length end, Right p)
-    bestStrict <- foldl' better Nothing <$> mapM probeStrict strictParses
-    bestSoft <- probeSoft pStructure38
-    case better bestStrict bestSoft of
-        Nothing -> MP.empty
-        Just (_, Left p) -> liftP (p spelling)
-        Just (_, Right p) -> p spelling
-    where
+                Just (_, end) -> Just (length start - length end, Stateful p)
         better Nothing c = c
         better c Nothing = c
         better acc@(Just (m, _)) c@(Just (n, _))
             | m >= n = acc
             | otherwise = c
-        strictParses :: [Spelling -> Parser TibetanSyllable]
-        strictParses =
-            [ pStructure28
-            , pStructure29
-            , pStructure30
-            , pStructure31
-            , pStructure32
-            , pStructure33
-            , pStructure34
-            , pStructure35
-            , pStructure36
-            , pStructure37
-            , pStructure21
-            , pStructure22
-            , pStructure23
-            , pStructure24
-            , pStructure13
-            , pStructure14
-            , pStructure15
-            , pStructure16
-            , pStructure17
-            , pStructure18
-            , pStructure19
-            , pStructure20
-            , pStructure9
-            , pStructure10
-            , pStructure11
-            , pStructure12
-            , pStructure27
-            , pStructure26
-            , pStructure25
-            , pStructure4
-            , pStructure5
-            , pStructure6
-            , pStructure7
-            , pStructure8
-            , pStructure1
-            , pStructure2
-            , pStructure3
-            ]
+
+-- | The structures a syllable may be read as, each tagged by whether it keeps
+-- spelling state, in the book's own order. The order is the tie-break and
+-- therefore load-bearing: on an equal match the earlier structure wins, and the
+-- list is kept exactly as the book orders the shapes.
+data Candidate
+    = Stateless (Spelling -> Parser TibetanSyllable)
+    | Stateful (Spelling -> SpellParser TibetanSyllable)
+
+candidates :: [Candidate]
+candidates =
+    [ Stateless pStructure28
+    , Stateless pStructure29
+    , Stateless pStructure30
+    , Stateless pStructure31
+    , Stateless pStructure32
+    , Stateless pStructure33
+    , Stateless pStructure34
+    , Stateless pStructure35
+    , Stateless pStructure36
+    , Stateless pStructure37
+    , Stateful pStructure21
+    , Stateless pStructure22
+    , Stateless pStructure23
+    , Stateless pStructure24
+    , Stateless pStructure13
+    , Stateless pStructure14
+    , Stateless pStructure15
+    , Stateless pStructure16
+    , Stateless pStructure17
+    , Stateless pStructure18
+    , Stateless pStructure19
+    , Stateless pStructure20
+    , Stateful pStructure9
+    , Stateless pStructure10
+    , Stateless pStructure11
+    , Stateless pStructure12
+    , Stateless pStructure27
+    , Stateless pStructure26
+    , Stateless pStructure25
+    , Stateless pStructure4
+    , Stateless pStructure5
+    , Stateless pStructure6
+    , Stateless pStructure7
+    , Stateful pStructure8
+    , Stateless pStructure1
+    , Stateless pStructure2
+    , Stateless pStructure3
+    , Stateful pStructure38
+    ]

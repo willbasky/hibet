@@ -4,9 +4,11 @@
 The 37 syllable structures ('pStructure1' … 'pStructure37'), each composed from
 constraint parsers in 'Convert.Grammar.Constraint' and the token-level parser
 primitives in 'Convert.Grammar.Parser', and the generic word 'pStructure38',
-composed from the same module's generic-word parsers. The 37 book structures
-are strict parsers: nothing accumulates, not even a probe, so their probes run
-in the plain parser. Only the generic word carries spelling state.
+composed from the same module's generic-word parsers. The book structures
+compose strict parsers: nothing accumulates, not even a probe, so their probes
+run in the plain parser. Three of them (8, 9, 21) carry spelling state of
+their own, to host the ambiguous-spelling window at their tail ('spellAs'), and
+the generic word carries the spelling state of the word tail.
 Structures recognize a single syllable out of a 'Token' stream; punctuation is
 left unconsumed so it survives and is handled separately by 'Convert.Sentence'.
 -}
@@ -53,7 +55,7 @@ module Convert.Grammar.Structure
     ) where
 
 import qualified Convert.Grammar.Constraint as C
-import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..))
+import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..), liftP)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token (Token)
@@ -101,13 +103,18 @@ pStructure7 spelling = C.pConstraint13 spelling
 
 -- Tibetan spelling structure 8
 -- On the basis of the Tibetan spelling grammar 4.14
-pStructure8 :: Spelling -> Parser TibetanSyllable
-pStructure8 spelling = C.pConstraint14 spelling
+--
+-- The first of the three structures that host a window: the syllable is
+-- finished the moment rule 4.14 has run, and only the finished syllable says
+-- which of its two readings won, so the ambiguous-spelling window sits here
+-- ('Convert.Grammar.Constraint.Ambiguous').
+pStructure8 :: Spelling -> SpellParser TibetanSyllable
+pStructure8 spelling = spellAs (C.pConstraint14 spelling)
 
 -- Tibetan spelling structure 9
 -- On the basis of the Tibetan spelling grammar 4.14 and 4.15
-pStructure9 :: Spelling -> Parser TibetanSyllable
-pStructure9 spelling = C.pConstraint14 spelling `seqJoinS` C.pConstraint15 spelling
+pStructure9 :: Spelling -> SpellParser TibetanSyllable
+pStructure9 spelling = spellAs (C.pConstraint14 spelling `seqJoinS` C.pConstraint15 spelling)
 
 -- Tibetan spelling structure 10
 -- On the basis of the Tibetan spelling grammar 4.11 and 4.15
@@ -212,6 +219,20 @@ parseSuffixPostfix _spelling base suffix post = do
     p <- mark Postfix post
     pure (b <> s <> p)
 
+-- | Run a strict structure parser and hold the window at its tail.
+--
+-- The three structures that host a window are the only book structures that
+-- need spelling state, and the only thing they spend it on is the finding the
+-- window records: the parse itself stays the strict one, lifted into the spell
+-- parser unchanged. The window therefore runs where the syllable ends - after
+-- its last letter is placed - and not anywhere earlier, which for a composed
+-- structure is not the same moment.
+spellAs :: Parser TibetanSyllable -> SpellParser TibetanSyllable
+spellAs structure = do
+    syllable <- liftP structure
+    C.noteAmbiguous syllable
+    pure syllable
+
 -- | Two structure parsers one after the other, their syllables joined: the
 -- book stacks the two rules into one word (4.14 then 4.15 -> བཏག), and the
 -- parse result has no 'Semigroup' instance, so the join the pure parser
@@ -257,12 +278,17 @@ pStructure20 spelling = C.pConstraint10 spelling `seqJoinS` C.pConstraint15 spel
 
 -- Tibetan spelling structure 21
 -- On the basis of the Tibetan spelling grammar 4.1, 4.14, 4.15
-pStructure21 :: Spelling -> Parser TibetanSyllable
+--
+-- The third stateful structure, and the one that reads the three-letter forms
+-- the prefix-free way: the postfix is the syllable's last letter here, so the
+-- window runs after it is placed.
+pStructure21 :: Spelling -> SpellParser TibetanSyllable
 pStructure21 spelling =
-    MP.choice
-        [ MP.try $ rootSuffixPostfix spelling (C.pConstraint16Da spelling) GP.pPostfixDa
-        , MP.try $ rootSuffixPostfix spelling (C.pConstraint16Sa spelling) GP.pPostfixSa
-        ]
+    spellAs $
+        MP.choice
+            [ MP.try $ rootSuffixPostfix spelling (C.pConstraint16Da spelling) GP.pPostfixDa
+            , MP.try $ rootSuffixPostfix spelling (C.pConstraint16Sa spelling) GP.pPostfixSa
+            ]
 
 -- Tibetan spelling structure 22
 -- On the basis of the Tibetan spelling grammar 4.8, 4.14, 4.15

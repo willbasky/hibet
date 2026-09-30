@@ -66,6 +66,7 @@ library
     Convert.Tokenizer.Wylie
 
   other-modules:
+    Convert.Grammar.Constraint.Ambiguous
     Convert.Grammar.Constraint.Constraint01
     Convert.Grammar.Constraint.Constraint08
     Convert.Grammar.Constraint.Constraint09

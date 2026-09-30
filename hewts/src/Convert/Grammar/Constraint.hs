@@ -7,7 +7,10 @@
 -- The constraint parsers are building blocks (prefix / root / vowel / suffix /
 -- postfix / basic-syllable fragments) composed by 'Convert.Grammar.Structure'
 -- into complete syllable spelling structures; the generic-word parsers spell
--- whatever the book's structures leave unspelled.
+-- whatever the book's structures leave unspelled, and the ambiguous-syllable
+-- rule ('recommendedSpelling' / 'noteAmbiguous') reads the marks of a
+-- finished syllable at the tail of the structures that claim the ambiguous
+-- forms.
 module Convert.Grammar.Constraint
     ( pConstraint01
     , pConstraint01WithLong
@@ -29,8 +32,11 @@ module Convert.Grammar.Constraint
     , pConstraint20
     , pConstraint21First
     , pConstraint21Rest
+    , recommendedSpelling
+    , noteAmbiguous
     ) where
 
+import Convert.Grammar.Constraint.Ambiguous (noteAmbiguous, recommendedSpelling)
 import Convert.Grammar.Constraint.Constraint01
     ( pConstraint01
     , pConstraint01Sanskrit
