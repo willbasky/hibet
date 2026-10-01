@@ -5,8 +5,10 @@
 module Test.Diagnostic (tests) where
 
 import Convert
-    ( SpellItem (..)
+    ( OutputFormat (..)
+    , SpellItem (..)
     , legality
+    , renderItems
     )
 import Convert.Diagnostic
     ( Diagnostic (..)
@@ -40,6 +42,7 @@ tests =
         , prefixCannotLeadWording
         , wave344
         , wave345
+        , wave346
         , records
         ]
 
@@ -119,6 +122,7 @@ prefixCannotLeadWording =
             rendered "g....yag"
                 @?= Right
                     [ "line 1: \"g....yag\": The prefix \"g\" does not allow \".\" after it."
+                    , "line 1: \"g....yag\": The stack dot \".\" joins no stack to a letter."
                     ]
         ]
 
@@ -272,6 +276,75 @@ recommendsLine word preferred =
         <> preferred
         <> "\"."
 
+-- | The wave-3.4.6 tokenizer cases: what a word may not begin with, and the
+-- dot that joins nothing.
+--
+-- A final mark hangs over the letter it closes, so it cannot open a run: on its
+-- own it closes nothing, and the word behind it is a word of its own. The mark
+-- stands exactly as it was written - the reference leaves such a character where
+-- it stands too - which is what the conversion cases here pin down next to the
+-- messages. A stack dot the grammar did not use is the same kind of leftover,
+-- found in the run's own tail rather than in a window.
+wave346 :: TestTree
+wave346 =
+    testGroup
+        "what a word may not begin with (3.4.6)"
+        [ testGroup
+            "a final mark cannot open a run"
+            [ testCase "the mark is blamed and stands as written" $
+                rendered "Mi"
+                    @?= Right ["line 1: \"M\": The final \"M\" closes no letter."]
+            , testCase "the word behind it is read on its own" $
+                converted "Mi" @?= Right "Mཨི"
+            , testCase "the mark is a run of its own" $
+                wordsOf "Mi" @?= Right ["line 1: \"M\""]
+            , testCase "each stray mark is blamed on its own" $
+                rendered "??"
+                    @?= Right
+                        [ "line 1: \"?\": The final \"?\" closes no letter."
+                        , "line 1: \"?\": The final \"?\" closes no letter."
+                        ]
+            , testCase "the marks stand as written and the word is read" $
+                converted "mo . ???" @?= Right "མོ་.་???"
+            , testCase "a final inside a run stays legal" $
+                converted "k? oM" @?= Right "ཀ྄་ཨོཾ"
+            , testCase "a final behind a vowel stays silent" $
+                rendered "oM" @?= Right []
+            , testCase "a caret with no stack in front of it stands as written" $
+                converted "^ra" @?= Right "^ར"
+            , testCase "a caret with nothing before it is blamed" $
+                rendered "^ra"
+                    @?= Right ["line 1: \"^\": The final \"^\" closes no letter."]
+            , testCase "the stray mark carries its code and severity" $
+                recordsOf "Mi" @?= Right [(LeadingFinal, SevWarning)]
+            , testCase "a Tibetan stray mark stands as it was written" $
+                tibetanConverted "ཾ" @?= Right "ཾ"
+            ]
+        , testGroup
+            "a stack dot that joins nothing"
+            [ testCase "the dot in the tail is blamed" $
+                rendered "ka."
+                    @?= Right ["line 1: \"ka.\": The stack dot \".\" joins no stack to a letter."]
+            , testCase "the dot stays as it was written" $
+                converted "ka." @?= Right "ཀ."
+            , testCase "one finding for the run, however many dots it holds" $
+                rendered "ka.."
+                    @?= Right ["line 1: \"ka..\": The stack dot \".\" joins no stack to a letter."]
+            , testCase "a dot the grammar used is no orphan" $
+                rendered "g.yag" @?= Right []
+            , testCase "a plus the grammar used is no orphan" $
+                rendered "sat+t+wa ba" @?= Right []
+            , testCase "the dot is blamed after the window findings of its run" $
+                rendered "g....yag"
+                    @?= Right
+                        [ "line 1: \"g....yag\": The prefix \"g\" does not allow \".\" after it."
+                        , "line 1: \"g....yag\": The stack dot \".\" joins no stack to a letter."
+                        ]
+            , testCase "the orphan dot carries its code and severity" $
+                recordsOf "ka." @?= Right [(OrphanDot, SevWarning)]
+            ]
+        ]
+
 -- | The diagnostic record: the code, the severity and the quoted word, so the
 -- UI maps codes to help text without parsing messages.
 records :: TestTree
@@ -315,6 +388,26 @@ rendered :: Text -> Either Text [Text]
 rendered input = do
     items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
     pure (renderDiagnostics input (legality items))
+
+-- | What a Wylie input becomes. A rule that changes how the input is read has
+-- to be checked on the text the converter hands back as well as on the message,
+-- since the two can disagree: the message names the problem, the text shows
+-- what was made of the input instead.
+converted :: Text -> Either Text Text
+converted = spellingToUnicode Wylie
+
+-- | The same for a Tibetan-script input.
+tibetanConverted :: Text -> Either Text Text
+tibetanConverted = spellingToUnicode Tibetan
+
+spellingToUnicode :: Spelling -> Text -> Either Text Text
+spellingToUnicode spelling input = do
+    items <- parseEither (pSentence spelling) (fst (tokenize input))
+    pure (renderItems OutUnicode items)
+    where
+        tokenize = case spelling of
+            Wylie -> tokenizeWylie
+            Tibetan -> tokenizeUnicode
 
 -- | Every preferred spelling a Wylie input is recommended, so that a form
 -- which must stay quiet is checked by what it recommends and not by the whole

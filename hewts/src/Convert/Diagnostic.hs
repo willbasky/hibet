@@ -20,6 +20,8 @@ module Convert.Diagnostic
     , unexpectedCharacter
     , unfinishedComment
     , invalidHexCode
+    , orphanDot
+    , leadingFinal
     , invalidPrefix
     , prefixCannotLead
     , repeatedCaret
@@ -55,6 +57,8 @@ data DiagnosticCode
     = UnexpectedCharacter
     | UnfinishedComment
     | InvalidHexCode
+    | OrphanDot
+    | LeadingFinal
     | InvalidPrefix
     | PrefixCannotLead
     | RepeatedCaret
@@ -102,8 +106,8 @@ diagnosticsInOrder (Diagnostics ds) = Diagnostics (reverse ds)
 diagnosticList :: Diagnostics -> [Diagnostic]
 diagnosticList (Diagnostics ds) = ds
 
--- | @Unexpected character "x".@ - the reference's wording for a letter or
--- special marker that occurs where nothing expects it.
+-- | A letter or a sign that stands where no Wylie spelling expects one: the
+-- character is echoed as it was written, and this says why it was not read.
 unexpectedCharacter :: Span -> Char -> Diagnostic
 unexpectedCharacter sp c =
     Diagnostic
@@ -111,10 +115,10 @@ unexpectedCharacter sp c =
         SevWarning
         sp
         Nothing
-        ("Unexpected character \"" <> T.singleton c <> "\".")
+        ("The character \"" <> T.singleton c <> "\" belongs to no Wylie spelling.")
 
--- | @Unfinished [non-Wylie stuff].@ - a bracketed foreign-text block that is
--- never closed; the reference reports it and stops reading.
+-- | A bracketed block of foreign text that is never closed: the block is
+-- echoed as it stands, up to the end of the line.
 unfinishedComment :: Span -> Diagnostic
 unfinishedComment sp =
     Diagnostic
@@ -122,11 +126,10 @@ unfinishedComment sp =
         SevWarning
         sp
         Nothing
-        "Unfinished [non-Wylie stuff]."
+        "The bracketed foreign text is never closed."
 
--- | @"\u01x3": invalid hex code.@ - a \\uXXXX escape whose code is not a valid
--- hexadecimal number. The reference drops such an escape entirely, and so do
--- we; the message quotes the escape exactly as it was written.
+-- | A \\uXXXX escape whose code is not a valid hexadecimal number. Such an
+-- escape is dropped, and the message quotes it exactly as it was written.
 invalidHexCode :: Span -> Text -> Diagnostic
 invalidHexCode sp raw =
     Diagnostic
@@ -134,7 +137,31 @@ invalidHexCode sp raw =
         SevWarning
         sp
         Nothing
-        ("\"" <> raw <> "\": invalid hex code.")
+        ("The escape \"" <> raw <> "\" is not a valid code point.")
+
+-- | A stack dot standing in a run that no structure used it in (ka.): a dot
+-- only joins a letter to the next one, so here it joins nothing. The run is
+-- quoted whole, as every spelling rule quotes it.
+orphanDot :: Span -> Maybe Span -> Diagnostic
+orphanDot sp word =
+    Diagnostic
+        OrphanDot
+        SevWarning
+        sp
+        word
+        "The stack dot \".\" joins no stack to a letter."
+
+-- | A final mark with no letter in front of it (Mi, ???): a final hangs over a
+-- letter, so on its own it closes nothing. The mark is a run of its own, and
+-- the run is quoted whole.
+leadingFinal :: Span -> Maybe Span -> Text -> Diagnostic
+leadingFinal sp word mark =
+    Diagnostic
+        LeadingFinal
+        SevWarning
+        sp
+        word
+        ("The final \"" <> mark <> "\" closes no letter.")
 
 -- | A run opens with a consonant in the reference's PREFIX state that is no
 -- prefix letter at all, so nothing it leads can be legal. The word is quoted
@@ -305,6 +332,14 @@ data Finding
     | -- | A syllable whose letters read either way, and the spelling the
       -- corpus prefers of it.
       PreferredSpelling !Text
+    | -- | A stack dot in the unclaimed tail of a run (ka.): the dot is no
+      -- part of any structure of the run, so it joins nothing. Recorded by
+      -- the run parser itself, not by a constraint window - no window owns
+      -- the tail.
+      UnplacedDot
+    | -- | A final mark standing as a run of its own (Mi): it closes no
+      -- letter. The mark as it was written.
+      FinalWithoutLetter !Text
     deriving (Show, Eq)
 
 -- | A 'Finding' with the span of the whole syllable run it names.
@@ -319,6 +354,8 @@ resolveFinding sp (NoVowelAfterPrefix pre) = missingVowelAfterPrefix sp (Just sp
 resolveFinding sp (BadSecondSuffix c2 first) = invalidSecondSuffix sp (Just sp) c2 first
 resolveFinding sp (ConsonantAfter2ndSuffix c) = consonantAfterSecondSuffix sp (Just sp) c
 resolveFinding sp (PreferredSpelling preferred) = ambiguousSpelling sp (Just sp) preferred
+resolveFinding sp UnplacedDot = orphanDot sp (Just sp)
+resolveFinding sp (FinalWithoutLetter mark) = leadingFinal sp (Just sp) mark
 
 -- | The finished diagnostics of a run's findings, in the order the windows
 -- recorded them ('foldr' + 'addDiagnostic', which prepends, keeps that

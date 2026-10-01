@@ -97,16 +97,19 @@ wylieLexicalCases =
     , ("line breaks collapse", wylieRaws "a\r\nb\rc\nd" @?= ["a", "b", "c", "d"])
     ,
         ( "a bare letter is unexpected"
-        , wylieWarnings "x" @?= ["line 1: Unexpected character \"x\"."]
+        , wylieWarnings "x"
+            @?= ["line 1: The character \"x\" belongs to no Wylie spelling."]
         )
     ,
         ( "a special marker is unexpected"
-        , wylieWarnings "~" @?= ["line 1: Unexpected character \"~\"."]
+        , wylieWarnings "~"
+            @?= ["line 1: The character \"~\" belongs to no Wylie spelling."]
         )
     , ("a foreign character passes quietly", wylieWarnings "\x2019a" @?= [])
     ,
         ( "the second line is counted correctly"
-        , wylieWarnings "ka\nx" @?= ["line 2: Unexpected character \"x\"."]
+        , wylieWarnings "ka\nx"
+            @?= ["line 2: The character \"x\" belongs to no Wylie spelling."]
         )
     ,
         ( "an escape stands for the character"
@@ -115,7 +118,8 @@ wylieLexicalCases =
     , ("an escape reports nothing", wylieWarnings "de la \\3 yod/" @?= [])
     ,
         ( "a broken hex escape is reported"
-        , wylieWarnings "a\\u01x3a" @?= ["line 1: \"\\u01x3\": invalid hex code."]
+        , wylieWarnings "a\\u01x3a"
+            @?= ["line 1: The escape \"\\u01x3\" is not a valid code point."]
         )
     , ("a broken hex escape leaves no token", wylieRaws "a\\u01x3b" @?= ["a", "b"])
     ,
@@ -125,7 +129,7 @@ wylieLexicalCases =
     ,
         ( "an unclosed bracket is reported"
         , wylieWarnings "a [unfinished [comment]"
-            @?= ["line 1: Unfinished [non-Wylie stuff]."]
+            @?= ["line 1: The bracketed foreign text is never closed."]
         )
     ,
         ( "a closed bracket block is not reported"

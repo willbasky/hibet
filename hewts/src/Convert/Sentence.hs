@@ -15,11 +15,12 @@ module Convert.Sentence
     ) where
 
 import Control.Monad (void)
-import Convert.Diagnostic (Diagnostics, findingsDiagnostics)
+import Convert.Diagnostic (Diagnostics, Finding (..), findingsDiagnostics)
 import Convert.Grammar.Parser
     ( Parser
     , SpellParser
     , Spelling (..)
+    , isDot
     , isPunctuationLike
     , liftP
     , pNumber
@@ -75,6 +76,7 @@ import Convert.Token
     , offsetEnd
     , offsetStart
     , tokenCanonical
+    , tokenRaw
     , tokenSpan
     )
 import Data.Foldable (toList)
@@ -129,8 +131,83 @@ pItem spelling =
         [ Punct <$> MP.some (liftP pPunctuation)
         , Number <$> MP.some (liftP pNumber)
         , MP.try (pSyllable spelling)
+        , pStrayFinal
         , Other <$> MP.some (MP.satisfy (not . isPunctuationLike))
         ]
+
+-- | A final mark with no letter in front of it (Mi, ???). A final hangs over
+-- the letter it closes, so standing on its own it is no part of any syllable:
+-- the reference leaves such a mark exactly as it stands and starts a fresh
+-- run at the next letter. So the mark becomes a run of its own - one token,
+-- echoed as written, carrying the finding the run records for it. It never
+-- swallows the run behind it, which is what separates @Mi@ (M, then ཨི) from
+-- a single run of two tokens.
+pStrayFinal :: SpellParser SpellItem
+pStrayFinal = do
+    tok <- MP.satisfy isStrayFinal
+    let sp = tokenSpan tok
+    pure $
+        InvalidSyllableItem
+            Syllable
+                { syllableTokens = Seq.fromList [(Nothing, tok)]
+                , syllableDiags =
+                    findingsDiagnostics sp [FinalWithoutLetter (tokenRaw tok)]
+                }
+
+-- | A run opens with a token the grammar could work from: a consonant, a
+-- subjoined consonant, a vowel, a final, a sign or a Sanskrit mark. Stack
+-- breaks, numbers, punctuation and unknown tokens never open one.
+isSyllableStart :: Token -> Bool
+isSyllableStart token = case tokenCanonical token of
+    TcConsonant _ -> True
+    TcSubConsonant _ -> True
+    TcVowel _ -> True
+    TcFinal _ -> True
+    TcSign _ -> True
+    TcSanskritMark _ -> True
+    _ -> False
+
+-- | What may open a run: everything above except a final mark. A final hangs
+-- over the letter it closes, so one with nothing in front of it belongs to no
+-- syllable - 'pStrayFinal' is the branch that says so and keeps the run
+-- behind it whole. A final inside a run is legal and common (kM, oM), which is
+-- why the rule is about the head alone.
+isSyllableHead :: Token -> Bool
+isSyllableHead token = case tokenCanonical token of
+    TcFinal _ -> False
+    _ -> isSyllableStart token
+
+-- | A final mark standing at the head of what is left to read.
+isStrayFinal :: Token -> Bool
+isStrayFinal token = case tokenCanonical token of
+    TcFinal _ -> True
+    _ -> False
+
+-- | The run swallows everything but the boundary: consonants, subjoined
+-- forms, vowels, finals, signs, Sanskrit marks, and the stack separators
+-- (@.@ and @+@) that glue stacks together. Numbers, half-numbers, unknown
+-- tokens and punctuation end the run first.
+isSyllableTail :: Token -> Bool
+isSyllableTail token = case tokenCanonical token of
+    TcConSpec _ -> True
+    TcNumber _ -> False
+    TcHalfNumber _ -> False
+    _ -> isSyllableStart token
+
+-- | A stack dot the winning structure never used. A dot the grammar did use is
+-- spliced back unmarked between two marked letters (g.yag keeps no mark on
+-- its dot), so the test is the tail: a dot with no marked letter behind it
+-- stands where no stack can stand. One finding for the run, however many such
+-- dots it holds.
+unplacedDots :: [(Maybe Position, Token)] -> [Finding]
+unplacedDots = go
+    where
+        go ((Nothing, tok) : behind)
+            | isDot tok, all unmarked behind = [UnplacedDot]
+        go (_ : behind) = go behind
+        go [] = []
+        unmarked (Nothing, _) = True
+        unmarked _ = False
 
 -- | One syllable run: a run-starting token, the structure that claims the
 -- most of it, everything the run swallows up to the next boundary, and the
@@ -144,7 +221,7 @@ pSyllable spelling = do
     -- syllable start if the run is to be claimed below (numbers, punctuation
     -- and unknown tokens fall through to their own branches), but the head
     -- itself belongs to the structure probe, so nothing may be consumed here.
-    void $ MP.lookAhead (MP.satisfy isSyllableStart)
+    void $ MP.lookAhead (MP.satisfy isSyllableHead)
     marked <- MP.option Seq.empty (MP.try (pStructure spelling))
     endOfStructure <- MP.getInput
     let claimed = length start - length endOfStructure
@@ -157,7 +234,8 @@ pSyllable spelling = do
         syllable =
             Syllable
                 { syllableTokens = Seq.fromList (markedContent <> [(Nothing, t) | t <- boundary])
-                , syllableDiags = findingsDiagnostics runSpan findings
+                , syllableDiags =
+                    findingsDiagnostics runSpan (findings <> unplacedDots markedContent)
                 }
     pure $
         if claimed == 0
@@ -213,27 +291,6 @@ pSyllable spelling = do
                             (i, _) : rest -> go (before <> rest) more ((i, pos, tok) : acc)
                             -- unreachable: the structures only emit run tokens
                             [] -> reverse acc
-        -- A run opens with a token the grammar could work from: a consonant, a
-        -- subjoined consonant, a vowel, a final, a sign or a Sanskrit mark.
-        -- Stack breaks, numbers, punctuation and unknown tokens never open one.
-        isSyllableStart token = case tokenCanonical token of
-            TcConsonant _ -> True
-            TcSubConsonant _ -> True
-            TcVowel _ -> True
-            TcFinal _ -> True
-            TcSign _ -> True
-            TcSanskritMark _ -> True
-            _ -> False
-
-        -- The run swallows everything but the boundary: consonants, subjoined
-        -- forms, vowels, finals, signs, Sanskrit marks, and the stack
-        -- separators (@.@ and @+@) that glue stacks together. Numbers,
-        -- half-numbers, unknown tokens and punctuation end the run first.
-        isSyllableTail token = case tokenCanonical token of
-            TcConSpec _ -> True
-            TcNumber _ -> False
-            TcHalfNumber _ -> False
-            _ -> isSyllableStart token
 
 -- A syllable must match the structure that consumes the most tokens: a
 -- Tibetan syllable extends until the boundary marked by punctuation, exactly

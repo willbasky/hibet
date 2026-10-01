@@ -104,16 +104,29 @@ renderItems fmt = T.concat . map renderItem
             | fmt == OutUnicode = renderSyllable (syllableTokens s)
             | otherwise = renderSyllableWylie (syllableTokens s)
         renderItem (InvalidSyllableItem s)
-            -- An unclaimed run prints every token as its raw self: nothing
-            -- the grammar did not recognize may hide, join or skip a letter
-            -- (the strict modes will complain about the run instead).
+            -- A run the grammar read nothing of. Its letters are still
+            -- converted one by one: a lone sign vowel is a letter like any
+            -- other (ཱ -> A), and nothing the grammar did not recognize may
+            -- hide, join or skip a letter. A final mark in such a run is the
+            -- exception: no letter claimed it, so there is nothing to convert
+            -- it *to* and it stands as it was written (Mi -> M, not ཾ) - the
+            -- same thing the reference does with a character that is neither a
+            -- letter to it nor special.
             | fmt == OutUnicode = rawSyllable s
             | otherwise = rawSyllable s
         renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
         renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
         renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
 
-        rawSyllable s = T.concat (map (renderToken fmt . snd) (toList (syllableTokens s)))
+        rawSyllable s = T.concat (map (echo . snd) (toList (syllableTokens s)))
+
+        echo tok
+            | isFinalMark tok = tokenRaw tok
+            | otherwise = renderToken fmt tok
+
+        isFinalMark tok = case tokenCanonical tok of
+            TcFinal _ -> True
+            _ -> False
 
         -- Whether a Nothing-placed token is a stack separator (@.@ or @+@):
         -- the only unmarked tokens a run may hide or keep.
