@@ -6,20 +6,28 @@ import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.Text as T
 import Numeric.Natural (Natural)
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), Assertion, assertBool, testCase)
+import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
 
 tests :: TestTree
 tests =
     testGroup
         "spans"
-        [ testCase "wylie spans are contiguous" (assertContiguousSpans $ fst (tokenizeWylie "tsh // g+ha + //"))
+        [ testCase
+            "wylie spans are contiguous"
+            (assertContiguousSpans $ fst (tokenizeWylie "tsh // g+ha + //"))
         , testCase "wylie multi-char token span length" caseWylieMultiCharLen
-        , testCase "unicode spans are contiguous" (assertContiguousSpans $ fst (tokenizeUnicode "ཚ དྷ།།"))
+        , testCase
+            "unicode spans are contiguous"
+            (assertContiguousSpans $ fst (tokenizeUnicode "ཚ དྷ།།"))
         , testCase "unicode final token ends at input length" caseUnicodeEndsAtLength
         , testCase "wylie stream invariants on mixed input" caseWylieStreamInvariants
         , testCase "unicode stream invariants on mixed input" caseUnicodeStreamInvariants
-        , testCase "wylie stream invariants on empty input" (assertTokenStreamInvariants (fst . tokenizeWylie) "")
-        , testCase "unicode stream invariants on empty input" (assertTokenStreamInvariants (fst . tokenizeUnicode) "")
+        , testCase
+            "wylie stream invariants on empty input"
+            (assertTokenStreamInvariants (fst . tokenizeWylie) "")
+        , testCase
+            "unicode stream invariants on empty input"
+            (assertTokenStreamInvariants (fst . tokenizeUnicode) "")
         ]
 
 caseWylieMultiCharLen :: Assertion
@@ -43,7 +51,9 @@ caseUnicodeEndsAtLength =
 
 caseWylieStreamInvariants :: Assertion
 caseWylieStreamInvariants =
-    assertTokenStreamInvariants (fst . tokenizeWylie) "gzhon // g+h O ~+`]-. x _ k+Sh"
+    assertTokenStreamInvariants
+        (fst . tokenizeWylie)
+        "gzhon // g+h O ~+`]-. x _ k+Sh"
 
 caseUnicodeStreamInvariants :: Assertion
 caseUnicodeStreamInvariants =
@@ -52,14 +62,14 @@ caseUnicodeStreamInvariants =
 assertContiguousSpans :: [Token] -> Assertion
 assertContiguousSpans [] = pure ()
 assertContiguousSpans toks = go 0 toks
-  where
-    go :: Natural -> [Token] -> Assertion
-    go _ [] = pure ()
-    go expectedStart (tok : rest) = do
-        offsetStart (tokenSpan tok) @?= expectedStart
-        let end = offsetEnd (tokenSpan tok)
-        end @?= expectedStart + fromIntegral (T.length (tokenRaw tok))
-        go end rest
+    where
+        go :: Natural -> [Token] -> Assertion
+        go _ [] = pure ()
+        go expectedStart (tok : rest) = do
+            offsetStart (tokenSpan tok) @?= expectedStart
+            let end = offsetEnd (tokenSpan tok)
+            end @?= expectedStart + fromIntegral (T.length (tokenRaw tok))
+            go end rest
 
 assertTokenStreamInvariants :: (T.Text -> [Token]) -> T.Text -> Assertion
 assertTokenStreamInvariants tokenizer input = do
@@ -75,7 +85,9 @@ assertContinuationShape :: Token -> Assertion
 assertContinuationShape tok =
     let rawEmpty = T.null (tokenRaw tok)
         spanEmpty = offsetStart (tokenSpan tok) == offsetEnd (tokenSpan tok)
-     in assertBool "empty tokenRaw must coincide with a degenerate span" (rawEmpty == spanEmpty)
+     in assertBool
+            "empty tokenRaw must coincide with a degenerate span"
+            (rawEmpty == spanEmpty)
 
 assertUnknownCanonicalEqualsRaw :: Token -> Assertion
 assertUnknownCanonicalEqualsRaw tok =

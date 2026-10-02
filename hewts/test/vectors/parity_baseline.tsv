@@ -53,12 +53,21 @@
 # checks left this ratchet on 30.09.2026. The prefix rule fires inline in the
 # grammar's head window now, with our own records and wording under
 # Test.Diagnostic; the conversion numbers below are untouched.
-jsewts	w2u	210	185
+#
+# Waves 3.4.4-3.4.6 (legality windows, the ambiguity recommendation, the
+# tokenizer cases) move the conversion numbers for the first time since 3.5:
+# a final mark no longer opens a run and stays as it was written, so Mi and
+# "mo . ???" read the way the reference reads them. w2u 185->187 (jsewts) and
+# 188->190 (Lingua), round-trip 179->180 and 181->182; the ratchet is lowered
+# to the new numbers in 3.4.7. The stray-mark echo and the orphan-dot finding
+# are conversion-neutral on the other corpora. A stack dot the grammar did not
+# use is now reported (ka.), which is a message, not a conversion.
+jsewts	w2u	210	187
 jsewts	u2w	210	50
-jsewts	roundtrip	210	179
-lingua	w2u	218	188
+jsewts	roundtrip	210	180
+lingua	w2u	218	190
 lingua	u2w	218	47
-lingua	roundtrip	218	181
+lingua	roundtrip	218	182
 ewts-rs	w2u	16	15
 java	w2u	6	4
 java	u2w	2	1

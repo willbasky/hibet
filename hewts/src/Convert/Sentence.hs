@@ -15,16 +15,20 @@ module Convert.Sentence
     ) where
 
 import Control.Monad (void)
-import Convert.Diagnostic (Diagnostics, Finding (..), findingsDiagnostics)
+import Convert.Diagnostic
+    ( Diagnostics
+    , Finding (FinalWithoutLetter)
+    , findingsDiagnostics
+    )
 import Convert.Grammar.Parser
     ( Parser
     , SpellParser
     , Spelling (..)
-    , isDot
     , isPunctuationLike
     , liftP
     , pNumber
     , pPunctuation
+    , pUnclaimedTail
     , runSpell
     , takeFindings
     )
@@ -194,21 +198,6 @@ isSyllableTail token = case tokenCanonical token of
     TcHalfNumber _ -> False
     _ -> isSyllableStart token
 
--- | A stack dot the winning structure never used. A dot the grammar did use is
--- spliced back unmarked between two marked letters (g.yag keeps no mark on
--- its dot), so the test is the tail: a dot with no marked letter behind it
--- stands where no stack can stand. One finding for the run, however many such
--- dots it holds.
-unplacedDots :: [(Maybe Position, Token)] -> [Finding]
-unplacedDots = go
-    where
-        go ((Nothing, tok) : behind)
-            | isDot tok, all unmarked behind = [UnplacedDot]
-        go (_ : behind) = go behind
-        go [] = []
-        unmarked (Nothing, _) = True
-        unmarked _ = False
-
 -- | One syllable run: a run-starting token, the structure that claims the
 -- most of it, everything the run swallows up to the next boundary, and the
 -- boundary itself. The warnings of the constraint windows name the run
@@ -225,7 +214,7 @@ pSyllable spelling = do
     marked <- MP.option Seq.empty (MP.try (pStructure spelling))
     endOfStructure <- MP.getInput
     let claimed = length start - length endOfStructure
-    tailToks <- MP.many (MP.satisfy isSyllableTail)
+    tailToks <- pUnclaimedTail isSyllableTail
     boundary <- MP.many (liftP pPunctuation)
     findings <- takeFindings
     let content = take claimed start <> tailToks
@@ -234,8 +223,7 @@ pSyllable spelling = do
         syllable =
             Syllable
                 { syllableTokens = Seq.fromList (markedContent <> [(Nothing, t) | t <- boundary])
-                , syllableDiags =
-                    findingsDiagnostics runSpan (findings <> unplacedDots markedContent)
+                , syllableDiags = findingsDiagnostics runSpan findings
                 }
     pure $
         if claimed == 0

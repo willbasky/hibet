@@ -6,7 +6,7 @@ import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit ((@?=), Assertion, testCase)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 tests :: TestTree
 tests =
@@ -29,13 +29,17 @@ singleWylie :: Text -> (TokenKind, TokenCanonical) -> Assertion
 singleWylie input expected =
     case fst (tokenizeWylie input) of
         [tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
-        xs -> error $ "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
+        xs ->
+            error $
+                "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
 singleUnicode :: Text -> (TokenKind, TokenCanonical) -> Assertion
 singleUnicode input expected =
     case fst (tokenizeUnicode input) of
         [tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
-        xs -> error $ "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
+        xs ->
+            error $
+                "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
 -- | Expect the whole input to tokenize to exactly the given canonical
 -- sequence (a single spelling may expand or decompose into several tokens).
@@ -58,35 +62,83 @@ wylieCases =
     , ("final bindu nAda ~M`", singleWylie "~M`" (TkFinal, TcFinal FMBinduNada))
     , ("final candrabindu ~M", singleWylie "~M" (TkFinal, TcFinal FMCandrabindu))
     , ("final srog med X", singleWylie "X" (TkFinal, TcFinal FMSrogMed))
-    , ("final nasal variant ~X", singleWylie "~X" (TkFinal, TcFinal FMCandrabinduHalanta))
+    ,
+        ( "final nasal variant ~X"
+        , singleWylie "~X" (TkFinal, TcFinal FMCandrabinduHalanta)
+        )
     , ("final visarga H", singleWylie "H" (TkFinal, TcFinal FMVisarga))
     , ("number 0", singleWylie "0" (TkNumber, TcNumber N0))
     , ("number 9", singleWylie "9" (TkNumber, TcNumber N9))
-    , ("punctuation tsheg space", singleWylie " " (TkPunctuation, TcPunctuation PMTsheg))
-    , ("punctuation double shad", singleWylie "//" (TkPunctuation, TcPunctuation PMNyisShad))
-    , ("punctuation gter tshig mgo", singleWylie ":" (TkPunctuation, TcPunctuation PMGterTshigMgo))
+    ,
+        ( "punctuation tsheg space"
+        , singleWylie " " (TkPunctuation, TcPunctuation PMTsheg)
+        )
+    ,
+        ( "punctuation double shad"
+        , singleWylie "//" (TkPunctuation, TcPunctuation PMNyisShad)
+        )
+    ,
+        ( "punctuation gter tshig mgo"
+        , singleWylie ":" (TkPunctuation, TcPunctuation PMGterTshigMgo)
+        )
     , ("symbol exclamation", singleWylie "!" (TkSymbol, TcSymbol SMExclamation))
     , ("symbol right paren", singleWylie ")" (TkSymbol, TcSymbol SMRParen))
     , ("explicit space marker underscore", singleWylie "_" (TkSpace, TcSpace SMSpace))
     , ("explicit plus becomes ConSpec", singleWylie "+" (TkConSpec, TcConSpec CSPlus))
     , ("explicit dot becomes ConSpec", singleWylie "." (TkConSpec, TcConSpec CSDot))
-    , ("unknown latin x becomes unknown", singleWylie "x" (TkUnknown, TcUnknown (UnknownMark "x")))
-    , ("escape decodes consonant kka", singleWylie "\\u0F6B" (TkConsonant, TcConsonant Ckka))
-    , ("escape lower-case hex decodes too", singleWylie "\\u0f6c" (TkConsonant, TcConsonant CRra))
-    , ("escape decodes vowel vocalic r-i as sequence", seqWylie "\\u0F76" [TcSubConsonant SCr, TcVowel V_i])
-    , ("escape decodes punctuation nyis tsheg shad", singleWylie "\\u0F10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
-    , ("escape decodes half number H_1", singleWylie "\\u0F2A" (TkHalfNumber, TcHalfNumber H_1))
-    , ("escape decodes sign yig mgo at", singleWylie "\\u0F00" (TkSign, TcSign SGYigMgoAt))
-    , ("escape decodes sanskrit mark", singleWylie "\\u0F86" (TkSanskritMark, TcSanskritMark SMiLciRtags))
-    , ("escape decodes ornament", singleWylie "\\u0FD0" (TkOrnament, TcOrnament OMRdelDkarGcig))
-    , ("escape to unknown codepoint stays unknown", singleWylie "\\u0E0E" (TkUnknown, TcUnknown (UnknownMark "\\u0E0E")))
-    , ("U escape out of Tibetan stays unknown", singleWylie "\\U0001F600" (TkUnknown, TcUnknown (UnknownMark "\\U0001F600")))
+    ,
+        ( "unknown latin x becomes unknown"
+        , singleWylie "x" (TkUnknown, TcUnknown (UnknownMark "x"))
+        )
+    ,
+        ( "escape decodes consonant kka"
+        , singleWylie "\\u0F6B" (TkConsonant, TcConsonant Ckka)
+        )
+    ,
+        ( "escape lower-case hex decodes too"
+        , singleWylie "\\u0f6c" (TkConsonant, TcConsonant CRra)
+        )
+    ,
+        ( "escape decodes vowel vocalic r-i as sequence"
+        , seqWylie "\\u0F76" [TcSubConsonant SCr, TcVowel V_i]
+        )
+    ,
+        ( "escape decodes punctuation nyis tsheg shad"
+        , singleWylie "\\u0F10" (TkPunctuation, TcPunctuation PMNyisTshegShad)
+        )
+    ,
+        ( "escape decodes half number H_1"
+        , singleWylie "\\u0F2A" (TkHalfNumber, TcHalfNumber H_1)
+        )
+    ,
+        ( "escape decodes sign yig mgo at"
+        , singleWylie "\\u0F00" (TkSign, TcSign SGYigMgoAt)
+        )
+    ,
+        ( "escape decodes sanskrit mark"
+        , singleWylie "\\u0F86" (TkSanskritMark, TcSanskritMark SMiLciRtags)
+        )
+    ,
+        ( "escape decodes ornament"
+        , singleWylie "\\u0FD0" (TkOrnament, TcOrnament OMRdelDkarGcig)
+        )
+    ,
+        ( "escape to unknown codepoint stays unknown"
+        , singleWylie "\\u0E0E" (TkUnknown, TcUnknown (UnknownMark "\\u0E0E"))
+        )
+    ,
+        ( "U escape out of Tibetan stays unknown"
+        , singleWylie "\\U0001F600" (TkUnknown, TcUnknown (UnknownMark "\\U0001F600"))
+        )
     ]
 
 wylieAliasCases :: [(String, Assertion)]
 wylieAliasCases =
     [ aliasesWylie "retroflex ta aliases" ["T", "-t"] (TkConsonant, TcConsonant CT)
-    , aliasesWylie "retroflex tha aliases" ["Th", "-th"] (TkConsonant, TcConsonant CTh)
+    , aliasesWylie
+        "retroflex tha aliases"
+        ["Th", "-th"]
+        (TkConsonant, TcConsonant CTh)
     , aliasesWylie "retroflex da aliases" ["D", "-d"] (TkConsonant, TcConsonant CD)
     , aliasesWylie "retroflex na aliases" ["N", "-n"] (TkConsonant, TcConsonant CN)
     , aliasesWylie "sha aliases" ["Sh", "-sh"] (TkConsonant, TcConsonant CSh)
@@ -99,15 +151,33 @@ wylieAliasCases =
 -- (subjoined r/l + reverse-i).
 wylieExpansionCases :: [(String, Assertion)]
 wylieExpansionCases =
-    [ seqAliasesWylie "gh expansions" ["gh", "g+h"] [TcConsonant Cg, TcSubConsonant SCh]
-    , seqAliasesWylie "Dh expansions" ["Dh", "D+h"] [TcConsonant CD, TcSubConsonant SCh]
-    , seqAliasesWylie "dh expansions" ["dh", "d+h"] [TcConsonant Cd, TcSubConsonant SCh]
-    , seqAliasesWylie "bh expansions" ["bh", "b+h"] [TcConsonant Cb, TcSubConsonant SCh]
-    , seqAliasesWylie "dzh expansions" ["dzh", "dz+h"] [TcConsonant Cdz, TcSubConsonant SCh]
+    [ seqAliasesWylie
+        "gh expansions"
+        ["gh", "g+h"]
+        [TcConsonant Cg, TcSubConsonant SCh]
+    , seqAliasesWylie
+        "Dh expansions"
+        ["Dh", "D+h"]
+        [TcConsonant CD, TcSubConsonant SCh]
+    , seqAliasesWylie
+        "dh expansions"
+        ["dh", "d+h"]
+        [TcConsonant Cd, TcSubConsonant SCh]
+    , seqAliasesWylie
+        "bh expansions"
+        ["bh", "b+h"]
+        [TcConsonant Cb, TcSubConsonant SCh]
+    , seqAliasesWylie
+        "dzh expansions"
+        ["dzh", "dz+h"]
+        [TcConsonant Cdz, TcSubConsonant SCh]
     , ("k+Sh expansion", seqWylie "k+Sh" [TcConsonant Ck, TcSubConsonant SCSh])
     , ("f caret expansion", seqWylie "f" [TcConsonant Cph, TcFinal FMCaret])
     , ("v caret expansion", seqWylie "v" [TcConsonant Cb, TcFinal FMCaret])
-    , seqAliasesWylie "subjoined Dh expansions" ["-dh", "-d+h"] [TcSubConsonant SCD, TcSubConsonant SCh]
+    , seqAliasesWylie
+        "subjoined Dh expansions"
+        ["-dh", "-d+h"]
+        [TcSubConsonant SCD, TcSubConsonant SCh]
     , ("long I", seqWylie "I" [TcVowel VA, TcVowel Vi])
     , ("long U", seqWylie "U" [TcVowel VA, TcVowel Vu])
     , ("long E", seqWylie "E" [TcVowel VA, TcVowel Ve])
@@ -148,41 +218,113 @@ unicodeCases =
     , ("number 8", singleUnicode "༨" (TkNumber, TcNumber N8))
     , ("punctuation tsheg", singleUnicode "་" (TkPunctuation, TcPunctuation PMTsheg))
     , ("punctuation shad", singleUnicode "།" (TkPunctuation, TcPunctuation PMShad))
-    , ("punctuation nyis shad", singleUnicode "༎" (TkPunctuation, TcPunctuation PMNyisShad))
+    ,
+        ( "punctuation nyis shad"
+        , singleUnicode "༎" (TkPunctuation, TcPunctuation PMNyisShad)
+        )
     , ("symbol at-like mark", singleUnicode "༄" (TkSymbol, TcSymbol SMAt))
     , ("symbol opening mark", singleUnicode "༼" (TkSymbol, TcSymbol SMLParen))
     , ("sign yig mgo at", singleUnicode "\x0f00" (TkSign, TcSign SGYigMgoAt))
     , ("half number H_4", singleUnicode "\x0f2d" (TkHalfNumber, TcHalfNumber H_4))
-    , ("sanskrit mark i lci rtags", singleUnicode "྆" (TkSanskritMark, TcSanskritMark SMiLciRtags))
-    , ("ornament rdel dkar gcig", singleUnicode "\x0fd0" (TkOrnament, TcOrnament OMRdelDkarGcig))
-    , ("punctuation nyis tsheg shad", singleUnicode "\x0f10" (TkPunctuation, TcPunctuation PMNyisTshegShad))
+    ,
+        ( "sanskrit mark i lci rtags"
+        , singleUnicode "྆" (TkSanskritMark, TcSanskritMark SMiLciRtags)
+        )
+    ,
+        ( "ornament rdel dkar gcig"
+        , singleUnicode "\x0fd0" (TkOrnament, TcOrnament OMRdelDkarGcig)
+        )
+    ,
+        ( "punctuation nyis tsheg shad"
+        , singleUnicode "\x0f10" (TkPunctuation, TcPunctuation PMNyisTshegShad)
+        )
     , ("ascii space becomes TkSpace", singleUnicode " " (TkSpace, TcSpace SMSpace))
-    , ("unknown latin x becomes unknown", singleUnicode "x" (TkUnknown, TcUnknown (UnknownMark "x")))
+    ,
+        ( "unknown latin x becomes unknown"
+        , singleUnicode "x" (TkUnknown, TcUnknown (UnknownMark "x"))
+        )
     ]
 
 -- | Deprecated precomposed characters decompose into canonical token
 -- sequences on input (aspirates, long vowels, vocalic r/l).
 unicodeDecompositionCases :: [(String, Assertion)]
 unicodeDecompositionCases =
-    [ ("precomposed U+0F43 (གྷ) decomposes", seqUnicode "\x0f43" [TcConsonant Cg, TcSubConsonant SCh])
-    , ("precomposed U+0F4D (ཌྷ) decomposes", seqUnicode "\x0f4d" [TcConsonant CD, TcSubConsonant SCh])
-    , ("precomposed U+0F52 (དྷ) decomposes", seqUnicode "\x0f52" [TcConsonant Cd, TcSubConsonant SCh])
-    , ("precomposed U+0F57 (བྷ) decomposes", seqUnicode "\x0f57" [TcConsonant Cb, TcSubConsonant SCh])
-    , ("precomposed U+0F5C (ཛྷ) decomposes", seqUnicode "\x0f5c" [TcConsonant Cdz, TcSubConsonant SCh])
-    , ("precomposed U+0F69 (ཀྵ) decomposes", seqUnicode "\x0f69" [TcConsonant Ck, TcSubConsonant SCSh])
-    , ("precomposed U+0FB9 (ྐྵ) decomposes", seqUnicode "\x0fb9" [TcSubConsonant SCk, TcSubConsonant SCSh])
-    , ("precomposed U+0F93 (ྒྷ) decomposes", seqUnicode "\x0f93" [TcSubConsonant SCg, TcSubConsonant SCh])
-    , ("precomposed U+0F9D (ྜྷ) decomposes", seqUnicode "\x0f9d" [TcSubConsonant SCD, TcSubConsonant SCh])
-    , ("precomposed U+0FA2 (ྡྷ) decomposes", seqUnicode "\x0fa2" [TcSubConsonant SCd, TcSubConsonant SCh])
-    , ("precomposed U+0FA7 (ྦྷ) decomposes", seqUnicode "\x0fa7" [TcSubConsonant SCb, TcSubConsonant SCh])
-    , ("precomposed U+0FAC (ྫྷ) decomposes", seqUnicode "\x0fac" [TcSubConsonant SCdz, TcSubConsonant SCh])
-    , ("precomposed U+0F73 (ཱི) decomposes", seqUnicode "\x0f73" [TcVowel VA, TcVowel Vi])
-    , ("precomposed U+0F75 (ཱུ) decomposes", seqUnicode "\x0f75" [TcVowel VA, TcVowel Vu])
-    , ("precomposed U+0F81 (ཱྀ) decomposes", seqUnicode "\x0f81" [TcVowel VA, TcVowel V_i])
-    , ("precomposed U+0F76 (ྲྀ) decomposes", seqUnicode "\x0f76" [TcSubConsonant SCr, TcVowel V_i])
-    , ("precomposed U+0F77 (ཷ) decomposes", seqUnicode "\x0f77" [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
-    , ("precomposed U+0F78 (ླྀ) decomposes", seqUnicode "\x0f78" [TcSubConsonant SCl, TcVowel V_i])
-    , ("precomposed U+0F79 (ཹ) decomposes", seqUnicode "\x0f79" [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
+    [
+        ( "precomposed U+0F43 (གྷ) decomposes"
+        , seqUnicode "\x0f43" [TcConsonant Cg, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F4D (ཌྷ) decomposes"
+        , seqUnicode "\x0f4d" [TcConsonant CD, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F52 (དྷ) decomposes"
+        , seqUnicode "\x0f52" [TcConsonant Cd, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F57 (བྷ) decomposes"
+        , seqUnicode "\x0f57" [TcConsonant Cb, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F5C (ཛྷ) decomposes"
+        , seqUnicode "\x0f5c" [TcConsonant Cdz, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F69 (ཀྵ) decomposes"
+        , seqUnicode "\x0f69" [TcConsonant Ck, TcSubConsonant SCSh]
+        )
+    ,
+        ( "precomposed U+0FB9 (ྐྵ) decomposes"
+        , seqUnicode "\x0fb9" [TcSubConsonant SCk, TcSubConsonant SCSh]
+        )
+    ,
+        ( "precomposed U+0F93 (ྒྷ) decomposes"
+        , seqUnicode "\x0f93" [TcSubConsonant SCg, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F9D (ྜྷ) decomposes"
+        , seqUnicode "\x0f9d" [TcSubConsonant SCD, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0FA2 (ྡྷ) decomposes"
+        , seqUnicode "\x0fa2" [TcSubConsonant SCd, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0FA7 (ྦྷ) decomposes"
+        , seqUnicode "\x0fa7" [TcSubConsonant SCb, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0FAC (ྫྷ) decomposes"
+        , seqUnicode "\x0fac" [TcSubConsonant SCdz, TcSubConsonant SCh]
+        )
+    ,
+        ( "precomposed U+0F73 (ཱི) decomposes"
+        , seqUnicode "\x0f73" [TcVowel VA, TcVowel Vi]
+        )
+    ,
+        ( "precomposed U+0F75 (ཱུ) decomposes"
+        , seqUnicode "\x0f75" [TcVowel VA, TcVowel Vu]
+        )
+    ,
+        ( "precomposed U+0F81 (ཱྀ) decomposes"
+        , seqUnicode "\x0f81" [TcVowel VA, TcVowel V_i]
+        )
+    ,
+        ( "precomposed U+0F76 (ྲྀ) decomposes"
+        , seqUnicode "\x0f76" [TcSubConsonant SCr, TcVowel V_i]
+        )
+    ,
+        ( "precomposed U+0F77 (ཷ) decomposes"
+        , seqUnicode "\x0f77" [TcSubConsonant SCr, TcVowel VA, TcVowel V_i]
+        )
+    ,
+        ( "precomposed U+0F78 (ླྀ) decomposes"
+        , seqUnicode "\x0f78" [TcSubConsonant SCl, TcVowel V_i]
+        )
+    ,
+        ( "precomposed U+0F79 (ཹ) decomposes"
+        , seqUnicode "\x0f79" [TcSubConsonant SCl, TcVowel VA, TcVowel V_i]
+        )
     ]
 
 unicodeTableCases :: [(String, Assertion)]
@@ -561,7 +703,8 @@ unicodeSymbols =
     , ('\x0f3d', (TkSymbol, TcSymbol SMRParen))
     ]
 
-aliasesWylie :: String -> [Text] -> (TokenKind, TokenCanonical) -> (String, Assertion)
+aliasesWylie ::
+    String -> [Text] -> (TokenKind, TokenCanonical) -> (String, Assertion)
 aliasesWylie name raws expected =
     (name, mapM_ (`singleWylie` expected) raws)
 

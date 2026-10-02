@@ -284,7 +284,7 @@ recommendsLine word preferred =
 -- stands exactly as it was written - the reference leaves such a character where
 -- it stands too - which is what the conversion cases here pin down next to the
 -- messages. A stack dot the grammar did not use is the same kind of leftover,
--- found in the run's own tail rather than in a window.
+-- and the tail reader is the window that finds it.
 wave346 :: TestTree
 wave346 =
     testGroup
@@ -332,6 +332,9 @@ wave346 =
                     @?= Right ["line 1: \"ka..\": The stack dot \".\" joins no stack to a letter."]
             , testCase "a dot the grammar used is no orphan" $
                 rendered "g.yag" @?= Right []
+            , testCase "in one run, only the dot the grammar left is blamed" $
+                rendered "g.yag."
+                    @?= Right ["line 1: \"g.yag.\": The stack dot \".\" joins no stack to a letter."]
             , testCase "a plus the grammar used is no orphan" $
                 rendered "sat+t+wa ba" @?= Right []
             , testCase "the dot is blamed after the window findings of its run" $

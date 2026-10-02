@@ -2,7 +2,7 @@ module Convert.Grammar.Parser where
 
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
-import Convert.Diagnostic (Finding)
+import Convert.Diagnostic (Finding (..))
 import Convert.Token
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -229,6 +229,33 @@ pSubjoinRun = continueRun [] []
         fitsBelow :: [Token] -> Token -> Bool
         fitsBelow subjoined next =
             length subjoined < 2 && not (length subjoined == 1 && isL next)
+
+-- | The tail of a syllable run: everything the winning structure left of the
+-- word, up to the boundary. Which tokens the run swallows is the caller's
+-- business - the sentence reads its own boundaries - while what a swallowed
+-- stack dot means is the grammar's, and this is that window.
+--
+-- A dot joins a stack to the letter behind it, and the grammar's own dot
+-- window ('Convert.Grammar.Constraint.Constraint21.pDotBreak') takes a dot only
+-- when a consonant follows it, and marks that consonant. A dot that reaches
+-- this window therefore joins nothing, and the first one is the run's single
+-- 'UnplacedDot' finding; the rest of the tail is taken in silence, as one
+-- finding per run is the rule.
+pUnclaimedTail :: (Token -> Bool) -> SpellParser [Token]
+pUnclaimedTail isTail = go
+    where
+        go :: SpellParser [Token]
+        go = do
+            -- The token is taken, not just looked at: the recursion below reads
+            -- the run again, and a lookAhead would hand it the same token.
+            tok <- MP.optional (MP.satisfy isTail)
+            case tok of
+                Nothing -> pure []
+                Just t
+                    | isDot t -> do
+                        noteFinding UnplacedDot
+                        (t :) <$> MP.many (MP.satisfy isTail)
+                    | otherwise -> (t :) <$> go
 
 -- | Whether a vowel token belongs to a stack (see 'pVowelAny').
 isEatableVowel :: Token -> Bool

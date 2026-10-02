@@ -214,9 +214,11 @@ renderItems fmt = T.concat . map renderItem
         --   * a run-initial a-chen that only carries a vowel sign is not
         --     written out (ཨུ -> "u"), since the vowel alone restores it.
         --
-        -- Subjoined letters keep their raw glyph spelling: the Wylie
-        -- tokenizer accepts the Tibetan subjoined letters as aliases, so the
-        -- stacks round-trip exactly as they did before, and only the forms
+        -- A subjoined letter prints as its full letter (ླ -> "l"), because the
+        -- Wylie tokenizer has no spelling for the Tibetan subjoined glyphs: a
+        -- glyph spelled straight into Wylie input stays an unknown token. The
+        -- stacks still read back, through the subfix arms of the bare @y, w,
+        -- r, l@ and through the superfix arms of the rest; only the forms
         -- above gain separators.
         renderSyllableWylie :: Seq (Maybe Position, Token) -> Text
         renderSyllableWylie marks = go Nothing (toList marks)
