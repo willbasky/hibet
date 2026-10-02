@@ -63,8 +63,10 @@ import Convert.Grammar.Parser
     ( LeadRole (..)
     , SpellParser
     , WordTail (..)
+    , claimFinal
     , liftP
     , noteFinding
+    , resetFinalChain
     , scanLeading
     , scanTail
     )
@@ -82,7 +84,6 @@ import Convert.Token
     , Token
     , TokenCanonical (..)
     , TokenSource (..)
-    , finalClass
     , tokenCanonical
     , tokenRaw
     , tokenSource
@@ -109,6 +110,8 @@ pConstraint21First =
         vowelStart = do
             marks <- markS Vowel GP.pVowelAny
             resetWordTail
+            -- A word that opens on a vowel opens a stack like any other.
+            resetFinalChain
             pure marks
 
 -- | Every way the word can continue: another consonant-led stack, a lone
@@ -118,13 +121,19 @@ pConstraint21First =
 -- dotted stack still spells as one word (g.yon -> གཡོན). A lone vowel starts
 -- the word-tail count over (3.4.4), and a continuation that is not a
 -- consonant-led stack ends the head letter the word opened on.
+--
+-- A lone final mark here is the same window the tail of a stack runs, and it
+-- goes through the same 'oneFinalMark': which of the two claims a given token
+-- depends on how the stack before it closed (a Wylie @a@ is a vowel the tail
+-- can absorb, a Tibetan one is not, so a Tibetan @ཀཾཾ@ reaches this arm and
+-- @kaMM@ does not), and that must not change what the spelling means.
 pConstraint21Rest :: SpellParser TibetanSyllable
 pConstraint21Rest =
     MP.choice
         [ noLead pDotBreak
         , noLead restJoin
         , vowelContinuation
-        , noLead (markS Final GP.pFinal)
+        , noLead oneFinalMark
         , noLead (markS Subfix GP.pSubConsonant)
         , pStackBody False
         ]
@@ -157,11 +166,15 @@ pConstraint21Rest =
 pDotBreak :: SpellParser TibetanSyllable
 pDotBreak =
     MP.try (liftP GP.pDot <* MP.lookAhead (MP.satisfy GP.isConsonantToken))
+        *> resetFinalChain
         *> pure mempty
 
 pStackBody :: Bool -> SpellParser TibetanSyllable
 pStackBody atStart = do
     base <- liftP GP.pConsonant
+    -- A new stack closes its own finals: the chain the previous one filled
+    -- does not reach into it.
+    resetFinalChain
     next0 <-
         MP.lookAhead (MP.skipMany (liftP GP.pCaret) *> MP.optional (liftP GP.pToken))
     let (pos, _) = markBase atStart base next0
@@ -178,9 +191,10 @@ pStackBody atStart = do
         completeStack :: Token -> TibetanSyllable -> SpellParser TibetanSyllable
         completeStack base baseMark = MP.try $ do
             (subjoined, carets) <- liftP GP.pSubjoinRun
-            -- The second caret of one run (4.x): only the first prints below
-            -- the run (g^r^a), so the surplus is the window's own finding.
-            when (length carets > 1) (noteFinding SecondCaret)
+            -- The carets of the run belong to the chain before the tail reads
+            -- it: only the first prints below the run (g^r^a), and a lone caret
+            -- after the stack is a second one (g^ra^).
+            noteRunCarets carets
             next <- MP.lookAhead (MP.optional (liftP GP.pToken))
             case next of
                 Just t | GP.isVowelLike t || GP.isPlus t -> do
@@ -190,7 +204,7 @@ pStackBody atStart = do
                     -- is exactly what its rule asks for; either way the
                     -- pending lead is over.
                     settleVowelHead base subjoined
-                    tailMarks <- pConsumeTail [] False
+                    tailMarks <- pConsumeTail False
                     pure
                         (baseMark <> subfixMarks subjoined <> caretMark (listToMaybe carets) <> tailMarks)
                 _ -> MP.empty
@@ -405,43 +419,46 @@ startsWithVowel w = case Seq.lookup 0 w of
 -- of a fresh stack, not the implicit vowel again, so the a-chen branch only
 -- fires before the first vowel.
 --
--- The thread tracks the finals of this stack - by their orthographic class,
--- because two of the same class never stand in one stack (kaMM) - and the
--- word tail: every vowel placed here, a real one, the implicit @a@, or a
--- vowel forced in with @+@, starts the word's suffix count over.
-pConsumeTail :: [Text] -> Bool -> SpellParser TibetanSyllable
-pConsumeTail dbFinals vowelSeen =
+-- The chain of finals belongs to the stack, not to the tail parser: it is the
+-- state in 'ScanState', so a second stack starts a new one and both windows
+-- that claim a final mark read the same spelling the same way. Every vowel
+-- placed here, a real one, the implicit @a@, or a vowel forced in with @+@,
+-- starts the word's suffix count over.
+pConsumeTail :: Bool -> SpellParser TibetanSyllable
+pConsumeTail vowelSeen =
     MP.choice
-        [ pTailMark (markS Vowel GP.pVowelAny) True
+        [ pTailVowel
         , pImplicitABranch
-        , pTailMark (markS Final GP.pFinal) vowelSeen
+        , pTailFinal
         , pForcedJoinBranch
         , pure mempty
         ]
     where
-        -- One more mark of the tail, then the rest of it under the flag this
-        -- mark leaves for the continuation. A final marks its class in the
-        -- thread - a duplicate class is the two-finals window - and a vowel
-        -- starts the word-tail count over.
-        pTailMark :: SpellParser TibetanSyllable -> Bool -> SpellParser TibetanSyllable
-        pTailMark step flag =
-            MP.try $ do
-                marks <- step
-                case markFinalClass marks of
-                    Just cls -> do
-                        when (cls `elem` dbFinals) (noteFinding (DuplicateFinalClass cls))
-                        rest <- pConsumeTail (dbFinals <> [cls]) flag
-                        pure (marks <> rest)
-                    Nothing -> do
-                        resetWordTail
-                        rest <- pConsumeTail dbFinals flag
-                        pure (marks <> rest)
+        -- A real vowel, then the rest of the tail after it.
+        pTailVowel :: SpellParser TibetanSyllable
+        pTailVowel = MP.try $ do
+            marks <- markS Vowel GP.pVowelAny
+            resetWordTail
+            rest <- pConsumeTail True
+            pure (marks <> rest)
 
         -- The bare @a@ only fits before the first real vowel of the stack.
         pImplicitABranch :: SpellParser TibetanSyllable
         pImplicitABranch
             | vowelSeen = MP.empty
-            | otherwise = pTailMark (markS ImplicitVowel GP.pImplicitA) False
+            | otherwise = MP.try $ do
+                marks <- markS ImplicitVowel GP.pImplicitA
+                resetWordTail
+                rest <- pConsumeTail False
+                pure (marks <> rest)
+
+        -- One final mark, then the rest of the tail: a final does not place a
+        -- vowel, so the flag the stack reached is the one the tail keeps.
+        pTailFinal :: SpellParser TibetanSyllable
+        pTailFinal = MP.try $ do
+            marks <- oneFinalMark
+            rest <- pConsumeTail vowelSeen
+            pure (marks <> rest)
 
         -- A forced join may itself be a vowel (@+e@): the tail after it then
         -- continues as after any real vowel. A forced join that drags a
@@ -453,17 +470,8 @@ pConsumeTail dbFinals vowelSeen =
             when (vowelSeen && not (startsWithVowel marks)) $
                 noteFinding (JoinAfterVowel (joinHeadRaw marks))
             when (startsWithVowel marks) resetWordTail
-            rest <- pConsumeTail dbFinals (vowelSeen || startsWithVowel marks)
+            rest <- pConsumeTail (vowelSeen || startsWithVowel marks)
             pure (marks <> rest)
-
-        -- The orthographic class of the final that leads a tail piece, when
-        -- the piece leads with a final at all (M, X, H, ^...).
-        markFinalClass :: TibetanSyllable -> Maybe Text
-        markFinalClass w = case Seq.lookup 0 w of
-            Just (Final, tok) -> case tokenCanonical tok of
-                TcFinal fm -> Just (finalClass fm)
-                _ -> Nothing
-            _ -> Nothing
 
         -- The letter a forced join dragged below the stack, for the wording
         -- of the @+@-after-vowel window (@ku+k@ blames @k@).
@@ -471,6 +479,50 @@ pConsumeTail dbFinals vowelSeen =
         joinHeadRaw w = case Seq.lookup 0 w of
             Just (Subfix, tok) -> T.filter (/= '+') (tokenRaw tok)
             _ -> T.empty
+
+-- | The carets a subjoining run swallowed are spent, and the chain has to know
+-- it: a caret fills no slot but it is a caret the stack carries, so a lone
+-- caret closing the syllable after such a stack is a second one and the tail
+-- window has to say so. Both windows that take a caret out of a run - the
+-- plain stack and the forced join - come through here, so the chain is written
+-- in one place instead of one place per window.
+--
+-- The surplus of a run is counted one caret at a time, the same rule the tail
+-- applies. Only the first caret of a run prints below it; the rest are the
+-- window's own finding, which is what @g^r^a@ has always done.
+noteRunCarets :: [Token] -> SpellParser ()
+noteRunCarets = mapM_ noteRunCaret
+    where
+        noteRunCaret :: Token -> SpellParser ()
+        noteRunCaret tok = do
+            fit <- claimFinal tok
+            case fit of
+                GP.FinalRepeatedCaret -> noteFinding SecondCaret
+                _ -> pure ()
+
+-- | One final mark, taken against the chain this stack's earlier finals built
+-- and marked 'Eaten' when it does not fit: the mark stays in the parse and in
+-- the run, the finding names it, and it prints nothing - which is what the
+-- second caret of @g^r^a@ already does here, and what the reference does with
+-- the mark it drops (@oMM@ -> ཨོཾ).
+--
+-- Both windows that claim a final mark come through this one. Which window
+-- claims a spelling is a matter of how the stack before it closed - a Wylie
+-- @a@ is a vowel the tail can absorb, a Tibetan one is not - and that must not
+-- change what the spelling means: @kaMM@ and @aMM@ are one spelling, and the
+-- reference reads both the same way.
+oneFinalMark :: SpellParser TibetanSyllable
+oneFinalMark = MP.try $ do
+    tok <- liftP GP.pFinal
+    fit <- claimFinal tok
+    case fit of
+        GP.FinalFits -> pure (Seq.singleton (Final, tok))
+        GP.FinalOutOfChain -> do
+            noteFinding (DuplicateFinalMark (tokenRaw tok))
+            pure (Seq.singleton (Eaten, tok))
+        GP.FinalRepeatedCaret -> do
+            noteFinding SecondCaret
+            pure (Seq.singleton (Eaten, tok))
 
 -- | The forced join sign @+@ (Wylie syntax only), with two readings: the
 -- letter after it is dragged below the stack as a subfix together with its
@@ -498,7 +550,7 @@ pForcedJoin = MP.try $ do
         pSubjoinBelow = do
             next <- MP.choice [liftP GP.pConsonant, liftP GP.pSubConsonant]
             (subjoined, carets) <- liftP GP.pSubjoinRun
-            when (length carets > 1) (noteFinding SecondCaret)
+            noteRunCarets carets
             pure $
                 Seq.singleton (Subfix, next)
                     <> caretMark (listToMaybe carets)

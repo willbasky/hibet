@@ -145,6 +145,11 @@ renderItems fmt = T.concat . map renderItem
                     | tokenSource tok == TsWylie = "ཨ"
                 prependA _ = ""
 
+                -- A mark a window took and named prints nothing: it is in the
+                -- parse and the finding quotes the run, but the reference drops
+                -- it from the output too (oMM -> ཨོཾ), and a second caret has
+                -- always printed this way (g^r^a -> གྲ༹).
+                renderMark (Just Eaten, _) = ""
                 -- A Tibetan token always prints its own slice (identity holds even
                 -- when a mark would hide or join it: གཨ prints its ཨ, གྲ prints
                 -- its joined ྲ).
@@ -236,6 +241,7 @@ renderItems fmt = T.concat . map renderItem
                 markText _ (Nothing, tok) rest
                     | isConSpec tok, anyMarked rest = ""
                     | otherwise = renderToken OutWylie tok
+                markText _ (Just Eaten, _) _ = ""
                 markText _ (_, tok) _ = renderToken OutWylie tok
 
                 -- Whether the letters could form a subjoined stack: only then

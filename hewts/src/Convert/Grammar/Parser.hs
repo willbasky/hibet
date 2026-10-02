@@ -14,16 +14,19 @@ type Parser = Parsec Void [Token]
 
 -- | The spelling state that lives in the grammar parsers: the findings the
 -- constraint windows recorded for the syllable run being parsed, plus the
--- two context bits the rules of wave 3.4.4 thread across the stacks of one
--- word - the bare prefix or superfix the word opened on, still waiting for
--- the stack it leads ('scanLeading'), and the consonant positions of the
--- word tail after its last vowel ('scanTail'). A new wave-3.4 rule adds a
--- constructor to 'Finding' and a window; these two fields are the only
+-- context bits the rules of wave 3.4.4 thread across the stacks of one word -
+-- the bare prefix or superfix the word opened on, still waiting for the stack
+-- it leads ('scanLeading'), the consonant positions of the word tail after its
+-- last vowel ('scanTail'), and how far the stack being spelled has filled the
+-- chain of its final marks ('scanFinalSlot', 'scanCaret'). A new wave-3.4 rule
+-- adds a constructor to 'Finding' and a window; these fields are the only
 -- context the windows of a run share.
 data ScanState = ScanState
     { scanFindings :: [Finding]
     , scanLeading :: Maybe (LeadRole, Token)
     , scanTail :: WordTail
+    , scanFinalSlot :: Int
+    , scanCaret :: Bool
     }
 
 -- | The head letter a word opened on and that still waits for the stack it
@@ -54,7 +57,14 @@ data WordTail
 type SpellParser = StateT ScanState Parser
 
 initialScanState :: ScanState
-initialScanState = ScanState{scanFindings = [], scanLeading = Nothing, scanTail = TailVoid}
+initialScanState =
+    ScanState
+        { scanFindings = []
+        , scanLeading = Nothing
+        , scanTail = TailVoid
+        , scanFinalSlot = 0
+        , scanCaret = False
+        }
 
 -- | Run a stateful spelling parse as a plain one, discarding the state: the
 -- entry point of the sentence runner and the pure projection of every probe.
@@ -89,6 +99,43 @@ takeFindings = do
             , scanTail = TailVoid
             }
     pure (reverse fs)
+
+-- | A new stack begins: the chain of its final marks is empty again. A
+-- syllable's finals belong to the stack they close, not to the whole run, so
+-- @kH gaM@ is two legal stacks - read as one chain it would put the @M@ behind
+-- a slot the visarga of the first stack had passed.
+resetFinalChain :: SpellParser ()
+resetFinalChain = modify $ \s -> s{scanFinalSlot = 0, scanCaret = False}
+
+-- | How a final mark stood against the chain its stack's earlier finals built.
+data FinalFit
+    = -- | The mark filled its slot, or was the stack's first caret.
+      FinalFits
+    | -- | A sign mark that came twice or came back to front: the chain's own
+      -- window, and the reason 'Convert.Token.finalSlot' numbers the slots.
+      FinalOutOfChain
+    | -- | A second caret. The caret fills no slot - it is transparent while
+      -- the subjoining run goes on and prints below it, not after the chain -
+      -- so it has a rule of its own and its own wording.
+      FinalRepeatedCaret
+
+-- | Take one final mark's place in the chain and say how it stood: a sign mark
+-- fills the next slot only while the chain has not passed it
+-- (@Convert.Token.finalSlot@), and a caret only has to be the stack's first.
+-- A mark that does not fit is the window's own finding; the chain does not walk
+-- back for it, because the mark is dropped, not moved.
+claimFinal :: Token -> SpellParser FinalFit
+claimFinal tok = case tokenCanonical tok of
+    TcFinal fm -> case finalSlot fm of
+        Nothing -> do
+            seen <- gets scanCaret
+            modify $ \s -> s{scanCaret = True}
+            pure (if seen then FinalRepeatedCaret else FinalFits)
+        Just slot -> do
+            high <- gets scanFinalSlot
+            modify $ \s -> s{scanFinalSlot = max high slot}
+            pure (if slot > high then FinalFits else FinalOutOfChain)
+    _ -> pure FinalFits
 
 parseEither :: Parser a -> [Token] -> Either Text a
 parseEither p ts =

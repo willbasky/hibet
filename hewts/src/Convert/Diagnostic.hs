@@ -197,17 +197,23 @@ repeatedCaret sp word =
         word
         "The caret \"^\" occurs more than once in this stack."
 
--- | Two finals of the same orthographic class in one stack's tail (kaMM):
--- the classes of the nine final marks group the variants that never repeat,
--- so the duplicate window is decided by class, not by mark.
+-- | A final mark that does not fit the chain its stack's earlier finals built
+-- (@kaMM@, @ka~M`M@). The chain is a row of slots ('Convert.Token.finalSlot')
+-- and a mark fills only its own, once, and only while the chain has not passed
+-- it - so the same wording covers a mark that comes twice and a mark that
+-- comes back to front. The reference drops the mark and says nothing more; the
+-- wording is ours, as the caret's is.
 duplicateFinal :: Span -> Maybe Span -> Text -> Diagnostic
-duplicateFinal sp word cls =
+duplicateFinal sp word mark =
     Diagnostic
         DuplicateFinal
         SevWarning
         sp
         word
-        ("Two finals of the \"" <> cls <> "\" class in one stack.")
+        ( "The final \""
+            <> mark
+            <> "\" does not fit the final chain: it fills one slot, in order, once."
+        )
 
 -- | A forced join @+@ drags a consonant below a stack whose vowel is already
 -- placed (ku+k): the join after the stack's own vowel should bring a vowel,
@@ -314,8 +320,10 @@ data Finding
     | -- | The second caret of a subjoining run (g^r^a): only the first one
       -- prints.
       SecondCaret
-    | -- | Two finals of the same orthographic class in one stack (kaMM).
-      DuplicateFinalClass !Text
+    | -- | A final mark that does not fit the chain its syllable's earlier
+      -- finals built: its slot is taken, or the chain has passed it (kaMM,
+      -- ka~M`M).
+      DuplicateFinalMark !Text
     | -- | A forced join's consonant under a stack whose vowel is already
       -- placed (ku+k).
       JoinAfterVowel !Text
@@ -347,7 +355,7 @@ resolveFinding :: Span -> Finding -> Diagnostic
 resolveFinding sp (HeadNotAPrefix letter) = invalidPrefix sp (Just sp) letter
 resolveFinding sp (HeadPrefixCannotLead prefix' next) = prefixCannotLead sp (Just sp) prefix' next
 resolveFinding sp SecondCaret = repeatedCaret sp (Just sp)
-resolveFinding sp (DuplicateFinalClass cls) = duplicateFinal sp (Just sp) cls
+resolveFinding sp (DuplicateFinalMark mark) = duplicateFinal sp (Just sp) mark
 resolveFinding sp (JoinAfterVowel letter) = forcedJoinAfterVowel sp (Just sp) letter
 resolveFinding sp (BadSuperfixCombination sf root subs) = badSuperfixCombination sp (Just sp) sf root subs
 resolveFinding sp (NoVowelAfterPrefix pre) = missingVowelAfterPrefix sp (Just sp) pre

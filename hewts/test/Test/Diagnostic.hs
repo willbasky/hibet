@@ -126,9 +126,9 @@ prefixCannotLeadWording =
                     ]
         ]
 
--- | The wave-3.4.4 legality windows: the second caret, two finals of one
--- class, the join after a placed vowel, the superfix combination tables, the
--- vowel after a prefix, and the suffix-position pair rule of the word tail.
+-- | The wave-3.4.4 legality windows: the second caret, the final chain, the
+-- join after a placed vowel, the superfix combination tables, the vowel after
+-- a prefix, and the suffix-position pair rule of the word tail.
 wave344 :: TestTree
 wave344 =
     testGroup
@@ -137,9 +137,54 @@ wave344 =
             rendered "g^r^a"
                 @?= Right
                     ["line 1: \"g^r^a\": The caret \"^\" occurs more than once in this stack."]
-        , testCase "two finals of one class are blamed" $
+        , testCase "a second caret after the stack is blamed the same way" $
+            rendered "gra^^"
+                @?= Right
+                    ["line 1: \"gra^^\": The caret \"^\" occurs more than once in this stack."]
+        , testCase "a lone caret after a stack that already carries one is blamed" $
+            rendered "g^ra^"
+                @?= Right
+                    ["line 1: \"g^ra^\": The caret \"^\" occurs more than once in this stack."]
+        , testCase "the stack's own caret prints and the lone one prints nothing" $
+            converted "g^ra^" @?= Right "གྲ༹"
+        , testCase "each caret beyond the first is blamed on its own" $
+            rendered "g^ra^^"
+                @?= Right
+                    [ "line 1: \"g^ra^^\": The caret \"^\" occurs more than once in this stack."
+                    , "line 1: \"g^ra^^\": The caret \"^\" occurs more than once in this stack."
+                    ]
+        , testCase "a caret inside the subjoining run is spent as well" $
+            rendered "g^^ra"
+                @?= Right
+                    ["line 1: \"g^^ra\": The caret \"^\" occurs more than once in this stack."]
+        , testCase "a final that comes twice is blamed" $
             rendered "kaMM"
-                @?= Right ["line 1: \"kaMM\": Two finals of the \"M\" class in one stack."]
+                @?= Right
+                    [ "line 1: \"kaMM\": The final \"M\" does not fit the final chain: it fills one slot, in order, once."
+                    ]
+        , testCase "a final that comes back to front is blamed" $
+            rendered "ka~M`M"
+                @?= Right
+                    [ "line 1: \"ka~M`M\": The final \"M\" does not fit the final chain: it fills one slot, in order, once."
+                    ]
+        , testCase "the same spelling is read the same way whichever window claims it" $
+            rendered "aMM"
+                @?= Right
+                    [ "line 1: \"aMM\": The final \"M\" does not fit the final chain: it fills one slot, in order, once."
+                    ]
+        , testCase "the Tibetan arm reads a doubled final the same way" $
+            renderedTibetan "\x0f40\x0f7e\x0f7e"
+                @?= Right
+                    [ "line 1: \"\x0f40\x0f7e\x0f7e\": The final \"\x0f7e\" does not fit the final chain: it fills one slot, in order, once."
+                    ]
+        , testCase "two finals in a row stay legal" $
+            rendered "kaM~M`" @?= Right []
+        , testCase "the visarga before the srog med stays legal" $
+            rendered "aHX" @?= Right []
+        , testCase "the visarga before the candrabindu halanta stays legal" $
+            rendered "aH~X" @?= Right []
+        , testCase "a caret before a final stays legal" $
+            rendered "g^raM" @?= Right []
         , testCase "a join after the vowel subjoins its consonant" $
             rendered "ku+k"
                 @?= Right
@@ -390,6 +435,15 @@ rawWords input = do
 rendered :: Text -> Either Text [Text]
 rendered input = do
     items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure (renderDiagnostics input (legality items))
+
+-- | The same for a Tibetan-script input. A rule the two arms of the grammar
+-- share has to be checked on both: the arm that claims a given token differs
+-- between them, and a window that one arm never reaches is a window that
+-- stays silent.
+renderedTibetan :: Text -> Either Text [Text]
+renderedTibetan input = do
+    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
     pure (renderDiagnostics input (legality items))
 
 -- | What a Wylie input becomes. A rule that changes how the input is read has

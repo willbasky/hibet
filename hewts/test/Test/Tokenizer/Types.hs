@@ -15,7 +15,7 @@ tests =
         [ testGroup "wylie" (map mkCase wylieCases)
         , testGroup "wylie aliases" (map mkCase wylieAliasCases)
         , testGroup "wylie expansions" (map mkCase wylieExpansionCases)
-        , testGroup "final classes" (map mkCase finalClassCases)
+        , testGroup "final slots" (map mkCase finalSlotCases)
         , testGroup "wylie tables" (map mkCase wylieTableCases)
         , testGroup "unicode" (map mkCase unicodeCases)
         , testGroup "unicode decomposition" (map mkCase unicodeDecompositionCases)
@@ -144,6 +144,7 @@ wylieAliasCases =
     , aliasesWylie "sha aliases" ["Sh", "-sh"] (TkConsonant, TcConsonant CSh)
     , aliasesWylie "wa aliases" ["w", "W"] (TkConsonant, TcConsonant Cw)
     , aliasesWylie "ya aliases" ["y", "Y"] (TkConsonant, TcConsonant Cy)
+    , aliasesWylie "a-chung aliases" ["'", "\x2019"] (TkConsonant, TcConsonant C')
     ]
 
 -- | Compound spellings that expand to several canonical tokens: aspirates
@@ -414,19 +415,20 @@ wylieFinals =
     , ("&", (TkFinal, TcFinal FMYigMgo))
     ]
 
--- | Orthographic classes of the nine finals (at most one member per class in
--- a syllable, used by the later spelling check).
-finalClassCases :: [(String, Assertion)]
-finalClassCases =
-    [ ("M class for anusvara", finalClass FMAnusvara @?= "M")
-    , ("M class for bindu nAda", finalClass FMBinduNada @?= "M")
-    , ("M class for candrabindu", finalClass FMCandrabindu @?= "M")
-    , ("X class for srog med", finalClass FMSrogMed @?= "X")
-    , ("X class for candrabindu halanta", finalClass FMCandrabinduHalanta @?= "X")
-    , ("H class for visarga", finalClass FMVisarga @?= "H")
-    , ("? class for halanta", finalClass FMHalanta @?= "?")
-    , ("^ class for caret", finalClass FMCaret @?= "^")
-    , ("& class for yig mgo", finalClass FMYigMgo @?= "&")
+-- | The slots the nine finals fill in a syllable's closing chain. A mark fills
+-- only its own slot, once, and only while the chain has not passed it; the
+-- caret fills no slot and keeps a rule of its own.
+finalSlotCases :: [(String, Assertion)]
+finalSlotCases =
+    [ ("slot 1 for anusvara", finalSlot FMAnusvara @?= Just 1)
+    , ("slot 2 for bindu nAda", finalSlot FMBinduNada @?= Just 2)
+    , ("slot 3 for candrabindu", finalSlot FMCandrabindu @?= Just 3)
+    , ("slot 4 for visarga", finalSlot FMVisarga @?= Just 4)
+    , ("slot 5 for srog med", finalSlot FMSrogMed @?= Just 5)
+    , ("slot 6 for candrabindu halanta", finalSlot FMCandrabinduHalanta @?= Just 6)
+    , ("slot 7 for halanta", finalSlot FMHalanta @?= Just 7)
+    , ("no slot for the caret", finalSlot FMCaret @?= Nothing)
+    , ("slot 8 for yig mgo", finalSlot FMYigMgo @?= Just 8)
     ]
 
 wylieNumbers :: [(Text, (TokenKind, TokenCanonical))]

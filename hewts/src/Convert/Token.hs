@@ -373,8 +373,9 @@ data SubConsonant
 -- SCdPLUSh 0x0fa2, SCbPLUSh 0x0fa7, SCdzPLUSh 0x0fac) are decomposed on input
 -- into subjoined base + subjoined-h, mirroring the Consonant rule above.
 
--- | The nine EWTS final marks. 'finalClass' groups the orthographic variants
--- that may never follow the same syllable (duplicate detection, later wave).
+-- | The nine EWTS final marks. 'finalSlot' files the eight sign marks in the
+-- order a syllable's finals fill them; the caret takes no slot and keeps a
+-- rule of its own (the repeated caret of Constraint21).
 data FinalMark
     = FMAnusvara -- M ཾ \u0f7e
     | FMBinduNada -- ~M` ྂ \u0f82
@@ -388,19 +389,35 @@ data FinalMark
     | FMYigMgo -- & ྅ \u0f85
     deriving (Show, Eq, Ord, Enum, Bounded)
 
--- | Orthographic class of a final: at most one member of each class per
--- syllable. Matches the reference tables (ewts-converter m_final_class).
-finalClass :: FinalMark -> Text
-finalClass = \case
-    FMAnusvara -> "M"
-    FMBinduNada -> "M"
-    FMCandrabindu -> "M"
-    FMSrogMed -> "X"
-    FMCandrabinduHalanta -> "X"
-    FMVisarga -> "H"
-    FMHalanta -> "?"
-    FMCaret -> "^"
-    FMYigMgo -> "&"
+-- | The slot a final sign fills in its syllable's closing chain, and Nothing
+-- for the caret, which fills no slot.
+--
+-- A mark fills only its own slot, only once, and only while the chain has not
+-- passed it. So @M~M`@ fills two slots in order and stands (baM~M`@ ->
+-- བཾྂ), while @~M`M@ asks for a slot the chain has left behind and the mark
+-- is lost (o~M`M@ -> ཨོྂ), and a mark that comes twice is lost the same way
+-- (oMM@ -> ཨོཾ). The reference drops the mark and warns; we drop it from the
+-- rendering and warn, which is what its own second caret already does here.
+--
+-- The order is ours, not the book's. The book has no word on the final marks
+-- at all: its grammar 4.21 spells a word as prefix, superfix, root, subfix,
+-- vowel sign, suffix and postfix, and Def 4.9 files the final marks with the
+-- other signs rather than among the letters. What the reference corpora do fix
+-- is @M@ before @~M`@, and @H@ before @X@ and before @~X@; the two orders the
+-- other way and both repeats draw the warning. No corpus covers a third mark
+-- in one chain, so the rest of the order stands on that reasoning, not on
+-- evidence.
+finalSlot :: FinalMark -> Maybe Int
+finalSlot = \case
+    FMAnusvara -> Just 1
+    FMBinduNada -> Just 2
+    FMCandrabindu -> Just 3
+    FMVisarga -> Just 4
+    FMSrogMed -> Just 5
+    FMCandrabinduHalanta -> Just 6
+    FMHalanta -> Just 7
+    FMCaret -> Nothing
+    FMYigMgo -> Just 8
 
 -- | Wylie-only consonant-stack operators: '+' (explicit subjoin) and '.'
 -- (explicit stack). They exist only in the Wylie input alphabet and have no

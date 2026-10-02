@@ -500,6 +500,7 @@ wylieConsonantAliases =
     , ("W", Cw)
     , ("Y", Cy)
     , ("-sh", CSh)
+    , ("\x2019", C') -- U+2019: the typographic apostrophe is the a-chung too
     ]
 
 -- | Wylie spellings that expand to several canonical tokens.

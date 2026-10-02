@@ -29,8 +29,8 @@ import qualified Data.Sequence as Seq
 --
 -- 'Final' is ours rather than the book's: the book files final marks with the
 -- other signs (Def 4.9) instead of giving them a place of their own, but we
--- need to tell them apart - two identical finals in a row are an error, and the
--- order of assembly depends on it.
+-- need to tell them apart - a final that does not fit the closing chain is an
+-- error, and the order of assembly depends on it.
 data Position
     = Root
     | Prefix
@@ -41,6 +41,11 @@ data Position
     | Vowel
     | Final
     | ImplicitVowel
+    | -- | A mark the grammar took and the window named: it stays in the parse
+      -- and in the run, but it prints nothing, exactly as the second caret of
+      -- @g^r^a@ does. Nothing is lost from the token stream - the finding
+      -- quotes the run, so the mark is still there to be read.
+      Eaten
     deriving (Show, Eq, Ord)
 
 -- | A Tibetan syllable (Def 4.10) as a flat list of marked tokens.
