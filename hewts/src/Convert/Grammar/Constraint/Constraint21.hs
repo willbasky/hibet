@@ -177,11 +177,22 @@ pStackBody atStart = do
     resetFinalChain
     next0 <-
         MP.lookAhead (MP.skipMany (liftP GP.pCaret) *> MP.optional (liftP GP.pToken))
-    let (pos, _) = markBase atStart base next0
+    -- The letters the root behind the base would subjoin. Only a superfix
+    -- letter asks: rule 4.10 puts la below no superfix at all, so whether the
+    -- gate shuts is known here, where the base is placed - and the bare stack
+    -- that names the combination quotes this very run.
+    below0 <-
+        if GP.isSuperfixLetter base
+            then MP.lookAhead $ do
+                _ <- MP.skipMany (liftP GP.pCaret)
+                _ <- MP.optional (liftP GP.pToken)
+                fst <$> liftP GP.pSubjoinRun
+            else pure []
+    let (pos, _) = markBase atStart base next0 below0
         baseMark = Seq.singleton (pos, base)
     MP.choice
         [ completeStack base baseMark
-        , bare base baseMark pos
+        , bare base baseMark pos next0 below0
         ]
     where
         -- The subjoining run under the base is over and the stack next meets
@@ -215,12 +226,32 @@ pStackBody atStart = do
         -- letter this stack closes - a prefix that reached no vowel, or a
         -- superfix that gated nothing - and the suffix-count window of the
         -- word tail.
-        bare :: Token -> TibetanSyllable -> Position -> SpellParser TibetanSyllable
-        bare base baseMark pos = do
+        bare ::
+            Token
+            -> TibetanSyllable
+            -> Position
+            -> Maybe Token
+            -> [Token]
+            -> SpellParser TibetanSyllable
+        bare base baseMark pos next below = do
             when atStart (checkHead base pos)
+            noteShutGate base next below
             settleBareHead base pos
             advanceWordTail base
             pure baseMark
+
+        -- The gate rule 4.10 keeps shut: la below the root keeps the base an
+        -- ordinary root ('markBase'), so no pending lead reaches
+        -- 'settleVowelHead'. This bare stack therefore calls the same table
+        -- window on the same run, and the finding is the one that window
+        -- would name (grglam).
+        noteShutGate :: Token -> Maybe Token -> [Token] -> SpellParser ()
+        noteShutGate base next below = case next of
+            Just n
+                | Just run <- superfixRun base n below
+                , any isLa run ->
+                    checkSuperfixCombination base n run
+            _ -> pure ()
 
         -- The pending head letter, now that the stack it opened stands with
         -- a vowel: a superfix is checked against its tables, a prefix that
@@ -560,8 +591,13 @@ pForcedJoin = MP.try $ do
 -- Prefix (bsgribs -> བ), a superfix letter over a non-subfix consonant is a
 -- Superfix (rka -> རྐ), anything else is the Root. The renderer prints the
 -- letter either way; the positions matter to the legality rules of wave 3.4.
-markBase :: Bool -> Token -> Maybe Token -> (Position, Token)
-markBase atStart base next =
+--
+-- One superfix letter gates nothing whatever: rule 4.10 keeps la below no
+-- superfix (its 15 triples take wa, ya and ra only), so a root that would
+-- subjoin it shuts the gate before it opens and the base is a root like any
+-- other (grglam -> གརགླམ, as the reference reads it).
+markBase :: Bool -> Token -> Maybe Token -> [Token] -> (Position, Token)
+markBase atStart base next below =
     case next of
         Just n
             -- The letter directly below the base belongs to its own stack
@@ -572,11 +608,31 @@ markBase atStart base next =
                 && not (GP.isSubjoinCandidate n)
                 && not (GP.isImplicitA n) ->
                 (Prefix, base)
-            | GP.isSuperfixLetter base
-                && not (GP.isSubjoinCandidate n)
-                && not (GP.isImplicitA n) ->
+            | Just run <- superfixRun base n below
+            , not (any isLa run) ->
                 (Superfix, base)
         _ -> (Root, base)
+
+-- | The gate of rule 4.8 from the base's own side: the letters the root
+-- behind a superfix letter would subjoin, but only while that gate stands -
+-- a superfix letter over a consonant of its own stacks, with nothing a subfix
+-- or a vowel can close it on (rka, sgrwa). Both the placement and the window
+-- that names a failed combination read this one predicate.
+superfixRun :: Token -> Token -> [Token] -> Maybe [Token]
+superfixRun base n below
+    | GP.isSuperfixLetter base
+    , not (GP.isSubjoinCandidate n)
+    , not (GP.isImplicitA n) =
+        Just below
+    | otherwise = Nothing
+
+-- | The letter la in either script - the Wylie letter and the Tibetan
+-- subjoined ལ - the subfix rule 4.10 lets stand below no superfix at all.
+isLa :: Token -> Bool
+isLa t = case tokenCanonical t of
+    TcConsonant Cl -> True
+    TcSubConsonant SCl -> True
+    _ -> False
 
 -- | The head check (3.4.3), fired when the word's first stack closed bare:
 -- the grammar placed the head letter with a role that is not a superfix stack

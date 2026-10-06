@@ -72,12 +72,17 @@
 # moves UP; it is a floor, not a target, and it caps nothing. The u2w legs,
 # ewts-rs and the kangyur round-trip stay where they were. The numbers are
 # still far from `total`, and that gap is the remaining work.
-jsewts	w2u	210	191
+#
+# Wave 3.4.10 (the superfix gate a subjoined la shuts, defect 8): the floor
+# moves UP again - w2u 191->192 (jsewts) and 194->195 (Lingua), round-trip
+# 184->185 and 186->187. One spelling changes (grglam), the u2w legs, ewts-rs,
+# java and the kangyur round-trip stay where they were.
+jsewts	w2u	210	192
 jsewts	u2w	210	50
-jsewts	roundtrip	210	184
-lingua	w2u	218	194
+jsewts	roundtrip	210	185
+lingua	w2u	218	195
 lingua	u2w	218	47
-lingua	roundtrip	218	186
+lingua	roundtrip	218	187
 ewts-rs	w2u	16	15
 java	w2u	6	5
 java	u2w	2	1
