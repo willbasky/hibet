@@ -28,7 +28,7 @@ pConstraint14 = \case
             ]
     Wylie ->
         MP.choice
-            [ MP.try $ parseConstraintWylie14 GP.pPrefixGa pRoots1
+            [ MP.try $ parseConstraintWylie14 GP.pPrefixGa pRoots1Wylie
             , MP.try $ parseConstraintWylie14 GP.pPrefixDa pRoots2
             , MP.try $ parseConstraintWylie14 GP.pPrefixBa pRoots3
             , MP.try $ parseConstraintWylie14 GP.pPrefixMa pRoots4
@@ -46,6 +46,14 @@ parseConstraintUnicode14 parsePrefix parseRoot = do
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག
 pRoots1 :: Parser Token
 pRoots1 = pAllowedRoot [Cc, Cny, Ct, Cd, Cn, Cts, Czh, Cz, Cy, Csh, Cs]
+
+-- The same root group for Wylie input, without ཡ: the glyphs carry no
+-- ambiguity (གྱ and ཡ are written apart), but a bare Wylie y after the
+-- prefix is the subjoined ya of the stack - gyi reads གྱི, and the prefix
+-- with a full ya is written with the dot, g.yi (གཡི), by the dotted
+-- structures.
+pRoots1Wylie :: Parser Token
+pRoots1Wylie = pAllowedRoot [Cc, Cny, Ct, Cd, Cn, Cts, Czh, Cz, Csh, Cs]
 
 -- (2) root group [ 'ཀ', 'ག', 'ང', 'པ', 'བ', 'མ' ] with prefix ད
 pRoots2 :: Parser Token

@@ -77,12 +77,24 @@
 # moves UP again - w2u 191->192 (jsewts) and 194->195 (Lingua), round-trip
 # 184->185 and 186->187. One spelling changes (grglam), the u2w legs, ewts-rs,
 # java and the kangyur round-trip stay where they were.
+#
+# Wave 3.4.11 (the honest U->W stack renderer, defect 3): the u2w legs jump.
+# Glyph-sourced syllables now render through the stack grouping the reference
+# uses - a regular stack spelled plain, a non-regular one plus-joined, the
+# dot only where prefix + stack close a regular stack (and read through the
+# structure windows, so a bare "gy" stays a stack), the implicit @a@ of a
+# vowel-less root and none on the lone final suffix of several stacks
+# (བརྙེས -> "b+r+nyes", ས -> "sa"). Subjoined glyphs read as letters instead
+# of raw codepoints. u2w 50->149 (jsewts), 47->148 (Lingua), roundtrip
+# 185->189 and 187->191; w2u, ewts-rs, java and the kangyur roundtrip stay
+# where they were, and the kangyur U->W snapshot is regenerated - the old
+# one had recorded the raw subjoined glyphs.
 jsewts	w2u	210	192
-jsewts	u2w	210	50
-jsewts	roundtrip	210	185
+jsewts	u2w	210	149
+jsewts	roundtrip	210	189
 lingua	w2u	218	195
-lingua	u2w	218	47
-lingua	roundtrip	218	187
+lingua	u2w	218	148
+lingua	roundtrip	218	191
 ewts-rs	w2u	16	15
 java	w2u	6	5
 java	u2w	2	1

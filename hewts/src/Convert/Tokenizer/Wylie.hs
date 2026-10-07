@@ -221,7 +221,14 @@ lookupSpelling sp raw key =
 wylieOf :: TokenCanonical -> Maybe Text
 wylieOf = \case
     TcConsonant c -> Just (wylieConsonant c)
-    TcSubConsonant _ -> Nothing
+    -- A subjoined glyph has no spelling of its own in the Wylie alphabet:
+    -- a stack is spelled through its letters, so the glyph prints as its
+    -- full letter (the subjoined r and g of rgya print r and g). The raised
+    -- glyphs keep the raised spelling they read back as, so that what a
+    -- stack writes it also reads.
+    TcSubConsonant SCW -> Just "W"
+    TcSubConsonant SCY -> Just "Y"
+    TcSubConsonant sc -> Just (wylieConsonant (fromSubjoined sc))
     TcVowel v -> Just (wylieVowel v)
     TcFinal f -> Just (wylieFinal f)
     TcNumber n -> Just (wylieNumber n)

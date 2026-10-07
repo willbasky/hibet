@@ -74,12 +74,12 @@ caseRenderFvComposed =
 
 caseRenderCrossScriptCanonical :: Assertion
 caseRenderCrossScriptCanonical =
-    renderInput OutWylie "ཉ་ཱི" @?= "ny Ai"
+    renderInput OutWylie "ཉ་ཱི" @?= "nya Ai"
 
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =
     renderInput OutWylie "ཫཬཷ༐༪྆࿐"
-        @?= "\\u0f6ba\\u0f6cཷA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
+        @?= "\\u0f6ba\\u0f6c+raA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =

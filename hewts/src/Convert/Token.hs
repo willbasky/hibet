@@ -471,6 +471,53 @@ toSubjoined = \case
     Ckka -> Nothing
     CRra -> Nothing
 
+-- | The full letter a subjoined glyph belongs to: the exact inverse of
+-- 'toSubjoined' where the register has one, so that a glyph spelled out in
+-- Wylie reads back as the same glyph (@r@ under a base reads back as @r@,
+-- never as a raw glyph). The bundled letters have no subjoined form to
+-- invert. The raised glyphs do not stand for their own letters - they are
+-- the raised spellings of w and y - and map back to those letters.
+fromSubjoined :: SubConsonant -> Consonant
+fromSubjoined = \case
+    SCk -> Ck
+    SCkh -> Ckh
+    SCg -> Cg
+    SCng -> Cng
+    SCc -> Cc
+    SCch -> Cch
+    SCj -> Cj
+    SCny -> Cny
+    SCT -> CT
+    SCTh -> CTh
+    SCD -> CD
+    SCN -> CN
+    SCt -> Ct
+    SCth -> Cth
+    SCd -> Cd
+    SCn -> Cn
+    SCp -> Cp
+    SCph -> Cph
+    SCb -> Cb
+    SCm -> Cm
+    SCts -> Cts
+    SCtsh -> Ctsh
+    SCdz -> Cdz
+    SCw -> Cw
+    SCzh -> Czh
+    SCz -> Cz
+    SC' -> C'
+    SCy -> Cy
+    SCr -> Cr
+    SCl -> Cl
+    SCsh -> Csh
+    SCSh -> CSh
+    SCs -> Cs
+    SCh -> Ch
+    SCa -> Ca
+    SCW -> Cw
+    SCY -> Cy
+    SCR -> CR
+
 -- | The subjoined form a token prints as. Source-aware: the EWTS raised
 -- letters @W@ and @Y@ stay raised (their Wylie slices are @\"W\"@ and
 -- @\"Y\"@), and a token that is already a subconsonant carries its own
