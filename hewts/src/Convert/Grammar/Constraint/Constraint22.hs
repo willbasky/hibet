@@ -16,7 +16,7 @@
 -- (དག is read root ད + suffix ག, with no letter standing in for a vowel).
 -- That mark is therefore also what keeps the rule off a syllable with a real
 -- vowel (dgi is དགི, not དག).
-module Convert.Grammar.Constraint.Ambiguous
+module Convert.Grammar.Constraint.Constraint22
     ( recommendedSpelling
     , noteAmbiguous
     ) where

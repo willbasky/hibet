@@ -36,7 +36,6 @@ module Convert.Grammar.Constraint
     , noteAmbiguous
     ) where
 
-import Convert.Grammar.Constraint.Ambiguous (noteAmbiguous, recommendedSpelling)
 import Convert.Grammar.Constraint.Constraint01
     ( pConstraint01
     , pConstraint01Sanskrit
@@ -64,4 +63,8 @@ import Convert.Grammar.Constraint.Constraint20 (pConstraint20)
 import Convert.Grammar.Constraint.Constraint21
     ( pConstraint21First
     , pConstraint21Rest
+    )
+import Convert.Grammar.Constraint.Constraint22
+    ( noteAmbiguous
+    , recommendedSpelling
     )

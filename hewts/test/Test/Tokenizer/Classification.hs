@@ -1,4 +1,4 @@
-module Test.Tokenizer.Types (tests) where
+module Test.Tokenizer.Classification (tests) where
 
 import Convert.Token
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -11,7 +11,7 @@ import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 tests :: TestTree
 tests =
     testGroup
-        "types"
+        "classification"
         [ testGroup "wylie" (map mkCase wylieCases)
         , testGroup "wylie aliases" (map mkCase wylieAliasCases)
         , testGroup "wylie expansions" (map mkCase wylieExpansionCases)

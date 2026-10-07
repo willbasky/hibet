@@ -21,7 +21,7 @@ pConstraint15 _spelling = mark Suffix pAllowedSuffix
 -- | The suffix group of rule 4.15, kept as data of this constraint: the same
 -- set decides which letters a syllable's second position may take, and which
 -- of them makes a two-letter syllable readable the other way round
--- ('Convert.Grammar.Constraint.Ambiguous').
+-- ('Convert.Grammar.Constraint.Constraint22').
 suffixConsonants15 :: [Consonant]
 suffixConsonants15 = [Cg, Cng, Cd, Cn, Cb, Cm, C', Cr, Cl, Cs]
 

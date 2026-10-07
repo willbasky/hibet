@@ -107,7 +107,7 @@ pStructure7 spelling = C.pConstraint13 spelling
 -- The first of the three structures that host a window: the syllable is
 -- finished the moment rule 4.14 has run, and only the finished syllable says
 -- which of its two readings won, so the ambiguous-spelling window sits here
--- ('Convert.Grammar.Constraint.Ambiguous').
+-- ('Convert.Grammar.Constraint.Constraint22').
 pStructure8 :: Spelling -> SpellParser TibetanSyllable
 pStructure8 spelling = spellAs (C.pConstraint14 spelling)
 
