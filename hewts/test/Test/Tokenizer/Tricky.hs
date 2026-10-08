@@ -121,7 +121,10 @@ wylieLexicalCases =
         , wylieWarnings "a\\u01x3a"
             @?= ["line 1: The escape \"\\u01x3\" is not a valid code point."]
         )
-    , ("a broken hex escape leaves no token", wylieRaws "a\\u01x3b" @?= ["a", "b"])
+    ,
+        ( "a broken hex escape leaves its text as a token"
+        , wylieRaws "a\\u01x3b" @?= ["a", "\\u01x3", "b"]
+        )
     ,
         ( "a bracket block is one token"
         , bracketShape "[New York]k" @?= ("[New York]", "k")

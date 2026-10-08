@@ -14,20 +14,23 @@ module Convert.Sentence
     , pSentence
     ) where
 
-import Control.Monad (void)
+import Control.Monad (void, when)
 import Convert.Diagnostic
     ( Diagnostics
-    , Finding (FinalWithoutLetter)
+    , Finding (FinalWithoutLetter, UnplacedDot)
     , findingsDiagnostics
     )
 import Convert.Grammar.Parser
     ( Parser
     , SpellParser
     , Spelling (..)
+    , isDot
     , isPunctuationLike
     , liftP
+    , noteFinding
     , pNumber
     , pPunctuation
+    , pToken
     , pUnclaimedTail
     , runSpell
     , takeFindings
@@ -136,7 +139,7 @@ pItem spelling =
         , Number <$> MP.some (liftP pNumber)
         , MP.try (pSyllable spelling)
         , pStrayFinal
-        , Other <$> MP.some (MP.satisfy (not . isPunctuationLike))
+        , Other <$> MP.some (MP.satisfy isJunk)
         ]
 
 -- | A final mark with no letter in front of it (Mi, ???). A final hangs over
@@ -157,6 +160,14 @@ pStrayFinal = do
                 , syllableDiags =
                     findingsDiagnostics sp [FinalWithoutLetter (tokenRaw tok)]
                 }
+
+-- | What the otherwise-unrecognized branch may swallow: a token that is
+-- neither punctuation (its own branch above) nor the possible start of a
+-- syllable run. A junk run ends where a syllable could begin, so the letters
+-- after a stray non-Tibetan sign still parse as themselves (ba=la -> བ༴ལ,
+-- <ba> -> ༺བ༻) instead of being swallowed whole with it.
+isJunk :: Token -> Bool
+isJunk token = not (isPunctuationLike token) && not (isSyllableStart token)
 
 -- | A run opens with a token the grammar could work from: a consonant, a
 -- subjoined consonant, a vowel, a final, a sign or a Sanskrit mark. Stack
@@ -199,10 +210,13 @@ isSyllableTail token = case tokenCanonical token of
     _ -> isSyllableStart token
 
 -- | One syllable run: a run-starting token, the structure that claims the
--- most of it, everything the run swallows up to the next boundary, and the
--- boundary itself. The warnings of the constraint windows name the run
--- without the boundary: their span is resolved here from the run's own
--- tokens, once the run is over.
+-- most of it, what this stack owns of the rest - the tail tokens no fresh
+-- run would claim, headed by the one dot the reference lets a stack take
+-- after itself - and the boundary itself. The tail a fresh run does claim
+-- stays in the input for the next item to read as itself: a tail that opens
+-- a word is a fresh run, not this run's raw echo. The warnings of the
+-- constraint windows name the run without the boundary: their span is
+-- resolved here from the run's own tokens, once the run is over.
 pSyllable :: Spelling -> SpellParser SpellItem
 pSyllable spelling = do
     start <- MP.getInput
@@ -214,11 +228,19 @@ pSyllable spelling = do
     marked <- MP.option Seq.empty (MP.try (pStructure spelling))
     endOfStructure <- MP.getInput
     let claimed = length start - length endOfStructure
-    tailToks <- pUnclaimedTail isSyllableTail
+    -- A claimed run closes with what the stack above owns; an unclaimed one
+    -- keeps swallowing its tail - it is one invalid item by construction and
+    -- it has to consume its head, or the sentence would not advance.
+    (tailToks, tailMarks) <-
+        if claimed == 0
+            then do
+                toks <- pUnclaimedTail isSyllableTail
+                pure (toks, [])
+            else stackClose
     boundary <- MP.many (liftP pPunctuation)
     findings <- takeFindings
     let content = take claimed start <> tailToks
-        markedContent = runItems (toList marked) content
+        markedContent = runItems (toList marked <> tailMarks) content
         runSpan = wordSpan content
         syllable =
             Syllable
@@ -239,6 +261,56 @@ pSyllable spelling = do
                 (offsetStart (tokenSpan first))
                 (offsetEnd (tokenSpan (foldl (\_ t -> t) first word)))
         wordSpan [] = Span 0 0
+
+        -- What a claimed run owns past its structure: the tail tokens no
+        -- fresh run would claim. The reference lets its stack take exactly
+        -- one dot after itself (fromWylieOneStack): the first dot of the
+        -- tail is that dot - eaten, and this run's single UnplacedDot, a dot
+        -- that reaches this close joining no stack to a letter - while a
+        -- mark the structures refuse (a Tibetan long a beside its root, a
+        -- final or sign after the stack) hangs over the stack it belongs to
+        -- and stays in this run, as it did before the tail became a run of
+        -- its own. What a fresh run does claim - the letters behind
+        -- @....yag@, the @e@ of @ba.e@ - stays in the input for the next
+        -- item to read as itself, so a tail that opens a word is not this
+        -- run's raw echo.
+        stackClose :: SpellParser ([Token], [(Position, Token)])
+        stackClose = close False
+            where
+                -- @dotSeen@: whether the tail's first dot already went past -
+                -- only it is eaten and blamed, the dots behind it stay written.
+                close :: Bool -> SpellParser ([Token], [(Position, Token)])
+                close dotSeen = do
+                    next <- MP.lookAhead (MP.optional (liftP pToken))
+                    case next of
+                        Just tok | isSyllableTail tok -> do
+                            fresh <- claimsFreshRun
+                            if fresh
+                                then pure ([], [])
+                                else do
+                                    void (liftP pToken)
+                                    let isDotTok = isDot tok
+                                        eat = not dotSeen && isDotTok
+                                    when eat $ noteFinding UnplacedDot
+                                    (toks, marks) <- close (dotSeen || isDotTok)
+                                    pure
+                                        ( tok : toks
+                                        , (if eat then [(Eaten, tok)] else []) <> marks
+                                        )
+                        _ -> pure ([], [])
+
+                -- Whether a run of its own starts here: the grammar decides
+                -- what opens a run, not the token class, so the tail is probed
+                -- with the real structure choice. The probe reads - pStructure
+                -- runs its winner inside 'lookAhead', and a lookAhead rolls
+                -- both the input and the scan state back.
+                claimsFreshRun :: SpellParser Bool
+                claimsFreshRun = do
+                    before <- MP.getInput
+                    after <-
+                        MP.optional
+                            (MP.try (MP.lookAhead (pStructure spelling *> MP.getInput)))
+                    pure $ maybe False ((< length before) . length) after
 
         -- The marks the grammar emitted keep their emission order and the
         -- unmarked tokens - separators it ate, the unclaimed tail, the

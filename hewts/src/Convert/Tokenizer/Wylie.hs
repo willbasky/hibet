@@ -254,10 +254,16 @@ wylieConSpec = \case
 -- opaque - the reference re-emits the escape rather than the character.
 --
 -- An escape that cannot be a code point at all is neither: the reference
--- reports it and drops it, and so do we.
+-- reports it and prints nothing for it. The slice still stands in the text
+-- though - it separates the letters around it (@a\01x3a@ reads as two runs,
+-- not one word) - so the token stays, with empty content that renders as
+-- nothing.
 decodeEscape :: Span -> Text -> ([Token], Diagnostics)
 decodeEscape sp raw
-    | isBrokenHexEscape raw = ([], addDiagnostic (invalidHexCode sp raw) mempty)
+    | isBrokenHexEscape raw =
+        ( [mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark "")) sp]
+        , addDiagnostic (invalidHexCode sp raw) mempty
+        )
     | otherwise =
         case decodeHexCode raw of
             Just c ->

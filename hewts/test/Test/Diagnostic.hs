@@ -121,8 +121,8 @@ prefixCannotLeadWording =
         , testCase "g....yag blames the stack dot" $
             rendered "g....yag"
                 @?= Right
-                    [ "line 1: \"g....yag\": The prefix \"g\" does not allow \".\" after it."
-                    , "line 1: \"g....yag\": The stack dot \".\" joins no stack to a letter."
+                    [ "line 1: \"g....\": The prefix \"g\" does not allow \".\" after it."
+                    , "line 1: \"g....\": The stack dot \".\" joins no stack to a letter."
                     ]
         ]
 
@@ -370,8 +370,8 @@ wave346 =
             [ testCase "the dot in the tail is blamed" $
                 rendered "ka."
                     @?= Right ["line 1: \"ka.\": The stack dot \".\" joins no stack to a letter."]
-            , testCase "the dot stays as it was written" $
-                converted "ka." @?= Right "ཀ."
+            , testCase "the dot after the stack is eaten as the reference eats it" $
+                converted "ka." @?= Right "ཀ"
             , testCase "one finding for the run, however many dots it holds" $
                 rendered "ka.."
                     @?= Right ["line 1: \"ka..\": The stack dot \".\" joins no stack to a letter."]
@@ -385,8 +385,8 @@ wave346 =
             , testCase "the dot is blamed after the window findings of its run" $
                 rendered "g....yag"
                     @?= Right
-                        [ "line 1: \"g....yag\": The prefix \"g\" does not allow \".\" after it."
-                        , "line 1: \"g....yag\": The stack dot \".\" joins no stack to a letter."
+                        [ "line 1: \"g....\": The prefix \"g\" does not allow \".\" after it."
+                        , "line 1: \"g....\": The stack dot \".\" joins no stack to a letter."
                         ]
             , testCase "the orphan dot carries its code and severity" $
                 recordsOf "ka." @?= Right [(OrphanDot, SevWarning)]

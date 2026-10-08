@@ -171,10 +171,11 @@ doubleShad =
 newline :: TestTree
 newline =
     testCase
-        "དེ\nདུ -> newline is Other, keeps following run grouped (round-trip intact)"
+        "དེ\nདུ -> newline is Other, the following run parses as itself (round-trip intact)"
         $ tagged (run "དེ\nདུ")
             @?= [ ("S", ["ད", "ེ"])
-                , ("O", ["\n", "ད", "ུ"])
+                , ("O", ["\n"])
+                , ("S", ["ད", "ུ"])
                 ]
 
 digtsAfterSpace :: TestTree

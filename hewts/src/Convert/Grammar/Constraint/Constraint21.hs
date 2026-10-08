@@ -215,7 +215,7 @@ pStackBody atStart = do
                     -- is exactly what its rule asks for; either way the
                     -- pending lead is over.
                     settleVowelHead base subjoined
-                    tailMarks <- pConsumeTail False
+                    tailMarks <- pConsumeTail False (GP.isImplicitA base)
                     pure
                         (baseMark <> subfixMarks subjoined <> caretMark (listToMaybe carets) <> tailMarks)
                 _ -> MP.empty
@@ -455,13 +455,18 @@ startsWithVowel w = case Seq.lookup 0 w of
 -- that claim a final mark read the same spelling the same way. Every vowel
 -- placed here, a real one, the implicit @a@, or a vowel forced in with @+@,
 -- starts the word's suffix count over.
-pConsumeTail :: Bool -> SpellParser TibetanSyllable
-pConsumeTail vowelSeen =
+-- | The tail of a stack after its base stands: a vowel, the final marks, the
+-- forced joins. @baseIsA@ says the base of this very stack is the a-chen -
+-- it already is the vowel an implicit @a@ would spell there, so the tail may
+-- not take a second one (@aa@ is two syllables, as the reference reads it).
+pConsumeTail :: Bool -> Bool -> SpellParser TibetanSyllable
+pConsumeTail vowelSeen baseIsA =
     MP.choice
         [ pTailVowel
         , pImplicitABranch
         , pTailFinal
         , pForcedJoinBranch
+        , pForcedFinalBranch
         , pure mempty
         ]
     where
@@ -470,17 +475,19 @@ pConsumeTail vowelSeen =
         pTailVowel = MP.try $ do
             marks <- markS Vowel GP.pVowelAny
             resetWordTail
-            rest <- pConsumeTail True
+            rest <- pConsumeTail True baseIsA
             pure (marks <> rest)
 
-        -- The bare @a@ only fits before the first real vowel of the stack.
+        -- The bare @a@ only fits before the first real vowel of the stack -
+        -- and never as the vowel of an a-chen base, which is what makes @aa@
+        -- two stacks.
         pImplicitABranch :: SpellParser TibetanSyllable
         pImplicitABranch
-            | vowelSeen = MP.empty
+            | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
                 marks <- markS ImplicitVowel GP.pImplicitA
                 resetWordTail
-                rest <- pConsumeTail False
+                rest <- pConsumeTail False baseIsA
                 pure (marks <> rest)
 
         -- One final mark, then the rest of the tail: a final does not place a
@@ -488,7 +495,7 @@ pConsumeTail vowelSeen =
         pTailFinal :: SpellParser TibetanSyllable
         pTailFinal = MP.try $ do
             marks <- oneFinalMark
-            rest <- pConsumeTail vowelSeen
+            rest <- pConsumeTail vowelSeen baseIsA
             pure (marks <> rest)
 
         -- A forced join may itself be a vowel (@+e@): the tail after it then
@@ -501,8 +508,25 @@ pConsumeTail vowelSeen =
             when (vowelSeen && not (startsWithVowel marks)) $
                 noteFinding (JoinAfterVowel (joinHeadRaw marks))
             when (startsWithVowel marks) resetWordTail
-            rest <- pConsumeTail (vowelSeen || startsWithVowel marks)
-            pure (marks <> rest)
+            -- The letter a forced join dragged below a stack that already has
+            -- its vowel spells with the stack's implicit /a/: the @a@ after
+            -- @+r@ in bo+ra is that vowel (བོྲ), not the root ཨ of a fresh
+            -- stack - the a-chen branch below only fires before the first
+            -- vowel, so the tail cannot take the letter there.
+            inheritVowel <- case Seq.lookup 0 marks of
+                Just (Subfix, _) -> MP.option mempty (markS ImplicitVowel GP.pImplicitA)
+                _ -> pure mempty
+            rest <- pConsumeTail (vowelSeen || startsWithVowel marks) baseIsA
+            pure (marks <> inheritVowel <> rest)
+
+        -- The forced join sign with a final behind it: the reference lets the
+        -- stack's own subscript loop take the sign and its finals section
+        -- take the letter after it (@g+X@ -> ག༷), so the two belong to this
+        -- stack - and the final closes it, the word loop reads on from there.
+        pForcedFinalBranch :: SpellParser TibetanSyllable
+        pForcedFinalBranch = MP.try $ do
+            void (liftP GP.pPlus)
+            oneFinalMark
 
         -- The letter a forced join dragged below the stack, for the wording
         -- of the @+@-after-vowel window (@ku+k@ blames @k@).

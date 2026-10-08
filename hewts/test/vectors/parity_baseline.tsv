@@ -89,12 +89,41 @@
 # 185->189 and 187->191; w2u, ewts-rs, java and the kangyur roundtrip stay
 # where they were, and the kangyur U->W snapshot is regenerated - the old
 # one had recorded the raw subjoined glyphs.
-jsewts	w2u	210	192
-jsewts	u2w	210	149
-jsewts	roundtrip	210	189
-lingua	w2u	218	195
-lingua	u2w	218	148
-lingua	roundtrip	218	191
+#
+# Wave 3.4.12 (defect 1, the six 6/6 lines): the junk branch of the sentence
+# no longer swallows letters behind it - a stray non-Tibetan sign (=, <, >,
+# parens, a Latin x) ends its Other run where a syllable could start
+# (ba=la -> བ༴ལ, <ba> -> ༺བ༻, blaxbla -> བླxབླ), and its u2w mirror parses
+# the same sign separately (བ༴ལ -> ba=la). The Wylie join sign '+' prints
+# nothing in the unmarked tail (g+X -> ག༷). The grammar reads the @a@ after a
+# +-joined subfix as the stack's implicit vowel (bo+ra -> བོྲ), and the U->W
+# stack renderer floats a late vowel back where it prints (བོྲ -> "bro").
+# w2u 192->199 (jsewts), 195->202 (Lingua); u2w 149->155, 148->154;
+# roundtrip 189->195, 191->197; ewts-rs, java and the kangyur roundtrip stay
+# where they were. The u2w bracket blocks ([comment], bla[x]bla, [???]) stay
+# open - bracketed foreign text is a wave 4 feature.
+#
+# Wave 3.4.13 (the unread tail, defect 2, the core A-D): a claimed run now
+# keeps the tail tokens no fresh run would claim - the marks the structures
+# refuse (a Tibetan long a beside its root, a final after the stack, a lone
+# join sign) hang over their stack, and the first dot past the structure is
+# eaten with an UnplacedDot finding, exactly one, as the reference lets its
+# stack take one dot (ka. -> ka-eaten, g....yag -> the run "g...." plus a
+# fresh "yag"). What a fresh run does claim stays in the input: it reads as
+# itself instead of echoing through the old run (g....yag -> ga...yag, "e"
+# after a dot opens its own stack). A broken hex escape is an opaque token
+# of its own now, splitting the tsekbars around it (a<escape>b -> a, <escape>,
+# b), and a forced final closes a stack the structure did not reach; the
+# implicit-a branch no longer runs behind an a-chen root. w2u 199->201 (jsewts),
+# 202->206 (Lingua), u2w 155->156 (jsewts), roundtrip 195->196 (jsewts) and
+# 197->199 (Lingua); Lingua u2w holds 154 (the AH line reads AH again),
+# ewts-rs, java and the kangyur roundtrip stay where they were.
+jsewts	w2u	210	201
+jsewts	u2w	210	156
+jsewts	roundtrip	210	196
+lingua	w2u	218	206
+lingua	u2w	218	154
+lingua	roundtrip	218	199
 ewts-rs	w2u	16	15
 java	w2u	6	5
 java	u2w	2	1

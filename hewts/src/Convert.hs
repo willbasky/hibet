@@ -14,7 +14,8 @@ import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Grammar.Syllable (Position (..))
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token
-    ( Consonant (..)
+    ( ConSpec (..)
+    , Consonant (..)
     , FinalMark (FMCaret)
     , Token
     , TokenCanonical (..)
@@ -271,6 +272,12 @@ renderItems fmt = T.concat . map renderItem
             TcConSpec _ -> True
             _ -> False
 
+        -- The join sign of Wylie stack syntax: unlike a dot, it has no glyph
+        -- of its own, so an unmarked '+' always prints nothing.
+        isLoneJoin tok = case tokenCanonical tok of
+            TcConSpec CSPlus -> True
+            _ -> False
+
         -- Whether the rest of a run still carries a marked (Just) token.
         anyMarked = any (isJust . fst)
 
@@ -317,6 +324,11 @@ renderItems fmt = T.concat . map renderItem
                 go _ (m@(Just Superfix, _) : rest) = renderMark m : go True rest
                 go _ (m@(Just _, _) : rest) = renderMark m : go False rest
                 go _ ((Nothing, tok) : rest)
+                    -- A join sign that joins nothing reads as nothing: '+' is
+                    -- Wylie-only stack syntax and prints in neither a dead
+                    -- tail (g+X -> ག༷, the sign still prints) nor a marked
+                    -- one, where the shared clause below already hides it.
+                    | isLoneJoin tok = go False rest
                     -- An unmarked token the grammar ate in the middle of a claimed
                     -- stack prints nothing (a stack dot, a doubled caret); only
                     -- the unmarked tail and the boundary print their raw slices.
@@ -446,7 +458,7 @@ renderItems fmt = T.concat . map renderItem
                 -- the implicit @a@ of a vowel-less root stack - even a lone
                 -- letter carries it (ས -> "sa", མངའ -> "mnga'").
                 wylieFromGlyphs :: [(Maybe Position, Token)] -> Text
-                wylieFromGlyphs = goGlyph False Nothing . groupPieces
+                wylieFromGlyphs = goGlyph False Nothing . groupPieces . floatLateSubs
 
                 goGlyph before prevMark (piece : rest) =
                     emitGlyph before prevMark piece rest
@@ -552,6 +564,18 @@ renderItems fmt = T.concat . map renderItem
                             (Just Eaten, _) -> True
                             (Just Final, tok) -> tokenCanonical tok == TcFinal FMCaret
                             _ -> False
+
+                -- A vowel sign that stands between its base and a subjoined
+                -- letter (བོྲ) still belongs to the stack the base opened: the
+                -- reference reads the syllable as the br-stack plus the vowel
+                -- ("bro"), so the sign is floated after the letters it prints
+                -- after, where the group builder expects it. The usual order
+                -- (base, sub, vowel) passes through untouched.
+                floatLateSubs :: [(Maybe Position, Token)] -> [(Maybe Position, Token)]
+                floatLateSubs (v : s : rest)
+                    | isVowelPos (fst v), isSubTok (snd s) = s : v : floatLateSubs rest
+                floatLateSubs (m : rest) = m : floatLateSubs rest
+                floatLateSubs [] = []
 
                 isLetterTok tok = case tokenCanonical tok of
                     TcConsonant _ -> True
