@@ -234,8 +234,8 @@ pStackBody atStart = do
             -> [Token]
             -> SpellParser TibetanSyllable
         bare base baseMark pos next below = do
-            when atStart (checkHead base pos)
-            noteShutGate base next below
+            named <- noteShutGate base next below
+            when (atStart && not named) (checkHead base pos)
             settleBareHead base pos
             advanceWordTail base
             pure baseMark
@@ -244,14 +244,18 @@ pStackBody atStart = do
         -- ordinary root ('markBase'), so no pending lead reaches
         -- 'settleVowelHead'. This bare stack therefore calls the same table
         -- window on the same run, and the finding is the one that window
-        -- would name (grglam).
-        noteShutGate :: Token -> Maybe Token -> [Token] -> SpellParser ()
+        -- would name (grglam). The same window now names a superfix letter
+        -- whose root lies outside its 4.8 set (rpa, rsa): the gate of rule
+        -- 4.8 shut it here, and the word head is still the place the writer
+        -- reached for a superfix.
+        noteShutGate :: Token -> Maybe Token -> [Token] -> SpellParser Bool
         noteShutGate base next below = case next of
             Just n
                 | Just run <- superfixRun base n below
-                , any isLa run ->
-                    checkSuperfixCombination base n run
-            _ -> pure ()
+                , any isLa run || not (gatedSuperfix base n)
+                , atStart || any isLa run ->
+                    checkSuperfixCombination base n run *> pure True
+            _ -> pure False
 
         -- The pending head letter, now that the stack it opened stands with
         -- a vowel: a superfix is checked against its tables, a prefix that
@@ -633,7 +637,8 @@ markBase atStart base next below =
                 && not (GP.isImplicitA n) ->
                 (Prefix, base)
             | Just run <- superfixRun base n below
-            , not (any isLa run) ->
+            , not (any isLa run)
+            , gatedSuperfix base n ->
                 (Superfix, base)
         _ -> (Root, base)
 
@@ -649,6 +654,18 @@ superfixRun base n below
     , not (GP.isImplicitA n) =
         Just below
     | otherwise = Nothing
+
+-- | The root a superfix letter may gate, from rule 4.8's own sets: the letter
+-- right behind the superfix has to be one of its roots. The reference gates
+-- the same way (jsewts @isSuperscript t && superscript t t2@). Without it the
+-- letter is no superfix at all and reads as a plain root (rsa -> ras); an
+-- illegal subfix combination below a legal root still stacks and only the
+-- window warns (sgrwa).
+gatedSuperfix :: Token -> Token -> Bool
+gatedSuperfix base n =
+    case (tokenCanonical base, consonantOf n) of
+        (TcConsonant sf, Just root) -> root `elem` superfixRoots sf
+        _ -> False
 
 -- | The letter la in either script - the Wylie letter and the Tibetan
 -- subjoined ལ - the subfix rule 4.10 lets stand below no superfix at all.

@@ -44,6 +44,11 @@ tests =
             [Superfix, Root, ImplicitVowel]
             "རྐ"
         , probed
+            "rsa -> r takes no superfix over s (4.8): two roots"
+            "rsa"
+            [Root, Root, ImplicitVowel]
+            "རས"
+        , probed
             "bsgribs -> prefix, superfix, root, subfix, vowel, suffix, postfix"
             "bsgribs"
             [Prefix, Superfix, Root, Subfix, Vowel, Suffix, Postfix]

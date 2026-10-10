@@ -205,6 +205,9 @@ wave344 =
         , testCase "r over a letter outside its roots is no combination" $
             rendered "rpa"
                 @?= Right ["line 1: \"rpa\": The superfix \"r\" does not occur above \"p\"."]
+        , testCase "defect 9: rsa no longer stacks, but still names the combination" $
+            rendered "rsa"
+                @?= Right ["line 1: \"rsa\": The superfix \"r\" does not occur above \"s\"."]
         , testCase "s over g+r+w is no combination (the reference's domain)" $
             rendered "sgrwa"
                 @?= Right
