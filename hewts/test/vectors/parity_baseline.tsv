@@ -118,13 +118,13 @@
 # 202->206 (Lingua), u2w 155->156 (jsewts), roundtrip 195->196 (jsewts) and
 # 197->199 (Lingua); Lingua u2w holds 154 (the AH line reads AH again),
 # ewts-rs, java and the kangyur roundtrip stay where they were.
-jsewts	w2u	210	201
+jsewts	w2u	210	208
 jsewts	u2w	210	156
-jsewts	roundtrip	210	196
-lingua	w2u	218	206
+jsewts	roundtrip	210	198
+lingua	w2u	218	214
 lingua	u2w	218	154
-lingua	roundtrip	218	199
-ewts-rs	w2u	16	15
+lingua	roundtrip	218	201
+ewts-rs	w2u	16	16
 java	w2u	6	5
 java	u2w	2	1
 kangyur	roundtrip	254	254

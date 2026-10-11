@@ -79,12 +79,12 @@ caseRenderCrossScriptCanonical =
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =
     renderInput OutWylie "ཫཬཷ༐༪྆࿐"
-        @?= "\\u0f6ba\\u0f6c+raA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
+        @?= "\\u0f6b\\u0f6c+rA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
     renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33"))
-        @?= "ཬྲྀ༒༳"
+        @?= "ཬྲྀ༒༳"
 
 rawRoundtripWylie :: Text -> Text
 rawRoundtripWylie = T.concat . fmap tokenRaw . (fst . tokenizeWylie)

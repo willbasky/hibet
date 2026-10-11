@@ -179,7 +179,7 @@ checkSpelling spelling wasAlias = do
 canonicalRepresentative :: Text -> Text -> Text
 canonicalRepresentative u s
     | s `elem` ["ai", "au", "-i"] = "a" <> s
-    | isLoneConsonant u = s <> "a"
+    | isLoneConsonant u, not (T.isPrefixOf "\\" s) = s <> "a"
     | otherwise = s
     where
         isLoneConsonant g =

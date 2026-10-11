@@ -113,7 +113,7 @@ wylieLexicalCases =
         )
     ,
         ( "an escape stands for the character"
-        , escapedCharacter "de la \\3 yod/" @?= Just (TcNumber N3)
+        , escapedCharacter "de la \\3 yod/" @?= Just (TcUnknown (UnknownMark "3"))
         )
     , ("an escape reports nothing", wylieWarnings "de la \\3 yod/" @?= [])
     ,

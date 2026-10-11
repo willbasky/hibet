@@ -422,7 +422,8 @@ renderItems fmt = T.concat . map renderItem
                 -- as a fresh a-chen once the run already ran its course.
                 implicitA (Just Root, tok) rest
                     | isFullLetter tok
-                    , not (isAChen tok) =
+                    , not (isAChen tok)
+                    , not (isEscapeSpelling tok) =
                         case rest of
                             (Just nextPos, _) : _
                                 | nextPos `elem` [Root, Suffix, Postfix, Final] -> "a"
@@ -433,6 +434,14 @@ renderItems fmt = T.concat . map renderItem
                     case tokenCanonical tok of
                         TcConsonant _ -> True
                         _ -> False
+
+                -- Whether a token's Wylie spelling is really an escape
+                -- (@\uXXXX@). EWTS has no mnemonic for some characters (the
+                -- Balti ཫ ཬ, the half-numbers, the signs), so they spell as an
+                -- escape that already stands for the whole character; the
+                -- implicit @a@ must not follow it (@\u0f6b@ reads back as ཫ,
+                -- @\u0f6ba@ as ཫ + ཨ).
+                isEscapeSpelling tok = T.isPrefixOf "\\" (renderToken OutWylie tok)
 
                 isAChen tok = tokenCanonical tok == TcConsonant Ca
 
@@ -520,6 +529,10 @@ renderItems fmt = T.concat . map renderItem
                             | vowelOver = ""
                             | firstPos `notElem` [Just Root, Just Superfix] = ""
                             | T.isSuffixOf "a" plus = ""
+                            -- an escape spelling already stands for the whole
+                            -- character, inherent vowel and all, so it takes no
+                            -- written @a@ (@\u0f6b@ is ཫ, @\u0f6ba@ is ཫ + ཨ)
+                            | isEscapeSpelling firstTok = ""
                             -- a lone suffix consonant closing several stacks
                             -- keeps the letter it reads as, with no @a@
                             -- (བརྙེས -> "b+r+nyes", མངའ -> "mnga'")

@@ -5,13 +5,11 @@ module Convert.Tokenizer.Wylie where
 import Control.Applicative (asum, (<|>))
 import Convert.Diagnostic
 import Convert.Token
-import Convert.Tokenizer.Unicode (canonicalSeq)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (chr, isHexDigit)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -248,10 +246,14 @@ wylieConSpec = \case
     CSPlus -> "+"
     CSDot -> "."
 
--- | Decode a \\uXXXX or \\UXXXXXXXX escape chunk. The named character may
--- map to several canonical tokens (deprecated precomposed forms are
--- decomposed here too), and a code point that is not a known character stays
--- opaque - the reference re-emits the escape rather than the character.
+-- | Decode a \\uXXXX or \\UXXXXXXXX escape chunk, or a @\\x@ one. An escape
+-- means "insert this character literally": a hex escape stands for the code
+-- point it names, a backslash before anything else for the character after it
+-- (@\\3@ inserts @3@). The character is not looked up in the spelling tables -
+-- a deprecated precomposed form stays whole (@\\u0f77@ prints U+0F77, not its
+-- decomposition) and a code point with no canonical token prints its
+-- character, not the escape - because an escape names exactly the character
+-- the reference appends, and nothing else.
 --
 -- An escape that cannot be a code point at all is neither: the reference
 -- reports it and prints nothing for it. The slice still stands in the text
@@ -264,26 +266,20 @@ decodeEscape sp raw
         ( [mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark "")) sp]
         , addDiagnostic (invalidHexCode sp raw) mempty
         )
-    | otherwise =
-        case decodeHexCode raw of
-            Just c ->
-                ( maybe
-                    [mkUnknown TsWylie sp raw]
-                    (mkSequenceTokens TsWylie sp raw)
-                    (canonicalSeq c)
-                , mempty
-                )
-            -- "\3" and friends: the escaped character stands for itself, while
-            -- the raw slice stays the whole escape
-            Nothing -> ([escapedCharacter], mempty)
+    | otherwise = ([literalCharacter], mempty)
     where
-        escapedCharacter =
-            case T.uncons (T.drop 1 raw) of
-                Nothing -> mkUnknown TsWylie sp raw
-                Just (c, _) ->
-                    fromMaybe
-                        (mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark (T.singleton c))) sp)
-                        (lookupSpelling sp raw (T.singleton c))
+        -- The character the escape stands for: the code point of a hex escape,
+        -- or the character after the backslash. The token's raw slice stays the
+        -- whole escape, so the letters around it are still covered.
+        literalCharacter =
+            case decodeHexCode raw of
+                Just c -> literal c
+                Nothing -> case T.uncons (T.drop 1 raw) of
+                    Just (c, _) -> literal c
+                    Nothing -> mkUnknown TsWylie sp raw
+
+        literal c =
+            mkToken TsWylie TkUnknown raw (TcUnknown (UnknownMark (T.singleton c))) sp
 
 -- | A \\uXXXX / \\UXXXXXXXX escape whose digits are not all hexadecimal: the
 -- reference's tokenizer still swallows the whole sequence, so the message can
