@@ -138,6 +138,31 @@ wylieLexicalCases =
         ( "a closed bracket block is not reported"
         , wylieWarnings "a [New York] b" @?= []
         )
+    ,
+        ( "a run of spaces collapses to one tsheg"
+        , wylieRaws "a     " @?= ["a", "     "]
+        )
+    ,
+        ( "a run of spaces is a single tsheg token"
+        , wylieTshegs "a     " @?= ["     "]
+        )
+    , ("spaces only leave nothing", wylieRaws "   " @?= [])
+    ,
+        ( "leading spaces are dropped"
+        , wylieRaws "  bla" @?= ["b", "l", "a"]
+        )
+    ,
+        ( "a leading line break and spaces are dropped"
+        , wylieRaws "\r  bla" @?= ["b", "l", "a"]
+        )
+    ,
+        ( "runs of spaces between words are one tsheg each"
+        , wylieTshegs "bla   ma   " @?= ["   ", "   "]
+        )
+    ,
+        ( "a single space stays a single tsheg"
+        , wylieTshegs "a b" @?= [" "]
+        )
     ]
 
 mkLexCase :: (String, Assertion) -> TestTree
@@ -146,6 +171,15 @@ mkLexCase (name, assertion) = testCase name assertion
 -- | The raw slices of the tokens, with the empty continuation slices dropped.
 wylieRaws :: Text -> [Text]
 wylieRaws = filter (not . T.null) . map tokenRaw . fst . tokenizeWylie
+
+-- | The raw slices of the tsheg tokens: a run of spaces is one token whose raw
+-- slice is the whole run (wave 4.1).
+wylieTshegs :: Text -> [Text]
+wylieTshegs input =
+    [ tokenRaw tok
+    | tok <- fst (tokenizeWylie input)
+    , tokenCanonical tok == TcPunctuation PMTsheg
+    ]
 
 -- | The diagnostics for an input, in the reference's own message format.
 wylieWarnings :: Text -> [Text]

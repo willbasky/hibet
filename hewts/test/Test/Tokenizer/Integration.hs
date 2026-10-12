@@ -1,6 +1,13 @@
 module Test.Tokenizer.Integration (tests) where
 
-import Convert (OutputFormat (..), SpellItem (..), renderItems, splitSentences)
+import Convert
+    ( OutputFormat (..)
+    , SpellItem (..)
+    , pSentence
+    , renderItems
+    , splitSentences
+    )
+import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Token
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
@@ -32,6 +39,9 @@ tests =
         , testCase
             "escape input renders back to unicode (lossless)"
             caseRenderEscapeToUnicode
+        , testCase
+            "render collapses space runs to one tsheg"
+            caseRenderCollapsedSpaces
         ]
 
 caseWylieRawRoundtrip :: Assertion
@@ -85,6 +95,23 @@ caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
     renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33"))
         @?= "ཬྲྀ༒༳"
+
+-- | The Wylie -> Unicode leg of the full pipeline: tokenize the Wylie input,
+-- run the grammar and render Unicode. Used for the wave 4.1 whitespace shapes,
+-- where the tokenizer's collapse has to survive the grammar.
+renderWylie :: Text -> Text
+renderWylie input =
+    either (error . T.unpack) (renderItems OutUnicode) $
+        parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+
+caseRenderCollapsedSpaces :: Assertion
+caseRenderCollapsedSpaces = do
+    renderWylie "a     " @?= "ཨ་"
+    renderWylie "bla   ma   " @?= "བླ་མ་"
+    renderWylie "\r  bla" @?= "བླ"
+    renderWylie "a " @?= "ཨ་"
+    renderWylie "a b" @?= "ཨ་བ"
+    renderWylie "   " @?= ""
 
 rawRoundtripWylie :: Text -> Text
 rawRoundtripWylie = T.concat . fmap tokenRaw . (fst . tokenizeWylie)

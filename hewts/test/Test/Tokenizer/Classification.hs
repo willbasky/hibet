@@ -33,6 +33,17 @@ singleWylie input expected =
             error $
                 "Expected 1 token, got " <> show (length xs) <> " for input: " <> show input
 
+-- | The whitespace spelling alone is stripped as the leading whitespace of a
+-- document (wave 4.1), so it is checked after a letter, where it is the last
+-- token of the stream.
+singleWylieSpace :: (TokenKind, TokenCanonical) -> Assertion
+singleWylieSpace expected =
+    case fst (tokenizeWylie "k ") of
+        [_kTok, tok] -> (tokenKind tok, tokenCanonical tok) @?= expected
+        xs ->
+            error $
+                "Expected 2 tokens for \"k \", got " <> show (length xs)
+
 singleUnicode :: Text -> (TokenKind, TokenCanonical) -> Assertion
 singleUnicode input expected =
     case fst (tokenizeUnicode input) of
@@ -71,7 +82,7 @@ wylieCases =
     , ("number 9", singleWylie "9" (TkNumber, TcNumber N9))
     ,
         ( "punctuation tsheg space"
-        , singleWylie " " (TkPunctuation, TcPunctuation PMTsheg)
+        , singleWylieSpace (TkPunctuation, TcPunctuation PMTsheg)
         )
     ,
         ( "punctuation double shad"
@@ -669,7 +680,13 @@ seqAliasesWylie name raws expected =
     (name, mapM_ (`seqWylie` expected) raws)
 
 assertWylieSingles :: [(Text, (TokenKind, TokenCanonical))] -> Assertion
-assertWylieSingles = mapM_ (\(raw, expected) -> singleWylie raw expected)
+assertWylieSingles = mapM_ check
+    where
+        -- a whitespace spelling is stripped when leading, so the table feeds
+        -- it after a letter (see 'singleWylieSpace')
+        check (raw, expected)
+            | not (T.null raw) && T.all (== ' ') raw = singleWylieSpace expected
+            | otherwise = singleWylie raw expected
 
 assertUnicodeSingles :: [(Char, (TokenKind, TokenCanonical))] -> Assertion
 assertUnicodeSingles = mapM_ (\(ch, expected) -> singleUnicode (T.singleton ch) expected)

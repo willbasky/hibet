@@ -7,7 +7,7 @@ import Convert.Diagnostic
 import Convert.Token
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
-import Data.Char (chr, isHexDigit)
+import Data.Char (chr, isHexDigit, isSpace)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
@@ -57,10 +57,16 @@ longTokenList =
 -- foreign text, and characters that occur where nothing expects them are
 -- reported. Only the token layer knows positions; line numbers are worked out
 -- later, in 'Convert.Diagnostic'.
+--
+-- Leading whitespace of the whole input is dropped, as the reference does when
+-- fixing spacing (@^\s+@): a document starts at its first real letter, so an
+-- indented line does not open with a tsheg. A run of spaces anywhere else is
+-- one tsheg carrying the whole run (see 'nextChunk'): the reference collapses
+-- the run instead of writing one tsheg per space.
 tokenizeWylie :: Text -> ([Token], Diagnostics)
 tokenizeWylie input = (reverse tokensRev, diagnosticsInOrder diagsRev)
     where
-        (tokensRev, diagsRev) = go [] mempty 0 input
+        (tokensRev, diagsRev) = go [] mempty 0 (T.dropWhile isSpace input)
 
         go accT accD _ rest
             | T.null rest = (accT, accD)
@@ -104,6 +110,11 @@ nextChunk source
     | T.isPrefixOf "\\" source =
         let (chunk, next) = consumeEscape source
          in (chunk, next, Nothing)
+    | T.isPrefixOf " " source =
+        -- A run of spaces is one chunk: the whole run becomes a single tsheg
+        -- (see 'classifyTokens'), the way the reference collapses it.
+        let (run, next) = T.span (== ' ') source
+         in (run, next, Nothing)
     | otherwise =
         case Trie.match longTokenTrie sourceBytes of
             Just (prefix, _, rest)
@@ -154,10 +165,17 @@ classifyTokens sp raw commentClosed
     | raw == "b+l" = ([mkUnknown TsWylie sp raw], mempty)
     | raw == "+" = ([mkToken TsWylie TkConSpec raw (TcConSpec CSPlus) sp], mempty)
     | raw == "." = ([mkToken TsWylie TkConSpec raw (TcConSpec CSDot) sp], mempty)
+    -- A run of spaces spells one tsheg. The whole run stays in the raw slice
+    -- (the input remains covered) and the grammar sees a single boundary, so
+    -- "a     " reads as ཨ་ and "bla   ma   " as བླ་མ་ rather than one tsheg per
+    -- space.
+    | isSpaceRun = ([mkPunctuation TsWylie sp raw PMTsheg], mempty)
     | Just closed <- commentClosed = nonTibetanComment closed
     | isEscapeChunk raw = decodeEscape sp raw
     | otherwise = classifyPlain
     where
+        isSpaceRun = not (T.null raw) && T.all (== ' ') raw
+
         -- a bracketed block of foreign text: one token covering the whole block,
         -- plus a warning when the closing bracket never arrives
         nonTibetanComment closed =

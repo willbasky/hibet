@@ -100,14 +100,21 @@ unicodeToWylieToUnicode =
 
 checkUnicodeIdentity :: TokenCanonical -> Text -> String -> Assertion
 checkUnicodeIdentity canon input label =
-    let w = renderW (parseU input)
+    let -- A tsheg alone is the leading whitespace of the document, and the
+        -- Wylie spelling of a tsheg is a space (wave 4.1): checked after a
+        -- letter, where it is not leading.
+        u =
+            case canon of
+                TcPunctuation PMTsheg -> "ཀ" <> input
+                _ -> input
+        w = renderW (parseU u)
         back = renderU (parseW w)
         -- A lone vowel renders with the a-chen in front (wylie "i" -> ཨི),
         -- exactly what the references write, so only the vowel glyphs gain it.
         want =
             case canon of
                 TcVowel _ -> "ཨ" <> input
-                _ -> input
+                _ -> u
         msg =
             unwords
                 [ "unicode identity failed:"
@@ -123,7 +130,10 @@ checkUnicodeIdentity canon input label =
 wylieSpellings :: [(Text, Bool)]
 wylieSpellings = HS.toList . HS.fromList $ reps' <> aliasKeys
     where
-        reps' = [(s, False) | s <- wylieReps]
+        -- A spelling that is all whitespace is the tsheg alone: it is stripped
+        -- as the leading whitespace of a document (wave 4.1) and is no longer
+        -- an identity, so it is checked in context, not here.
+        reps' = [(s, False) | s <- wylieReps, not (T.all (== ' ') s)]
         aliasKeys = [(s, True) | s <- wylieAliasKeys]
 
 wylieReps :: [Text]
