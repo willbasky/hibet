@@ -4,12 +4,13 @@ module Convert
     , syllables
     , renderItems
     , legality
+    , documentDiagnostics
     , OutputFormat (..)
     , SpellItem (..)
     , pSentence
     ) where
 
-import Convert.Diagnostic (Diagnostics)
+import Convert.Diagnostic (Diagnostics, addDiagnostic, noTibetanCharacters)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Grammar.Syllable (Position (..))
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
@@ -17,10 +18,12 @@ import Convert.Token
     ( ConSpec (..)
     , Consonant (..)
     , FinalMark (FMCaret)
+    , Span (..)
     , Token
     , TokenCanonical (..)
     , TokenSource (..)
     , UnknownMark (..)
+    , mkSpan
     , subjoinOf
     , tokenCanonical
     , tokenRaw
@@ -198,6 +201,42 @@ legality = foldMap itemDiags
         itemDiags (SyllableItem s) = syllableDiags s
         itemDiags (InvalidSyllableItem s) = syllableDiags s
         itemDiags _ = mempty
+
+-- | The document-level warning: the whole input holds no single element the
+-- converter reads as Tibetan. A syllable (sound or broken), a number and a
+-- sign all count; a bracketed block of foreign text and a stray letter or
+-- special mark do not, so a document of nothing but those reads as empty and
+-- is blamed whole. The span is the whole input and no word is quoted - the
+-- warning is about the document, not about any run in it.
+--
+-- This is the W->U arm of the reference, whose @units == 0@ control counts a
+-- letter, a number or a sign of punctuation; the W->U assembly calls it (see
+-- @Test.Parity.convertW2U@). The predicate is about positions the tokenizers
+-- already set, not a second walk over the tokens.
+documentDiagnostics :: Text -> [SpellItem] -> Diagnostics
+documentDiagnostics input items
+    | hasTibetanElement items = mempty
+    | otherwise =
+        addDiagnostic
+            (noTibetanCharacters (mkSpan 0 (fromIntegral (T.length input))))
+            mempty
+
+-- | Whether the parsed sentence holds at least one element the converter reads
+-- as Tibetan: a syllable (sound or broken), a number, or any token that took a
+-- canonical payload (a sign, a punctuation mark, a space, a symbol). A token
+-- that stayed 'TcUnknown' - an ASCII letter, an unmatched special mark, the
+-- content of a bracket block - is no such element.
+hasTibetanElement :: [SpellItem] -> Bool
+hasTibetanElement = any itemHoldsElement
+    where
+        itemHoldsElement (SyllableItem _) = True
+        itemHoldsElement (InvalidSyllableItem _) = True
+        itemHoldsElement (Number _) = True
+        itemHoldsElement (Punct ts) = any isElement ts
+        itemHoldsElement (Other ts) = any isElement ts
+        isElement t = case tokenCanonical t of
+            TcUnknown _ -> False
+            _ -> True
 
 -- | Extract only the recognized syllables from Tibetan text, each as its
 -- raw spelling (e.g. @མཆོག་དེ་དུ-> @["མཆོག","དེ"]@).

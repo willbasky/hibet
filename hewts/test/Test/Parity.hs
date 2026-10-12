@@ -23,6 +23,7 @@ module Test.Parity (tests) where
 import Convert
     ( OutputFormat (..)
     , SpellItem (..)
+    , documentDiagnostics
     , legality
     , pSentence
     , renderItems
@@ -212,7 +213,10 @@ convertW2U input = go (parseItems Wylie tokens)
     where
         (tokens, diags) = tokenizeWylie input
         go (Left err) = (Left err, diags)
-        go (Right items) = (Right (renderItems OutUnicode items), diags <> legality items)
+        go (Right items) =
+            ( Right (renderItems OutUnicode items)
+            , diags <> legality items <> documentDiagnostics input items
+            )
 
 convertU2W :: Text -> (Either Text Text, Diagnostics)
 convertU2W input = go (parseItems Tibetan tokens)

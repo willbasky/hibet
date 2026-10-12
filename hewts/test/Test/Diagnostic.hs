@@ -7,6 +7,7 @@ module Test.Diagnostic (tests) where
 import Convert
     ( OutputFormat (..)
     , SpellItem (..)
+    , documentDiagnostics
     , legality
     , renderItems
     )
@@ -23,7 +24,7 @@ import Convert.Grammar.Parser
     , parseEither
     )
 import Convert.Sentence (Syllable (..), pSentence)
-import Convert.Token (tokenRaw)
+import Convert.Token (Span (..), tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
@@ -43,6 +44,7 @@ tests =
         , wave344
         , wave345
         , wave346
+        , documentLevel
         , records
         ]
 
@@ -395,6 +397,85 @@ wave346 =
                 recordsOf "ka." @?= Right [(OrphanDot, SevWarning)]
             ]
         ]
+
+-- | The document-level warning (4.2): a whole input the converter reads
+-- nothing Tibetan from. A syllable (sound or broken), a number and a sign all
+-- count; a bracketed block of foreign text and a stray letter or special mark
+-- do not. The warning is about the document, so its span is the whole input
+-- and no word is quoted.
+documentLevel :: TestTree
+documentLevel =
+    testGroup
+        "the whole document (4.2)"
+        [ testCase "letters the converter cannot read are no document" $
+            documentWarnings "xxx" @?= Right [documentLine]
+        , testCase "a bracket block of foreign text is no document" $
+            documentWarnings "[abc]" @?= Right [documentLine]
+        , testCase "a stray special mark is no document" $
+            documentWarnings "~" @?= Right [documentLine]
+        , testCase "spaces alone are no document" $
+            documentWarnings "   " @?= Right [documentLine]
+        , testCase "empty input is no document" $
+            documentWarnings "" @?= Right [documentLine]
+        , testCase "a sign of punctuation is content" $
+            documentWarnings "/" @?= Right []
+        , testCase "a symbol is content" $
+            documentWarnings "!" @?= Right []
+        , testCase "a number is content" $
+            documentWarnings "1" @?= Right []
+        , testCase "a letter is content" $
+            documentWarnings "ka" @?= Right []
+        , testCase "a mixed document stays silent" $
+            documentWarnings "ka [x] 1 /" @?= Right []
+        , testCase "the warning carries its code and severity" $
+            documentRecordsOf "" @?= Right [NoTibetanCharacters]
+        , testCase "the span is the whole input" $
+            documentSpans "  xxx" @?= Right [Span 0 5]
+        , testCase "no word is quoted" $
+            documentWords "" @?= Right [Nothing]
+        , testCase "the warning joins the assembled channel, once" $
+            fmap
+                (\ws -> (length (filter (== documentLine) ws), documentLine `elem` ws))
+                (documentChannel "~xxx")
+                @?= Right (1, True)
+        ]
+
+-- | The document warning alone, as the channel renders it.
+documentWarnings :: Text -> Either Text [Text]
+documentWarnings input = do
+    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure (renderDiagnostics input (documentDiagnostics input items))
+
+-- | The assembled W->U channel: the tokenizer's diagnostics, then the
+-- document warning, exactly as 'Test.Parity.convertW2U' returns them.
+documentChannel :: Text -> Either Text [Text]
+documentChannel input = do
+    let (tokens, diags) = tokenizeWylie input
+    items <- parseEither (pSentence Wylie) tokens
+    pure (renderDiagnostics input (diags <> documentDiagnostics input items))
+
+-- | The one document-level message, as the channel renders it.
+documentLine :: Text
+documentLine = "line 1: The input holds no Tibetan letters."
+
+-- | The codes of the document warning alone.
+documentRecordsOf :: Text -> Either Text [DiagnosticCode]
+documentRecordsOf input = do
+    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure [diagCode d | d <- diagnosticList (documentDiagnostics input items)]
+
+-- | The spans of the document warning alone.
+documentSpans :: Text -> Either Text [Span]
+documentSpans input = do
+    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure [diagSpan d | d <- diagnosticList (documentDiagnostics input items)]
+
+-- | The quoted word of the document warning alone ('Nothing': the warning is
+-- about the document, not about a word).
+documentWords :: Text -> Either Text [Maybe Span]
+documentWords input = do
+    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure [diagWord d | d <- diagnosticList (documentDiagnostics input items)]
 
 -- | The diagnostic record: the code, the severity and the quoted word, so the
 -- UI maps codes to help text without parsing messages.

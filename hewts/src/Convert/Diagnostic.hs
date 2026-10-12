@@ -32,6 +32,7 @@ module Convert.Diagnostic
     , invalidSecondSuffix
     , consonantAfterSecondSuffix
     , ambiguousSpelling
+    , noTibetanCharacters
     , Finding (..)
     , resolveFinding
     , findingsDiagnostics
@@ -69,6 +70,7 @@ data DiagnosticCode
     | InvalidSecondSuffix
     | ConsonantAfterSecondSuffix
     | AmbiguousSpelling
+    | NoTibetanCharacters
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -304,6 +306,20 @@ ambiguousSpelling sp word preferred =
             <> preferred
             <> "\"."
         )
+
+-- | The whole document holds no single element the converter reads as
+-- Tibetan: no syllable (sound or broken), no number, no sign. The span is the
+-- whole input and no word is quoted - the warning is about the document, not
+-- about any run in it. The text is ours, as every message here is; the
+-- reference's @units == 0@ control is what the wording answers to.
+noTibetanCharacters :: Span -> Diagnostic
+noTibetanCharacters sp =
+    Diagnostic
+        NoTibetanCharacters
+        SevWarning
+        sp
+        Nothing
+        "The input holds no Tibetan letters."
 
 -- | A finding a constraint window of the grammar records before the run is
 -- over: the run's whole span is only known once the structures have claimed
