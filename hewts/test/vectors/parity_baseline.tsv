@@ -118,12 +118,37 @@
 # 202->206 (Lingua), u2w 155->156 (jsewts), roundtrip 195->196 (jsewts) and
 # 197->199 (Lingua); Lingua u2w holds 154 (the AH line reads AH again),
 # ewts-rs, java and the kangyur roundtrip stay where they were.
-jsewts	w2u	210	208
-jsewts	u2w	210	156
-jsewts	roundtrip	210	198
-lingua	w2u	218	214
-lingua	u2w	218	154
-lingua	roundtrip	218	201
+#
+# Step 4.4a (the bare a-chen stack; Q-6/Q-7, 16.10.2026): a Wylie a-chen root
+# closes its own vowel slot, so the reference reads @ae@ as ཨ + ཨེ and @aa@ as
+# two stacks. The U->W leg now writes the dot before a standalone a-chen, as
+# THL (ewts-js) and Lingua do. jsewts never writes that dot (its own ཨཨ spells
+# "aa", ཨཨེ spells "ae"), so on row 109 the same ཨཨ takes "aa" there and "a.a"
+# here: the two references disagree on one input, and the decision follows
+# THL. The jsewts u2w floor therefore DROPS by one, 156->155, as a recorded
+# divergence, not a silent loss.
+#
+# Step 4.4a, part two (the U->W long-vowel convention; 16.10.2026): the 4.4a
+# W->U counts now stand in the floor too (w2u 208->210 jsewts, 214->218
+# Lingua), and the U->W leg takes the reference's long-vowel convention. The
+# Tibetan side spells a long letter with the @ཱ@ sign and a short sign; the
+# generic stack absorbs both now, the @ཱ@ leaving the slot open for the @ི@ @ུ@
+# @ྀ@ that complete it (ཨཱི reads back as @I@, ཀཱུ as @kU@, ཅླཱྀ as @c+l-I@),
+# while a bare «ཨཱ» stays structure 1's own on the length tie. The compound
+# signs ཻ ཽ ྀ bind a stack the same way, so ཀཽ is one stack (@kau@) and ཨཻ/ཨཽ
+# read back as @ai@/@au@. That is what the reformatting leg needs: the
+# W->U->W->U chain stays inside its own language. u2w 155->172 (jsewts),
+# 154->173 (Lingua); roundtrip 198->200, 201->207. ewts-rs, java and the
+# kangyur roundtrip stay where they were. The remaining u2w gaps are the
+# reference's own quirks (bracketed foreign text, the @f@/@v@ caret, the
+# deprecated precomposed signs U+0f73/U+0f77, the @rdo+e@ force-join) - waves
+# 4 and later.
+jsewts	w2u	210	210
+jsewts	u2w	210	172
+jsewts	roundtrip	210	200
+lingua	w2u	218	218
+lingua	u2w	218	173
+lingua	roundtrip	218	207
 ewts-rs	w2u	16	16
 java	w2u	6	5
 java	u2w	2	1

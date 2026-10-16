@@ -25,6 +25,7 @@ data ScanState = ScanState
     { scanFindings :: [Finding]
     , scanLeading :: Maybe (LeadRole, Token)
     , scanTail :: WordTail
+    , scanStackVowel :: Bool
     , scanFinalSlot :: Int
     , scanCaret :: Bool
     }
@@ -46,6 +47,15 @@ data WordTail
     | TailOpen (Maybe Token) (Maybe Token)
     deriving (Show, Eq)
 
+-- | Whether the word's currently open stack already carries its vowel: a Wylie
+-- a-chen base (the letter that already is the vowel an implicit @a@ would
+-- spell) sets it when the stack opens, a sign or the bare implicit @a@ sets it
+-- where the tail places them, and a forced join that drags a letter below a
+-- fresh a-chen base clears it again (that base is then a root waiting for its
+-- vowel, a+yo -> ཨྱོ). A stack carries a single vowel, so a lone vowel that
+-- reaches the word loop while this flag stands belongs to a fresh a-chen stack
+-- of its own, not to the stack that closed (ae -> ཨ + ཨེ, kae -> ཀ + ཨེ).
+
 -- | The spell parser: the grammar runs in 'StateT' over the token parser, so
 -- the state lives in the parsers themselves. Megaparsec's @MonadParsec@
 -- instances for 'StateT' (its own README: wrap @ParsecT@ in these monads to
@@ -62,6 +72,7 @@ initialScanState =
         { scanFindings = []
         , scanLeading = Nothing
         , scanTail = TailVoid
+        , scanStackVowel = False
         , scanFinalSlot = 0
         , scanCaret = False
         }
@@ -97,6 +108,7 @@ takeFindings = do
             { scanFindings = []
             , scanLeading = Nothing
             , scanTail = TailVoid
+            , scanStackVowel = False
             }
     pure (reverse fs)
 
@@ -214,15 +226,50 @@ isImplicitA :: Token -> Bool
 isImplicitA Token{tokenCanonical = TcConsonant Ca} = True
 isImplicitA _ = False
 
+-- | The same letter, but only as the Wylie spelling writes it. A Tibetan
+-- a-chen (0x0f68) is a written letter that opens a stack of its own - the
+-- vowel sign behind it still belongs to that stack (ཨེ is one stack, the
+-- Wylie @ae@ two) - so the generic stack takes @a@ as its unprinted implicit
+-- vowel by this narrower predicate, and a written a-chen as a base like any
+-- other consonant.
+isImplicitAWylie :: Token -> Bool
+isImplicitAWylie t = isImplicitA t && tokenSource t == TsWylie
+
+pImplicitAWylie :: Parser Token
+pImplicitAWylie = satisfy isImplicitAWylie
+
 -- | A vowel the generic stack can absorb. Wylie writes the long letters as
 -- their two short parts (@AH@, @mA@, @oM@), so every vowel token is absorbable
--- there; Tibetan spells a long a explicitly (0x0f71) and a root written next
--- to it must not swallow it into the same word, so the Tibetan side takes only
--- the short vowels. The lattice is decided per token, by 'tokenSource', not by
--- the 'Spelling' label: the parity runs Wylie token lists under 'Tibetan' as
--- well.
+-- there; the Tibetan side takes the short vowels, the compound signs @ཻ@ @ཽ@ @ྀ@
+-- (0x0f7b, 0x0f7d, 0x0f80) that bind a stack just as the short ones do, and the
+-- long @a@ sign @ཱ@ (0x0f71). So «ཨ» + «ཻ» is one stack (@ai@, not an a-chen
+-- with a vowel left over), and «ཱ» opening a stack leaves the slot for the
+-- short vowel that completes the long letter («ཱ» + «ི» reads back as @I@).
+-- A lone «ཨཱ» is still the book's long-a window's: structure 1 claims it on the
+-- length tie, so the sign standing by itself keeps its own shape. The lattice
+-- is decided per token, by 'tokenSource', not by the 'Spelling' label: the
+-- parity runs Wylie token lists under 'Tibetan' as well.
 pVowelAny :: Parser Token
 pVowelAny = satisfy isEatableVowel
+
+-- | The bare short vowel that completes a long vowel, seen from the long @a@
+-- token that opened the slot. Wylie spells the long letters as two letters, and
+-- the second token carries no text of its own (its raw is empty) because the
+-- one letter wrote both (@I@ -> @A@ + @i@, @-I@ -> @A@ + @-i@); a short vowel
+-- written out on its own (@Ai@ as @A@ then a spelled @i@, @kAi@ as @k@ + @A@ +
+-- @i@) keeps its raw text and opens a stack of its own. Tibetan spells the long
+-- letter with the sign @ཱ@ (0x0f71) and the short sign that completes it, each
+-- its own codepoint, so there the predicate is the completing short vowel
+-- itself - @ི@ @ུ@ @ྀ@ combine into @I@ @U@ @-I@ (@ཱ@ + @ེ@ stays two, @A@ then
+-- @e@, as the reference reads it).
+pLongVowelHalf :: Parser Token
+pLongVowelHalf = satisfy isLongVowelHalf
+
+isLongVowelHalf :: Token -> Bool
+isLongVowelHalf t@Token{tokenCanonical = TcVowel v}
+    | tokenSource t == TsUnicode = v `elem` [Vi, Vu, V_i]
+    | otherwise = T.null (tokenRaw t)
+isLongVowelHalf _ = False
 
 -- | The forced subjoin sign @+@: the letter after it is pushed below the base.
 pPlus :: Parser Token
@@ -307,7 +354,7 @@ pUnclaimedTail isTail = go
 -- | Whether a vowel token belongs to a stack (see 'pVowelAny').
 isEatableVowel :: Token -> Bool
 isEatableVowel tok@Token{tokenCanonical = TcVowel v}
-    | tokenSource tok == TsUnicode = v `elem` [Vi, Ve, Vo, Vu]
+    | tokenSource tok == TsUnicode = v `elem` [Vi, Ve, Vo, Vu, Vai, Vau, V_i, VA]
     | otherwise = True
 isEatableVowel _ = False
 

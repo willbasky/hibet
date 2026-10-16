@@ -23,6 +23,7 @@ import Convert.Token
     , TokenCanonical (..)
     , TokenSource (..)
     , UnknownMark (..)
+    , Vowel (VA, V_i, Vi, Vu)
     , mkSpan
     , subjoinOf
     , tokenCanonical
@@ -509,8 +510,13 @@ renderItems fmt = T.concat . map renderItem
                 wylieFromGlyphs = goGlyph False Nothing . groupPieces . floatLateSubs
 
                 goGlyph before prevMark (piece : rest) =
-                    emitGlyph before prevMark piece rest
-                        <> goGlyph (before || isLetterPiece piece) (lastMark piece) rest
+                    case longVowelRun before piece rest of
+                        Just (combined, rest') ->
+                            combined
+                                <> goGlyph (before || isLetterPiece piece) (lastMark piece) rest'
+                        Nothing ->
+                            emitGlyph before prevMark piece rest
+                                <> goGlyph (before || isLetterPiece piece) (lastMark piece) rest
                 goGlyph _ _ [] = ""
 
                 emitGlyph _ _ [] _ = ""
@@ -555,15 +561,24 @@ renderItems fmt = T.concat . map renderItem
                         -- the dot only where the prefix and the stack could
                         -- read as one regular stack: b + r + ny is no regular
                         -- stack, so བརྙ stays "brnya"
-                        dot = case prevMark of
-                            Just (Just Prefix, prevTok)
-                                | isFullLetter prevTok
-                                , isFullLetter firstTok
-                                , Set.member
-                                    (renderToken OutWylie prevTok <> "+" <> plus)
-                                    regularStacks ->
-                                    "."
-                            _ -> ""
+                        --
+                        -- a stack opening on an a-chen takes a dot of its own
+                        -- whenever an earlier stack stands in the run: a bare
+                        -- @a@ behind another letter would read back as a single
+                        -- stack once the run already runs, so the reference
+                        -- separates them (a.a, ba.a, be.a) and no dot is the
+                        -- a-chen's own opening stack (aka, gaka, bka)
+                        dot
+                            | isAChen firstTok, before = "."
+                            | otherwise = case prevMark of
+                                Just (Just Prefix, prevTok)
+                                    | isFullLetter prevTok
+                                    , isFullLetter firstTok
+                                    , Set.member
+                                        (renderToken OutWylie prevTok <> "+" <> plus)
+                                        regularStacks ->
+                                        "."
+                                _ -> ""
                         writtenA
                             | vowelOver = ""
                             | firstPos `notElem` [Just Root, Just Superfix] = ""
@@ -654,6 +669,34 @@ renderItems fmt = T.concat . map renderItem
                 vowelOwns rest = case rest of
                     piece : _ -> isVowelPiece piece
                     _ -> False
+
+                -- The long letter the Tibetan side spells with the @ཱ@ sign and
+                -- a short sign: the pair is one mnemonic in Wylie (@I@ @U@ @-I@),
+                -- so it prints as one piece and the short sign is skipped. The
+                -- mnemonic needs a letter to sit on («I» is ཨཱི, not a bare ཱི),
+                -- so the pair combines only after a letter piece of this run
+                -- (@before@): «ཱ» + «ི» with no carrier reads @A@ then @i@, as
+                -- before. The other short signs that may follow @ཱ@ (@ེ@ @ོ@) do
+                -- not combine either: the reference reads «ཱ» + «ེ» as @A@ then
+                -- @e@.
+                longVowelRun before piece (next : rest)
+                    | before
+                    , Just VA <- vowelPieceCanon piece
+                    , Just v <- vowelPieceCanon next
+                    , Just combined <- longVowelCombined v =
+                        Just (combined, rest)
+                longVowelRun _ _ _ = Nothing
+
+                vowelPieceCanon (m : _)
+                    | isVowelPos (fst m) = case tokenCanonical (snd m) of
+                        TcVowel v -> Just v
+                        _ -> Nothing
+                vowelPieceCanon _ = Nothing
+
+                longVowelCombined Vi = Just "I"
+                longVowelCombined Vu = Just "U"
+                longVowelCombined V_i = Just "-I"
+                longVowelCombined _ = Nothing
 
         renderToken ofmt tok
             | tokenSource tok == sourceOf ofmt = tokenRaw tok

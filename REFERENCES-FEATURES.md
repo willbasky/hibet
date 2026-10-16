@@ -12,7 +12,8 @@
 и держится для понимания и принципов, а не как образец: наши сообщения будут
 своими, пословное совпадение с эталоном не требуется и не проверяется.
 
-Составлено: Sept 2026 (ред. 2 — состав референсов сокращён до 4). Источники —
+Составлено: Sept 2026. Текущая редакция — **3 (16.10.2026)**: re-audit
+референсов — принят `ewts-js`, уточнены линии и инвентарь тестов. Источники —
 исходники референсов (см. раздел 1).
 
 ---
@@ -34,38 +35,49 @@
 | — | вне скоупа / не требуется |
 
 Ссылки на референсы сокращены: **[java]** = `ewts-converter/.../EwtsConverter.java`,
-**[jsewts]** = `jsewts/src/jsewts.js`, **[ewts-rs]** = `ewts-rs/ewts/src/*.rs`,
-**[Lingua]** = `Lingua-BO-Wylie/lib/Lingua/BO/Wylie.pm`, **[Trans]** =
+**[jsewts]** = `jsewts/src/jsewts.js`, **[ewts-js]** = `ewts-js/src/EwtsConverter.mjs`,
+**[ewts-rs]** = `ewts-rs/ewts/src/*.rs`, **[Lingua]** =
+`Lingua-BO-Wylie/lib/Lingua/BO/Wylie.pm`, **[Trans]** =
 `ewts-converter/.../TransConverter.java`. Пути относительно `convertors/main/`.
 
 ---
 
-## 1. Референсы (`convertors/main/`, 4 проекта)
+## 1. Референсы (`convertors/main/`, 6 проектов; эталонов — 5)
 
-| Проект | Язык | Направления | Warnings | Роль для нас |
+Re-audit (16.10.2026): в `main/` лежат шесть проектов — `ewts-converter`,
+`jsewts`, `Lingua-BO-Wylie`, `ewts-js`, `ewts-rs` и `pyewts`. Эталонами
+считаются первые пять; `pyewts` оставлен в папке, но **эталоном не является**
+(см. 13.1).
+
+| Проект | Язык / активность | Направления | Warnings | Роль для нас |
 |---|---|---|---|---|
-| `ewts-converter` (~~2785~~ … `EwtsConverter.java` + `TransConverter.java`) | Java (BDRC/buda-base) | W→U и U→W | есть | **первичный оракул конвертации** обоих направлений и режимов (sloppy/lenient); единственный с полным `E`/`O`. Warnings — только принципы, не образец (см. «Смена стратегии») |
-| `jsewts` (`jsewts.js` + `acip.js` + `alalc.js` + `unicode_tib.js`) | JS | W→U и U→W | есть | **вторичный оракул конвертации**: порт BDRC-логики, лучшие тесты (210-корпус + kang) и CI; ACIP/ALALC/DTS; кросс-проверка java |
-| `ewts-rs` (`converter.rs`, `tokenizer.rs`, `dict.rs`, `rules_test.rs`) | Rust | только W→U | нет (по дизайну) | **алгоритм стековой резолюции** W→U + `rules_test.rs` (16 правил) как приёмочные векторы |
-| `Lingua-BO-Wylie` (`Wylie.pm`) | Perl (THL, 2011) | W→U и U→W | есть | **исторический эталон THL** (родоначальник логики), 219 roundtrip-векторов, `leave_dubious`; арбитраж расхождений таблиц |
+| `ewts-converter` (`EwtsConverter.java` + `TransConverter.java`) | Java (BDRC/buda-base); посл. коммит 2024-07-01, тесты с 2022-06-20 | W→U и U→W | есть | **первичный оракул конвертации** обоих направлений и режимов (sloppy/lenient); единственный с полным `E`/`O`. Warnings — только принципы, не образец (см. «Смена стратегии») |
+| `jsewts` (`jsewts.js` + `acip.js` + `alalc.js` + `unicode_tib.js`) | JS (BDRC); посл. коммит 2025-09-05 | W→U и U→W | есть | **вторичный оракул конвертации**: порт BDRC-логики, лучшие тест-корпуса (210 + kang + wkang) и CI (в `deploy-pages.yml` гоняется `yarn test`); ACIP/ALALC/DTS; нормализация Unicode; кросс-проверка java |
+| `Lingua-BO-Wylie` (`Wylie.pm`) | Perl (THL, `$VERSION` 2011; зеркало `nbuwe`, 2026) | W→U и U→W | есть | **исторический эталон THL** (родоначальник логики), 218 roundtrip-векторов, `leave_dubious`; арбитраж расхождений таблиц |
+| `ewts-js` (`EwtsConverter.mjs`) | JS (THL, Roger Espel Llima, v2.0.0); посл. коммит 2026-05-08 | W→U и U→W (+ фонетика) | есть | **активный преемник THL-линии** (сам Lingua называет его «The JavaScript reincarnation of this code»); воспроизводит корпус Lingua **218/218** и jsewts **210/210** (W→U), U→W 205/210 и 211/218; **источник таблиц `ewts-rs`**; собственный корпус 212 тестов. Warnings — не образец |
+| `ewts-rs` (`converter.rs`, `tokenizer.rs`, `dict.rs`, `rules_test.rs`, `lib.rs`) | Rust; посл. коммит 2026-10-12 | только W→U | нет (по дизайну) | **алгоритм стековой резолюции** W→U + тесты `rules_test.rs` (16 правил), `lib.rs` и `tokenizer.rs` как векторы. Таблицы символов взяты из `ewts-js` — независим только алгоритм |
+| `pyewts` (`pyewts.py`) | Python (порт BDRC-логики, OpenPecha/Esukhia); 0 тестов, нет CI | W→U, U→W (частично), ACIP | есть | **не эталон**: избыточная третья копия BDRC-логики (§13.1) |
 
-Две независимые линии имплементации одного стандарта (важно для
-differential-тестов, чтобы ловить родовые баги):
+Две линии имплементации одного стандарта (важно для differential-тестов,
+чтобы ловить родовые баги):
 
-- **BDRC-линия**: `ewts-converter` (java) → `jsewts` (его JS-порт).
-- **THL-линия**: `Lingua-BO-Wylie` (perl, Роджер Эспель Ллима). Его современный
-  JS-редизайн `ewts-js` был в `other/` и **исключён как дубль линии** (см. 13.3);
-  его уникальные идеи зафиксированы в §8.3.
+- **BDRC-линия**: `ewts-converter` (java) → `jsewts` (его JS-порт) → `pyewts`
+  (Python-порт; не эталон).
+- **THL-линия**: `Lingua-BO-Wylie` (perl, Роджер Эспель Ллима) → `ewts-js`
+  (его JS-редизайн, тот же автор; активен). Преемственность подтверждена
+  делом: на корпусе Lingua `ewts-js` даёт те же 218/218.
 
-`ewts-rs` стоит особняком: односторонний и без warnings, но с самым чистым
-алгоритмом сборки стеков.
+`ewts-rs` стоит особняком по **алгоритму**: односторонний, без warnings,
+чистый стековый разбор. Но его **таблицы символов не независимы** — оба его
+README указывают источником `ewts-js/src/EwtsConverter.mjs`.
 
 Зафиксированные решения по оракулам (с 30.09.2026 — только конвертация):
 
-- **Java + jsewts + Lingua** = спецификация конвертации обоих направлений и
-  режимов (**java/jsewts** — BDRC-ветка, **Lingua** — независимая THL-ветка для
-  перекрестной сверки). Диагностика оракулами не является: тексты, состав и
-  порядок предупреждений — свои.
+- **Java + jsewts + Lingua + ewts-js** = спецификация конвертации обоих
+  направлений и режимов: **java/jsewts** — BDRC-линия, **Lingua/ewts-js** —
+  THL-линия (Lingua — исторический арбитраж, ewts-js — активный преемник).
+  Диагностика оракулами не является: тексты, состав и порядок предупреждений —
+  свои.
 - **ewts-rs** = алгоритм определения «верх/супер/субскрипт» и правила 1–16.
 
 ---
@@ -139,6 +151,34 @@ ACIP) — пользователи академической среды пиш�
 - [jsewts] отдельные модули `acip.js`, `alalc.js` (обе стороны).
 
 **В hewts**: вне скоупа; резерв (этап 6+).
+
+### 2.5 Нормализация/переупорядочивание Unicode (только [jsewts]) — ❌
+**Что решает**: Unicode-вход тибетского текста бывает «неканонически»
+упорядочен: гласный знак перед основным согласным, слоговые знаки в
+произвольном порядке, deprecated-прекомпозиты. Без приведения к канону U→W
+рвёт стек на части или теряет знаки.
+
+**Как решают**: [jsewts] `unicode_tib.js` (`normalizeUnicode`, порт
+`OpenPecha/Botok` `unicode_normalization.py`; покрыт `test/unicode_tib.test.js`,
+9 кейсов):
+- разворот discouraged/deprecated: `0F73→0F71 0F72`, `0F75`, `0F77→0FB2 0F71 0F80`,
+  `0F79`, `0F81`;
+- NFD-декомпозиция прекомпозитов: `0F43,0F4D,0F52,0F57,0F5C,0F69,0F76,0F78,
+  0F93,0F9D,0FA2,0FA7,0FAC,0FB9` (NFC — обратная сборка);
+- `0F00→0F68 0F7C 0F7E`;
+- **переупорядочивание внутри слога** по категориям
+  (Base → Subscript → BottomVowel → BottomMark → TopVowel → TopMark →
+  RightMark; устойчивая сортировка по исходной позиции);
+- `0F65→0F62` перед «недопустимыми» последователями;
+- выправление «неправильного старта»: ведущий гласный переносится за основу,
+  ведущий субскрипт отбрасывается.
+
+[java]/[Lingua]/[ewts-js] делают лишь часть этого (декомпозицию прекомпозитов,
+см. 7.1), полного переупорядочивания нет.
+
+**В hewts**: ❌. Отдельная задача (этап 1/5): нормализация Unicode-входа —
+до классификации стека. Часть про deprecated-прекомпозиты уже отражена в 7.1;
+здесь важна именно **перестановка** знаков в канонический порядок.
 
 ---
 
@@ -268,8 +308,8 @@ I(0F71+0F72), u(0F74), U(0F71+0F74), e(0F7A), **E(0F71+0F7A)**, ai(0F7B),
 o(0F7C), **O(0F71+0F7C)**, au(0F7D), -i(0F80), -I(0F71+0F80)`.
 Вокалические `r-i/r-I/l-i/l-I` = составные `0FB2/0FB3 + 0F80/0F71 0F80`
 (standalone = верх `0F62/0F63`, добавленные = субскрипт `0FB2/0FB3`).
-[jsewts/Lingua] — то же, но **без E/O** (см. вывод в §13.1): долгии e/o умеет
-только java.
+Вся не-java родословная (`jsewts`, `Lingua`, `ewts-js`, `pyewts`) — то же, но
+**без `E/O`**: долгие e/o умеет только java (см. §11, п. 5).
 
 **В hewts** (`Token.hs:277-297`, `Unicode.hs:164-180`): ❌ нет `VE`/`VO`;
 `VI→0F73`, `VU→0F75`, `V_I→0F81`, `Vr_i→0F76`, `Vr_I→0F77`, `Vl_i→0F78`,
@@ -724,10 +764,10 @@ U→W (6):
 корректировками+проверками / **отдельная проверка правописания без конвертации**.
 Проектировать как опции одного конвейера (этап 6).
 
-### 8.3 Идеи из `ewts-js` (референс исключён как дубль линии, идеи учтены)
-Проект `ewts-js` (JS, 2025, автор — автор Lingua-BO-Wylie) удалён из состава
-референсов как субсумированный дубль (см. §1 и 13.3). Сохранившиеся уникальные
-идеи, которые стоит принять или рассмотреть:
+### 8.3 Флаги и идеи из `ewts-js` (с ред. 3 — референс, см. §1)
+Проект `ewts-js` (JS, v2.0.0; автор — автор Lingua-BO-Wylie) с 16.10.2026
+входит в состав эталонов THL-линии (см. §1). Помимо конвертации (W→U/U→W) он
+несёт несколько идей, которые стоит принять или рассмотреть:
 
 1. **`pass_through`** (`EwtsConverter.mjs`): U→W — не-тибетский текст выводить
    «как есть», без обёртки `[ ]`. → наш этап 5 (опция U→W).
@@ -771,28 +811,47 @@ U→W (6):
 
 ## 10. Тесты референсов (целевой приёмочный набор)
 
-| Источник | Что за векторы |
-|---|---|
-| `ewts-rs/rules_test.rs` | 16 правил THL: 1.bsgribs; 2.mkhan; 3.gyon g.yon; 4.sat+t+wa; 5.bru+e rdo+e; 6.rta r+ta; 7.sarba mang+galaM; 8.\u0F40; 9.[New York]; 10.\3; 11.a khu/_ug pa/_aM; 12.mA duH phaT; 13.R+na R+Ya R+ya; 14.rnya rla rwa; 15.r+r r+R s+Wa r+Y; 16.r+sha l+ra h+wa h+ya |
-| `ewts-converter/.../ConversionTest.java` | 36 ассертов / 5 тестов: pa'ng, be'u'i'o, sO, mNyon…, мантры, DTS/ALALC, sloppy/lenient |
-| `jsewts/test/` | `test.txt` 210 случаев + `kang.txt` 255 (Kangyur round-trip); `acip.test.js` ~32, `alalc.test.js` 12, `unicode_tib.test.js`; Jest + CI |
-| `Lingua-BO-Wylie/t/` | `test.txt` 219 round-trip случаев + `Lingua-BO-Wylie.t` с проверкой warnings |
-| Наши golden | отражают **текущий неполный** рендер → пересчитать после этапов 1–5 |
+| Источник | Что за векторы | В наших векторах |
+|---|---|---|
+| `ewts-rs/…/rules_test.rs` | 16 правил THL: 1.bsgribs; 2.mkhan; 3.gyon g.yon; 4.sat+t+wa; 5.bru+e rdo+e; 6.rta r+ta; 7.sarba mang+galaM; 8.\u0F40; 9.[New York]; 10.\3; 11.a khu/_ug pa/_aM; 12.mA duH phaT; 13.R+na R+Ya R+ya; 14.rnya rla rwa; 15.r+r r+R s+Wa r+Y; 16.r+sha l+ra h+wa h+ya | ✅ `ewts_rs_rules.tsv` |
+| `ewts-rs/…/lib.rs` | `TST_DATA` (стандартные стеки, `rkw rk+w`, `rgyi`, мантра `oM aHhU~M…`, `sha ai gaang`, длинный текст), `etu_prefixes` (4), `etu_non_tibetan_test` (7, вкл. `\u0f40`, `\U00000f40`), `etu_lower_form_after_first_consonant` (4: `bw`, `yw`, `bwa`, `bw `) — всего ~22 | ❌ |
+| `ewts-rs/…/tokenizer.rs` | токенизатор: `TST_DATA` (6) + non-tibetan (4) — состав токенов | ❌ |
+| `ewts-converter/.../ConversionTest.java` | 5 `@Test`, 36 ассертов: `textEwts` (8 EWTS-пар / 6 уник.), `textDtsAlalcToEwts` (3), `textConvertSloppy` (1), `textConvertLenient` (5), `textEwtsToDtsAlalc` (13) | ✅ только EWTS-пары → `java_ewts.tsv`; DTS/ALALC/sloppy/lenient — ❌ (резерв / Волна 6) |
+| `jsewts/test/test.txt` | 210 случаев (W→U + U→W + warnings + back) | ✅ `jsewts_parity.tsv` |
+| `jsewts/test/kang.txt` | 254 строки Kangyur | ✅ только round-trip |
+| `jsewts/test/wkang.txt` | 254 строки — **готовый U→W-выход для `kang.txt`** (генератор `towylie.js`); `rekang.txt` — обратный прогон | ❌ (готовый U→W-оракул) |
+| `jsewts/test/unicode_tib.test.js` | 9 кейсов нормализации/переупорядочивания Unicode (см. 2.5) | ❌ |
+| `jsewts/test/acip.test.js` | ~56 записей: ACIP→EWTS и EWTS→ACIP | ❌ (резерв) |
+| `jsewts/test/alalc.test.js` | 12 `test(...)`: EWTS→ALALC/DTS | ❌ (резерв) |
+| `jsewts/test/wylie.test.js` | прогон `test.txt` в режиме `sloppy:true` + «issue #1» (длинный вектор) | ❌ (sloppy — Волна 6; issue #1 — кандидат) |
+| `Lingua-BO-Wylie/t/test.txt` | 218 случаев (round-trip + warnings) | ✅ `lingua_parity.tsv` |
+| `Lingua-BO-Wylie/t/Lingua-BO-Wylie.t` | проверка warnings поверх `test.txt` | ❌ (по решению: диагностика своя) |
+| `ewts-js/src/EwtsConverterTests.mjs` | 212 тестов (порт java-набора); W→U совпадает с корпусами Lingua и jsewts на 100%, но **12 строк уникальны** и иные `warns`/`wylie2` | ❌ (кандидат на отдельный корпус) |
+| `pyewts` | — | тестов нет |
 
-Дифференциальные прогоны hewts ↔ {java, jsewts, Lingua} на корпусе — не
-настроены (этап 7).
+**Что это значит.** W→U-корпуса покрыты тремя наборами (java, jsewts, Lingua);
+сверх них у референсов есть неперебранные векторы: `ewts-rs` (`lib.rs`,
+`tokenizer.rs`), нормализация Unicode (`unicode_tib`), готовый U→W-оракул
+(`wkang.txt`), корпус `ewts-js` и резервные ACIP/ALALC/DTS/sloppy/lenient.
+
+Наши golden отражают **текущий неполный** рендер → пересчитать после этапов 1–5.
+
+Дифференциальные прогоны hewts ↔ {java, jsewts, Lingua, ewts-js} на корпусе —
+не настроены (этап 7).
 
 ---
 
 ## 11. Зафиксированные решения
 
-1. **Оракулы (с 30.09.2026 — только конвертация)**: Java `ewts-converter` +
-   `jsewts` (оба направления, режимы; BDRC-линия) и `Lingua-BO-Wylie`
-   (независимая THL-линия — арбитраж); `ewts-rs` — только стековая резолюция
-   W→U и rules_test 1–16. Warnings оракулами не являются: диагностика — своя
+1. **Оракулы (с 30.09.2026 — только конвертация; уточнено 16.10.2026)**:
+   Java `ewts-converter` + `jsewts` (оба направления, режимы; **BDRC-линия**) и
+   `Lingua-BO-Wylie` + `ewts-js` (оба направления; **THL-линия**: Lingua —
+   исторический арбитраж и корпус 218, `ewts-js` — активный преемник и корпус
+   212); `ewts-rs` — только стековая резолюция W→U и rules_test 1–16 +
+   `lib.rs`/`tokenizer.rs`. Warnings оракулами не являются: диагностика — своя
    (коды и тексты из `Convert.Diagnostic`).
-   Исключены: `pyewts` (порт java: баг `E/O`, 0 тестов — §13.1), `lucene-bo`
-   (анализатор, не конвертор — §13.2), `ewts-js` (дубль THL-линии — §13.3).
+   Исключены: `pyewts` (избыточный порт BDRC-логики, 0 тестов, нет CI — §13.1),
+   `lucene-bo` (анализатор, не конвертор — §13.2).
 2. **Составные формы везде + декомпозиция deprecated на входе Unicode**
    (аспираты, долгие гласные, вокалические r/l; 0F00→а-чен+o+анусвара): решение
    сходится со всеми оставшимися референсами.
@@ -811,30 +870,31 @@ U→W (6):
 
 | Фича | Референс | hewts | Этап |
 |---|---|---|---|
-| Longest-match токенизация | все 4 | ✅ | — |
-| Эскейпы \u/\U/\x | все 4 | ✅ (спец: декод в канон) | 3 (верификация) |
+| Longest-match токенизация | все оракулы | ✅ | — |
+| Эскейпы \u/\U/\x | все оракулы | ✅ (спец: декод в канон) | 3 (верификация) |
 | Скобки [..] (вложенность+эскейп) | java/jsewts/Lingua | ✅ (+экранирование `\[`) | — |
-| Warning «Unfinished […]» | все 4 | ❌ | 3 |
+| Warning «Unfinished […]» | все оракулы | ❌ | 3 |
 | Спецсимволы вне контекста | java/jsewts/Lingua | 🟡 (issue, без ConSep) | 1,3 |
-| ConSpec `+` и `.` | все 4 | ❌ | 1,3 |
+| ConSpec `+` и `.` | все оракулы | ❌ | 1,3 |
 | BOM/ZWSP | java/jsewts | ❌ | 3 |
-| Цифры/пунктуация/символы | все 4 | ✅ | — |
-| Финалы 9 с классами | все 4 | 🟡 (6 канонов) | 1 |
-| Аспираты составные base+0FB7 | все 4 | 🟡 (precomposed 0F43…) | 1 |
+| Цифры/пунктуация/символы | все оракулы | ✅ | — |
+| Финалы 9 с классами | все оракулы | 🟡 (6 канонов) | 1 |
+| Аспираты составные base+0FB7 | все оракулы | 🟡 (precomposed 0F43…) | 1 |
 | Гласные составные + VE/VO | java (E/O — только java) | 🟡 (precomposed; нет VE/VO) | 1 |
 | Вокалические r/l составные | java/jsewts/Lingua | 🟡 (precomposed 0F76-79) | 1 |
-| Декомпозиция deprecated на входе | все 4 (+0F00: ewts-js) | ❌ | 1 |
-| Таблицы супер/субскриптов | все 4 | ❌ (модель есть, резолюции нет) | 2 |
+| Декомпозиция deprecated на входе | все оракулы (+0F00: ewts-js) | ❌ | 1 |
+| Нормализация/переупорядочивание Unicode | только jsewts (`unicode_tib`) | ❌ | 1,5 |
+| Таблицы супер/субскриптов | все оракулы | ❌ (модель есть, резолюции нет) | 2 |
 | Машина PREFIX/MAIN/SUFF1/SUFF2/NONE | java/jsewts/Lingua | 🟡 (U-сторона) | 2 (audit) |
 | Префиксы/суффиксы/suff2/affixed/ambiguous | java/jsewts/Lingua | 🟡 (частично Constraints) | 2 (audit) |
 | m_tib_stacks (97/96/~90) компакт | jsewts/java/Lingua | ❌ | 2,5 |
 | Стек-резолюция W→U (is_lower_form) | ewts-rs | ❌ | 3 |
-| Неявная a / подавление / backtrack | все 4 | ❌ | 3 |
-| а-чен-префикс standalone-гласных | все 4 | ❌ | 3 |
-| Субскрипт-a 0FB8 после `+` | все 4 | ❌ | 3 |
+| Неявная a / подавление / backtrack | все оракулы | ❌ | 3 |
+| а-чен-префикс standalone-гласных | все оракулы | ❌ | 3 |
+| Субскрипт-a 0FB8 после `+` | все оракулы | ❌ | 3 |
 | Позиция `^`, dup-финалы | java/jsewts | 🟡 (FMCaret есть) | 1,3 |
 | f/v свертка ph^→f, b^→v | java/jsewts/Lingua | 🟡 (прямые есть) | 1,5 |
-| W→U рендер | все 4 | ❌ (базово построен) | 4 |
+| W→U рендер | все оракулы | ❌ (базово построен) | 4 |
 | U→W рендер субскриптов/Unknown | java/jsewts/Lingua | ❌ (wylieOf неполон) | 5 |
 | Дизамбигуация + точки + reinsertion a | java/jsewts/Lingua | 🟡/❌ | 5 |
 | Композиция A+i→I (и E/O) | java (E/O) / jsewts (i/u/-i) | ❌ | 1,5 |
@@ -845,21 +905,26 @@ U→W (6):
 | Каталог диагностики + формат line N | java/jsewts/Lingua | 🟡 (свой record `Diagnostic`) | 3.4,6 |
 | Режимы convert/check/check-only | — (свои) | ❌ | 6 |
 | DTS/DWTS/ALALC/ACIP | java + Trans / jsewts | ❌ (резерв) | резерв |
-| Дифференциальные тесты vs 4 референса | — | ❌ | 7 |
-| Round-trip / golden | jsewts+kang, Lingua 219 | 🟡 (заглушки) | 7 |
+| Дифференциальные тесты vs оракулы | — | ❌ | 7 |
+| Round-trip / golden | jsewts+kang+wkang, Lingua 218, ewts-js 212 | 🟡 (заглушки) | 7 |
 
 ---
 
 ## 13. Рассмотрено и отклонено
 
-### 13.1 pyewts (Python, THL/OpenPecha) — исключён
-**Почему**: это порт BDRC-логики java (та же сигнатура `initWylie`,
-те же сообщения warnings, включая родовую опечатку `"Subjoined "t2"not expected
-after"`). Все его фичи полностью покрываются java+jsewts, а корректность ниже:
-- **баг**: нет `E`/`O` ни в `m_vowel`, ни в `m_tib_vowel_long` — `kE`→`k`+«E»
-  (в java/jsewts E/O-поведение есть только в java — см. §4.3);
-- 0 автоматических тестов, нет CI;
-- sloppy-список из 34 пар — строгое подмножество java (45, `EwtsConverter.java:958-1086`).
+### 13.1 pyewts (Python, порт BDRC-логики; OpenPecha/Esukhia→Webuddhist-tech) — исключён
+**Почему**: это **избыточная третья копия BDRC-логики** — README прямо говорит
+«The code is adapted from Java ewts-converter»: та же сигнатура `initWylie`, те
+же сообщения warnings (включая родовую опечатку `"Subjoined "t2"not expected
+after"`). Всё, что он умеет, уже покрыто java + jsewts, а как эталон он слабее:
+
+- **0 автоматических тестов, нет CI** — единственный референс без тестов;
+- sloppy-список из 34 пар (`pyewts.py:549`) — подмножество java (~45);
+- нет `E`/`O`, но это **не отличие**: их нет и в `jsewts`/`Lingua`/`ewts-js`
+  (только java — см. §4.3), поэтому как аргумент против pyewts не годится.
+
+Единственная «своя» фича — ACIP↔EWTS — дублируется `jsewts/src/acip.js`.
+Примечание: README заявляет MIT, а файл `LICENSE` — Apache-2.0.
 
 ### 13.2 lucene-bo (Java, Lucene-анализатор) — вне скоупа
 Анализатор для поиска (не конвертор 1:1): токенизация слогов, affixed/PaBa
@@ -867,11 +932,15 @@ after"`). Все его фичи полностью покрываются java+
 нормализации (`TibCharFilter` — декомпозиция precomposed/0F00) и lenient-режиму.
 Не референс конвертора; при желании использовать её тесты (36 @Test) как бонус.
 
-### 13.3 ewts-js (JS, 2025, author = автор Lingua-BO-Wylie) — исключён как дубль
-Современный JS-редизайн THL-логики (тот же автор, что [Lingua]); его поведение —
-то же ядро + фонетика. Как ориентир он дублирует одновременно две линии.
-Уникальные идеи сохранены в §8.3 (pass_through, keep, leave_dubious, декомпозиция
-0F00, tib_stack ~107, фонетика-вне-скоупа).
+### 13.3 ewts-js (JS, автор = автор Lingua-BO-Wylie) — пересмотрено 16.10.2026
+Ранее исключался «как дубль THL-линии». Re-audit показал, что это неверно:
+`ewts-js` — **не дубль, а активный преемник** (сам Lingua называет его «The
+JavaScript reincarnation of this code»), и он уже является источником таблиц
+`ewts-rs`. Проверено на корпусах: W→U — Lingua **218/218**, jsewts **210/210**;
+U→W — 211/218 и 205/210 (лучше текущего нашего). С ред. 3 **входит в эталоны**
+(см. §1); его идеи остаются в §8.3. Оговорки: нет `LICENSE`-файла (README и
+`package.json` заявляют Apache-2.0), нет каталога тестов/CI, но поставляется
+`EwtsConverterTests.mjs` (212 тестов); фонетика — вне нашего скоупа.
 
 ### 13.4 Прочие из `convertors/other/` (были рассмотрены) — не подходят
 - **ksanaforge_wylie** (2013, AMD): верный, но древний снапшот той же логики;

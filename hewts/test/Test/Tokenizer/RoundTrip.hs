@@ -181,14 +181,13 @@ checkSpelling spelling wasAlias = do
 -- | The stable Wylie spelling of a lone mark (the spelling the renderer
 -- keeps returning once a chain enters it). A lone a-chen stays "a"; the
 -- ordinary vowels keep their own spelling (the a-chen that carries them
--- in Unicode is written back out, not forward: "A" -> ཨཱ -> "A"); a mark
--- a bare a-chen does not absorb keeps the a-chen in front ("ai" -> ཨཻ ->
--- "aai"); and a lone consonant carries the implicit @a@ the references
--- write for a vowel-less root (ས -> "sa", ཀ -> "ka"): a chain that
--- enters through the glyph reads the same @a@ back.
+-- in Unicode is written back out, not forward: "A" -> ཨཱ -> "A"); the
+-- compound signs the a-chen absorbs read back the same way ("ai" -> ཨཻ ->
+-- "ai", "-i" -> ཨྀ -> "-i"); and a lone consonant carries the implicit @a@
+-- the references write for a vowel-less root (ས -> "sa", ཀ -> "ka"): a
+-- chain that enters through the glyph reads the same @a@ back.
 canonicalRepresentative :: Text -> Text -> Text
 canonicalRepresentative u s
-    | s `elem` ["ai", "au", "-i"] = "a" <> s
     | isLoneConsonant u, not (T.isPrefixOf "\\" s) = s <> "a"
     | otherwise = s
     where

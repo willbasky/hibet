@@ -89,7 +89,7 @@ caseRenderCrossScriptCanonical =
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =
     renderInput OutWylie "ཫཬཷ༐༪྆࿐"
-        @?= "\\u0f6b\\u0f6c+rA-i\\u0f10\\u0f2a\\u0f86\\u0fd0"
+        @?= "\\u0f6b\\u0f6c+r-I\\u0f10\\u0f2a\\u0f86\\u0fd0"
 
 caseRenderEscapeToUnicode :: Assertion
 caseRenderEscapeToUnicode =
