@@ -826,7 +826,7 @@ U→W (6):
 | `jsewts/test/wylie.test.js` | прогон `test.txt` в режиме `sloppy:true` + «issue #1» (длинный вектор) | ❌ (sloppy — Волна 6; issue #1 — кандидат) |
 | `Lingua-BO-Wylie/t/test.txt` | 218 случаев (round-trip + warnings) | ✅ `lingua_parity.tsv` |
 | `Lingua-BO-Wylie/t/Lingua-BO-Wylie.t` | проверка warnings поверх `test.txt` | ❌ (по решению: диагностика своя) |
-| `ewts-js/src/EwtsConverterTests.mjs` | 212 тестов (порт java-набора); W→U совпадает с корпусами Lingua и jsewts на 100%, но **12 строк уникальны** и иные `warns`/`wylie2` | ❌ (кандидат на отдельный корпус) |
+| `ewts-js/src/EwtsConverterTests.mjs` | 212 тестов (порт java-набора); W→U совпадает с корпусами Lingua и jsewts на 100%, по `(wylie,uni)` не покрыта **ровно 1 пара**; U→W для 40 строк расходится, warnings не оракул | ✅ `ewts_js_parity.tsv` (наш корпус паритета, 212) |
 | `pyewts` | — | тестов нет |
 
 **Что это значит.** W→U-корпуса покрыты тремя наборами (java, jsewts, Lingua);

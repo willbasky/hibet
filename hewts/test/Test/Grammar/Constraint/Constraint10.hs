@@ -1,3 +1,5 @@
+-- Ожидания: книга (Nyima Tashi), правило 10.
+
 module Test.Grammar.Constraint.Constraint10 (tests) where
 
 import Convert.Grammar.Constraint

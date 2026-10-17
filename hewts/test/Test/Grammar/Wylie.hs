@@ -1,3 +1,5 @@
+-- Ожидания: книга (структуры) + оракулы EWTS (совпадение с эталоном).
+
 -- | The Wylie arms of the grammar, walked from the Wylie input.
 --
 -- Parsing Wylie goes through the same 37 structures as Tibetan, but with the

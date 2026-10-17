@@ -1,3 +1,5 @@
+-- Ожидания: hewts — канал диагностики; коды и формулировки наши (30.09.2026).
+
 -- | The converter's own diagnostics (wave 3.4): the records the grammar's
 -- constraint windows produce in their own windows, with our wording, our
 -- codes and our channel. The expectations here are ours, not the

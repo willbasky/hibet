@@ -157,5 +157,8 @@ lingua	u2w	218	173
 lingua	roundtrip	218	207
 ewts-rs	w2u	16	16
 java	w2u	5	5
+ewts-js	w2u	212	211
+ewts-js	u2w	212	172
+ewts-js	roundtrip	212	201
 java	u2w	2	1
 kangyur	roundtrip	254	254

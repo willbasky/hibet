@@ -1,3 +1,5 @@
+-- Ожидания: оракулы EWTS (метки jsewts) + hewts (обобщённый стек).
+
 module Test.Grammar.Stack (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)

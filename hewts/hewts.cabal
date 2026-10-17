@@ -15,9 +15,10 @@ build-type: Simple
 extra-doc-files:
   CHANGELOG.md
   README.md
+  test/parity/parity_baseline.tsv
+  test/README.md
   test/vectors/*.tsv
   test/vectors/kang.txt
-  test/vectors/README.md
 
 tested-with: ghc ==9.10.3
 

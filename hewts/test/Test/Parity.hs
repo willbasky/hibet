@@ -1,6 +1,11 @@
 module Test.Parity (tests) where
 
--- \| Parity against the reference corpora (see @test/vectors/README.md@).
+-- \| Parity against the reference corpora (see @test/README.md@).
+--
+-- This module and @test/vectors/@ are the **reference layer** of the suite: the
+-- copies of the references' own tests and the runner that drives them. In the
+-- tasty tree they sit under @reference vectors (parity)@. Everything outside
+-- that group is hewts's own suite.
 --
 -- Parity covers conversion only (30.09.2026): the reference's exported warning
 -- texts and the corpus warn columns are not read and not compared, because the
@@ -14,10 +19,11 @@ module Test.Parity (tests) where
 -- An expectation the reference does not state is either missing or written as
 -- @?@; such fields are not checked. Absence never means "zero".
 --
--- The suite is a ratchet: @parity_baseline.tsv@ records how many checks of
+-- The suite is a ratchet: @parity_baseline.tsv@ (in @test/parity/@, our own
+-- harness, not a reference vector) records how many checks of
 -- each kind passed when it was written, and the tests fail when the current
 -- numbers fall below it. Progress in the later waves means lowering the
--- baseline, not deleting the corpora. @test/vectors/parity_report.txt@ always
+-- baseline, not deleting the corpora. @test/parity/parity_report.txt@ always
 -- holds the current full list of differences.
 
 import Convert
@@ -45,10 +51,11 @@ import Test.Tasty.HUnit (Assertion, assertBool, testCase)
 tests :: TestTree
 tests =
     testGroup
-        "parity"
+        "reference vectors (parity)"
         [ testCase "corpus sizes" checkSizes
         , testCase "jsewts 210" (checkCorpus CJsewts)
         , testCase "lingua 218" (checkCorpus CLingua)
+        , testCase "ewts-js 212" (checkCorpus CEwtsJs)
         , testCase "ewts-rs rules 16" (checkCorpus CRules)
         , testCase "java EWTS 5" (checkCorpus CJava)
         , testCase "kangyur round-trip 254" (checkCorpus CKang)
@@ -58,6 +65,7 @@ tests =
 data Corpus
     = CJsewts
     | CLingua
+    | CEwtsJs
     | CRules
     | CJava
     | CKang
@@ -125,15 +133,16 @@ corpusFile corpus =
     case corpus of
         CJsewts -> "test/vectors/jsewts_parity.tsv"
         CLingua -> "test/vectors/lingua_parity.tsv"
+        CEwtsJs -> "test/vectors/ewts_js_parity.tsv"
         CRules -> "test/vectors/ewts_rs_rules.tsv"
         CJava -> "test/vectors/java_ewts.tsv"
         CKang -> "test/vectors/kang.txt"
 
 baselineFile :: FilePath
-baselineFile = "test/vectors/parity_baseline.tsv"
+baselineFile = "test/parity/parity_baseline.tsv"
 
 reportFile :: FilePath
-reportFile = "test/vectors/parity_report.txt"
+reportFile = "test/parity/parity_report.txt"
 
 -- | A truncated or edited copy of a corpus must not silently shrink the
 -- sample, so the sizes are pinned.
@@ -142,6 +151,7 @@ expectedSize corpus =
     case corpus of
         CJsewts -> 210
         CLingua -> 218
+        CEwtsJs -> 212
         CRules -> 16
         CJava -> 5
         -- \| @kang.txt@ starts with a UTF-8 BOM that sits on a line of its own,
@@ -321,6 +331,7 @@ corpusName corpus =
     case corpus of
         CJsewts -> "jsewts"
         CLingua -> "lingua"
+        CEwtsJs -> "ewts-js"
         CRules -> "ewts-rs"
         CJava -> "java"
         CKang -> "kangyur"

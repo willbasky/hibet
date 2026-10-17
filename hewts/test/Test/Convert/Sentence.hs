@@ -1,3 +1,5 @@
+-- Ожидания: hewts — уровень документа: тшег, shad, числа.
+
 module Test.Convert.Sentence (tests) where
 
 import Convert.Grammar.Parser (Spelling (..), parseEither)

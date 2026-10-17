@@ -36,7 +36,7 @@ main = defaultMain tests
 tests :: TestTree
 tests =
     testGroup
-        "hewts tokenizers"
+        "hewts"
         [ Classification.tests
         , Spans.tests
         , Tricky.tests

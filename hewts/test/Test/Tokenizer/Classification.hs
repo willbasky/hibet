@@ -1,3 +1,5 @@
+-- Ожидания: спецификация EWTS — таблицы букв, алиасы, раскрытия.
+
 module Test.Tokenizer.Classification (tests) where
 
 import Convert.Token

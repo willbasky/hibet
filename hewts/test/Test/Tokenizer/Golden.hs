@@ -1,3 +1,5 @@
+-- Ожидания: hewts — снимки токен-потока.
+
 module Test.Tokenizer.Golden (tests) where
 
 import Convert.Token

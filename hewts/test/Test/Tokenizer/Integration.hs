@@ -1,3 +1,5 @@
+-- Ожидания: hewts — рендер, raw-roundtrip, escape.
+
 module Test.Tokenizer.Integration (tests) where
 
 import Convert

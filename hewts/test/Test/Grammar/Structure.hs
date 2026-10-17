@@ -1,3 +1,5 @@
+-- Ожидания: книга (Nyima Tashi) — 37 структур слога.
+
 module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Parser

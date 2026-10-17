@@ -1,3 +1,5 @@
+-- Ожидания: оракулы EWTS (правила входа); формулировки диагностик — hewts.
+
 module Test.Tokenizer.Tricky (tests) where
 
 import Convert.Diagnostic (renderDiagnostics)
@@ -181,7 +183,8 @@ wylieTshegs input =
     , tokenCanonical tok == TcPunctuation PMTsheg
     ]
 
--- | The diagnostics for an input, in the reference's own message format.
+-- | The diagnostics for an input, in our own wording: the reference dictates
+-- only which cases warn, not the text (see 'Test.Diagnostic').
 wylieWarnings :: Text -> [Text]
 wylieWarnings input = renderDiagnostics input (snd (tokenizeWylie input))
 

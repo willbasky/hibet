@@ -1,3 +1,5 @@
+-- Ожидания: hewts — публичный API конвертера (splitSentences, syllables, pSentence).
+
 module Test.Convert (tests) where
 
 import Convert (SpellItem (..), splitSentences, syllables)

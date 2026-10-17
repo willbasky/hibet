@@ -1,3 +1,5 @@
+-- Ожидания: hewts — непрерывность спанов.
+
 module Test.Tokenizer.Spans (tests) where
 
 import Convert.Token

@@ -1,3 +1,5 @@
+-- Ожидания: hewts — снимок U→W поверх эталонного входа kang.txt.
+
 module Test.Convert.Golden (tests) where
 
 import Convert (OutputFormat (..), pSentence, renderItems)

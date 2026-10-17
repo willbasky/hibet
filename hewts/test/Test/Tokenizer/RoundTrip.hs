@@ -1,3 +1,5 @@
+-- Ожидания: hewts — инвариант обратимости; написания — оракулы EWTS.
+
 module Test.Tokenizer.RoundTrip (tests) where
 
 import Control.Monad (when)
