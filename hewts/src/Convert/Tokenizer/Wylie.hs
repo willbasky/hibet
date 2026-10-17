@@ -528,6 +528,7 @@ wylieConsonantAliases =
     , ("Y", Cy)
     , ("-sh", CSh)
     , ("\x2019", C') -- U+2019: the typographic apostrophe is the a-chung too
+    , ("\x2018", C') -- U+2018: so is the left typographic quote ('ga' in ewts-js)
     ]
 
 -- | Wylie spellings that expand to several canonical tokens.

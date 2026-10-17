@@ -149,6 +149,12 @@
 # (toUnicode(str, null, true, false), fed by normalizeSloppyWylie), so it is not
 # a strict W->U pair. It moved to java_sloppy.tsv, the java w2u floor falls
 # 6->5, and the passing count stays 5: 5/5 on the strict set.
+#
+# Step 5.1 (the left typographic quote as a-chung): the a-chung alias table
+# takes U+2018 beside the U+2019 it already had, so 'ga' 'ga' (ewts-js 175,
+# the last open w2u line there) reads as its apostrophe twin does. The ewts-js
+# w2u leg closes completely, 211->212, and its round-trip follows the same
+# line, 201->202. Everything else holds.
 jsewts	w2u	210	210
 jsewts	u2w	210	172
 jsewts	roundtrip	210	200
@@ -157,8 +163,8 @@ lingua	u2w	218	173
 lingua	roundtrip	218	207
 ewts-rs	w2u	16	16
 java	w2u	5	5
-ewts-js	w2u	212	211
+ewts-js	w2u	212	212
 ewts-js	u2w	212	172
-ewts-js	roundtrip	212	201
+ewts-js	roundtrip	212	202
 java	u2w	2	1
 kangyur	roundtrip	254	254

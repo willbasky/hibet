@@ -157,7 +157,10 @@ wylieAliasCases =
     , aliasesWylie "sha aliases" ["Sh", "-sh"] (TkConsonant, TcConsonant CSh)
     , aliasesWylie "wa aliases" ["w", "W"] (TkConsonant, TcConsonant Cw)
     , aliasesWylie "ya aliases" ["y", "Y"] (TkConsonant, TcConsonant Cy)
-    , aliasesWylie "a-chung aliases" ["'", "\x2019"] (TkConsonant, TcConsonant C')
+    , aliasesWylie
+        "a-chung aliases"
+        ["'", "\x2019", "\x2018"]
+        (TkConsonant, TcConsonant C')
     ]
 
 -- | Compound spellings that expand to several canonical tokens: aspirates
