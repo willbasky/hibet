@@ -143,6 +143,12 @@
 # reference's own quirks (bracketed foreign text, the @f@/@v@ caret, the
 # deprecated precomposed signs U+0f73/U+0f77, the @rdo+e@ force-join) - waves
 # 4 and later.
+#
+# Step 4.4, the Q-5 tail (17.10.2026): the fifth @textEwts()@ assertion reads
+# through the reference's one-argument toUnicode, i.e. its sloppy path
+# (toUnicode(str, null, true, false), fed by normalizeSloppyWylie), so it is not
+# a strict W->U pair. It moved to java_sloppy.tsv, the java w2u floor falls
+# 6->5, and the passing count stays 5: 5/5 on the strict set.
 jsewts	w2u	210	210
 jsewts	u2w	210	172
 jsewts	roundtrip	210	200
@@ -150,6 +156,6 @@ lingua	w2u	218	218
 lingua	u2w	218	173
 lingua	roundtrip	218	207
 ewts-rs	w2u	16	16
-java	w2u	6	5
+java	w2u	5	5
 java	u2w	2	1
 kangyur	roundtrip	254	254

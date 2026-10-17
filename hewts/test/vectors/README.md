@@ -12,12 +12,14 @@ baseline'а, по которому `Test.Parity` следит за парите�
 | `lingua_parity.tsv` | 218 случаев, тот же формат | `Lingua-BO-Wylie/t/test.txt` | без git-истории в нашей копии |
 | `kang.txt` | 254 строки тибетского текста, без ожиданий | `jsewts/test/kang.txt` | jsewts `a3c8c6b` |
 | `ewts_rs_rules.tsv` | 16 правил EWTS, только W→U | `ewts-rs/ewts/src/rules_test.rs` | ewts-rs `14f7b24` (2024-12-11) |
-| `java_ewts.tsv` | 6 строк, EWTS-пары | `ewts-converter/.../ConversionTest.java`, метод `textEwts()` | ewts-converter `c1a6d3f` (2024-07-01) |
+| `java_ewts.tsv` | 5 строк, строгие EWTS-пары | `ewts-converter/.../ConversionTest.java`, метод `textEwts()` | ewts-converter `c1a6d3f` (2024-07-01) |
+| `java_sloppy.tsv` | 1 sloppy-пара, никем пока не читается (Волна 6) | оттуда же, «sloppy»-assertion метода `textEwts()` | ewts-converter `c1a6d3f` |
 | `parity_baseline.tsv` | храповик: минимум проходящих проверок | наш файл | — |
 | `parity_report.txt` | текущий полный список расхождений | генерируется тестом, в git не входит | — |
 
-Первые три файла — **дословные копии**. Два вектора правил (`ewts_rs_rules.tsv`,
-`java_ewts.tsv`) **извлечены** из исходников референсов, потому что там данные
+Первые три файла — **дословные копии**. Векторы правил и java-пары
+(`ewts_rs_rules.tsv`, `java_ewts.tsv`, `java_sloppy.tsv`) **извлечены** из
+исходников референсов, потому что там данные
 лежат парами в коде, а не в таблицах.
 
 **Выгрузки текстов предупреждений больше нет.** До 30.09.2026 рядом лежали
@@ -96,9 +98,13 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
   проверяет сам jsewts (`kangtest.js` сравнивает свой `toWylie`→`fromWylie` с
   исходником). Сравнение идёт после нормализации эталона: убраны ASCII-пробелы,
   `༎` развёрнуто в `།།`.
-- `java_ewts.tsv` — это 6 строк, а не «36 проверок»: в `ConversionTest.java`
-  из 36 assertion'ов EWTS-парами являются только 8 (6 уникальных), остальное —
-  DTS/ALALC (вне приоритета), sloppy (Волна 6) и lenient (вне приоритета).
+- `java_ewts.tsv` — это 5 строк, а не «36 проверок»: в `ConversionTest.java`
+  из 36 assertion'ов EWTS-парами являются только 8 (6 уникальных) — все в методе
+  `textEwts()`; остальные assertion'ы — DTS/ALALC (вне приоритета), отдельные
+  sloppy-тесты (Волна 6) и lenient (вне приоритета). Одна из шести уникальных пар
+  (`mNyon … padma`) конвертируется одноаргументным `toUnicode`, то есть через
+  sloppy-путь, и вынесена в `java_sloppy.tsv` (шаг 4.4, Q-5); строгих W→U-пар у
+  java, стало быть, пять.
 
 ## Находка на старте Волны 1
 

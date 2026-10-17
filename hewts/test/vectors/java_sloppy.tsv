@@ -1,0 +1,17 @@
+# Sloppy pairs from ewts-converter ConversionTest.java.
+#
+# A pair here is reachable only through the reference's sloppy path:
+# EwtsConverter.toUnicode(str) calls toUnicode(str, null, true, false), and
+# sloppy = true runs normalizeSloppyWylie first. Our strict W->U does not read
+# it, so in step 4.4 (Q-5, 17.10.2026) the pair moved out of java_ewts.tsv into
+# this file, and the strict W->U count fell from 6 to 5.
+#
+# Nothing reads this file yet. It is checked in wave 6, together with the sloppy
+# mode and the aliases normalizeSloppyWylie applies (Ny -> ny, Ng -> ng,
+# Ts -> ts, Dz -> dz, G/K/C/B/P/L/Z/J lowered, adm -> ad+m, " m " -> " ma ",
+# H and M lowered after a vowel, S -> s but not Sh). The reference methods
+# textConvertSloppy() and normalizeSloppyWylie() hold the rest of that material;
+# it gets its own rows when the mode exists.
+#
+# Columns: wylie <TAB> unicode  (the sloppy conversion of the wylie).
+mNyon mNges gTso rDza padma	མཉོན་མངེས་གཙོ་རྫ་པདྨ

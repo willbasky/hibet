@@ -50,7 +50,7 @@ tests =
         , testCase "jsewts 210" (checkCorpus CJsewts)
         , testCase "lingua 218" (checkCorpus CLingua)
         , testCase "ewts-rs rules 16" (checkCorpus CRules)
-        , testCase "java EWTS 6" (checkCorpus CJava)
+        , testCase "java EWTS 5" (checkCorpus CJava)
         , testCase "kangyur round-trip 254" (checkCorpus CKang)
         , testCase "report file" writeReport
         ]
@@ -143,7 +143,7 @@ expectedSize corpus =
         CJsewts -> 210
         CLingua -> 218
         CRules -> 16
-        CJava -> 6
+        CJava -> 5
         -- \| @kang.txt@ starts with a UTF-8 BOM that sits on a line of its own,
         -- so the file holds 254 real lines (255 newlines, first line = BOM).
         CKang -> 254

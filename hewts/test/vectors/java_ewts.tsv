@@ -6,4 +6,9 @@ be’u'i'o	བེའུའིའོ	0
 pa'm	པའམ	0
 ga&	ག྅	?	ga&	?	?
 sO	སཱོ	?	sO	?	?
-mNyon mNges gTso rDza padma	མཉོན་མངེས་གཙོ་རྫ་པདྨ
+#
+# One textEwts() assertion is not a strict W->U pair: the last one
+# ("mNyon ... padma") reads through the reference's one-argument toUnicode,
+# i.e. its sloppy path (toUnicode(str, null, true, false), fed by
+# normalizeSloppyWylie). It moved to java_sloppy.tsv in step 4.4
+# (Q-5, 17.10.2026); the strict W->U set here is the five rows above.

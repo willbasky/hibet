@@ -816,7 +816,7 @@ U→W (6):
 | `ewts-rs/…/rules_test.rs` | 16 правил THL: 1.bsgribs; 2.mkhan; 3.gyon g.yon; 4.sat+t+wa; 5.bru+e rdo+e; 6.rta r+ta; 7.sarba mang+galaM; 8.\u0F40; 9.[New York]; 10.\3; 11.a khu/_ug pa/_aM; 12.mA duH phaT; 13.R+na R+Ya R+ya; 14.rnya rla rwa; 15.r+r r+R s+Wa r+Y; 16.r+sha l+ra h+wa h+ya | ✅ `ewts_rs_rules.tsv` |
 | `ewts-rs/…/lib.rs` | `TST_DATA` (стандартные стеки, `rkw rk+w`, `rgyi`, мантра `oM aHhU~M…`, `sha ai gaang`, длинный текст), `etu_prefixes` (4), `etu_non_tibetan_test` (7, вкл. `\u0f40`, `\U00000f40`), `etu_lower_form_after_first_consonant` (4: `bw`, `yw`, `bwa`, `bw `) — всего ~22 | ❌ |
 | `ewts-rs/…/tokenizer.rs` | токенизатор: `TST_DATA` (6) + non-tibetan (4) — состав токенов | ❌ |
-| `ewts-converter/.../ConversionTest.java` | 5 `@Test`, 36 ассертов: `textEwts` (8 EWTS-пар / 6 уник.), `textDtsAlalcToEwts` (3), `textConvertSloppy` (1), `textConvertLenient` (5), `textEwtsToDtsAlalc` (13) | ✅ только EWTS-пары → `java_ewts.tsv`; DTS/ALALC/sloppy/lenient — ❌ (резерв / Волна 6) |
+| `ewts-converter/.../ConversionTest.java` | 5 `@Test`, 36 ассертов: `textEwts` (8 EWTS-пар / 6 уник.), `textDtsAlalcToEwts` (3), `textConvertSloppy` (1), `textConvertLenient` (5), `textEwtsToDtsAlalc` (13) | ✅ EWTS-пары метода `textEwts`: 5 строгих → `java_ewts.tsv`, 1 sloppy-пара → `java_sloppy.tsv` (Q-5, ждёт Волну 6); DTS/ALALC, отдельные sloppy- и lenient-тесты — ❌ (резерв / Волна 6) |
 | `jsewts/test/test.txt` | 210 случаев (W→U + U→W + warnings + back) | ✅ `jsewts_parity.tsv` |
 | `jsewts/test/kang.txt` | 254 строки Kangyur | ✅ только round-trip |
 | `jsewts/test/wkang.txt` | 254 строки — **готовый U→W-выход для `kang.txt`** (генератор `towylie.js`); `rekang.txt` — обратный прогон | ❌ (готовый U→W-оракул) |
