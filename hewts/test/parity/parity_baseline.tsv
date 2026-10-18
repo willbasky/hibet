@@ -179,17 +179,30 @@
 # (fa ba va pha) among them. w2u, round-trip, ewts-rs, java and the kangyur
 # u2w/round-trip hold: those lines already round-tripped through the
 # expansion, and the fold fires only on a caret stack of exactly one letter.
+#
+# Step 5.3 (brackets around foreign text, 18.10.2026): the U->W renderer wraps
+# a run of non-Tibetan items in [...], exactly where the reference's toWylie
+# opens a block, and escapes a [ or a ] inside it. The run is the longest
+# chain of Space and Foreign items that holds at least one Foreign item; a
+# chain without one is printed as it was, an ASCII space outside a block still
+# spelling @_@. A space after a syllable stays inside the syllable and prints
+# as @_@ (bla x -> "bla_[x]", the reference "bla[ x]") - the split belongs to
+# space handling, wave 5.12. u2w 176->186 (jsewts), 177->188 (Lingua),
+# 176->187 (ewts-js), 250->251 (kangyur); round-trip 200->206, 207->214,
+# 202->209. w2u, ewts-rs and java hold. The kangyur U->W snapshot is
+# regenerated: one line's NBSP is bracketed now (lags/[ ]'di), which is the
+# same block the reference opens.
 jsewts	w2u	210	210
-jsewts	u2w	210	176
-jsewts	roundtrip	210	200
+jsewts	u2w	210	186
+jsewts	roundtrip	210	206
 lingua	w2u	218	218
-lingua	u2w	218	177
-lingua	roundtrip	218	207
+lingua	u2w	218	188
+lingua	roundtrip	218	214
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	212	212
-ewts-js	u2w	212	176
-ewts-js	roundtrip	212	202
+ewts-js	u2w	212	187
+ewts-js	roundtrip	212	209
 java	u2w	2	1
 kangyur	roundtrip	254	254
-kangyur	u2w	254	250
+kangyur	u2w	254	251

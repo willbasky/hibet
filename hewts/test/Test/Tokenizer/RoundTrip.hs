@@ -190,6 +190,12 @@ checkSpelling spelling wasAlias = do
 -- chain that enters through the glyph reads the same @a@ back.
 canonicalRepresentative :: Text -> Text -> Text
 canonicalRepresentative u s
+    -- Nothing was converted: a mark with no letter in front of it stands as
+    -- it was written (Mi -> M), so the W->U leg hands the spelling back
+    -- untouched and the U->W arm reads that untouched text as foreign and
+    -- brackets it - the reference's own form (jsewts line 179, "Mཨི" ->
+    -- "[M]i").
+    | u == s = "[" <> s <> "]"
     | isLoneConsonant u, not (T.isPrefixOf "\\" s) = s <> "a"
     | otherwise = s
     where

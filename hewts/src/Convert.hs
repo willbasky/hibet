@@ -18,6 +18,7 @@ import Convert.Token
     ( ConSpec (..)
     , Consonant (..)
     , FinalMark (FMCaret)
+    , SpaceMark (..)
     , Span (..)
     , Token
     , TokenCanonical (..)
@@ -268,26 +269,64 @@ data OutputFormat
     | OutWylie
     deriving (Show, Eq)
 
+-- | One piece of the Wylie output, by what the reference's escaping walker
+-- does with the character behind it: a spelling of its own ('Plain'), an
+-- ASCII space (it spells @_@ on its own and passes through inside a block),
+-- or a character of foreign text ('Foreign', the block's own).
+data Piece = Plain Text | Space Text | Foreign Text
+
+-- | The reference's foreign-text blocks (@toWylie@ in escaping mode): a
+-- maximal stretch of foreign characters prints between brackets, the brackets
+-- inside it escaped (@\[with embedded\[\]\]@). An ASCII space joins such a
+-- block only where the block already holds foreign text - that is what keeps
+-- the leading spaces of "  2tix!" inside one block - and prints as @_@ where
+-- nothing foreign follows it.
+renderForeign :: [Piece] -> Text
+renderForeign [] = ""
+renderForeign (p : rest)
+    -- every branch must consume at least this head, or the walk repeats it
+    | not (bracketable p) = openText p <> renderForeign rest
+    | any isForeign block = openBlock block <> renderForeign afterBlock
+    | otherwise = T.concat (map openText block) <> renderForeign afterBlock
+    where
+        (more, afterBlock) = span bracketable rest
+        block = p : more
+        bracketable (Plain _) = False
+        bracketable _ = True
+        isForeign (Foreign _) = True
+        isForeign _ = False
+        -- inside a block every character prints as itself
+        blockText (Plain t) = t
+        blockText (Space t) = t
+        blockText (Foreign t) = t
+        openBlock pieces = "[" <> escapeBrackets (T.concat (map blockText pieces)) <> "]"
+        escapeBrackets = T.replace "]" "\\]" . T.replace "[" "\\["
+        -- outside a block an ASCII space is the reference's own spelling of it
+        openText (Space _) = "_"
+        openText piece = blockText piece
+
 -- | Convert every token to an 'OutputFormat' spelling, preserving
 -- everything: same-script tokens keep their exact raw spelling (including
 -- aliases), cross-script tokens become canonical representatives, and
 -- tokens without a cross-script spelling fall back to their raw spelling.
+--
+-- The two arms walk the items differently. The Unicode arm prints one item at
+-- a time. The Wylie arm walks the items the way the reference walks the
+-- characters of its input, because a stretch of foreign text is one block
+-- across item boundaries: a run, a number and a sign of punctuation spell in
+-- Wylie, and every other character joins the bracket block the reference
+-- writes foreign text in (step 5.3).
 renderItems :: OutputFormat -> [SpellItem] -> Text
-renderItems fmt = T.concat . map renderItem
+renderItems fmt items = case fmt of
+    OutUnicode -> T.concat (map renderItem items)
+    OutWylie -> renderForeign (concatMap wyliePieces items)
     where
-        renderItem (SyllableItem s)
+        renderItem (SyllableItem s) =
             -- The Unicode renderer reads the position marks (wave 3.3): a
             -- subfix prints its subjoined letter, an implicit @a@ prints
             -- nothing, a run-initial vowel gets the a-chen written out.
-            -- The Wylie renderer walks the same marks and writes the
-            -- separators the Wylie spelling needs to stay readable back (step
-            -- 5 refactor): the implicit @a@ of a vowel-less bare root, the
-            -- dot before a full root that would otherwise glue to its prefix
-            -- letter, and a run-initial a-chen that only carries a vowel
-            -- sign.
-            | fmt == OutUnicode = renderSyllable (syllableTokens s)
-            | otherwise = renderSyllableWylie (syllableTokens s)
-        renderItem (InvalidSyllableItem s)
+            renderSyllable (syllableTokens s)
+        renderItem (InvalidSyllableItem s) =
             -- A run the grammar read nothing of. Its letters are still
             -- converted one by one: a lone sign vowel is a letter like any
             -- other (ཱ -> A), and nothing the grammar did not recognize may
@@ -296,15 +335,45 @@ renderItems fmt = T.concat . map renderItem
             -- it *to* and it stands as it was written (Mi -> M, not ཾ) - the
             -- same thing the reference does with a character that is neither a
             -- letter to it nor special.
-            | fmt == OutUnicode = rawSyllable s
-            | otherwise = rawSyllable s
-        renderItem (Number ts) = T.concat (map (renderToken fmt) ts)
-        renderItem (Punct ts) = T.concat (map (renderToken fmt) ts)
-        renderItem (Other ts) = T.concat (map (renderToken fmt) ts)
+            rawSyllable OutUnicode s
+        renderItem (Number ts) = T.concat (map (renderToken OutUnicode) ts)
+        renderItem (Punct ts) = T.concat (map (renderToken OutUnicode) ts)
+        renderItem (Other ts) = T.concat (map (renderToken OutUnicode) ts)
 
-        rawSyllable s = T.concat (map (echo . snd) (toList (syllableTokens s)))
+        -- The Wylie pieces of one item: a run spells as a whole (the same
+        -- mark-aware walk the Wylie renderer does, wave 3.5), a number and a
+        -- sign spell per token - and a token no table reads as Tibetan is a
+        -- character of foreign text.
+        --
+        -- shortcut: an ASCII space the run's own boundary closes with stays
+        -- inside the run and spells @_@, so a space between a run and foreign
+        -- text does not join the block behind it (བླ x -> "bla_[x]", the
+        -- reference "bla[ x]"); split the trailing spaces off the run when a
+        -- corpus needs that shape.
+        wyliePieces :: SpellItem -> [Piece]
+        wyliePieces (SyllableItem s) = [Plain (renderSyllableWylie (syllableTokens s))]
+        wyliePieces (InvalidSyllableItem s) = [Plain (rawSyllable OutWylie s)]
+        wyliePieces (Number ts) = map wyliePiece ts
+        wyliePieces (Punct ts) = map wyliePiece ts
+        wyliePieces (Other ts) = map wyliePiece ts
 
-        echo tok
+        wyliePiece tok
+            | isAsciiSpace tok = Space (tokenRaw tok)
+            | isForeignChar tok = Foreign (renderToken OutWylie tok)
+            | otherwise = Plain (renderToken OutWylie tok)
+
+        isAsciiSpace tok = tokenCanonical tok == TcSpace SMSpace
+
+        -- Foreign text is a character no table reads as Tibetan. A line break
+        -- is not one: the reference ends a block at it and prints it as
+        -- written.
+        isForeignChar tok = case tokenCanonical tok of
+            TcUnknown (UnknownMark text) -> not (T.isInfixOf "\n" text) && not (T.isInfixOf "\r" text)
+            _ -> False
+
+        rawSyllable fmt s = T.concat (map (echo fmt . snd) (toList (syllableTokens s)))
+
+        echo fmt tok
             | isFinalMark tok = tokenRaw tok
             | otherwise = renderToken fmt tok
 
