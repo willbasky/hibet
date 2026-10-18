@@ -46,6 +46,7 @@ tests =
         , wave344
         , wave345
         , wave346
+        , wave54
         , documentLevel
         , records
         ]
@@ -400,6 +401,61 @@ wave346 =
             ]
         ]
 
+-- | Wave 5.4: a sign with no letter to attach to, and a Tibetan character no
+-- table can name. Both escape in Wylie output (@\uXXXX@, the reference's own
+-- escape of a character it cannot spell), and both have a record of their own
+-- on the Unicode side - the first diagnostics this direction produces.
+wave54 :: TestTree
+wave54 =
+    testGroup
+        "wave 5.4: orphan signs and unnameable glyphs"
+        [ testGroup
+            "an orphan sign escapes in Wylie output"
+            [ testCase "a lone vowel" $
+                tibetanWylie "\x0f72" @?= Right "\\u0f72"
+            , testCase "the long vowel whole, not its components" $
+                tibetanWylie "\x0f73" @?= Right "\\u0f73"
+            , testCase "a rewritten form by its components" $
+                tibetanWylie "\x0f77" @?= Right "\\u0fb2\\u0f71\\u0f80"
+            , testCase "a lone final" $
+                tibetanWylie "\x0f7e" @?= Right "\\u0f7e"
+            , testCase "a glyph no table names" $
+                tibetanWylie "\x0f09" @?= Right "\\u0f09"
+            , testCase "behind a real stack the sign still escapes" $
+                tibetanWylie "\x0f56\x0fb3\x0f0b\x0f73" @?= Right "bla \\u0f73"
+            , testCase "a sign with its letter keeps its mnemonic" $
+                tibetanWylie "\x0f40\x0f72" @?= Right "ki"
+            ]
+        , testGroup
+            "the orphan sign is blamed"
+            [ testCase "a lone vowel" $
+                renderedTibetan "\x0f72"
+                    @?= Right ["line 1: \"ི\": The sign \"ི\" has no letter to attach to."]
+            , testCase "a decomposed group is one source character, one record" $
+                recordsOfTibetan "\x0f73" @?= Right [(OrphanSign, SevWarning)]
+            , testCase "a lone subjoined letter" $
+                recordsOfTibetan "\x0fb3" @?= Right [(OrphanSign, SevWarning)]
+            , testCase "a sign with its letter stays quiet" $
+                renderedTibetan "\x0f40\x0f72" @?= Right []
+            , testCase "a Wylie sign needs no letter to be read" $
+                rendered "i" @?= Right []
+            , testCase "a lone final keeps its own code" $
+                recordsOfTibetan "\x0f7e" @?= Right [(LeadingFinal, SevWarning)]
+            ]
+        , testGroup
+            "an unnameable glyph is named for the record"
+            [ testCase "the whole message" $
+                glyphWarnings "\x0f09"
+                    @?= ["line 1: The Tibetan character \"༉\" has no Wylie name."]
+            , testCase "the code and severity" $
+                glyphRecords "\x0f09" @?= [(UnnameableGlyph, SevWarning)]
+            , testCase "a sign the tables name stays quiet" $
+                glyphWarnings "\x0f72" @?= []
+            , testCase "a Latin letter is not a glyph at all" $
+                glyphWarnings "x" @?= []
+            ]
+        ]
+
 -- | The document-level warning (4.2): a whole input the converter reads
 -- nothing Tibetan from. A syllable (sound or broken), a number and a sign all
 -- count; a bracketed block of foreign text and a stray letter or special mark
@@ -543,6 +599,14 @@ converted = spellingToUnicode Wylie
 tibetanConverted :: Text -> Either Text Text
 tibetanConverted = spellingToUnicode Tibetan
 
+-- | What a Tibetan input becomes in Wylie output (wave 5.4): the escape the
+-- reference writes for a sign with no letter to attach to and for a glyph no
+-- table can name.
+tibetanWylie :: Text -> Either Text Text
+tibetanWylie input = do
+    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
+    pure (renderItems OutWylie items)
+
 spellingToUnicode :: Spelling -> Text -> Either Text Text
 spellingToUnicode spelling input = do
     items <- parseEither (pSentence spelling) (fst (tokenize input))
@@ -599,6 +663,28 @@ recordsOf input = do
         [ (diagCode d, diagSeverity d)
         | d <- diagnosticList (legality items)
         ]
+
+-- | The same for a Tibetan-script input.
+recordsOfTibetan :: Text -> Either Text [(DiagnosticCode, Severity)]
+recordsOfTibetan input = do
+    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
+    pure
+        [ (diagCode d, diagSeverity d)
+        | d <- diagnosticList (legality items)
+        ]
+
+-- | The tokenizer's own messages (wave 5.4): the record for a character no
+-- table can name comes from the tokenizer, before any parse, and the tokenizer
+-- itself never fails.
+glyphWarnings :: Text -> [Text]
+glyphWarnings input = renderDiagnostics input (snd (tokenizeUnicode input))
+
+-- | The codes and severities of the tokenizer's messages, in order.
+glyphRecords :: Text -> [(DiagnosticCode, Severity)]
+glyphRecords input =
+    [ (diagCode d, diagSeverity d)
+    | d <- diagnosticList (snd (tokenizeUnicode input))
+    ]
 
 -- | The quoted-word part of each message (the @line N: "word"@ prefix of the
 -- rendered form), so a typo in the span logic shows up independently of the

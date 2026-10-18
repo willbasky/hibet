@@ -19,12 +19,12 @@ import Convert.Token
     , Consonant (..)
     , FinalMark (FMCaret)
     , SpaceMark (..)
-    , Span (..)
     , Token
     , TokenCanonical (..)
     , TokenSource (..)
     , UnknownMark (..)
     , Vowel (VA, V_i, Vi, Vu)
+    , isToplessMark
     , mkSpan
     , subjoinOf
     , tokenCanonical
@@ -33,13 +33,16 @@ import Convert.Token
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
 import Convert.Tokenizer.Wylie (wylieOf)
+import Data.Char (ord)
 import Data.Foldable (toList)
 import Data.Maybe (fromMaybe, isJust)
 import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as T
+import Numeric (showHex)
 
 -- | The stacked consonant combinations the reference Wylie spelling writes
 -- plainly (the jsewts @m_tib_stacks@ table): a stack whose letters joined by
@@ -272,21 +275,28 @@ data OutputFormat
 -- | One piece of the Wylie output, by what the reference's escaping walker
 -- does with the character behind it: a spelling of its own ('Plain'), an
 -- ASCII space (it spells @_@ on its own and passes through inside a block),
--- or a character of foreign text ('Foreign', the block's own).
-data Piece = Plain Text | Space Text | Foreign Text
+-- a character of foreign text ('Foreign', the block's own), or a \\uXXXX
+-- escape of a character Wylie does not name ('Escaped').
+data Piece = Plain Text | Space Text | Foreign Text | Escaped Text
 
 -- | The reference's foreign-text blocks (@toWylie@ in escaping mode): a
 -- maximal stretch of foreign characters prints between brackets, the brackets
 -- inside it escaped (@\[with embedded\[\]\]@). An ASCII space joins such a
 -- block only where the block already holds foreign text - that is what keeps
 -- the leading spaces of "  2tix!" inside one block - and prints as @_@ where
--- nothing foreign follows it.
+-- nothing foreign follows it. An escape joins a block foreign text has
+-- already opened, and prints outside every block that has not opened yet
+-- (@x༉@ -> @[x༉]@, @༉x@ -> @༉[x]@).
 renderForeign :: [Piece] -> Text
 renderForeign [] = ""
 renderForeign (p : rest)
     -- every branch must consume at least this head, or the walk repeats it
     | not (bracketable p) = openText p <> renderForeign rest
-    | any isForeign block = openBlock block <> renderForeign afterBlock
+    | any isForeign block =
+        -- an escape before the block's first foreign character stands where
+        -- the reference writes it: outside
+        let (outside, inner) = span isEscaped block
+         in T.concat (map openText outside) <> openBlock inner <> renderForeign afterBlock
     | otherwise = T.concat (map openText block) <> renderForeign afterBlock
     where
         (more, afterBlock) = span bracketable rest
@@ -295,15 +305,25 @@ renderForeign (p : rest)
         bracketable _ = True
         isForeign (Foreign _) = True
         isForeign _ = False
+        isEscaped (Escaped _) = True
+        isEscaped _ = False
         -- inside a block every character prints as itself
         blockText (Plain t) = t
         blockText (Space t) = t
         blockText (Foreign t) = t
+        blockText (Escaped t) = t
         openBlock pieces = "[" <> escapeBrackets (T.concat (map blockText pieces)) <> "]"
         escapeBrackets = T.replace "]" "\\]" . T.replace "[" "\\["
         -- outside a block an ASCII space is the reference's own spelling of it
         openText (Space _) = "_"
         openText piece = blockText piece
+
+-- | The reference's escape of a character Wylie does not name: @\u@ and four
+-- lowercase hex digits (the reference's @formatHex@).
+tibetanEscape :: Char -> Text
+tibetanEscape c = "\\u" <> T.pack (replicate (4 - length digits) '0' <> digits)
+    where
+        digits = showHex (ord c) ""
 
 -- | Convert every token to an 'OutputFormat' spelling, preserving
 -- everything: same-script tokens keep their exact raw spelling (including
@@ -345,22 +365,86 @@ renderItems fmt items = case fmt of
         -- sign spell per token - and a token no table reads as Tibetan is a
         -- character of foreign text.
         --
+        -- A mark at the head of a run with no letter to attach to never
+        -- reaches that walk: the reference escapes such a character
+        -- (@needs a top symbol@), so an orphan prefix becomes escapes and
+        -- the rest of the run spells as before (wave 5.4).
+        --
         -- shortcut: an ASCII space the run's own boundary closes with stays
         -- inside the run and spells @_@, so a space between a run and foreign
         -- text does not join the block behind it (བླ x -> "bla_[x]", the
         -- reference "bla[ x]"); split the trailing spaces off the run when a
         -- corpus needs that shape.
         wyliePieces :: SpellItem -> [Piece]
-        wyliePieces (SyllableItem s) = [Plain (renderSyllableWylie (syllableTokens s))]
-        wyliePieces (InvalidSyllableItem s) = [Plain (rawSyllable OutWylie s)]
+        wyliePieces (SyllableItem s) =
+            let (orphans, rest) = splitOrphans (syllableTokens s)
+             in orphanEscapes (toList orphans) <> [runPiece (renderSyllableWylie rest)]
+        wyliePieces (InvalidSyllableItem s) =
+            let (orphans, rest) = splitOrphans (syllableTokens s)
+             in orphanEscapes (toList orphans) <> [runPiece (rawTokens OutWylie (toList rest))]
         wyliePieces (Number ts) = map wyliePiece ts
         wyliePieces (Punct ts) = map wyliePiece ts
         wyliePieces (Other ts) = map wyliePiece ts
 
+        -- A run whose whole spelling is an escape stands for the characters
+        -- one by one, so it joins a block like any other escape (x + 0F6B ->
+        -- [xཫ]) instead of closing it.
+        runPiece txt
+            | T.isPrefixOf "\\" txt = Escaped txt
+            | otherwise = Plain txt
+
+        -- The orphan prefix of a run: the marks before the first letter, and
+        -- everything the run holds behind them.
+        splitOrphans toks = Seq.spanl (isToplessMark . snd) toks
+
+        -- One escape per source character of an orphan prefix. The five
+        -- forms the reference rewrites into components before reading
+        -- anything (jsewts.js:1784-1788) escape component by component, so
+        -- they read back into the same glyph; every other orphan escapes as
+        -- the character it was written - a continuation of the group carries
+        -- no character of its own.
+        orphanEscapes :: [(a, Token)] -> [Piece]
+        orphanEscapes = go False
+            where
+                go _ [] = []
+                go rewritten ((_, tok) : rest)
+                    | T.null (tokenRaw tok) =
+                        component rewritten tok <> go rewritten rest
+                    | otherwise =
+                        let c = T.head (tokenRaw tok)
+                         in if c `elem` rewrittenComponents
+                                then component True tok <> go True rest
+                                else [Escaped (tibetanEscape c)] <> go False rest
+
+                component True tok = maybe [] escapeUnit (unicodeOf (tokenCanonical tok))
+                component False _ = []
+
+                escapeUnit txt = case T.uncons txt of
+                    Just (c, _) -> [Escaped (tibetanEscape c)]
+                    Nothing -> []
+
+        -- The deprecated forms jsewts rewrites into components before its
+        -- walk: an orphan of one of them escapes as its components. The two
+        -- long vowels (0F73, 0F75) it leaves whole and they escape as
+        -- written.
+        rewrittenComponents :: String
+        rewrittenComponents = "\x0f76\x0f77\x0f78\x0f79\x0f81"
+
         wyliePiece tok
             | isAsciiSpace tok = Space (tokenRaw tok)
+            -- a spelling that is already an escape stands for the whole
+            -- character, so it is one: it joins a block foreign text opened
+            -- and opens no block of its own
+            | isEscapeSpelling tok = Escaped (renderToken OutWylie tok)
+            -- a Tibetan character no table names: the reference escapes it
+            -- instead of opening a bracket block with it (wave 5.4)
+            | isUnnameableGlyph tok = Escaped (escapeGlyphText (unknownText tok))
             | isForeignChar tok = Foreign (renderToken OutWylie tok)
             | otherwise = Plain (renderToken OutWylie tok)
+
+        escapeGlyphText txt = case T.uncons txt of
+            Just (c, _) -> tibetanEscape c
+            Nothing -> ""
 
         isAsciiSpace tok = tokenCanonical tok == TcSpace SMSpace
 
@@ -371,11 +455,30 @@ renderItems fmt items = case fmt of
             TcUnknown (UnknownMark text) -> not (T.isInfixOf "\n" text) && not (T.isInfixOf "\r" text)
             _ -> False
 
-        rawSyllable fmt s = T.concat (map (echo fmt . snd) (toList (syllableTokens s)))
+        -- A Tibetan character no table names (༉, ࿂): the reference escapes
+        -- it in the Tibetan plane and only the rest of the unknown text is
+        -- foreign.
+        isUnnameableGlyph tok = case tokenCanonical tok of
+            TcUnknown (UnknownMark text) -> isTibetanGlyph text
+            _ -> False
 
-        echo fmt tok
+        isTibetanGlyph text = case T.uncons text of
+            Just (c, _) -> c >= '\x0f00' && c <= '\x0fff'
+            Nothing -> False
+
+        -- Whether a token's Wylie spelling is really an escape (@\uXXXX@).
+        -- EWTS has no mnemonic for some characters (the Balti ཫ ཬ, the
+        -- half-numbers, the signs), so they spell as an escape that already
+        -- stands for the whole character.
+        isEscapeSpelling tok = T.isPrefixOf "\\" (renderToken OutWylie tok)
+
+        rawSyllable ofmt s = rawTokens ofmt (toList (syllableTokens s))
+
+        rawTokens ofmt = T.concat . map (echo ofmt . snd)
+
+        echo ofmt tok
             | isFinalMark tok = tokenRaw tok
-            | otherwise = renderToken fmt tok
+            | otherwise = renderToken ofmt tok
 
         isFinalMark tok = case tokenCanonical tok of
             TcFinal _ -> True
@@ -549,14 +652,6 @@ renderItems fmt items = case fmt of
                     case tokenCanonical tok of
                         TcConsonant _ -> True
                         _ -> False
-
-                -- Whether a token's Wylie spelling is really an escape
-                -- (@\uXXXX@). EWTS has no mnemonic for some characters (the
-                -- Balti ཫ ཬ, the half-numbers, the signs), so they spell as an
-                -- escape that already stands for the whole character; the
-                -- implicit @a@ must not follow it (@\u0f6b@ reads back as ཫ,
-                -- @\u0f6ba@ as ཫ + ཨ).
-                isEscapeSpelling tok = T.isPrefixOf "\\" (renderToken OutWylie tok)
 
                 isAChen tok = tokenCanonical tok == TcConsonant Ca
 

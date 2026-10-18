@@ -419,6 +419,18 @@ finalSlot = \case
     FMCaret -> Nothing
     FMYigMgo -> Just 8
 
+-- | Whether a token is a mark that needs a letter in front of it: a vowel, a
+-- subjoined letter or a final, read from Unicode. Wylie input writes such a
+-- mark as a spelling of its own, so only a Unicode-sourced mark can stand
+-- where there is no letter to attach it to (wave 5.4).
+isToplessMark :: Token -> Bool
+isToplessMark tok =
+    tokenSource tok == TsUnicode && case tokenCanonical tok of
+        TcVowel _ -> True
+        TcSubConsonant _ -> True
+        TcFinal _ -> True
+        _ -> False
+
 -- | Wylie-only consonant-stack operators: '+' (explicit subjoin) and '.'
 -- (explicit stack). They exist only in the Wylie input alphabet and have no
 -- Unicode spelling.

@@ -10,9 +10,11 @@ import qualified Data.Text as T
 -- precomposed characters (aspirates, long vowels, vocalic r/l) decompose
 -- into a token sequence; see 'unicodeDecompose'.
 --
--- A byte-order mark and a zero-width space are skipped without a word, the way
--- the reference skips them. The diagnostics come back with the tokens; this
--- direction has none of its own yet.
+-- A byte-order mark and a zero-width space are skipped without a word, the
+-- way the reference skips them. The diagnostics come back with the tokens:
+-- the first of this direction is a Tibetan character no table can name
+-- ('unnameableGlyph'), which every reference converter escapes in Wylie
+-- output.
 tokenizeUnicode :: Text -> ([Token], Diagnostics)
 tokenizeUnicode input = (reverse tokensRev, diagnosticsInOrder diagsRev)
     where
@@ -29,7 +31,24 @@ tokenizeUnicode input = (reverse tokensRev, diagnosticsInOrder diagsRev)
                         let end = offset + 1
                             sp = mkSpan (fromIntegral offset) (fromIntegral end)
                             toks = classifyChar sp (T.singleton c) c
-                         in go (reverse toks <> accT) accD end next
+                            diag = unnameableGlyphOf c toks
+                         in go
+                                (reverse toks <> accT)
+                                (maybe accD (`addDiagnostic` accD) diag)
+                                end
+                                next
+
+-- | A Tibetan character no table names (༉, ࿂): one unknown token over the
+-- Tibetan plane, and the warning for it. Latin letters and everything else
+-- outside the plane are simply not Tibetan - this is about a glyph Wylie
+-- cannot spell, which the reference escapes as @\\uXXXX@.
+unnameableGlyphOf :: Char -> [Token] -> Maybe Diagnostic
+unnameableGlyphOf c toks
+    | c >= '\x0f00' && c <= '\x0fff'
+    , [t] <- toks
+    , TcUnknown _ <- tokenCanonical t =
+        Just (unnameableGlyph (tokenSpan t) (T.singleton c))
+    | otherwise = Nothing
 
 -- | The reference passes a byte-order mark and a zero-width space through
 -- without a word; so do we.

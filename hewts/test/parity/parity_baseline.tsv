@@ -192,16 +192,29 @@
 # 202->209. w2u, ewts-rs and java hold. The kangyur U->W snapshot is
 # regenerated: one line's NBSP is bracketed now (lags/[ ]'di), which is the
 # same block the reference opens.
+#
+# Step 5.4 (orphan signs and unnameable glyphs, 18.10.2026): a mark with no
+# letter to attach to (vowel, subjoined, final) and a Tibetan character no
+# table names now escape as \uXXXX - the reference's own escape - instead of
+# printing a mnemonic or the raw glyph; an escape joins a bracket block that
+# foreign text has already opened and opens none itself. u2w 186->190 (jsewts),
+# 188->192 (Lingua), 187->191 (ewts-js); round-trip 206->208, 214->216,
+# 209->209. ewts-js trades two rows rather than gaining: the digit+glyph line
+# round-trips now (its leaked brackets were the old failure), while the long
+# vowel line is flagged "should not round-trip" although its own w2u and u2w
+# expectations force any conforming converter to round-trip it - that flag
+# used to pass only because our u2w was wrong. w2u, the kangyur and the other
+# corpora hold.
 jsewts	w2u	210	210
-jsewts	u2w	210	186
-jsewts	roundtrip	210	206
+jsewts	u2w	210	190
+jsewts	roundtrip	210	208
 lingua	w2u	218	218
-lingua	u2w	218	188
-lingua	roundtrip	218	214
+lingua	u2w	218	192
+lingua	roundtrip	218	216
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	212	212
-ewts-js	u2w	212	187
+ewts-js	u2w	212	191
 ewts-js	roundtrip	212	209
 java	u2w	2	1
 kangyur	roundtrip	254	254

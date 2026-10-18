@@ -111,12 +111,10 @@ checkUnicodeIdentity canon input label =
                 _ -> input
         w = renderW (parseU u)
         back = renderU (parseW w)
-        -- A lone vowel renders with the a-chen in front (wylie "i" -> ཨི),
-        -- exactly what the references write, so only the vowel glyphs gain it.
-        want =
-            case canon of
-                TcVowel _ -> "ཨ" <> input
-                _ -> u
+        -- The round trip lands on the input itself: a lone vowel escapes
+        -- whole (wave 5.4), and only a tsheg needs the letter in front of
+        -- it, as above.
+        want = u
         msg =
             unwords
                 [ "unicode identity failed:"

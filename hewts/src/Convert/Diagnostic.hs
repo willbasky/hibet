@@ -33,6 +33,8 @@ module Convert.Diagnostic
     , consonantAfterSecondSuffix
     , ambiguousSpelling
     , noTibetanCharacters
+    , orphanSign
+    , unnameableGlyph
     , Finding (..)
     , resolveFinding
     , findingsDiagnostics
@@ -71,6 +73,8 @@ data DiagnosticCode
     | ConsonantAfterSecondSuffix
     | AmbiguousSpelling
     | NoTibetanCharacters
+    | OrphanSign
+    | UnnameableGlyph
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data Diagnostic = Diagnostic
@@ -321,6 +325,33 @@ noTibetanCharacters sp =
         Nothing
         "The input holds no Tibetan letters."
 
+-- | A vowel, subjoined letter or final standing before any letter (ི, ླ): a
+-- mark needs a letter to attach to, so no structure of the run could read it
+-- and the output escapes the character. The run is quoted whole, as every
+-- run-scoped spelling rule quotes it. The reference's own warning for the
+-- same sign is its \"needs a top symbol\"; the wording here is ours.
+orphanSign :: Span -> Maybe Span -> Text -> Diagnostic
+orphanSign sp word sign =
+    Diagnostic
+        OrphanSign
+        SevWarning
+        sp
+        word
+        ("The sign \"" <> sign <> "\" has no letter to attach to.")
+
+-- | A Tibetan character with no Wylie name (༉, ࿂): no mnemonic stands for it
+-- in any table, so the converter writes it as a \\uXXXX escape. The span is
+-- the character itself and no word is quoted - the message quotes the
+-- character already.
+unnameableGlyph :: Span -> Text -> Diagnostic
+unnameableGlyph sp glyph =
+    Diagnostic
+        UnnameableGlyph
+        SevWarning
+        sp
+        Nothing
+        ("The Tibetan character \"" <> glyph <> "\" has no Wylie name.")
+
 -- | A finding a constraint window of the grammar records before the run is
 -- over: the run's whole span is only known once the structures have claimed
 -- it, so the window records the pieces and 'Convert.Sentence' resolves them
@@ -364,6 +395,9 @@ data Finding
     | -- | A final mark standing as a run of its own (Mi): it closes no
       -- letter. The mark as it was written.
       FinalWithoutLetter !Text
+    | -- | A vowel or subjoined letter standing before anything that could
+      -- carry it (ི, ླ): no letter to attach to. The mark as it was written.
+      SignWithoutLetter !Text
     deriving (Show, Eq)
 
 -- | A 'Finding' with the span of the whole syllable run it names.
@@ -380,6 +414,7 @@ resolveFinding sp (ConsonantAfter2ndSuffix c) = consonantAfterSecondSuffix sp (J
 resolveFinding sp (PreferredSpelling preferred) = ambiguousSpelling sp (Just sp) preferred
 resolveFinding sp UnplacedDot = orphanDot sp (Just sp)
 resolveFinding sp (FinalWithoutLetter mark) = leadingFinal sp (Just sp) mark
+resolveFinding sp (SignWithoutLetter sign) = orphanSign sp (Just sp) sign
 
 -- | The finished diagnostics of a run's findings, in the order the windows
 -- recorded them ('foldr' + 'addDiagnostic', which prepends, keeps that

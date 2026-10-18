@@ -86,7 +86,7 @@ caseRenderFvComposed =
 
 caseRenderCrossScriptCanonical :: Assertion
 caseRenderCrossScriptCanonical =
-    renderInput OutWylie "ཉ་ཱི" @?= "nya Ai"
+    renderInput OutWylie "ཉ་ཱི" @?= "nya \\u0f71\\u0f72"
 
 caseRenderUnicodeStubsToWylie :: Assertion
 caseRenderUnicodeStubsToWylie =

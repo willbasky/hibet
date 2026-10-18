@@ -17,7 +17,7 @@ module Convert.Sentence
 import Control.Monad (void, when)
 import Convert.Diagnostic
     ( Diagnostics
-    , Finding (FinalWithoutLetter, UnplacedDot)
+    , Finding (FinalWithoutLetter, SignWithoutLetter, UnplacedDot)
     , findingsDiagnostics
     )
 import Convert.Grammar.Parser
@@ -80,6 +80,7 @@ import Convert.Token
     ( Span (..)
     , Token
     , TokenCanonical (..)
+    , isToplessMark
     , offsetEnd
     , offsetStart
     , tokenCanonical
@@ -90,6 +91,7 @@ import Data.Foldable (toList)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
+import qualified Data.Text as T
 import qualified Text.Megaparsec as MP
 
 -- | A syllable as the wave-3.4 dispatcher sees it: the tokens of the whole
@@ -242,10 +244,20 @@ pSyllable spelling = do
     let content = take claimed start <> tailToks
         markedContent = runItems (toList marked <> tailMarks) content
         runSpan = wordSpan content
+        -- A mark at the head of the run with no letter to attach to (wave
+        -- 5.4): the output escapes such a character, and this record says
+        -- why nothing read it. One record per source character - a
+        -- continuation of a decomposed form carries no character of its
+        -- own, and the group's own token speaks for it.
+        orphans =
+            [ SignWithoutLetter (tokenRaw t)
+            | (_, t) <- takeWhile (isToplessMark . snd) markedContent
+            , not (T.null (tokenRaw t))
+            ]
         syllable =
             Syllable
                 { syllableTokens = Seq.fromList (markedContent <> [(Nothing, t) | t <- boundary])
-                , syllableDiags = findingsDiagnostics runSpan findings
+                , syllableDiags = findingsDiagnostics runSpan (findings <> orphans)
                 }
     pure $
         if claimed == 0
