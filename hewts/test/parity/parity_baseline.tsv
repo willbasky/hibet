@@ -170,16 +170,25 @@
 # imported: it is fromWylie(wkang.txt) and equals kang.txt under this same
 # normalisation, i.e. the reference's own second leg - a self-check duplicate
 # of what the round-trip leg already covers (Q-5.1, orphan).
+# Step 5.2 (the f/v caret fold, 18.10.2026): the U->W stack renderer folds
+# the caret over a lone letter into the reference's mnemonic (m_tib_caret):
+# a stack of one letter under the caret spells as @f@/@v@ and the caret stays
+# unwritten (ཕ -> "fa", བ -> "va"), the mirror of the wave 0 expansion that
+# reads @f@ as pha + caret. u2w 172->176 (jsewts), 173->177 (Lingua),
+# 172->176 (ewts-js) - four f/v lines in each corpus, the mid-word form
+# (fa ba va pha) among them. w2u, round-trip, ewts-rs, java and the kangyur
+# u2w/round-trip hold: those lines already round-tripped through the
+# expansion, and the fold fires only on a caret stack of exactly one letter.
 jsewts	w2u	210	210
-jsewts	u2w	210	172
+jsewts	u2w	210	176
 jsewts	roundtrip	210	200
 lingua	w2u	218	218
-lingua	u2w	218	173
+lingua	u2w	218	177
 lingua	roundtrip	218	207
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	212	212
-ewts-js	u2w	212	172
+ewts-js	u2w	212	176
 ewts-js	roundtrip	212	202
 java	u2w	2	1
 kangyur	roundtrip	254	254

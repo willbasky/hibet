@@ -149,6 +149,12 @@ regularStacks =
         , "zh+w"
         ]
 
+-- | The Wylie mnemonic the reference prints for the caret over a lone
+-- letter (the jsewts @m_tib_caret@ table): a stack of one letter under a
+-- caret spells as that mnemonic (ཕ༹ -> "f", བ༹ -> "v").
+caretLetters :: [(Text, Text)]
+caretLetters = [("ph", "f"), ("b", "v")]
+
 -- | The suffix consonants: the reference lets the last of several stacks
 -- keep the letter it reads as, with no implicit @a@, when the stack is one
 -- of these letters (the jsewts @m_suffixes@ table) - the closing @ས@ of
@@ -554,10 +560,20 @@ renderItems fmt = T.concat . map renderItem
                             vowelOver
                                 && isAChen firstTok
                                 && length letterMs == 1
-                        letters = if dropChen then "" else spelled
+                        letters = case folded of
+                            Just l -> l
+                            Nothing -> if dropChen then "" else spelled
+                        hasCaret = any (\m -> tokenCanonical (snd m) == TcFinal FMCaret) piece
                         caret
-                            | any (\m -> tokenCanonical (snd m) == TcFinal FMCaret) piece = "^"
+                            | isJust folded = ""
+                            | hasCaret = "^"
                             | otherwise = ""
+                        -- the reference folds the caret over a lone letter
+                        -- into one mnemonic (pha + caret -> f, ba + caret ->
+                        -- v, m_tib_caret): only a stack of one letter folds
+                        folded
+                            | hasCaret, [n] <- names, Just l <- lookup n caretLetters = Just l
+                            | otherwise = Nothing
                         -- the dot only where the prefix and the stack could
                         -- read as one regular stack: b + r + ny is no regular
                         -- stack, so བརྙ stays "brnya"
