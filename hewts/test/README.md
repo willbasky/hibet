@@ -62,6 +62,7 @@ Automata with Application» (Nyima Tashi) в `Documents/`; **специфика�
 | `jsewts_parity.tsv` | 210 случаев, W→U и U→W | `jsewts/test/test.txt` | jsewts `a3c8c6b` (2025-09-05) |
 | `lingua_parity.tsv` | 218 случаев, тот же формат | `Lingua-BO-Wylie/t/test.txt` | без git-истории в нашей копии |
 | `kang.txt` | 254 строки тибетского текста, без ожиданий | `jsewts/test/kang.txt` | jsewts `a3c8c6b` |
+| `wkang.txt` | 254 строки Wylie — эталонный вывод U→W тех же строк | `jsewts/test/wkang.txt` (`toWylie(kang.txt)`) | jsewts `a3c8c6b` |
 | `ewts_rs_rules.tsv` | 16 правил EWTS, только W→U | `ewts-rs/ewts/src/rules_test.rs` | ewts-rs `14f7b24` (2024-12-11) |
 | `java_ewts.tsv` | 5 строк, строгие EWTS-пары | `ewts-converter/.../ConversionTest.java`, метод `textEwts()` | ewts-converter `c1a6d3f` (2024-07-01) |
 | `ewts_js_parity.tsv` | 212 случаев, тот же формат (EWTS W→U/U→W/roundtrip) | `ewts-js/src/EwtsConverterTests.mjs` | port java-набора (2026-05-08; 212 тестов) |
@@ -125,10 +126,14 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
 - `kang.txt` начинается с BOM, который стоит **на отдельной строке**, поэтому
   реальных строк 254, а не 255. Тест пропускает эту строку.
 - В `lingua_parity.tsv` одна строка имеет `\r` в конце.
-- `kang.txt` проверяется на обратимость (U→W→U), а не против ожиданий: так его
-  проверяет сам jsewts (`kangtest.js` сравнивает свой `toWylie`→`fromWylie` с
-  исходником). Сравнение идёт после нормализации эталона: убраны ASCII-пробелы,
-  `༎` развёрнуто в `།།`.
+- `kang.txt` проверяется на обратимость (U→W→U), как сам jsewts
+  (`kangtest.js` сравнивает свой `toWylie`→`fromWylie` с исходником), и — со
+  шага 5.0 — против `wkang.txt`: дословной выгрузки `toWylie(kang.txt)` того же
+  референса. Сверка идёт после нормализации: убраны ASCII-пробелы (и `_` на
+  Wylie-стороне — это запись того же пробела у эталона), `༎` развёрнуто в
+  `།།`. `rekang.txt` (`fromWylie(wkang.txt)`) **не импортирован**: под этой же
+  нормализацией он равен `kang.txt` — это вторая петля самопроверки эталона,
+  дубль round-trip-проверки (Q-5.1, сирота).
 - `java_ewts.tsv` — это 5 строк, а не «36 проверок»: в `ConversionTest.java`
   из 36 assertion'ов EWTS-парами являются только 8 (6 уникальных) — все в методе
   `textEwts()`; остальные assertion'ы — DTS/ALALC (вне приоритета), отдельные

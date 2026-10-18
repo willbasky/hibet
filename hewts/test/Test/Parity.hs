@@ -58,7 +58,7 @@ tests =
         , testCase "ewts-js 212" (checkCorpus CEwtsJs)
         , testCase "ewts-rs rules 16" (checkCorpus CRules)
         , testCase "java EWTS 5" (checkCorpus CJava)
-        , testCase "kangyur round-trip 254" (checkCorpus CKang)
+        , testCase "kangyur u2w+round-trip 254" (checkCorpus CKang)
         , testCase "report file" writeReport
         ]
 
@@ -114,19 +114,31 @@ itemsFor corpus = do
                   ]
                 ]
 
--- | The Kangyur corpus states no expected output: the reference checks itself
--- (U->W->U), so we check our own round-trip on real text.
+-- | The Kangyur corpus states no expected output in @kang.txt@ itself, but
+-- wave 5.0 brought the reference's own U->W export of the same corpus
+-- (@wkang.txt@ = @toWylie(kang.txt)@): the u2w leg is now checked against it,
+-- and the round-trip leg checks our own U->W->U as before. Both files hold
+-- the same 254 lines in the same order (each opens with an empty line), so
+-- the pairing is positional; a length mismatch shows up as a corpus-size
+-- failure.
 kangItems :: IO [Item]
 kangItems = do
     text <- readUtf8File (corpusFile CKang)
+    wylie <- readUtf8File kangWylieFile
     pure
-        [ Item
-            ("line " <> T.pack (show n) <> " " <> oneLine (T.take 20 raw))
-            KRoundtrip
-            (checkKangLine raw)
-        | (n, raw) <- zip [1 :: Int ..] (T.lines (dropBom text))
+        [ item
+        | (n, raw, want) <- zip3 [1 :: Int ..] (T.lines (dropBom text)) (T.lines wylie)
         , not (T.null raw)
+        , item <-
+            [ Item (kangLabel n raw) KRoundtrip (checkKangLine raw)
+            , Item (kangLabel n raw) KU2W (checkKangU2W raw want)
+            ]
         ]
+
+-- | One line of @kang.txt@, named the way both of its checks name it (the
+-- dedup in 'checkSizes' pins one label per line).
+kangLabel :: Int -> Text -> Text
+kangLabel n raw = "line " <> T.pack (show n) <> " " <> oneLine (T.take 20 raw)
 
 corpusFile :: Corpus -> FilePath
 corpusFile corpus =
@@ -137,6 +149,12 @@ corpusFile corpus =
         CRules -> "test/vectors/ewts_rs_rules.tsv"
         CJava -> "test/vectors/java_ewts.tsv"
         CKang -> "test/vectors/kang.txt"
+
+-- | The reference's own U->W export of @kang.txt@ (wave 5.0): jsewts ran
+-- @toWylie(kang.txt, {sloppy:false})@ over the same corpus, so this file is
+-- the expected Wylie for every Kangyur line.
+kangWylieFile :: FilePath
+kangWylieFile = "test/vectors/wkang.txt"
 
 baselineFile :: FilePath
 baselineFile = "test/parity/parity_baseline.tsv"
@@ -300,7 +318,27 @@ checkKangLine raw =
                 Fail ("got " <> quoted (normalise out) <> " want " <> quoted want)
     where
         want = normalise raw
-        normalise = T.replace "\x0f0e" "\x0f0d\x0f0d" . T.filter (/= ' ')
+
+-- | The Kangyur U->W leg (wave 5.0): our Unicode -> Wylie of the line against
+-- the reference's own export (@wkang.txt@), under the same normalisation the
+-- round-trip leg uses. The Wylie side also drops @_@ because that is how the
+-- reference spells the input ASCII space it received (@m_tib_other(' ')@ ->
+-- @_@); the input side dropped that space, so the matching @_@ must go too —
+-- otherwise every spaced line fails on a representation, not a conversion
+-- (space handling itself is wave 5.12).
+checkKangU2W :: Text -> Text -> Outcome
+checkKangU2W raw want =
+    case fst (convertU2W (normalise raw)) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out
+            | normalise out == normalise want -> Pass
+            | otherwise ->
+                Fail ("got " <> quoted (normalise out) <> " want " <> quoted (normalise want))
+
+-- | Drop ASCII spaces (both scripts spell a space one way each: U+0F0B output
+-- for tsheg, @_@ for an input space) and expand the double shad.
+normalise :: Text -> Text
+normalise = T.replace "\x0f0e" "\x0f0d\x0f0d" . T.filter (\c -> c /= ' ' && c /= '_')
 
 -- | One line of the reference's own corpus, named by its rule where the corpus
 -- names it, and by its line otherwise.

@@ -19,6 +19,7 @@ extra-doc-files:
   test/README.md
   test/vectors/*.tsv
   test/vectors/kang.txt
+  test/vectors/wkang.txt
 
 tested-with: ghc ==9.10.3
 

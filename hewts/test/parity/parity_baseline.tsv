@@ -155,6 +155,21 @@
 # the last open w2u line there) reads as its apostrophe twin does. The ewts-js
 # w2u leg closes completely, 211->212, and its round-trip follows the same
 # line, 201->202. Everything else holds.
+#
+# Step 5.0 (the Kangyur u2w oracle): wkang.txt - the reference's own
+# toWylie(kang.txt, {sloppy:false}) export - was copied into test/vectors and
+# became the expected Wylie for every Kangyur line, so the corpus has a u2w
+# leg for the first time: 250/254. The comparison runs under the round-trip
+# leg's normalisation (spaces dropped, the double shad expanded), plus the
+# Wylie side drops @_@ - the reference's spelling of an input ASCII space,
+# which the input side dropped with the space itself; space handling is wave
+# 5.12. The four open lines are the wave's own groups: the dot before a
+# standalone a-chen (jsewts writes none, the 4.4a canon follows THL), the
+# prefix-vs-two-suffixes reading (ganddu/gnaddu), a second vowel in the stack
+# (brib'a'am) and a bracket block with a space in it. rekang.txt was NOT
+# imported: it is fromWylie(wkang.txt) and equals kang.txt under this same
+# normalisation, i.e. the reference's own second leg - a self-check duplicate
+# of what the round-trip leg already covers (Q-5.1, orphan).
 jsewts	w2u	210	210
 jsewts	u2w	210	172
 jsewts	roundtrip	210	200
@@ -168,3 +183,4 @@ ewts-js	u2w	212	172
 ewts-js	roundtrip	212	202
 java	u2w	2	1
 kangyur	roundtrip	254	254
+kangyur	u2w	254	250
