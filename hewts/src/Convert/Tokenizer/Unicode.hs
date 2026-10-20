@@ -8,7 +8,9 @@ import qualified Data.Text as T
 
 -- | Tokenize Unicode Tibetan input to typed IR tokens. Deprecated
 -- precomposed characters (aspirates, long vowels, vocalic r/l) decompose
--- into a token sequence; see 'unicodeDecompose'.
+-- into a token sequence; see 'unicodeDecompose'. The syllable OM (ༀ) is
+-- also a precomposed spelling - a-chen + o + anusvara - and decomposes the
+-- same way, as ewts-js does.
 --
 -- A byte-order mark and a zero-width space are skipped without a word, the
 -- way the reference skips them. The diagnostics come back with the tokens:
@@ -71,10 +73,12 @@ canonicalSeq ch =
 
 -- | Deprecated precomposed Tibetan characters decomposed to canonical token
 -- sequences on input: aspirated consonants (± subjoined), long vowels and
--- vocalic r/l. Matches the reference decompositions (ewts-converter / jsewts).
+-- vocalic r/l, and the syllable OM (a-chen + o + anusvara). Matches the
+-- reference decompositions (ewts-converter / jsewts / ewts-js).
 unicodeDecompose :: [(Char, [TokenCanonical])]
 unicodeDecompose =
-    [ ('\x0f43', [TcConsonant Cg, TcSubConsonant SCh])
+    [ ('\x0f00', [TcConsonant Ca, TcVowel Vo, TcFinal FMAnusvara])
+    , ('\x0f43', [TcConsonant Cg, TcSubConsonant SCh])
     , ('\x0f4d', [TcConsonant CD, TcSubConsonant SCh])
     , ('\x0f52', [TcConsonant Cd, TcSubConsonant SCh])
     , ('\x0f57', [TcConsonant Cb, TcSubConsonant SCh])
@@ -280,7 +284,6 @@ unicodePunctuation = \case
 
 unicodeSign :: SignMark -> Text
 unicodeSign = \case
-    SGYigMgoAt -> "\x0f00"
     SGKaKhaGaGsum -> "\x0f01"
     SGNyiZlaNaaDa -> "\x0f02"
     SGSbrulShad -> "\x0f03"

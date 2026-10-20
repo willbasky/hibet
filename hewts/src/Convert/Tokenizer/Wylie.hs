@@ -478,7 +478,6 @@ wyliePunctuation = \case
 
 wylieSign :: SignMark -> Text
 wylieSign = \case
-    SGYigMgoAt -> "\\u0f00"
     SGKaKhaGaGsum -> "\\u0f01"
     SGNyiZlaNaaDa -> "\\u0f02"
     SGSbrulShad -> "\\u0f03"

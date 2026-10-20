@@ -237,7 +237,6 @@ unicodeCases =
         )
     , ("symbol at-like mark", singleUnicode "༄" (TkSymbol, TcSymbol SMAt))
     , ("symbol opening mark", singleUnicode "༼" (TkSymbol, TcSymbol SMLParen))
-    , ("sign yig mgo at", singleUnicode "\x0f00" (TkSign, TcSign SGYigMgoAt))
     , ("half number H_4", singleUnicode "\x0f2d" (TkHalfNumber, TcHalfNumber H_4))
     ,
         ( "sanskrit mark i lci rtags"
@@ -259,10 +258,14 @@ unicodeCases =
     ]
 
 -- | Deprecated precomposed characters decompose into canonical token
--- sequences on input (aspirates, long vowels, vocalic r/l).
+-- sequences on input (aspirates, long vowels, vocalic r/l, OM).
 unicodeDecompositionCases :: [(String, Assertion)]
 unicodeDecompositionCases =
     [
+        ( "precomposed U+0F00 (ༀ OM) decomposes"
+        , seqUnicode "\x0f00" [TcConsonant Ca, TcVowel Vo, TcFinal FMAnusvara]
+        )
+    ,
         ( "precomposed U+0F43 (གྷ) decomposes"
         , seqUnicode "\x0f43" [TcConsonant Cg, TcSubConsonant SCh]
         )
@@ -512,8 +515,7 @@ unicodeHalfNumbers =
 
 unicodeSigns :: [(Char, (TokenKind, TokenCanonical))]
 unicodeSigns =
-    [ ('\x0f00', (TkSign, TcSign SGYigMgoAt))
-    , ('\x0f01', (TkSign, TcSign SGKaKhaGaGsum))
+    [ ('\x0f01', (TkSign, TcSign SGKaKhaGaGsum))
     , ('\x0f02', (TkSign, TcSign SGNyiZlaNaaDa))
     , ('\x0f03', (TkSign, TcSign SGSbrulShad))
     ]

@@ -205,6 +205,15 @@
 # expectations force any conforming converter to round-trip it - that flag
 # used to pass only because our u2w was wrong. w2u, the kangyur and the other
 # corpora hold.
+#
+# Step 5.5 (precomposed input; 20.10.2026): the deprecated decompositions
+# already stood since wave 0, so the only new entry is U+0F00 (OM) -> a-chen +
+# o + anusvara, as ewts-js does; jsewts, java and Lingua print the escape
+# instead, and no corpus carries the character, so no number moves. The
+# remaining Lingua line 195 (ra + U+0F77 -> "rr-I") is an accepted divergence,
+# NOT an open gap: ewts-js and jsewts both print our "r+r-I" (checked by
+# running both converters), and "rr-I" is Lingua's own rule that treats a
+# subjoined r/l with a vocalic vowel as one vowel.
 jsewts	w2u	210	210
 jsewts	u2w	210	190
 jsewts	roundtrip	210	208

@@ -556,8 +556,7 @@ data PunctuationMark
     deriving (Show, Eq, Ord, Enum, Bounded)
 
 data SignMark
-    = SGYigMgoAt -- ༀ \u0f00
-    | SGKaKhaGaGsum -- ༁ \u0f01
+    = SGKaKhaGaGsum -- ༁ \u0f01
     | SGNyiZlaNaaDa -- ༂ \u0f02
     | SGSbrulShad -- ༃ \u0f03
     deriving (Show, Eq, Ord, Enum, Bounded)
