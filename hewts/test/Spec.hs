@@ -20,6 +20,7 @@ import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
 import qualified Test.Grammar.Stack as Stack
 import qualified Test.Grammar.Structure as Structures
+import qualified Test.Grammar.Syllable as Syllable
 import qualified Test.Grammar.Wylie as Wylie
 import qualified Test.Parity as Parity
 import Test.Tasty (TestTree, defaultMain, testGroup)
@@ -60,6 +61,7 @@ tests =
         , Diagnostic.tests
         , Stack.tests
         , Structures.tests
+        , Syllable.tests
         , Wylie.tests
         , Sentence.tests
         , Convert.tests

@@ -1,10 +1,12 @@
--- Ожидания: hewts — снимок U→W поверх эталонного входа kang.txt.
+-- Ожидания: hewts — снимки конверсии поверх эталонных входов (kang.txt для
+-- U→W, векторы паритета для W→U).
 
 module Test.Convert.Golden (tests) where
 
 import Convert (OutputFormat (..), pSentence, renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
 import Data.Text (Text)
@@ -14,7 +16,10 @@ import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
 
 tests :: TestTree
-tests = testGroup "conversion golden" [kangyurBackToWylie]
+tests =
+    testGroup
+        "conversion golden"
+        [kangyurBackToWylie, vectorsBackToUnicode]
 
 -- | What we currently turn the Kangyur text into in Wylie, line by line.
 --
@@ -43,6 +48,49 @@ converted input =
     case parseEither (pSentence Tibetan) (fst (tokenizeUnicode input)) of
         Left err -> "<parse error: " <> err <> ">"
         Right items -> renderItems OutWylie items
+
+-- | What we currently turn every reference Wylie input into. The inputs are the
+-- corpora Test.Parity reads, the output is our W→U conversion; the snapshot
+-- exists so the AST refactor shows up as a diff here instead of as a parity
+-- regression. One row: corpus, corpus line, Wylie input, our Unicode.
+vectorsBackToUnicode :: TestTree
+vectorsBackToUnicode =
+    goldenVsString
+        "reference vectors W->U snapshot"
+        "test/golden/vectors_back_to_unicode.golden"
+        renderVectors
+
+renderVectors :: IO BL.ByteString
+renderVectors = do
+    rows <- concat <$> mapM renderCorpus vectors
+    pure (BL.fromStrict (TE.encodeUtf8 (T.unlines rows)))
+
+-- | The corpora and their names, in the order the report lists them.
+vectors :: [(Text, FilePath)]
+vectors =
+    [ ("jsewts", "test/vectors/jsewts_parity.tsv")
+    , ("lingua", "test/vectors/lingua_parity.tsv")
+    , ("ewts-js", "test/vectors/ewts_js_parity.tsv")
+    , ("ewts-rs", "test/vectors/ewts_rs_rules.tsv")
+    , ("java", "test/vectors/java_ewts.tsv")
+    ]
+
+renderCorpus :: (Text, FilePath) -> IO [Text]
+renderCorpus (name, path) = do
+    text <- readVector path
+    pure
+        [ name <> "\t" <> T.pack (show n) <> "\t" <> wylie <> "\t" <> convertedW2U wylie
+        | (n, line) <- zip [1 :: Int ..] (T.lines text)
+        , not ("#" `T.isPrefixOf` line)
+        , not (T.null line)
+        , wylie : _ <- [T.splitOn "\t" line]
+        ]
+
+convertedW2U :: Text -> Text
+convertedW2U input =
+    case parseEither (pSentence Wylie) (fst (tokenizeWylie input)) of
+        Left err -> "<parse error: " <> err <> ">"
+        Right items -> renderItems OutUnicode items
 
 -- | The Kangyur corpus, the same way Test.Parity reads it: the file starts with
 -- a byte-order mark on a line of its own, so it is dropped before splitting.

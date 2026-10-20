@@ -1,0 +1,661 @@
+jsewts	2	dangs	དངས
+jsewts	3	a	ཨ
+jsewts	4	a 	ཨ་
+jsewts	5	a     	ཨ་
+jsewts	6	'a	འ
+jsewts	7	ka	ཀ
+jsewts	8	kaba	ཀབ
+jsewts	9	ga	ག
+jsewts	10	gha	གྷ
+jsewts	11	g+ha	གྷ
+jsewts	12	gang	གང
+jsewts	13	ganga	གང
+jsewts	14	ca	ཅ
+jsewts	15	cha	ཆ
+jsewts	16	Ta	ཊ
+jsewts	17	nya	ཉ
+jsewts	18	n+ya	ནྱ
+jsewts	19	-ta	ཊ
+jsewts	20	-tha	ཋ
+jsewts	21	Tha	ཋ
+jsewts	22	bhrUM	བྷྲཱུཾ
+jsewts	23	b+h+rUM	བྷྲཱུཾ
+jsewts	24	tsa	ཙ
+jsewts	25	tsha	ཚ
+jsewts	26	dza	ཛ
+jsewts	27	dzha	ཛྷ
+jsewts	28	dz+ha	ཛྷ
+jsewts	29	'a	འ
+jsewts	30	’a	འ
+jsewts	31	ya	ཡ
+jsewts	32	rya	རྱ
+jsewts	33	mrya	མྲྱ
+jsewts	34	sha	ཤ
+jsewts	35	Sha	ཥ
+jsewts	36	s+ha	སྷ
+jsewts	37	s+wa	སྭ
+jsewts	38	s+Wa	སྺ
+jsewts	39	s+ya	སྱ
+jsewts	40	sya	སྱ
+jsewts	41	s+Ya	སྻ
+jsewts	42	s+ra	སྲ
+jsewts	43	sra	སྲ
+jsewts	44	s+Ra	སྼ
+jsewts	45	s+a	སྸ
+jsewts	46	fa	ཕ༹
+jsewts	47	va	བ༹
+jsewts	48	f+ra	ཕ༹ྲ
+jsewts	49	v+la	བ༹ླ
+jsewts	50	r+-ta	རྚ
+jsewts	51	r+Ta	རྚ
+jsewts	52	m+Na	མྞ
+jsewts	53	m+'a	མྰ
+jsewts	54	mA	མཱ
+jsewts	55	e	ཨེ
+jsewts	56	A	ཨཱ
+jsewts	57	i	ཨི
+jsewts	58	I	ཨཱི
+jsewts	59	u	ཨུ
+jsewts	60	U	ཨཱུ
+jsewts	61	rU	རཱུ
+jsewts	62	rai	རཻ
+jsewts	63	ro	རོ
+jsewts	64	br-i	བྲྀ
+jsewts	65	kr-i	ཀྲྀ
+jsewts	66	cr-i	ཅྲྀ
+jsewts	67	c+r-i	ཅྲྀ
+jsewts	68	c+l-I	ཅླཱྀ
+jsewts	69	oM	ཨོཾ
+jsewts	70	o~M`	ཨོྂ
+jsewts	71	o~M	ཨོྃ
+jsewts	72	aH	ཨཿ
+jsewts	73	k?	ཀ྄
+jsewts	74	aHX	ཨཿ༷
+jsewts	75	aH~X	ཨཿ༵
+jsewts	76	ph^a	ཕ༹
+jsewts	77	0123456789	༠༡༢༣༤༥༦༧༨༩
+jsewts	78	gra gro	གྲ་གྲོ
+jsewts	79	gra*gro	གྲ༌གྲོ
+jsewts	80	gra/	གྲ།
+jsewts	81	gra//	གྲ༎
+jsewts	82	gra;	གྲ༏
+jsewts	83	gra|	གྲ༑
+jsewts	84	gra!	གྲ༈
+jsewts	85	oM:	ཨོཾ༔
+jsewts	86	ba_la	བ ལ
+jsewts	87	ba=la	བ༴ལ
+jsewts	88	<ba>	༺བ༻
+jsewts	89	(ba)	༼བ༽
+jsewts	90	gra	གྲ
+jsewts	91	bsgra	བསྒྲ
+jsewts	92	u	ཨུ
+jsewts	93	'u	འུ
+jsewts	94	gu	གུ
+jsewts	95	gru	གྲུ
+jsewts	96	bsgru	བསྒྲུ
+jsewts	97	pa	པ
+jsewts	98	pa'i	པའི
+jsewts	99	pa'am	པའམ
+jsewts	100	blo	བློ
+jsewts	101	bla ma	བླ་མ
+jsewts	102	[comment]	comment
+jsewts	103	[comment] gra	comment་གྲ
+jsewts	104	[comment [with embedded[]] brackets ]bslu	comment [with embedded[]] brackets བསླུ
+jsewts	105	[comment\u0020with embedded\U00000020unicode escapes] a	comment with embedded unicode escapes་ཨ
+jsewts	106	a [unfinished [comment]	ཨ་unfinished [comment]
+jsewts	107	bla   ma   	བླ་མ་
+jsewts	108	﻿bla	བླ
+jsewts	109	a\u01x3a	ཨཨ
+jsewts	110	xxx	xxx
+jsewts	111	blaxbla	བླxབླ
+jsewts	112	moX	མོ༷
+jsewts	113	mo . ???	མོ་.་???
+jsewts	114	sgra	སྒྲ
+jsewts	115	sgrwa	སྒྲྭ
+jsewts	116	tgra	ཏགྲ
+jsewts	117	g^ra	གྲ༹
+jsewts	118	g^r^a	གྲ༹
+jsewts	119	gr^a	གྲ༹
+jsewts	120	gra^	གྲ༹
+jsewts	121	rgwa	རྒྭ
+jsewts	122	rtswa	རྩྭ
+jsewts	123	rka	རྐ
+jsewts	124	rnga	རྔ
+jsewts	125	lnga	ལྔ
+jsewts	126	snga	སྔ
+jsewts	127	a	ཨ
+jsewts	128	a+a	ཨྸ
+jsewts	129	ba+a	བྸ
+jsewts	130	b+ae	བྸེ
+jsewts	131	a+yo	ཨྱོ
+jsewts	132	c	ཅ
+jsewts	133	gra	གྲ
+jsewts	134	grwa	གྲྭ
+jsewts	135	grywa	གརྱྭ
+jsewts	136	grla	གརླ
+jsewts	137	brla	བརླ
+jsewts	138	cla	ཅླ
+jsewts	139	rbya	རྦྱ
+jsewts	140	g+mra	གྨྲ
+jsewts	141	g+m+ra	གྨྲ
+jsewts	142	g+m+r+a	གྨྲྸ
+jsewts	143	g+X	ག༷
+jsewts	144	ge+a	གེྸ
+jsewts	145	ge+r	གེྲ
+jsewts	146	oM	ཨོཾ
+jsewts	147	oMM	ཨོཾ
+jsewts	148	o~M`	ཨོྂ
+jsewts	149	o~M`M	ཨོྂ
+jsewts	150	gyag	གྱག
+jsewts	151	g.yag	གཡག
+jsewts	152	g....yag	ག...ཡག
+jsewts	153	grglam	གརགླམ
+jsewts	154	AH	ཨཱཿ
+jsewts	155	bgru	བགྲུ
+jsewts	156	pgru	པགྲུ
+jsewts	157	bza	བཟ
+jsewts	158	bdza	བཛ
+jsewts	159	bz	བཟ
+jsewts	160	az	ཨཟ
+jsewts	161	bars	བརས
+jsewts	162	bart	བརཏ
+jsewts	163	gabs	གབས
+jsewts	164	gabsp	གབསཔ
+jsewts	165	b	བ
+jsewts	166	dag	དག
+jsewts	167	dga	དག
+jsewts	168	dgas	དགས
+jsewts	169	'gas	འགས
+jsewts	170	dbas	དབས
+jsewts	171	dmas	དམས
+jsewts	172	bags	བགས
+jsewts	173	mangs	མངས
+jsewts	174	dags	དགས
+jsewts	175	'ags	འགས
+jsewts	176	dabs	དབས
+jsewts	177	dams	དམས
+jsewts	178	bgas	བགས
+jsewts	179	Mi	Mཨི
+jsewts	180	bde gshegs chos kyi sku mnga’ sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+jsewts	181	bde gshegs chos kyi sku mnga' sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+jsewts	182	oM ma Ni pad+me hU~M` 	ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྂ་
+jsewts	183	oM aHhU~M` badzra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+jsewts	184	bla\u0f20\u0fc2	བླ༠࿂
+jsewts	185	bla \u0f73	བླ་ཱི
+jsewts	186	bla \u0f04	བླ་༄
+jsewts	187	bla \u0f09	བླ་༉
+jsewts	188	bla\u0f0bblu	བླ་བླུ
+jsewts	189	bla\u0f0cblu	བླ༌བླུ
+jsewts	190	bla\u0f73	བླཱི
+jsewts	191	ba\u0f76	བྲྀ
+jsewts	192	ra\u0f77	རཷ
+jsewts	193	\u0f77	ཷ
+jsewts	194	bo+ra	བོྲ
+jsewts	195	baM\u0fb2	བཾྲ
+jsewts	196	baM\u0f74	བཾུ
+jsewts	197	baM\u0f82	བཾྂ
+jsewts	198	a	ཨ
+jsewts	199	e	ཨེ
+jsewts	200	i	ཨི
+jsewts	201	I	ཨཱི
+jsewts	202	U	ཨཱུ
+jsewts	203	fa ba va pha	ཕ༹་བ་བ༹་ཕ
+jsewts	204	rdo+e	རྡོེ
+jsewts	205	rda+e	རྡེ
+jsewts	206	bgra	བགྲ
+jsewts	207	bgrwa	བགྲྭ
+jsewts	208	bgrya	བགྲྱ
+jsewts	209	mand	མནད
+jsewts	210	pand	པནད
+jsewts	211	mags	མགས
+lingua	2	a	ཨ
+lingua	3	a 	ཨ་
+lingua	4	a     	ཨ་
+lingua	5	'a	འ
+lingua	6	ka	ཀ
+lingua	7	kaba	ཀབ
+lingua	8	ga	ག
+lingua	9	gha	གྷ
+lingua	10	g+ha	གྷ
+lingua	11	gang	གང
+lingua	12	ganga	གང
+lingua	13	ca	ཅ
+lingua	14	cha	ཆ
+lingua	15	Ta	ཊ
+lingua	16	nya	ཉ
+lingua	17	n+ya	ནྱ
+lingua	18	-ta	ཊ
+lingua	19	-tha	ཋ
+lingua	20	Tha	ཋ
+lingua	21	bhrUM	བྷྲཱུཾ
+lingua	22	b+h+rUM	བྷྲཱུཾ
+lingua	23	tsa	ཙ
+lingua	24	tsha	ཚ
+lingua	25	dza	ཛ
+lingua	26	dzha	ཛྷ
+lingua	27	dz+ha	ཛྷ
+lingua	28	'a	འ
+lingua	29	’a	འ
+lingua	30	ya	ཡ
+lingua	31	rya	རྱ
+lingua	32	mrya	མྲྱ
+lingua	33	sha	ཤ
+lingua	34	Sha	ཥ
+lingua	35	s+ha	སྷ
+lingua	36	s+wa	སྭ
+lingua	37	s+Wa	སྺ
+lingua	38	s+ya	སྱ
+lingua	39	sya	སྱ
+lingua	40	s+Ya	སྻ
+lingua	41	s+ra	སྲ
+lingua	42	sra	སྲ
+lingua	43	s+Ra	སྼ
+lingua	44	s+a	སྸ
+lingua	45	fa	ཕ༹
+lingua	46	va	བ༹
+lingua	47	f+ra	ཕ༹ྲ
+lingua	48	v+la	བ༹ླ
+lingua	49	r+-ta	རྚ
+lingua	50	r+Ta	རྚ
+lingua	51	m+Na	མྞ
+lingua	52	m+'a	མྰ
+lingua	53	mA	མཱ
+lingua	54	e	ཨེ
+lingua	55	A	ཨཱ
+lingua	56	i	ཨི
+lingua	57	I	ཨཱི
+lingua	58	u	ཨུ
+lingua	59	U	ཨཱུ
+lingua	60	rU	རཱུ
+lingua	61	rai	རཻ
+lingua	62	ro	རོ
+lingua	63	br-i	བྲྀ
+lingua	64	kr-i	ཀྲྀ
+lingua	65	cr-i	ཅྲྀ
+lingua	66	c+r-i	ཅྲྀ
+lingua	67	c+l-I	ཅླཱྀ
+lingua	68	oM	ཨོཾ
+lingua	69	o~M`	ཨོྂ
+lingua	70	o~M	ཨོྃ
+lingua	71	aH	ཨཿ
+lingua	72	k?	ཀ྄
+lingua	73	aHX	ཨཿ༷
+lingua	74	aH~X	ཨཿ༵
+lingua	75	ph^a	ཕ༹
+lingua	76	0123456789	༠༡༢༣༤༥༦༧༨༩
+lingua	77	gra gro	གྲ་གྲོ
+lingua	78	gra*gro	གྲ༌གྲོ
+lingua	79	gra/	གྲ།
+lingua	80	gra//	གྲ༎
+lingua	81	gra;	གྲ༏
+lingua	82	gra|	གྲ༑
+lingua	83	gra!	གྲ༈
+lingua	84	oM:	ཨོཾ༔
+lingua	85	ba_la	བ ལ
+lingua	86	ba=la	བ༴ལ
+lingua	87	<ba>	༺བ༻
+lingua	88	(ba)	༼བ༽
+lingua	89	gra	གྲ
+lingua	90	bsgra	བསྒྲ
+lingua	91	u	ཨུ
+lingua	92	'u	འུ
+lingua	93	gu	གུ
+lingua	94	gru	གྲུ
+lingua	95	bsgru	བསྒྲུ
+lingua	96	pa	པ
+lingua	97	pa'i	པའི
+lingua	98	pa'am	པའམ
+lingua	99	blo	བློ
+lingua	100	bla ma	བླ་མ
+lingua	101	[comment]	comment
+lingua	102	[comment] gra	comment་གྲ
+lingua	103	[comment [with embedded[]] brackets ]bslu	comment [with embedded[]] brackets བསླུ
+lingua	104	[comment\u0020with embedded\U00000020unicode escapes] a	comment with embedded unicode escapes་ཨ
+lingua	105	a [unfinished [comment]	ཨ་unfinished [comment]
+lingua	106	bla   ma   	བླ་མ་
+lingua	107	﻿bla	བླ
+lingua	108	\u0020\U00000020\u0032\t\i\x\!	  2tix!
+lingua	109	  bla	བླ
+lingua	110	a\u01x3a	ཨཨ
+lingua	111	xxx	xxx
+lingua	112	blaxbla	བླxབླ
+lingua	113	moX	མོ༷
+lingua	114	mo . ???	མོ་.་???
+lingua	115	sgra	སྒྲ
+lingua	116	sgrwa	སྒྲྭ
+lingua	117	tgra	ཏགྲ
+lingua	118	g^ra	གྲ༹
+lingua	119	g^r^a	གྲ༹
+lingua	120	gr^a	གྲ༹
+lingua	121	gra^	གྲ༹
+lingua	122	rgwa	རྒྭ
+lingua	123	rtswa	རྩྭ
+lingua	124	rka	རྐ
+lingua	125	rnga	རྔ
+lingua	126	lnga	ལྔ
+lingua	127	snga	སྔ
+lingua	128	a	ཨ
+lingua	129	a+a	ཨྸ
+lingua	130	ba+a	བྸ
+lingua	131	b+ae	བྸེ
+lingua	132	a+yo	ཨྱོ
+lingua	133	c	ཅ
+lingua	134	gra	གྲ
+lingua	135	grwa	གྲྭ
+lingua	136	grywa	གརྱྭ
+lingua	137	grla	གརླ
+lingua	138	brla	བརླ
+lingua	139	cla	ཅླ
+lingua	140	rbya	རྦྱ
+lingua	141	g+mra	གྨྲ
+lingua	142	g+m+ra	གྨྲ
+lingua	143	g+m+r+a	གྨྲྸ
+lingua	144	g+X	ག༷
+lingua	145	ge+a	གེྸ
+lingua	146	ge+r	གེྲ
+lingua	147	oM	ཨོཾ
+lingua	148	oMM	ཨོཾ
+lingua	149	o~M`	ཨོྂ
+lingua	150	o~M`M	ཨོྂ
+lingua	151	gyag	གྱག
+lingua	152	g.yag	གཡག
+lingua	153	g....yag	ག...ཡག
+lingua	154	grglam	གརགླམ
+lingua	155	AH	ཨཱཿ
+lingua	156	bgru	བགྲུ
+lingua	157	pgru	པགྲུ
+lingua	158	bza	བཟ
+lingua	159	bdza	བཛ
+lingua	160	bz	བཟ
+lingua	161	az	ཨཟ
+lingua	162	bars	བརས
+lingua	163	bart	བརཏ
+lingua	164	gabs	གབས
+lingua	165	gabsp	གབསཔ
+lingua	166	b	བ
+lingua	167	dag	དག
+lingua	168	dga	དག
+lingua	169	dgas	དགས
+lingua	170	'gas	འགས
+lingua	171	dbas	དབས
+lingua	172	dmas	དམས
+lingua	173	bags	བགས
+lingua	174	mangs	མངས
+lingua	175	dags	དགས
+lingua	176	'ags	འགས
+lingua	177	dabs	དབས
+lingua	178	dams	དམས
+lingua	179	bgas	བགས
+lingua	180	Mi	Mཨི
+lingua	181	bde gshegs chos kyi sku mnga’ sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+lingua	182	bde gshegs chos kyi sku mnga' sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+lingua	183	oM ma Ni pad+me hU~M` 	ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྂ་
+lingua	184	oM aHhU~M` badzra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+lingua	185	oM aHhU~M` badz+ra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+lingua	186	oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+lingua	187	bla \u0f20\u0fc2	བླ་༠࿂
+lingua	188	bla \u0f73	བླ་ཱི
+lingua	189	bla \u0f04	བླ་༄
+lingua	190	bla \u0f09	བླ་༉
+lingua	191	bla\u0f0bblu	བླ་བླུ
+lingua	192	bla\u0f0cblu	བླ༌བླུ
+lingua	193	bla\u0f73	བླཱི
+lingua	194	ba\u0f76	བྲྀ
+lingua	195	ra\u0f77	རཷ
+lingua	196	\u0f77	ཷ
+lingua	197	bo+ra	བོྲ
+lingua	198	baM\u0fb2	བཾྲ
+lingua	199	baM\u0f74	བཾུ
+lingua	200	baM\u0f82	བཾྂ
+lingua	201	a	ཨ
+lingua	202	e	ཨེ
+lingua	203	i	ཨི
+lingua	204	I	ཨཱི
+lingua	205	U	ཨཱུ
+lingua	206	fa ba va pha	ཕ༹་བ་བ༹་ཕ
+lingua	207	rdo+e	རྡོེ
+lingua	208	rda+e	རྡེ
+lingua	209	bgra	བགྲ
+lingua	210	bgrwa	བགྲྭ
+lingua	211	bgrya	བགྲྱ
+lingua	212	mand	མནད
+lingua	213	pand	པནད
+lingua	214	mgas	མགས
+lingua	215	aa	ཨཨ
+lingua	216	ae	ཨཨེ
+lingua	217	ba.a	བཨ
+lingua	218	ba.e	བཨེ
+lingua	219	be.a	བེཨ
+ewts-js	3	a	ཨ
+ewts-js	4	a 	ཨ་
+ewts-js	5	a     	ཨ་
+ewts-js	6	'a	འ
+ewts-js	7	ka	ཀ
+ewts-js	8	kaba	ཀབ
+ewts-js	9	ga	ག
+ewts-js	10	gha	གྷ
+ewts-js	11	g+ha	གྷ
+ewts-js	12	gang	གང
+ewts-js	13	ganga	གང
+ewts-js	14	ca	ཅ
+ewts-js	15	cha	ཆ
+ewts-js	16	Ta	ཊ
+ewts-js	17	nya	ཉ
+ewts-js	18	n+ya	ནྱ
+ewts-js	19	-ta	ཊ
+ewts-js	20	-tha	ཋ
+ewts-js	21	Tha	ཋ
+ewts-js	22	bhrUM	བྷྲཱུཾ
+ewts-js	23	b+h+rUM	བྷྲཱུཾ
+ewts-js	24	tsa	ཙ
+ewts-js	25	tsha	ཚ
+ewts-js	26	dza	ཛ
+ewts-js	27	dzha	ཛྷ
+ewts-js	28	dz+ha	ཛྷ
+ewts-js	29	'a	འ
+ewts-js	30	’a	འ
+ewts-js	31	ya	ཡ
+ewts-js	32	rya	རྱ
+ewts-js	33	mrya	མྲྱ
+ewts-js	34	sha	ཤ
+ewts-js	35	Sha	ཥ
+ewts-js	36	s+ha	སྷ
+ewts-js	37	s+wa	སྭ
+ewts-js	38	s+Wa	སྺ
+ewts-js	39	s+ya	སྱ
+ewts-js	40	sya	སྱ
+ewts-js	41	s+Ya	སྻ
+ewts-js	42	s+ra	སྲ
+ewts-js	43	sra	སྲ
+ewts-js	44	s+Ra	སྼ
+ewts-js	45	s+a	སྸ
+ewts-js	46	fa	ཕ༹
+ewts-js	47	va	བ༹
+ewts-js	48	f+ra	ཕ༹ྲ
+ewts-js	49	v+la	བ༹ླ
+ewts-js	50	r+-ta	རྚ
+ewts-js	51	r+Ta	རྚ
+ewts-js	52	m+Na	མྞ
+ewts-js	53	m+'a	མྰ
+ewts-js	54	mA	མཱ
+ewts-js	55	e	ཨེ
+ewts-js	56	A	ཨཱ
+ewts-js	57	i	ཨི
+ewts-js	58	I	ཨཱི
+ewts-js	59	u	ཨུ
+ewts-js	60	U	ཨཱུ
+ewts-js	61	rU	རཱུ
+ewts-js	62	rai	རཻ
+ewts-js	63	ro	རོ
+ewts-js	64	br-i	བྲྀ
+ewts-js	65	kr-i	ཀྲྀ
+ewts-js	66	cr-i	ཅྲྀ
+ewts-js	67	c+r-i	ཅྲྀ
+ewts-js	68	c+l-I	ཅླཱྀ
+ewts-js	69	oM	ཨོཾ
+ewts-js	70	o~M`	ཨོྂ
+ewts-js	71	o~M	ཨོྃ
+ewts-js	72	aH	ཨཿ
+ewts-js	73	k?	ཀ྄
+ewts-js	74	aHX	ཨཿ༷
+ewts-js	75	aH~X	ཨཿ༵
+ewts-js	76	ph^a	ཕ༹
+ewts-js	77	0123456789	༠༡༢༣༤༥༦༧༨༩
+ewts-js	78	gra gro	གྲ་གྲོ
+ewts-js	79	gra*gro	གྲ༌གྲོ
+ewts-js	80	gra/	གྲ།
+ewts-js	81	gra//	གྲ༎
+ewts-js	82	gra;	གྲ༏
+ewts-js	83	gra|	གྲ༑
+ewts-js	84	gra!	གྲ༈
+ewts-js	85	oM:	ཨོཾ༔
+ewts-js	86	ba_la	བ ལ
+ewts-js	87	ba=la	བ༴ལ
+ewts-js	88	<ba>	༺བ༻
+ewts-js	89	(ba)	༼བ༽
+ewts-js	90	gra	གྲ
+ewts-js	91	bsgra	བསྒྲ
+ewts-js	92	u	ཨུ
+ewts-js	93	'u	འུ
+ewts-js	94	gu	གུ
+ewts-js	95	gru	གྲུ
+ewts-js	96	bsgru	བསྒྲུ
+ewts-js	97	pa	པ
+ewts-js	98	pa'i	པའི
+ewts-js	99	pa'am	པའམ
+ewts-js	100	blo	བློ
+ewts-js	101	bla ma	བླ་མ
+ewts-js	102	[comment]	comment
+ewts-js	103	[comment] gra	comment་གྲ
+ewts-js	104	[comment [with embedded[]] brackets ]bslu	comment [with embedded[]] brackets བསླུ
+ewts-js	105	[comment\u0020with embedded\U00000020unicode escapes] a	comment with embedded unicode escapes་ཨ
+ewts-js	106	a [unfinished [comment]	ཨ་unfinished [comment]
+ewts-js	107	bla   ma   	བླ་མ་
+ewts-js	108	﻿bla	བླ
+ewts-js	109	\u0020\U00000020\u0032\t\i\x\!	  2tix!
+ewts-js	110	a\u01x3a	ཨཨ
+ewts-js	111	xxx	xxx
+ewts-js	112	blaxbla	བླxབླ
+ewts-js	113	moX	མོ༷
+ewts-js	114	mo . ???	མོ་.་???
+ewts-js	115	sgra	སྒྲ
+ewts-js	116	sgrwa	སྒྲྭ
+ewts-js	117	tgra	ཏགྲ
+ewts-js	118	g^ra	གྲ༹
+ewts-js	119	g^r^a	གྲ༹
+ewts-js	120	gr^a	གྲ༹
+ewts-js	121	gra^	གྲ༹
+ewts-js	122	rgwa	རྒྭ
+ewts-js	123	rtswa	རྩྭ
+ewts-js	124	rka	རྐ
+ewts-js	125	rnga	རྔ
+ewts-js	126	lnga	ལྔ
+ewts-js	127	snga	སྔ
+ewts-js	128	a	ཨ
+ewts-js	129	a+a	ཨྸ
+ewts-js	130	ba+a	བྸ
+ewts-js	131	b+ae	བྸེ
+ewts-js	132	a+yo	ཨྱོ
+ewts-js	133	c	ཅ
+ewts-js	134	gra	གྲ
+ewts-js	135	grwa	གྲྭ
+ewts-js	136	grywa	གརྱྭ
+ewts-js	137	grla	གརླ
+ewts-js	138	brla	བརླ
+ewts-js	139	cla	ཅླ
+ewts-js	140	rbya	རྦྱ
+ewts-js	141	g+mra	གྨྲ
+ewts-js	142	g+m+ra	གྨྲ
+ewts-js	143	g+m+r+a	གྨྲྸ
+ewts-js	144	g+X	ག༷
+ewts-js	145	ge+a	གེྸ
+ewts-js	146	ge+r	གེྲ
+ewts-js	147	oM	ཨོཾ
+ewts-js	148	oMM	ཨོཾ
+ewts-js	149	o~M`	ཨོྂ
+ewts-js	150	o~M`M	ཨོྂ
+ewts-js	151	gyag	གྱག
+ewts-js	152	g.yag	གཡག
+ewts-js	153	g....yag	ག...ཡག
+ewts-js	154	grglam	གརགླམ
+ewts-js	155	AH	ཨཱཿ
+ewts-js	156	bgru	བགྲུ
+ewts-js	157	pgru	པགྲུ
+ewts-js	158	bza	བཟ
+ewts-js	159	bdza	བཛ
+ewts-js	160	bz	བཟ
+ewts-js	161	az	ཨཟ
+ewts-js	162	bars	བརས
+ewts-js	163	bart	བརཏ
+ewts-js	164	gabs	གབས
+ewts-js	165	gabsp	གབསཔ
+ewts-js	166	b	བ
+ewts-js	167	dag	དག
+ewts-js	168	dga	དག
+ewts-js	169	dgas	དགས
+ewts-js	170	'gas	འགས
+ewts-js	171	dbas	དབས
+ewts-js	172	dmas	དམས
+ewts-js	173	bags	བགས
+ewts-js	174	mangs	མངས
+ewts-js	175	‘ga‘ ‘ga‘	འགའ་འགའ
+ewts-js	176	dags	དགས
+ewts-js	177	'ags	འགས
+ewts-js	178	dabs	དབས
+ewts-js	179	dams	དམས
+ewts-js	180	bgas	བགས
+ewts-js	181	Mi	Mཨི
+ewts-js	182	bde gshegs chos kyi sku mnga’ sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+ewts-js	183	bde gshegs chos kyi sku mnga' sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎
+ewts-js	184	oM ma Ni pad+me hU~M` 	ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྂ་
+ewts-js	185	oM aHhU~M` badzra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+ewts-js	186	oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔
+ewts-js	187	bla \u0f20\u0fc2	བླ་༠࿂
+ewts-js	188	bla \u0f73	བླ་ཱི
+ewts-js	189	bla \u0f04	བླ་༄
+ewts-js	190	bla \u0f09	བླ་༉
+ewts-js	191	bla\u0f0bblu	བླ་བླུ
+ewts-js	192	bla\u0f0cblu	བླ༌བླུ
+ewts-js	193	bla\u0f73	བླཱི
+ewts-js	194	ba\u0f76	བྲྀ
+ewts-js	195	ra\u0f77	རཷ
+ewts-js	196	\u0f77	ཷ
+ewts-js	197	bo+ra	བོྲ
+ewts-js	198	baM\u0fb2	བཾྲ
+ewts-js	199	baM\u0f74	བཾུ
+ewts-js	200	baM\u0f82	བཾྂ
+ewts-js	201	a	ཨ
+ewts-js	202	e	ཨེ
+ewts-js	203	i	ཨི
+ewts-js	204	I	ཨཱི
+ewts-js	205	U	ཨཱུ
+ewts-js	206	fa ba va pha	ཕ༹་བ་བ༹་ཕ
+ewts-js	207	rdo+e	རྡོེ
+ewts-js	208	rda+e	རྡེ
+ewts-js	209	bgra	བགྲ
+ewts-js	210	bgrwa	བགྲྭ
+ewts-js	211	bgrya	བགྲྱ
+ewts-js	212	mand	མནད
+ewts-js	213	pand	པནད
+ewts-js	214	mgas	མགས
+ewts-rs	5	bsgribs	བསྒྲིབས
+ewts-rs	7	mkhan	མཁན
+ewts-rs	9	gyon g.yon 	གྱོན་གཡོན་
+ewts-rs	11	sat+t+wa	སཏྟྭ
+ewts-rs	13	bru+e rdo+e 	བྲེུ་རྡོེ་
+ewts-rs	15	rta r+ta 	རྟ་རྟ་
+ewts-rs	17	sarba mang+galaM 	སརྦ་མངྒལཾ་
+ewts-rs	19	ka \u0F40	ཀ་ཀ
+ewts-rs	21	khong [New York] la phebs song /	ཁོང་New York་ལ་ཕེབས་སོང་།
+ewts-rs	23	de la \3 yod/	དེ་ལ་3་ཡོད།
+ewts-rs	25	a khu/_ug pa/_aM/	ཨ་ཁུ། ཨུག་པ། ཨཾ།
+ewts-rs	27	mA duH phaT 	མཱ་དུཿ་ཕཊ་
+ewts-rs	29	R+na R+Ya R+ya 	ཪྣ་ཪྻ་ཪྱ་
+ewts-rs	31	rnya rla rwa 	རྙ་རླ་རྭ་
+ewts-rs	33	r+r r+R s+Wa r+Y 	རྲ་རྼ་སྺ་རྻ་
+ewts-rs	35	r+sha l+ra h+wa h+ya 	རྴ་ལྲ་ཧྭ་ཧྱ་
+java	4	pa'ng	པའང
+java	5	be’u'i'o	བེའུའིའོ
+java	6	pa'm	པའམ
+java	7	ga&	ག྅
+java	8	sO	སཱོ
