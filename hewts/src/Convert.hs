@@ -185,6 +185,158 @@ suffixLetters =
         , "-t"
         ]
 
+-- | The roots a prefix letter may stand before in the reference's U->W
+-- reading (the jsewts @m_prefixes@ table): only there does the prefix lose
+-- its implicit @a@. The grammar reads གརླ as prefix + root + subfix, but g is
+-- no prefix before @r+l@ and the reference spells it "garla", not "grla".
+prefixRoots :: [(Text, Set Text)]
+prefixRoots =
+    [ ("g", set ["c", "ny", "t", "d", "n", "ts", "zh", "z", "y", "sh", "s"])
+    ,
+        ( "d"
+        , set
+            [ "k"
+            , "g"
+            , "ng"
+            , "p"
+            , "b"
+            , "m"
+            , "k+y"
+            , "g+y"
+            , "p+y"
+            , "b+y"
+            , "m+y"
+            , "k+r"
+            , "g+r"
+            , "p+r"
+            , "b+r"
+            ]
+        )
+    ,
+        ( "b"
+        , set
+            [ "k"
+            , "g"
+            , "c"
+            , "t"
+            , "d"
+            , "ts"
+            , "zh"
+            , "z"
+            , "sh"
+            , "s"
+            , "r"
+            , "l"
+            , "k+y"
+            , "g+y"
+            , "k+r"
+            , "g+r"
+            , "r+l"
+            , "s+l"
+            , "r+k"
+            , "r+g"
+            , "r+ng"
+            , "r+j"
+            , "r+ny"
+            , "r+t"
+            , "r+d"
+            , "r+n"
+            , "r+ts"
+            , "r+dz"
+            , "s+k"
+            , "s+g"
+            , "s+ng"
+            , "s+ny"
+            , "s+t"
+            , "s+d"
+            , "s+n"
+            , "s+ts"
+            , "r+k+y"
+            , "r+g+y"
+            , "s+k+y"
+            , "s+g+y"
+            , "s+k+r"
+            , "s+g+r"
+            , "l+d"
+            , "l+t"
+            , "k+l"
+            , "s+r"
+            , "z+l"
+            , "s+w"
+            ]
+        )
+    ,
+        ( "m"
+        , set
+            [ "kh"
+            , "g"
+            , "ng"
+            , "ch"
+            , "j"
+            , "ny"
+            , "th"
+            , "d"
+            , "n"
+            , "tsh"
+            , "dz"
+            , "kh+y"
+            , "g+y"
+            , "kh+r"
+            , "g+r"
+            ]
+        )
+    ,
+        ( "'"
+        , set
+            [ "kh"
+            , "g"
+            , "ch"
+            , "j"
+            , "th"
+            , "d"
+            , "ph"
+            , "b"
+            , "tsh"
+            , "dz"
+            , "kh+y"
+            , "g+y"
+            , "ph+y"
+            , "b+y"
+            , "kh+r"
+            , "g+r"
+            , "d+r"
+            , "ph+r"
+            , "b+r"
+            ]
+        )
+    ]
+    where
+        set = Set.fromList
+
+-- | The second suffix the reference allows after a first one (the jsewts
+-- @m_suff2@ table): @s@ closes after g/ng/b/m, @d@ after n/r/l (དགས ->
+-- "dgas", མགས -> "mags").
+suff2Before :: [(Text, Set Text)]
+suff2Before = [("s", set ["g", "ng", "b", "m"]), ("d", set ["n", "r", "l"])]
+    where
+        set = Set.fromList
+
+-- | The root of a three-stack syllable that reads as prefix, suffix and second
+-- suffix at once (the jsewts @m_ambiguous_key@ table): the middle letter for
+-- dgs/dms, the first for mgs/bgs (མགས -> "mags", དགས -> "dgas").
+ambiguousRoot :: [(Text, Int)]
+ambiguousRoot =
+    [ ("dgs", 1)
+    , ("dms", 1)
+    , ("dngs", 0)
+    , ("'gs", 1)
+    , ("'bs", 1)
+    , ("mngs", 0)
+    , ("mgs", 0)
+    , ("bgs", 0)
+    , ("dbs", 1)
+    ]
+
 -- | Split Tibetan text into a structured token stream: every token is
 -- preserved, syllables are recognized via the 37 grammar structures,
 -- digits become 'Number', punctuation and whitespace become 'Punct',
@@ -665,164 +817,254 @@ renderItems fmt items = case fmt of
                         (Just Vowel, _) : _ -> True
                         _ -> False
 
-                -- A glyph-sourced run prints through stacks, the way the
+                -- A glyph-sourced run prints stack by stack, the way the
                 -- reference joins a Tibetan syllable: a full letter opens a
-                -- stack and every subjoined glyph after it joins that stack
-                -- (བརྙ is [b] + [r, ny], བྲྙ is [b, r, ny]), so the run
-                -- reads as the reference spells it - plainly when the letters
-                -- joined by '+' name a regular stack, with an explicit '+'
-                -- before each of them otherwise (རྒྱ -> "rgya",
-                -- དྷ -> "d+ha"), the dot between a prefix and the stack after
-                -- it only where the two could read as one regular stack, and
-                -- the implicit @a@ of a vowel-less root stack - even a lone
-                -- letter carries it (ས -> "sa", མངའ -> "mnga'").
+                -- stack, every subjoined glyph, vowel and final after it joins
+                -- that stack, and the stack reads as the reference spells it -
+                -- plainly when its letters name a regular stack, with an
+                -- explicit '+' before each letter after the first otherwise
+                -- (རྒྱ -> "rgya", དྷ -> "d+ha").
+                --
+                -- Which stack is a prefix, a suffix or a second suffix - and so
+                -- which one loses its implicit @a@ - is the reference's own
+                -- table reading (7.5), not the grammar's positions: the grammar
+                -- reads གརླ as prefix g + root r + subfix l, the reference reads
+                -- "ga" + "rla", because g is no prefix before @r+l@ (step 5.7).
+                -- A dot separates the prefix from the stack after it where the
+                -- two could read as one regular stack, and the reference's
+                -- ambiguity table settles three-stack syllables (mgs -> "mags",
+                -- dgs -> "dgas").
                 wylieFromGlyphs :: [(Maybe Position, Token)] -> Text
-                wylieFromGlyphs = goGlyph False Nothing . groupPieces . floatLateMarks
-
-                goGlyph before prevMark (piece : rest) =
-                    case longVowelRun before piece rest of
-                        Just (combined, rest') ->
-                            combined
-                                <> goGlyph (before || isLetterPiece piece) (lastMark piece) rest'
-                        Nothing ->
-                            emitGlyph before prevMark piece rest
-                                <> goGlyph (before || isLetterPiece piece) (lastMark piece) rest
-                goGlyph _ _ [] = ""
-
-                emitGlyph _ _ [] _ = ""
-                emitGlyph before prevMark piece@(m : _) rest
-                    | isVowelPiece piece = renderToken OutWylie (snd m)
-                    | isLetterPiece piece =
-                        stackGlyph
-                            before
-                            (any isLetterPiece rest)
-                            prevMark
-                            piece
-                            (vowelOwns rest)
-                    | otherwise = loneGlyph (anyMarked (concat rest)) m
-
-                -- One stack: its letters, the caret the run put after them,
-                -- and the implicit @a@ unless a vowel sign follows or the
-                -- spelling already ends in @a@.
-                stackGlyph _ _ _ [] _ = ""
-                stackGlyph before after prevMark piece@(firstM : _) vowelOver =
-                    dot <> letters <> caret <> writtenA
+                wylieFromGlyphs marks =
+                    T.concat (zipWith3 renderStack [0 ..] roles stacks)
                     where
-                        letterMs = filter (isLetterTok . snd) piece
-                        -- the caller opens a stack only where the first mark
-                        -- is a letter
-                        firstTok = snd firstM
-                        firstPos = fst firstM
-                        names = map (renderToken OutWylie . snd) letterMs
-                        plus = T.intercalate "+" names
-                        spelled
-                            | Set.member plus regularStacks = T.concat names
-                            | otherwise = plus
-                        -- a lone a-chen under a vowel sign prints as the vowel
-                        -- alone: the sign restores the letter (ཨུ -> "u")
-                        dropChen =
-                            vowelOver
-                                && isAChen firstTok
-                                && length letterMs == 1
-                        letters = case folded of
-                            Just l -> l
-                            Nothing -> if dropChen then "" else spelled
-                        hasCaret = any (\m -> tokenCanonical (snd m) == TcFinal FMCaret) piece
-                        caret
-                            | isJust folded = ""
-                            | hasCaret = "^"
-                            | otherwise = ""
-                        -- the reference folds the caret over a lone letter
-                        -- into one mnemonic (pha + caret -> f, ba + caret ->
-                        -- v, m_tib_caret): only a stack of one letter folds
-                        folded
-                            | hasCaret, [n] <- names, Just l <- lookup n caretLetters = Just l
-                            | otherwise = Nothing
-                        -- the dot only where the prefix and the stack could
-                        -- read as one regular stack: b + r + ny is no regular
-                        -- stack, so བརྙ stays "brnya"
-                        --
-                        -- a stack opening on an a-chen takes a dot of its own
-                        -- whenever an earlier stack stands in the run: a bare
-                        -- @a@ behind another letter would read back as a single
-                        -- stack once the run already runs, so the reference
-                        -- separates them (a.a, ba.a, be.a) and no dot is the
-                        -- a-chen's own opening stack (aka, gaka, bka)
-                        dot
-                            | isAChen firstTok, before = "."
-                            | otherwise = case prevMark of
-                                Just (Just Prefix, prevTok)
-                                    | isFullLetter prevTok
-                                    , isFullLetter firstTok
-                                    , Set.member
-                                        (renderToken OutWylie prevTok <> "+" <> plus)
-                                        regularStacks ->
-                                        "."
-                                _ -> ""
-                        writtenA
-                            | vowelOver = ""
-                            | firstPos `notElem` [Just Root, Just Superfix] = ""
-                            | T.isSuffixOf "a" plus = ""
-                            -- an escape spelling already stands for the whole
-                            -- character, inherent vowel and all, so it takes no
-                            -- written @a@ (@\u0f6b@ is ཫ, @\u0f6ba@ is ཫ + ཨ)
-                            | isEscapeSpelling firstTok = ""
-                            -- a lone suffix consonant closing several stacks
-                            -- keeps the letter it reads as, with no @a@
-                            -- (བརྙེས -> "b+r+nyes", མངའ -> "mnga'")
-                            | loneFinalSuffix = ""
-                            | otherwise = "a"
-                        -- the reference's suffix flag: the last stack of
-                        -- several, one letter, and that letter a suffix; a
-                        -- lone stack is never one, so a lone letter carries
-                        -- the @a@ it stands for (ས -> "sa", ὠ -> "'a")
-                        loneFinalSuffix = before && not after && isSuffixName names
-                        isSuffixName [n] = Set.member n suffixLetters
-                        isSuffixName _ = False
-
-                -- A mark outside every stack: a lone vowel sign already
-                -- handled above, a final sign, an eaten mark, a mark the run
-                -- left unmarked. It prints per token, as the flat spelling
-                -- would.
-                loneGlyph afterMarked m = case m of
-                    (Just Eaten, _) -> ""
-                    (Nothing, tok)
-                        | isConSpec tok, afterMarked -> ""
-                        | otherwise -> renderToken OutWylie tok
-                    (_, tok) -> renderToken OutWylie tok
-
-                -- Group the run into pieces: a stack (a full letter and the
-                -- glyphs under it) and the lone marks between the stacks.
-                groupPieces :: [(Maybe Position, Token)] -> [[(Maybe Position, Token)]]
-                groupPieces = map reverse . finish . foldl step ([], [])
-                    where
-                        step (cur, done) m
-                            | isFullTok tok, not (null cur) = ([m], cur : done)
-                            | isFullTok tok = ([m], done)
-                            | isSubTok tok, not (null cur) = (m : cur, done)
-                            | isSubTok tok = ([m], done)
-                            | not (null cur), joinsStack m = (m : cur, done)
-                            | not (null cur) = ([], [m] : cur : done)
-                            | otherwise = ([], [m] : done)
-                            where
-                                tok = snd m
-                        finish (cur, done) = reverse (if null cur then done else cur : done)
-                        joinsStack m = case m of
-                            (Just Eaten, _) -> True
-                            (Just Final, tok) -> tokenCanonical tok == TcFinal FMCaret
+                        stacks = map orderStack (splitStacks marks)
+                        (pfxs, sfxs, sf2s) =
+                            stackRoles (map stackCons stacks) (map stackSingleCons stacks)
+                        roles =
+                            [ (pfxs !! i, sfxs !! i, sf2s !! i)
+                            | i <- [0 .. length stacks - 1]
+                            ]
+                        dotAfterFirst = case (stacks, conss) of
+                            (first : _, _ : c : _) ->
+                                case stackSingleCons first of
+                                    Just nm ->
+                                        pfxs !! 0
+                                            && Set.member (nm <> "+" <> c) regularStacks
+                                    Nothing -> False
                             _ -> False
+                        conss = map stackCons stacks
+
+                        stackNames st =
+                            [renderToken OutWylie (snd m) | m <- st, isLetterTok (snd m)]
+
+                        stackCons = T.intercalate "+" . stackNames
+
+                        -- The reference's @single_cons@: one letter and nothing
+                        -- else on the stack (no caret, vowel or final); the
+                        -- a-chen is no consonant of its own.
+                        stackSingleCons st =
+                            case stackNames st of
+                                [nm]
+                                    | not (any isCaretMark st)
+                                    , not (any (isVowelPos . fst) st)
+                                    , not (any isLateFinal st)
+                                    , nm /= "a" ->
+                                        Just nm
+                                _ -> Nothing
+
+                        -- The prefix/suffix/second-suffix roles of every stack,
+                        -- as the reference computes them over a tsekbar.
+                        stackRoles csList singles0 =
+                            (prefixes', suffixes', suff2s')
+                            where
+                                n = length stacks
+
+                                at i xs
+                                    | i >= 0 && i < length xs = Just (xs !! i)
+                                    | otherwise = Nothing
+
+                                hasPrefix = case (at 0 singles0, at 1 csList) of
+                                    (Just (Just nm), Just after) ->
+                                        maybe
+                                            False
+                                            (Set.member (T.replace "+w" "" after))
+                                            (lookup nm prefixRoots)
+                                    _ -> False
+
+                                lastIsSuffix = case at (n - 1) singles0 of
+                                    Just (Just nm) -> Set.member nm suffixLetters
+                                    _ -> False
+
+                                secondSuffix =
+                                    n > 2 && case (at (n - 1) singles0, at (n - 2) singles0) of
+                                        (Just (Just lastNm), Just (Just prevNm)) ->
+                                            Set.member prevNm suffixLetters
+                                                && maybe
+                                                    False
+                                                    (Set.member prevNm)
+                                                    (lookup lastNm suff2Before)
+                                        _ -> False
+
+                                -- two stacks that read as prefix and suffix at
+                                -- once: the first is the root (dgas, not d.gas)
+                                prefixes =
+                                    [ i == 0 && hasPrefix && not (n == 2 && lastIsSuffix)
+                                    | i <- [0 .. n - 1]
+                                    ]
+
+                                roleSuffixes =
+                                    [ n > 1
+                                        && ( (i == n - 1 && lastIsSuffix)
+                                                || (i == n - 2 && secondSuffix)
+                                           )
+                                    | i <- [0 .. n - 1]
+                                    ]
+                                roleSuff2s =
+                                    [i == n - 1 && secondSuffix | i <- [0 .. n - 1]]
+
+                                setAt i v xs =
+                                    [if j == i then v else x | (j, x) <- zip [0 ..] xs]
+
+                                -- three stacks that read as prefix, suffix and
+                                -- second suffix go through the ambiguity table;
+                                -- an unknown key falls back to the middle root
+                                (prefixes', suffixes', suff2s')
+                                    | n == 3
+                                    , prefixes !! 0
+                                    , roleSuffixes !! 1
+                                    , roleSuff2s !! 2 =
+                                        let r =
+                                                fromMaybe
+                                                    1
+                                                    ( lookup
+                                                        (T.concat (map (fromMaybe "") singles0))
+                                                        ambiguousRoot
+                                                    )
+                                         in ( setAt r False prefixes
+                                            , setAt r False roleSuffixes
+                                            , setAt (r + 1) False roleSuff2s
+                                            )
+                                    | otherwise = (prefixes, roleSuffixes, roleSuff2s)
+
+                        renderStack i (isPrefixRole, isSuffixRole, isSuff2Role) st =
+                            case st of
+                                ((_, tok) : _)
+                                    | isFullTok tok ->
+                                        chenDot
+                                            <> lettersTxt
+                                            <> caretTxt
+                                            <> vowelTxt
+                                            <> finalsTxt
+                                            <> othersTxt
+                                            <> prefixDot
+                                    where
+                                        names = stackNames st
+                                        cons = T.intercalate "+" names
+                                        firstTok = tok
+                                        vowels =
+                                            [ v
+                                            | m <- st
+                                            , isVowelPos (fst m)
+                                            , Just v <- [vowelOf (snd m)]
+                                            ]
+                                        hasCaret = any isCaretMark st
+                                        folded = case names of
+                                            [nm] | hasCaret -> lookup nm caretLetters
+                                            _ -> Nothing
+                                        -- an a-chen that only carries a vowel
+                                        -- prints as the vowel alone (ཨུ -> "u")
+                                        dropAChen =
+                                            isAChen firstTok
+                                                && length names == 1
+                                                && not (null vowels)
+                                        lettersTxt = case folded of
+                                            Just l -> l
+                                            Nothing
+                                                | dropAChen -> ""
+                                                | Set.member cons regularStacks -> T.concat names
+                                                | otherwise -> cons
+                                        caretTxt = case folded of
+                                            Just _ -> ""
+                                            Nothing
+                                                | hasCaret -> "^"
+                                                | otherwise -> ""
+                                        vowelTxt = case vowels of
+                                            [] -> implicitTxt
+                                            VA : v : rest
+                                                | Just combined <- longVowel v ->
+                                                    T.intercalate
+                                                        "+"
+                                                        (combined : map vowelName rest)
+                                            vs -> T.intercalate "+" (map vowelName vs)
+                                        implicitTxt
+                                            | isPrefixRole || isSuffixRole || isSuff2Role = ""
+                                            | T.isSuffixOf "a" cons = ""
+                                            -- an escape spelling stands for the
+                                            -- whole character, inherent vowel
+                                            -- and all (@\u0f6b@ is ཫ)
+                                            | any (isEscapeSpelling . snd) letterMs = ""
+                                            | otherwise = "a"
+                                        letterMs = [m | m <- st, isLetterTok (snd m)]
+                                        finalsTxt =
+                                            T.concat
+                                                [ renderToken OutWylie (snd m)
+                                                | m <- st
+                                                , isLateFinal m
+                                                ]
+                                        othersTxt =
+                                            T.concat
+                                                [ renderToken OutWylie (snd m)
+                                                | m <- st
+                                                , isStrayMark m
+                                                ]
+                                        chenDot
+                                            | isAChen firstTok, any isLetterStack (take i stacks) = "."
+                                            | otherwise = ""
+                                        prefixDot
+                                            | i == 0, dotAfterFirst = "."
+                                            | otherwise = ""
+                                        isStrayMark m =
+                                            not (isStackMark m)
+                                                && not (isEatenMark m)
+                                                && not (isHiddenJoin m)
+                                        isEatenMark (Just Eaten, _) = True
+                                        isEatenMark _ = False
+                                        isHiddenJoin (Nothing, t) = isConSpec t
+                                        isHiddenJoin _ = False
+                                _ -> T.concat (map loneMark st)
+
+                        loneMark m = case m of
+                            (Just Eaten, _) -> ""
+                            (Nothing, tok) | isConSpec tok -> ""
+                            (_, tok) -> renderToken OutWylie tok
+
+                        isLetterStack st = case st of
+                            (_, tok) : _ -> isFullTok tok
+                            [] -> False
+
+                        vowelOf tok = case tokenCanonical tok of
+                            TcVowel v -> Just v
+                            _ -> Nothing
+
+                        vowelName v = fromMaybe "" (wylieOf (TcVowel v))
+
+                        -- A long vowel: the @ཱ@ sign and the short sign that
+                        -- completes it are one mnemonic in Wylie (@I@ @U@ @-I@),
+                        -- so the pair prints as one vowel.
+                        longVowel :: Vowel -> Maybe Text
+                        longVowel Vi = Just "I"
+                        longVowel Vu = Just "U"
+                        longVowel V_i = Just "-I"
+                        longVowel _ = Nothing
 
                 -- The reference reads a stack's marks into separate lists -
                 -- letters, caret, vowels, finals - and prints them in that
                 -- order, so a mark written before a later one still prints
                 -- after it: a final before a subjoined letter (བཾྲ -> "braM")
                 -- or before a vowel (བཾུ -> "buM"), a vowel sign before a
-                -- subjoined letter (བོྲ -> "bro"). The group builder below
-                -- expects that print order, so each stack is laid out again.
-                -- The split is at a full letter, which opens the next stack.
-                floatLateMarks :: [(Maybe Position, Token)] -> [(Maybe Position, Token)]
-                floatLateMarks = concatMap orderStack . splitStacks
-
+                -- subjoined letter (བོྲ -> "bro"). The split is at a full
+                -- letter, which opens the next stack.
                 splitStacks [] = []
                 splitStacks (m : rest)
                     | isFullTok (snd m) =
@@ -856,52 +1098,10 @@ renderItems fmt items = case fmt of
                 isFullTok tok = case tokenCanonical tok of
                     TcConsonant _ -> True
                     _ -> False
-                isSubTok tok = case tokenCanonical tok of
-                    TcSubConsonant _ -> True
-                    _ -> False
-                isLetterPiece (m : _) = isLetterTok (snd m)
-                isLetterPiece [] = False
-                isVowelPiece (m : _) = isVowelPos (fst m)
-                isVowelPiece [] = False
                 isVowelPos pos = case pos of
                     Just Vowel -> True
                     Just ImplicitVowel -> True
                     _ -> False
-                lastMark piece = case reverse piece of
-                    m : _ -> Just m
-                    [] -> Nothing
-                -- whether the next piece is the vowel sign over this stack
-                vowelOwns rest = case rest of
-                    piece : _ -> isVowelPiece piece
-                    _ -> False
-
-                -- The long letter the Tibetan side spells with the @ཱ@ sign and
-                -- a short sign: the pair is one mnemonic in Wylie (@I@ @U@ @-I@),
-                -- so it prints as one piece and the short sign is skipped. The
-                -- mnemonic needs a letter to sit on («I» is ཨཱི, not a bare ཱི),
-                -- so the pair combines only after a letter piece of this run
-                -- (@before@): «ཱ» + «ི» with no carrier reads @A@ then @i@, as
-                -- before. The other short signs that may follow @ཱ@ (@ེ@ @ོ@) do
-                -- not combine either: the reference reads «ཱ» + «ེ» as @A@ then
-                -- @e@.
-                longVowelRun before piece (next : rest)
-                    | before
-                    , Just VA <- vowelPieceCanon piece
-                    , Just v <- vowelPieceCanon next
-                    , Just combined <- longVowelCombined v =
-                        Just (combined, rest)
-                longVowelRun _ _ _ = Nothing
-
-                vowelPieceCanon (m : _)
-                    | isVowelPos (fst m) = case tokenCanonical (snd m) of
-                        TcVowel v -> Just v
-                        _ -> Nothing
-                vowelPieceCanon _ = Nothing
-
-                longVowelCombined Vi = Just "I"
-                longVowelCombined Vu = Just "U"
-                longVowelCombined V_i = Just "-I"
-                longVowelCombined _ = Nothing
 
         renderToken ofmt tok
             | tokenSource tok == sourceOf ofmt = tokenRaw tok

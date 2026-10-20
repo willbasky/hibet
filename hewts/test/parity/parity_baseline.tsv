@@ -223,17 +223,37 @@
 # caret, vowels, finals - so both spell "braM" and "buM". u2w 190->192
 # (jsewts), 192->194 (Lingua), 191->193 (ewts-js); round-trip, w2u, the
 # kangyur and the java pair hold.
+# Step 5.7 (the implicit @a@ after a prefix and the compact stacks, 20.10.2026):
+# the U->W renderer now reads a run the way the reference does - stack by
+# stack, with the reference's own role tables (m_prefixes, m_suffixes,
+# m_suff2, m_ambiguous_key) deciding which stack is a prefix, a suffix or a
+# second suffix, and so which one loses its implicit @a@. The grammar's
+# positions are the book's reading, not the reference's: གརླ is prefix + root +
+# subfix by the book but "garla" by the reference, because g is no prefix
+# before r+l. The same tables settle mand -> "mnad", dgas -> "dgas",
+# mgs -> "mags" - i.e. step 5.8's readings come for free. u2w 192->208
+# (jsewts), 194->209 (Lingua), 193->209 (ewts-js), 251->253 (kangyur);
+# round-trip 208->209, 216->217, 209->210. w2u holds on every corpus.
+#
+# Accepted divergences of this step: Lingua's badz+ra (lines 184-186) against
+# badzra, which jsewts, ewts-js and Lingua's own line 184 spell - the stack
+# table has dz+r and b has no dz+r among its prefix roots; Lingua's cr-i/cl-I
+# (lines 65-67) against our c+r-i/c+l-I, the 4.4a canon (jsewts agrees with
+# us); and Lingua's mgas (line 214), where its own m_ambiguous_key, like
+# jsewts's, gives "mags". The one open kangyur u2w line is the 4.4a a-chen dot
+# after the comparison's own space dropping (གོ ཨང -> "go.ang" against the
+# reference's "goang"), a rule the W->U canon keeps.
 jsewts	w2u	210	210
-jsewts	u2w	210	192
-jsewts	roundtrip	210	208
+jsewts	u2w	210	208
+jsewts	roundtrip	210	209
 lingua	w2u	218	218
-lingua	u2w	218	194
-lingua	roundtrip	218	216
+lingua	u2w	218	209
+lingua	roundtrip	218	217
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	212	212
-ewts-js	u2w	212	193
-ewts-js	roundtrip	212	209
+ewts-js	u2w	212	209
+ewts-js	roundtrip	212	210
 java	u2w	2	1
 kangyur	roundtrip	254	254
-kangyur	u2w	254	251
+kangyur	u2w	254	253
