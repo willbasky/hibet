@@ -214,16 +214,25 @@
 # NOT an open gap: ewts-js and jsewts both print our "r+r-I" (checked by
 # running both converters), and "rr-I" is Lingua's own rule that treats a
 # subjoined r/l with a vocalic vowel as one vowel.
+#
+# Step 5.6 (a mark written after a final still joins the stack, 20.10.2026):
+# the grammar already read བཾྲ and བཾུ as one syllable (root b, final M, then
+# the subjoined r or the vowel u), but the U->W renderer printed the marks in
+# input order ("baMr", "baMu"). It now lays each stack out the way the
+# reference collects it - letters (full and subjoined, in written order),
+# caret, vowels, finals - so both spell "braM" and "buM". u2w 190->192
+# (jsewts), 192->194 (Lingua), 191->193 (ewts-js); round-trip, w2u, the
+# kangyur and the java pair hold.
 jsewts	w2u	210	210
-jsewts	u2w	210	190
+jsewts	u2w	210	192
 jsewts	roundtrip	210	208
 lingua	w2u	218	218
-lingua	u2w	218	192
+lingua	u2w	218	194
 lingua	roundtrip	218	216
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	212	212
-ewts-js	u2w	212	191
+ewts-js	u2w	212	193
 ewts-js	roundtrip	212	209
 java	u2w	2	1
 kangyur	roundtrip	254	254

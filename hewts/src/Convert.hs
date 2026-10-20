@@ -677,7 +677,7 @@ renderItems fmt items = case fmt of
                 -- the implicit @a@ of a vowel-less root stack - even a lone
                 -- letter carries it (ས -> "sa", མངའ -> "mnga'").
                 wylieFromGlyphs :: [(Maybe Position, Token)] -> Text
-                wylieFromGlyphs = goGlyph False Nothing . groupPieces . floatLateSubs
+                wylieFromGlyphs = goGlyph False Nothing . groupPieces . floatLateMarks
 
                 goGlyph before prevMark (piece : rest) =
                     case longVowelRun before piece rest of
@@ -812,17 +812,42 @@ renderItems fmt items = case fmt of
                             (Just Final, tok) -> tokenCanonical tok == TcFinal FMCaret
                             _ -> False
 
-                -- A vowel sign that stands between its base and a subjoined
-                -- letter (བོྲ) still belongs to the stack the base opened: the
-                -- reference reads the syllable as the br-stack plus the vowel
-                -- ("bro"), so the sign is floated after the letters it prints
-                -- after, where the group builder expects it. The usual order
-                -- (base, sub, vowel) passes through untouched.
-                floatLateSubs :: [(Maybe Position, Token)] -> [(Maybe Position, Token)]
-                floatLateSubs (v : s : rest)
-                    | isVowelPos (fst v), isSubTok (snd s) = s : v : floatLateSubs rest
-                floatLateSubs (m : rest) = m : floatLateSubs rest
-                floatLateSubs [] = []
+                -- The reference reads a stack's marks into separate lists -
+                -- letters, caret, vowels, finals - and prints them in that
+                -- order, so a mark written before a later one still prints
+                -- after it: a final before a subjoined letter (བཾྲ -> "braM")
+                -- or before a vowel (བཾུ -> "buM"), a vowel sign before a
+                -- subjoined letter (བོྲ -> "bro"). The group builder below
+                -- expects that print order, so each stack is laid out again.
+                -- The split is at a full letter, which opens the next stack.
+                floatLateMarks :: [(Maybe Position, Token)] -> [(Maybe Position, Token)]
+                floatLateMarks = concatMap orderStack . splitStacks
+
+                splitStacks [] = []
+                splitStacks (m : rest)
+                    | isFullTok (snd m) =
+                        let (segment, after) = break (isFullTok . snd) rest
+                         in (m : segment) : splitStacks after
+                    | otherwise = [m] : splitStacks rest
+
+                -- A stable partition, so the letters keep the order they were
+                -- written in; an eaten mark prints nothing and goes last.
+                orderStack stackMarks =
+                    [m | m <- stackMarks, isLetterTok (snd m)]
+                        <> [m | m <- stackMarks, isCaretMark m]
+                        <> [m | m <- stackMarks, isVowelPos (fst m)]
+                        <> [m | m <- stackMarks, isLateFinal m]
+                        <> [m | m <- stackMarks, not (isStackMark m)]
+
+                isCaretMark (Just Final, tok) = tokenCanonical tok == TcFinal FMCaret
+                isCaretMark _ = False
+                isLateFinal (Just Final, tok) = tokenCanonical tok /= TcFinal FMCaret
+                isLateFinal _ = False
+                isStackMark m =
+                    isLetterTok (snd m)
+                        || isCaretMark m
+                        || isVowelPos (fst m)
+                        || isLateFinal m
 
                 isLetterTok tok = case tokenCanonical tok of
                     TcConsonant _ -> True
