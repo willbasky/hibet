@@ -4,10 +4,17 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
 import Convert.Diagnostic (Finding (..))
 import Convert.Grammar.Syllable
-    ( Position (..)
-    , Stack
+    ( Stack
     , TibetanSyllable
-    , placeToken
+    , putFinal
+    , putImplicitVowel
+    , putPostfix
+    , putPrefix
+    , putRoot
+    , putSubfix
+    , putSuffix
+    , putSuperfix
+    , putVowel
     )
 import Convert.Token
 import Data.Maybe (fromMaybe)
@@ -99,33 +106,73 @@ runSpell = flip evalStateT initialScanState
 liftP :: Parser a -> SpellParser a
 liftP = lift
 
--- | Give a token its place: it is read, put into the stack being built (the
--- grammar's own state) and returned as a one-element mark. Marking at the point
--- of binding keeps the token parsers themselves unchanged: they parse letters,
--- they know nothing about syllables.
+-- | Give a token its slot: it is read, put into the stack being built (the
+-- grammar's own state) and returned as part of the run. Placing at the point of
+-- binding keeps the token parsers themselves unchanged: they parse letters, they
+-- know nothing about syllables.
 --
 -- The state is the one truth about stacks: the same call decides where the
--- letter stands, so the parse no longer needs a grouping pass over the marked
--- run. A failed arm is rolled back by '<|>' together with its tokens, so a
--- probe or an alternative leaves no half-built stack behind.
-mark :: Position -> Parser Token -> SpellParser TibetanSyllable
-mark position parser = placeMark position =<< liftP parser
+-- letter stands, so the parse needs no grouping pass over the run. A failed arm
+-- is rolled back by '<|>' together with its tokens, so a probe or an alternative
+-- leaves no half-built stack behind. One function per slot of 'Stack'.
+markPrefix
+    , markSuffix
+    , markPostfix
+    , markSuperfix
+    , markRoot
+    , markSubfix
+    , markVowel
+    , markImplicitVowel
+    , markFinal ::
+        Parser Token -> SpellParser TibetanSyllable
+markPrefix = markAt putPrefix
+markSuffix = markAt putSuffix
+markPostfix = markAt putPostfix
+markSuperfix = markAt putSuperfix
+markRoot = markAt putRoot
+markSubfix = markAt putSubfix
+markVowel = markAt putVowel
+markImplicitVowel = markAt putImplicitVowel
+markFinal = markAt putFinal
 
--- | 'mark' for a token already read: the same placement, also for the
--- structures that build a mark from a token in hand.
-placeMark :: Position -> Token -> SpellParser TibetanSyllable
-placeMark position tok = do
-    modify $ \s -> s{scanStacks = placeToken position tok (scanStacks s)}
-    pure (Seq.singleton (position, tok))
+-- | The same for a token already read: the structures that build their slot from
+-- a token in hand.
+placePrefix
+    , placeSuffix
+    , placePostfix
+    , placeSuperfix
+    , placeRoot
+    , placeSubfix
+    , placeVowel
+    , placeFinal ::
+        Token -> SpellParser TibetanSyllable
+placePrefix = placeAt putPrefix
+placeSuffix = placeAt putSuffix
+placePostfix = placeAt putPostfix
+placeSuperfix = placeAt putSuperfix
+placeRoot = placeAt putRoot
+placeSubfix = placeAt putSubfix
+placeVowel = placeAt putVowel
+placeFinal = placeAt putFinal
 
--- | The subfix letters of one stack, marked in order.
+markAt ::
+    (Token -> Seq Stack -> Seq Stack) -> Parser Token -> SpellParser TibetanSyllable
+markAt put parser = placeAt put =<< liftP parser
+
+placeAt ::
+    (Token -> Seq Stack -> Seq Stack) -> Token -> SpellParser TibetanSyllable
+placeAt put tok = do
+    modify $ \s -> s{scanStacks = put tok (scanStacks s)}
+    pure (Seq.singleton tok)
+
+-- | The subfix letters of one stack, placed in order.
 subfixMarks :: [Token] -> SpellParser TibetanSyllable
-subfixMarks = fmap mconcat . mapM (placeMark Subfix)
+subfixMarks = fmap mconcat . mapM placeSubfix
 
--- | The one caret that survives a subjoining scan, marked 'Final', or nothing
--- when the scan kept no caret.
+-- | The one caret that survives a subjoining scan, or nothing when the scan
+-- kept no caret.
 caretMark :: Maybe Token -> SpellParser TibetanSyllable
-caretMark = maybe (pure mempty) (placeMark Final)
+caretMark = maybe (pure mempty) placeFinal
 
 -- | The stacks the run's grammar built, and the state is cleared for the next
 -- run. Every token a structure places is already in the stack that owns it, so
@@ -249,7 +296,8 @@ pSubfixLa = satisfy (isJoinedAt SCl Cl) <?> "Subfix la token"
 -- | A subjoined root from a group of letters: the joined sign in Tibetan, the
 -- full letter in Wylie.
 pJoinedRoot :: [Consonant] -> Parser Token
-pJoinedRoot allowed = satisfy (maybe False (`elem` allowed) . letterOfSign) <?> "Subjoined root token"
+pJoinedRoot allowed =
+    satisfy (maybe False (`elem` allowed) . letterOfSign) <?> "Subjoined root token"
 
 letterOfSign :: Token -> Maybe Consonant
 letterOfSign t = case (isWylieSign t, tokenCanonical t) of
@@ -259,15 +307,16 @@ letterOfSign t = case (isWylieSign t, tokenCanonical t) of
 
 -- | Whether the stack written so far is Wylie: its letters carry the Wylie source.
 isWylieStack :: TibetanSyllable -> Bool
-isWylieStack = any (isWylieSign . snd)
+isWylieStack = any isWylieSign
 
 -- | The vowel slot after a stack. Wylie writes a vowel in every syllable (a
 -- vowel letter, or the letter @a@ where none stands), so its slot is
 -- obligatory; Tibetan may leave it out. @written@ are the vowel letters the rule
 -- allows.
-vowelSlot :: TibetanSyllable -> [SpellParser TibetanSyllable] -> SpellParser TibetanSyllable
+vowelSlot ::
+    TibetanSyllable -> [SpellParser TibetanSyllable] -> SpellParser TibetanSyllable
 vowelSlot stack written
-    | isWylieStack stack = MP.choice (written ++ [mark ImplicitVowel pImplicitA])
+    | isWylieStack stack = MP.choice (written ++ [markImplicitVowel pImplicitA])
     | otherwise = fromMaybe mempty <$> MP.optional (MP.choice written)
 
 pVowel :: Parser Token

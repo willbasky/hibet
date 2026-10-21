@@ -7,9 +7,16 @@ module Convert.Grammar.Constraint.Constraint09
     , rootSubfixRows
     ) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , markRoot
+    , markSubfix
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -31,9 +38,9 @@ pConstraint09 =
 parseConstraint09 ::
     Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraint09 parseSubfix parseRoot = do
-    root <- mark Root parseRoot
-    subfix <- mark Subfix parseSubfix
-    vowel <- vowelSlot (root <> subfix) [mark Vowel GP.pVowel]
+    root <- markRoot parseRoot
+    subfix <- markSubfix parseSubfix
+    vowel <- vowelSlot (root <> subfix) [markVowel GP.pVowel]
     pure (root <> subfix <> vowel)
 
 -- | The root groups of rule 4.9, one row per subjoined letter: the same data

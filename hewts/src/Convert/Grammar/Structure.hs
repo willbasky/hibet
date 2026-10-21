@@ -59,9 +59,17 @@ module Convert.Grammar.Structure
     ) where
 
 import qualified Convert.Grammar.Constraint as C
-import Convert.Grammar.Parser (Parser, SpellParser, liftP, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , liftP
+    , markPostfix
+    , markRoot
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token (Token)
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
@@ -211,7 +219,7 @@ parseSuffixPostfix ::
 parseSuffixPostfix base suffix post = do
     b <- base
     s <- suffix
-    p <- mark Postfix post
+    p <- markPostfix post
     pure (b <> s <> p)
 
 -- | Run the structure and hold the window at its tail.
@@ -247,8 +255,8 @@ seqJoinS p q = do
 -- On the basis of the Tibetan spelling grammar 4.15
 pStructure17 :: SpellParser TibetanSyllable
 pStructure17 = do
-    root <- mark Root GP.pRootConsonant
-    vowel <- vowelSlot root [mark Vowel GP.pVowel]
+    root <- markRoot GP.pRootConsonant
+    vowel <- vowelSlot root [markVowel GP.pVowel]
     suffix <- C.pConstraint15
     pure (root <> vowel <> suffix)
 
@@ -337,10 +345,10 @@ rootSuffixPostfix ::
     -> Parser Token
     -> SpellParser TibetanSyllable
 rootSuffixPostfix suffix post = do
-    root <- mark Root GP.pRootConsonant
-    vowel <- vowelSlot root [mark Vowel GP.pVowel]
+    root <- markRoot GP.pRootConsonant
+    vowel <- vowelSlot root [markVowel GP.pVowel]
     s <- suffix
-    p <- mark Postfix post
+    p <- markPostfix post
     pure (root <> vowel <> s <> p)
 
 -- Tibetan spelling structure 25

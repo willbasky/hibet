@@ -6,10 +6,18 @@ module Convert.Grammar.Constraint.Constraint08
     ( pConstraint08
     ) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, mark, pJoinedRoot, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , markRoot
+    , markSuperfix
+    , markVowel
+    , pJoinedRoot
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Superfix (lSuperfixRoots, rSuperfixRoots, sSuperfixRoots)
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token (Token)
 import qualified Text.Megaparsec as MP
 
@@ -26,7 +34,7 @@ pConstraint08 =
 parseConstraint08 ::
     Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraint08 parseSuperfix parseRoot = do
-    superfix <- mark Superfix parseSuperfix
-    root <- mark Root parseRoot
-    vowel <- vowelSlot (superfix <> root) [mark Vowel GP.pVowel]
+    superfix <- markSuperfix parseSuperfix
+    root <- markRoot parseRoot
+    vowel <- vowelSlot (superfix <> root) [markVowel GP.pVowel]
     pure (superfix <> root <> vowel)

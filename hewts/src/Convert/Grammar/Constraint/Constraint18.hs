@@ -6,9 +6,15 @@ module Convert.Grammar.Constraint.Constraint18
     ( pConstraint18
     ) where
 
-import Convert.Grammar.Parser (SpellParser, isJoinedAt, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( SpellParser
+    , isJoinedAt
+    , markRoot
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token (Consonant (..), SubConsonant (..))
 import qualified Text.Megaparsec as MP
 
@@ -16,9 +22,9 @@ import qualified Text.Megaparsec as MP
 -- so the subroot is the plain letter ཕ there; the sign decides which it is.
 pConstraint18 :: SpellParser TibetanSyllable
 pConstraint18 = do
-    root <- mark Root (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
+    root <- markRoot (MP.satisfy (GP.isSpecificConsonant Ch) MP.<?> "A root ཧ")
     subRoot <-
-        mark Root (MP.satisfy (isJoinedAt SCph Cph) MP.<?> "A subroot ཕ")
+        markRoot (MP.satisfy (isJoinedAt SCph Cph) MP.<?> "A subroot ཕ")
     let stack = root <> subRoot
-    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    vowel <- vowelSlot stack [markVowel GP.pVowel]
     pure (stack <> vowel)

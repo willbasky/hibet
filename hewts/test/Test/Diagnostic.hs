@@ -13,17 +13,10 @@ import Convert
     , legality
     , renderItems
     )
-import Convert.Diagnostic
-    ( Diagnostic (..)
-    , DiagnosticCode (..)
-    , Severity (..)
-    , diagnosticList
-    , renderDiagnostics
-    )
+import Convert.Diagnostic (Diagnostic (..), DiagnosticCode (..), Diagnostics, Severity (..), diagnosticList, renderDiagnostics)
 import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable (flatten)
 import Convert.Sentence (Syllable (..), pSentence)
-import Convert.Diagnostic (Diagnostics)
 import Convert.Token (Span (..), Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -607,7 +600,8 @@ tibetanWylie input = do
     items <- parseEither (pSentence) (fst (tokenizeUnicode input))
     pure (renderItems OutWylie items)
 
-spellingToUnicode :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text Text
+spellingToUnicode ::
+    (Text -> ([Token], Diagnostics)) -> Text -> Either Text Text
 spellingToUnicode tokenize input = do
     items <- parseEither pSentence (fst (tokenize input))
     pure (renderItems OutUnicode items)

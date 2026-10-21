@@ -4,6 +4,7 @@
 module Test.Convert.Golden (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
+import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable
     ( Role (..)
@@ -13,7 +14,6 @@ import Convert.Grammar.Syllable
     , VowelSlot (..)
     , finalsTokens
     )
-import Convert.Diagnostic (Diagnostics)
 import Convert.Token (Token, TokenCanonical (..), tokenCanonical)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
@@ -137,13 +137,20 @@ stacksSnapshot =
 
 renderStacks :: IO BL.ByteString
 renderStacks = do
-    wylieRows <- concat <$> mapM (renderStackCorpus tokenizeWylie wylieColumn) vectors
-    unicodeRows <- concat <$> mapM (renderStackCorpus tokenizeUnicode unicodeColumn) vectors
-    kangyur <- renderStackCorpus tokenizeUnicode id ("kangyur", "test/vectors/kang.txt")
+    wylieRows <-
+        concat <$> mapM (renderStackCorpus tokenizeWylie wylieColumn) vectors
+    unicodeRows <-
+        concat <$> mapM (renderStackCorpus tokenizeUnicode unicodeColumn) vectors
+    kangyur <-
+        renderStackCorpus tokenizeUnicode id ("kangyur", "test/vectors/kang.txt")
     pure
         (BL.fromStrict (TE.encodeUtf8 (T.unlines (wylieRows <> unicodeRows <> kangyur))))
 
-renderStackCorpus :: (Text -> ([Token], Diagnostics)) -> (Text -> Text) -> (Text, FilePath) -> IO [Text]
+renderStackCorpus ::
+    (Text -> ([Token], Diagnostics))
+    -> (Text -> Text)
+    -> (Text, FilePath)
+    -> IO [Text]
 renderStackCorpus tokenize column (name, path) = do
     text <- readVector path
     pure

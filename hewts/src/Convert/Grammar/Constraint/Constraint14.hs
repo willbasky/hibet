@@ -4,9 +4,18 @@ Tibetan spelling grammar 4.14 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint14 (pConstraint14) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, isWylieSign, liftP, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , isWylieSign
+    , liftP
+    , markPrefix
+    , markRoot
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -35,14 +44,14 @@ pConstraint14 =
 parseConstraint14 ::
     Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraint14 parsePrefix parseRoot = do
-    prefix <- mark Prefix parsePrefix
+    prefix <- markPrefix parsePrefix
     dotted <- MP.optional (liftP GP.pDot)
-    root <- mark Root $ do
+    root <- markRoot $ do
         tok <- parseRoot
         if isWylieSign tok && not (isJust dotted) && GP.isSubjoinCandidate tok
             then MP.empty
             else pure tok
-    vowel <- vowelSlot (prefix <> root) [mark Vowel GP.pVowel]
+    vowel <- vowelSlot (prefix <> root) [markVowel GP.pVowel]
     pure (prefix <> root <> vowel)
 
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག

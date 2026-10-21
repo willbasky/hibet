@@ -6,9 +6,14 @@ module Convert.Grammar.Constraint.Constraint01
     , pConstraint01Sanskrit
     ) where
 
-import Convert.Grammar.Parser (SpellParser, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( SpellParser
+    , markRoot
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import qualified Data.Sequence as Seq
 
 -- | The root a stack already spelled: the a-chen standing there is no
@@ -19,10 +24,13 @@ import qualified Data.Sequence as Seq
 -- The run stays for the word parser, which reads the next vowel as the root
 -- of its own stack.
 rootIsA :: TibetanSyllable -> Bool
-rootIsA = maybe False (GP.isImplicitA . snd) . Seq.lookup 0
+rootIsA = maybe False GP.isImplicitA . Seq.lookup 0
 
 -- | The root, then its vowel slot. The Wylie a-chen root takes no vowel.
-rooted :: SpellParser TibetanSyllable -> [SpellParser TibetanSyllable] -> SpellParser TibetanSyllable
+rooted ::
+    SpellParser TibetanSyllable
+    -> [SpellParser TibetanSyllable]
+    -> SpellParser TibetanSyllable
 rooted root vowels = do
     r <- root
     v <-
@@ -32,11 +40,13 @@ rooted root vowels = do
     pure (r <> v)
 
 pConstraint01 :: SpellParser TibetanSyllable
-pConstraint01 = rooted (mark Root GP.pRootConsonant) [mark Vowel GP.pVowel]
+pConstraint01 = rooted (markRoot GP.pRootConsonant) [markVowel GP.pVowel]
 
 pConstraint01WithLong :: SpellParser TibetanSyllable
 pConstraint01WithLong =
-    rooted (mark Root GP.pRootConsonant) [mark Vowel GP.pVowel, mark Vowel GP.pVowelLongA]
+    rooted
+        (markRoot GP.pRootConsonant)
+        [markVowel GP.pVowel, markVowel GP.pVowelLongA]
 
 pConstraint01Sanskrit :: SpellParser TibetanSyllable
-pConstraint01Sanskrit = rooted (mark Root GP.pSanskrit) [mark Vowel GP.pVowel]
+pConstraint01Sanskrit = rooted (markRoot GP.pSanskrit) [markVowel GP.pVowel]

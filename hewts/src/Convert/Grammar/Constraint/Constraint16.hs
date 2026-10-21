@@ -9,9 +9,13 @@ module Convert.Grammar.Constraint.Constraint16
     , suffixGroup16Sa
     ) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, mark)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , markSuffix
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token
@@ -21,10 +25,10 @@ import Convert.Token
 import qualified Text.Megaparsec as MP
 
 pConstraint16Da :: SpellParser TibetanSyllable
-pConstraint16Da = mark Suffix pAllowedSuffix16Da
+pConstraint16Da = markSuffix pAllowedSuffix16Da
 
 pConstraint16Sa :: SpellParser TibetanSyllable
-pConstraint16Sa = mark Suffix pAllowedSuffix16Sa
+pConstraint16Sa = markSuffix pAllowedSuffix16Sa
 
 -- | The 2nd-suffix rule (4.16): the first suffix the postfix ད may follow,
 -- [ 'ན', 'ར', 'ལ' ]. The same set is the data of the generic word's

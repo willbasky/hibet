@@ -1,27 +1,18 @@
--- | A parsed Tibetan syllable: the tokens of one syllable, each marked with the
--- place it occupies in the syllable.
+-- | A parsed Tibetan syllable (REFACTOR-AST §4): the stacks of one run, in
+-- writing order, and the run's tokens in the order they were read.
 --
 -- The vocabulary is the book's own, from "Research on Tibetan Spelling Formal
 -- Language and Automata with Application" (Nyima Tashi, Science Press + Springer,
 -- 2019), section 4.1, Definitions 4.1-4.8. Our 37 structures come from the same
--- book (its "Tibetan spelling grammar 4.1-4.20", section 4.2), so the marks use the
--- terms the rules themselves use.
+-- book (its "Tibetan spelling grammar 4.1-4.20", section 4.2).
 --
--- The mark lives in the list rather than in 'Token': a letter is superfix or
--- subfix because of where it stands, not because of what it is - the same @r@ is a
--- root in one syllable and a subfix in another. Leaving 'Token' alone also leaves
--- its invariants alone (input coverage).
---
--- This module also holds the nested syllable of REFACTOR-AST: 'Stack' with its
--- 'Role', 'Subfixes', 'VowelSlot' and 'Finals'. Since step 4d the grammar
--- places every sign into those stacks as it parses ('placeToken', reached from
--- 'Convert.Grammar.Parser.mark'), and the sentence takes the stacks from the
--- parser state. The grammar still returns the flat marks of its run as well;
--- the windows and the structural tests read them, and step 4e removes them
--- together with 'Position'.
+-- The role of a letter is a field of its stack, and the slot inside the stack is
+-- the field itself ('Stack.stSuperfix', 'stRoot' and so on). The parser places
+-- each sign through the 'put…' functions below, one per field; the flat run of
+-- tokens is what the structures return and what the coverage checks read, and it
+-- carries no marks (step 4e removed 'Position').
 module Convert.Grammar.Syllable
-    ( Position (..)
-    , TibetanSyllable
+    ( TibetanSyllable
     , Role (..)
     , Subfixes (..)
     , VowelSlot (..)
@@ -32,7 +23,15 @@ module Convert.Grammar.Syllable
     , Syllable (..)
     , Stack (..)
     , stackTokens
-    , placeToken
+    , putPrefix
+    , putSuffix
+    , putPostfix
+    , putSuperfix
+    , putRoot
+    , putSubfix
+    , putVowel
+    , putImplicitVowel
+    , putFinal
     , flatten
     ) where
 
@@ -52,40 +51,11 @@ import Data.Maybe (catMaybes, isNothing)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
--- | The place a character occupies in a Tibetan syllable.
---
--- 'Final' is ours rather than the book's: the book files final marks with the
--- other signs (Def 4.9) instead of giving them a place of their own, but we
--- need to tell them apart - a final that does not fit the closing chain is an
--- error, and the order of assembly depends on it.
-data Position
-    = Root
-    | Prefix
-    | Superfix
-    | Subfix
-    | Suffix
-    | Postfix
-    | Vowel
-    | Final
-    | ImplicitVowel
-    deriving (Show, Eq, Ord)
-
--- | A Tibetan syllable (Def 4.10) as a flat list of marked tokens.
---
--- The marks are what a rule placed where: they serve the windows that read a
--- finished syllable ('Convert.Grammar.Constraint.Constraint22') and the
--- structural tests. The stacks themselves no longer come from this list: since
--- REFACTOR-AST step 4d the grammar places every mark into the parser state as
--- it goes ('Convert.Grammar.Parser.mark'), and this list is removed together
--- with 'Position' in step 4e. A 'Seq' rather than a list because the syllable
--- is built by appending pieces (a prefix, a root, a subfix, a vowel) and read
--- from both ends by the legality rules of wave 3.4. Be aware that this buys
--- clarity more than speed: a syllable holds one to six letters, and at that
--- size 'Seq' and a list append in the same handful of steps. The real cost in
--- this layer is elsewhere - see 'Convert.Grammar.Structure.pStructure', which
--- probes all 37 structures in lookahead, so every syllable is parsed 37 times
--- over.
-type TibetanSyllable = Seq (Position, Token)
+-- | The tokens of a run, in the order they were read. The stacks of the run are
+-- the grammar's own state ('Convert.Grammar.Parser.takeStacks'); this flat list
+-- is what the structures hand back, so the coverage checks and the spans have
+-- the run without consulting the stacks.
+type TibetanSyllable = Seq Token
 
 -- | The role a stack plays in its syllable (REFACTOR-AST §4). Needed for two
 -- printing decisions only: the implicit @a@ and the stack separator.
@@ -189,54 +159,73 @@ stackTokens Stack{..} =
         vowelTokens (Just VowelImplicit) = mempty
         vowelTokens (Just (VowelWritten t rest)) = t Seq.<| Seq.fromList rest
 
--- | Put one marked token into the stacks of a syllable, in the canonical order
--- of the fields. The grammar's own placement ('Convert.Grammar.Parser.mark')
--- goes through here, so the group of a mark is decided once: a prefix, suffix
--- or postfix opens a stack of its own, a superfix opens the stack whose root
--- follows it, a subjoined root joins the open root, and a subfix, vowel,
--- implicit vowel, caret or final joins the stack already open. An
--- 'ImplicitVowel' beside a written vowel is dropped: it prints nothing and is
--- input syntax, not a sign (the @a@ of @bo+ra@).
+-- | Put one token into its slot. One function per field of 'Stack': a prefix,
+-- suffix or postfix opens a stack of its own, a superfix opens the stack whose
+-- root follows it, a subjoined root joins the open root, and a subfix, vowel,
+-- implicit vowel or final fills the field of the stack already open.
 --
 -- shortcut: a fourth subjoined letter (none in the corpora; the type stops at
 -- 'ThreeSubfix') is dropped - add a form when such input surfaces.
-placeToken :: Position -> Token -> Seq Stack -> Seq Stack
-placeToken pos tok stacks = case pos of
-    Prefix -> stacks Seq.|> new RolePrefix tok
-    Suffix -> stacks Seq.|> new RoleSuffix tok
-    Postfix -> stacks Seq.|> new RolePostfix tok
-    Superfix -> stacks Seq.|> (emptyStack RoleRoot){stSuperfix = Just tok}
-    Root -> case Seq.viewr stacks of
-        rest Seq.:> top
-            | Just _ <- stRoot top
-            , TcSubConsonant _ <- tokenCanonical tok ->
-                rest Seq.|> top{stSubfixes = pushSubfix tok (stSubfixes top)}
-            | Just _ <- stSuperfix top
-            , Nothing <- stRoot top ->
-                rest Seq.|> top{stRoot = Just tok}
-        _ -> stacks Seq.|> new RoleRoot tok
-    Subfix -> onTop $ \st -> st{stSubfixes = pushSubfix tok (stSubfixes st)}
-    Vowel -> onTop $ \st -> st{stVowel = Just (pushVowel tok (stVowel st))}
-    ImplicitVowel -> onTop $ \st ->
-        st{stVowel = case stVowel st of Nothing -> Just VowelImplicit; v -> v}
-    Final
-        | isCaret tok -> onTop $ \st -> st{stCaret = stCaret st <|> Just tok}
-        | otherwise -> onTop $ \st ->
-            st{stFinals = maybe (stFinals st) id (snocFinal tok (stFinals st))}
-    where
-        new role tok' = (emptyStack role){stRoot = Just tok'}
-        emptyStack role = Stack role Nothing Nothing NoSubfix Nothing Nothing emptyFinals
-        onTop f = case Seq.viewr stacks of
-            Seq.EmptyR -> Seq.singleton (f (emptyStack RoleRoot))
-            rest Seq.:> top -> rest Seq.|> f top
-        pushSubfix tok' NoSubfix = OneSubfix tok'
-        pushSubfix tok' (OneSubfix a) = TwoSubfix a tok'
-        pushSubfix tok' (TwoSubfix a b) = ThreeSubfix a b tok'
-        pushSubfix _ three = three
-        pushVowel tok' Nothing = VowelWritten tok' []
-        pushVowel tok' (Just (VowelWritten t rest)) = VowelWritten t (rest <> [tok'])
-        pushVowel tok' (Just VowelImplicit) = VowelWritten tok' []
-        isCaret t = tokenCanonical t == TcFinal FMCaret
+putPrefix
+    , putSuffix
+    , putPostfix
+    , putSuperfix
+    , putRoot
+    , putSubfix
+    , putVowel
+    , putImplicitVowel
+    , putFinal ::
+        Token -> Seq Stack -> Seq Stack
+putPrefix tok = opens RolePrefix tok
+putSuffix tok = opens RoleSuffix tok
+putPostfix tok = opens RolePostfix tok
+putSuperfix tok stacks = stacks Seq.|> (emptyStack RoleRoot){stSuperfix = Just tok}
+putRoot tok stacks = case Seq.viewr stacks of
+    rest Seq.:> top
+        | Just _ <- stRoot top
+        , TcSubConsonant _ <- tokenCanonical tok ->
+            rest Seq.|> top{stSubfixes = pushSubfix tok (stSubfixes top)}
+        | Just _ <- stSuperfix top
+        , Nothing <- stRoot top ->
+            rest Seq.|> top{stRoot = Just tok}
+    _ -> stacks Seq.|> (emptyStack RoleRoot){stRoot = Just tok}
+putSubfix tok = onTop $ \st -> st{stSubfixes = pushSubfix tok (stSubfixes st)}
+putVowel tok = onTop $ \st -> st{stVowel = Just (pushVowel tok (stVowel st))}
+
+-- | The implicit @a@ is a fact of the slot, not a sign: it prints nothing and is
+-- input syntax, so a written vowel beside it wins (the @a@ of @bo+ra@).
+putImplicitVowel _ = onTop $ \st ->
+    st{stVowel = case stVowel st of Nothing -> Just VowelImplicit; v -> v}
+
+putFinal tok
+    | isCaret tok = onTop $ \st -> st{stCaret = stCaret st <|> Just tok}
+    | otherwise = onTop $ \st ->
+        st{stFinals = maybe (stFinals st) id (snocFinal tok (stFinals st))}
+
+opens :: Role -> Token -> Seq Stack -> Seq Stack
+opens role tok stacks = stacks Seq.|> (emptyStack role){stRoot = Just tok}
+
+emptyStack :: Role -> Stack
+emptyStack role = Stack role Nothing Nothing NoSubfix Nothing Nothing emptyFinals
+
+onTop :: (Stack -> Stack) -> Seq Stack -> Seq Stack
+onTop f stacks = case Seq.viewr stacks of
+    Seq.EmptyR -> Seq.singleton (f (emptyStack RoleRoot))
+    rest Seq.:> top -> rest Seq.|> f top
+
+pushSubfix :: Token -> Subfixes -> Subfixes
+pushSubfix tok NoSubfix = OneSubfix tok
+pushSubfix tok (OneSubfix a) = TwoSubfix a tok
+pushSubfix tok (TwoSubfix a b) = ThreeSubfix a b tok
+pushSubfix _ three = three
+
+pushVowel :: Token -> Maybe VowelSlot -> VowelSlot
+pushVowel tok Nothing = VowelWritten tok []
+pushVowel tok (Just (VowelWritten t rest)) = VowelWritten t (rest <> [tok])
+pushVowel tok (Just VowelImplicit) = VowelWritten tok []
+
+isCaret :: Token -> Bool
+isCaret t = tokenCanonical t == TcFinal FMCaret
 
 -- | The tokens of the stacks, each in its canonical place. Implicit vowels,
 -- dropped subfixes and separators have no token here.

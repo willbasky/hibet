@@ -7,8 +7,9 @@ import Convert.Grammar.Parser
     ( SpellParser
     , parseEither
     , runSpell
+    , takeStacks
     )
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (Role (..), Stack (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -42,29 +43,31 @@ tests =
             parseRaws (pConstraint14) "འཁ" @?= Right ["འ", "ཁ"]
         , testCase "a-prefix + roots5 with vowel" $
             parseRaws (pConstraint14) "འཁུ" @?= Right ["འ", "ཁ", "ུ"]
-        , testCase "marks each letter of the word" $
-            parsePositions (pConstraint14) "གཅུ" @?= Right [Prefix, Root, Vowel]
+        , testCase "the rule builds the stacks of the word" $
+            parseRoles (pConstraint14) "གཅུ" @?= Right [RolePrefix, RoleRoot]
         , testCase "a stack dot after the prefix parts the stacks" $
-            parseWyliePositions (pConstraint14) "g.yu"
-                @?= Right [Prefix, Root, Vowel]
+            parseWylieRoles (pConstraint14) "g.yu"
+                @?= Right [RolePrefix, RoleRoot]
         , testCase "without a dot the bare y is no root here" $
-            isLeft (parseWyliePositions (pConstraint14) "gyu") @?= True
+            isLeft (parseWylieRoles (pConstraint14) "gyu") @?= True
         ]
-
-parseWyliePositions ::
-    SpellParser TibetanSyllable -> Text -> Either Text [Position]
-parseWyliePositions p input =
-    fmap (toList . fmap fst) $
-        parseEither (runSpell p) (fst (tokenizeWylie input))
 
 parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
-    fmap (toList . fmap (tokenRaw . snd)) $
+    fmap (toList . fmap tokenRaw) $
         parseEither (runSpell p) (fst (tokenizeUnicode input))
 
--- | The positions the rule gives each letter of the word: the marks the
--- renderer will read in wave 3, step 3.3.
-parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
-parsePositions p input =
-    fmap (toList . fmap fst) $
-        parseEither (runSpell p) (fst (tokenizeUnicode input))
+-- | The roles of the stacks the rule built, read from the parser state: the
+-- role is a field of the stack now, not a mark on the letter (REFACTOR-AST
+-- step 4e). The letters are checked by 'parseRaws', and the slots inside a
+-- stack by @test/golden/stacks.golden@.
+parseRoles :: SpellParser TibetanSyllable -> Text -> Either Text [Role]
+parseRoles p input =
+    fmap (map stRole . toList) $
+        parseEither (runSpell (p *> takeStacks)) (fst (tokenizeUnicode input))
+
+-- | The same roles, read from a Wylie run.
+parseWylieRoles :: SpellParser TibetanSyllable -> Text -> Either Text [Role]
+parseWylieRoles p input =
+    fmap (map stRole . toList) $
+        parseEither (runSpell (p *> takeStacks)) (fst (tokenizeWylie input))

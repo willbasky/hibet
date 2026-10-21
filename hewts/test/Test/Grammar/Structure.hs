@@ -2,16 +2,16 @@
 
 module Test.Grammar.Structure (tests) where
 
+import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser
     ( SpellParser
     , parseEither
     , runSpell
     )
 import Convert.Grammar.Structure
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, VowelSlot (..))
+import Convert.Grammar.Syllable (TibetanSyllable, VowelSlot (..))
 import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
-import Convert.Diagnostic (Diagnostics)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -109,7 +109,8 @@ wordVowels tokenize input = fmap (map slot) (wordStacks tokenize input)
             Just VowelImplicit -> "implicit"
             Just (VowelWritten _ _) -> "written"
 
-wordStacks :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Ast.Stack]
+wordStacks ::
+    (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Ast.Stack]
 wordStacks tokenize input =
     case parseWylie tokenize input of
         Left err -> Left err
@@ -129,7 +130,8 @@ wordRaws tokenize input =
 wordSpelling :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text Text
 wordSpelling tokenize input = fmap T.concat (wordRaws tokenize input)
 
-parseWylie :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [SpellItem]
+parseWylie ::
+    (Text -> ([Token], Diagnostics)) -> Text -> Either Text [SpellItem]
 parseWylie tokenize input =
     parseEither pSentence (fst (tokenize input))
 
@@ -608,7 +610,7 @@ structure37 =
 parseRaws ::
     SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
-    fmap (toList . fmap (tokenRaw . snd)) $
+    fmap (toList . fmap tokenRaw) $
         parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The same helper for the structures that host a window (8, 9, 21): they are
@@ -619,5 +621,5 @@ parseRaws p input =
 parseRawsStateful ::
     SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRawsStateful p input =
-    fmap (toList . fmap (tokenRaw . snd)) $
+    fmap (toList . fmap tokenRaw) $
         parseEither (runSpell p) (fst (tokenizeUnicode input))

@@ -254,7 +254,8 @@ tokensOf = toList . Ast.flatten . sylStacks
 stacksOf :: Syllable -> [Ast.Stack]
 stacksOf = toList . sylStacks
 
-parseRuns :: (T.Text -> ([Token], Diagnostics)) -> T.Text -> Either T.Text [Syllable]
+parseRuns ::
+    (T.Text -> ([Token], Diagnostics)) -> T.Text -> Either T.Text [Syllable]
 parseRuns tokenize input =
     fmap
         ( \items ->

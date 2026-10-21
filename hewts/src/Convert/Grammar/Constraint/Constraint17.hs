@@ -7,9 +7,16 @@ module Convert.Grammar.Constraint.Constraint17
     , pConstraint17Ya
     ) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, mark, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , markRoot
+    , markSubfix
+    , markVowel
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token (..)
@@ -21,21 +28,21 @@ import qualified Text.Megaparsec as MP
 -- (1) root group [ 'ག', 'ད' ] above the subfix ར.
 pConstraint17Ra :: SpellParser TibetanSyllable
 pConstraint17Ra = do
-    root <- mark Root (pRootConsonant [Cg, Cd])
-    ra <- mark Subfix GP.pSubfixRa
-    wa <- mark Subfix GP.pSubfixWa
+    root <- markRoot (pRootConsonant [Cg, Cd])
+    ra <- markSubfix GP.pSubfixRa
+    wa <- markSubfix GP.pSubfixWa
     let stack = root <> ra <> wa
-    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    vowel <- vowelSlot stack [markVowel GP.pVowel]
     pure (stack <> vowel)
 
 -- (2) root ཕ above the subfix ཡ.
 pConstraint17Ya :: SpellParser TibetanSyllable
 pConstraint17Ya = do
-    root <- mark Root (pRootConsonant [Cph])
-    ya <- mark Subfix GP.pSubfixYa
-    wa <- mark Subfix GP.pSubfixWa
+    root <- markRoot (pRootConsonant [Cph])
+    ya <- markSubfix GP.pSubfixYa
+    wa <- markSubfix GP.pSubfixWa
     let stack = root <> ya <> wa
-    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    vowel <- vowelSlot stack [markVowel GP.pVowel]
     pure (stack <> vowel)
 
 pRootConsonant :: [Consonant] -> Parser Token

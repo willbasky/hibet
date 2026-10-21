@@ -12,11 +12,14 @@ import Convert.Grammar.Parser
     , isJoinedAt
     , isWylieSign
     , liftP
-    , mark
-    , placeMark
+    , markImplicitVowel
+    , markRoot
+    , markVowel
+    , placeRoot
+    , placeSuffix
     )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , SubConsonant (..)
@@ -41,7 +44,7 @@ pConstraint20 :: SpellParser TibetanSyllable
 pConstraint20 = do
     tok <- liftP (MP.satisfy (GP.isSpecificConsonant C') MP.<?> "A root འ")
     rootish <- MP.option False (MP.lookAhead (True <$ liftP rootHeads))
-    a <- placeMark (if rootish then Root else Suffix) tok
+    a <- if rootish then placeRoot tok else placeSuffix tok
     trailer <- MP.option mempty (MP.choice (tails (isWylieSign tok)))
     pure (a <> trailer)
     where
@@ -58,8 +61,8 @@ pConstraint20 = do
 
         tails :: Bool -> [SpellParser TibetanSyllable]
         tails wylie =
-            [mark Vowel GP.pVowel]
-                ++ [mark ImplicitVowel GP.pImplicitA | wylie]
-                ++ [ mark Root (MP.satisfy (isJoinedAt SCng Cng))
-                   , mark Root (MP.satisfy (isJoinedAt SCm Cm))
+            [markVowel GP.pVowel]
+                ++ [markImplicitVowel GP.pImplicitA | wylie]
+                ++ [ markRoot (MP.satisfy (isJoinedAt SCng Cng))
+                   , markRoot (MP.satisfy (isJoinedAt SCm Cm))
                    ]

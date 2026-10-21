@@ -4,9 +4,18 @@ Tibetan spelling grammar 4.11 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint11 (pConstraint11) where
 
-import Convert.Grammar.Parser (Parser, SpellParser, mark, pJoinedRoot, vowelSlot)
+import Convert.Grammar.Parser
+    ( Parser
+    , SpellParser
+    , markPrefix
+    , markRoot
+    , markSuperfix
+    , markVowel
+    , pJoinedRoot
+    , vowelSlot
+    )
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token (Consonant (..), Token)
 import qualified Text.Megaparsec as MP
 
@@ -21,11 +30,11 @@ pConstraint11 =
 parseConstraint11 ::
     Parser Token -> Parser Token -> Parser Token -> SpellParser TibetanSyllable
 parseConstraint11 parsePrefix parseSuperfix parseRoot = do
-    prefix <- mark Prefix parsePrefix
-    superfix <- mark Superfix parseSuperfix
-    root <- mark Root parseRoot
+    prefix <- markPrefix parsePrefix
+    superfix <- markSuperfix parseSuperfix
+    root <- markRoot parseRoot
     let stack = prefix <> superfix <> root
-    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    vowel <- vowelSlot stack [markVowel GP.pVowel]
     pure (stack <> vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'ང', 'ཇ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཛ' ] with prefix བ under superfix ར

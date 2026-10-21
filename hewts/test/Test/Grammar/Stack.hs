@@ -12,8 +12,8 @@ import Convert.Grammar.Parser
     )
 import Convert.Grammar.Structure (pStructure38)
 import Convert.Grammar.Syllable
-    ( Position (..)
-    , Stack
+    ( Role (..)
+    , Stack (..)
     , Syllable (..)
     , TibetanSyllable
     )
@@ -38,12 +38,11 @@ tests =
     testGroup
         "grammar stack (generic)"
         [ testCase "sat+t+wa keeps the base t before the subjoined ones" $
-            wylPositions "sat+t+wa"
-                @?= Right [Root, ImplicitVowel, Root, Subfix, Subfix, ImplicitVowel]
+            wylRoles "sat+t+wa" @?= Right [RoleRoot, RoleRoot]
         , testCase "sat+t+wa renders སཏྟྭ" $
             wylRender "sat+t+wa" @?= Right "སཏྟྭ"
         , testCase "g+m+r+a forces three subjoins" $
-            wylPositions "g+m+r+a" @?= Right [Root, Subfix, Subfix, Subfix]
+            wylRoles "g+m+r+a" @?= Right [RoleRoot]
         , testCase "g+m+r+a renders གྨྲྸ" $
             wylRender "g+m+r+a" @?= Right "གྨྲྸ"
         , testCase "g+mra subjoins the bare letter after a forced one" $
@@ -103,8 +102,11 @@ grammarStacks input =
 wylParse :: SpellParser TibetanSyllable -> Text -> Either Text TibetanSyllable
 wylParse p input = parseEither (runSpell p) (fst (tokenizeWylie input))
 
-wylPositions :: Text -> Either Text [Position]
-wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38)
+-- | The roles of the stacks the generic word built. The slots inside a stack
+-- (which letter is the base, which is subjoined) are covered by the render
+-- assertions above and by @test/golden/stacks.golden@.
+wylRoles :: Text -> Either Text [Role]
+wylRoles = fmap (map stRole . toList) . grammarStacks
 
 wylRender :: Text -> Either Text Text
 wylRender w =

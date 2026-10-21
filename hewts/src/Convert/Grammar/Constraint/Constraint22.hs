@@ -11,10 +11,10 @@
 -- says which reading won.
 --
 -- The recommendation speaks of Wylie, so the input must be Wylie too: a
--- syllable carries the 'ImplicitVowel' mark exactly when the letter @a@ was
+-- stack's vowel slot holds 'VowelImplicit' exactly when the letter @a@ was
 -- written where a vowel would be, and the Tibetan spelling never writes it
 -- (དག is read root ད + suffix ག, with no letter standing in for a vowel).
--- That mark is therefore also what keeps the rule off a syllable with a real
+-- That slot is therefore also what keeps the rule off a syllable with a real
 -- vowel (dgi is དགི, not དག).
 module Convert.Grammar.Constraint.Constraint22
     ( recommendedSpelling
@@ -24,7 +24,6 @@ module Convert.Grammar.Constraint.Constraint22
 import Control.Monad (guard)
 import Convert.Diagnostic (Finding (PreferredSpelling))
 import Convert.Grammar.Constraint.Constraint15 (suffixConsonants15)
-import Control.Monad (guard)
 import Convert.Grammar.Parser
     ( SpellParser
     , noteFinding

@@ -22,7 +22,7 @@ ignored its own 'Spelling' argument.
 The head window (3.4.3) lives here, in the word lead: when the first stack
 closes bare - the grammar placed a head letter that reached no vowel, no
 subjoining run and no forced join - the head sits in the prefix position
-unless it is a superfix letter gating a root ('markBase' says so; @rka@ and
+unless it is a superfix letter gating a root ('placeBase' says so; @rka@ and
 @sgra@ hold a stack, never a prefix). The two prefix warnings of section 4.2
 fire inline in that window, from the grammar's own predicates - the classic
 §4.2 sets as the pair predicate 'prefixAllows' - and the finding is
@@ -61,19 +61,28 @@ import Convert.Grammar.Parser
     , caretMark
     , claimFinal
     , liftP
-    , mark
+    , markImplicitVowel
+    , markSubfix
+    , markVowel
     , noteFinding
-    , placeMark
+    , peekStacks
+    , placeFinal
+    , placePrefix
+    , placeRoot
+    , placeSubfix
+    , placeSuperfix
     , resetFinalChain
     , scanLeading
     , scanStackVowel
+    , scanStacks
     , scanTail
     , subfixMarks
     )
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Superfix (superfixCombos, superfixRoots)
 import Convert.Grammar.Syllable
-    ( Position (..)
+    ( Role (..)
+    , Stack (..)
     , TibetanSyllable
     )
 import Convert.Token
@@ -106,7 +115,7 @@ pConstraint21First =
     where
         vowelStart :: SpellParser TibetanSyllable
         vowelStart = do
-            marks <- mark Vowel GP.pVowelAny
+            marks <- markVowel GP.pVowelAny
             noteVowelMark marks
             resetWordTail
             -- A word that opens on a vowel opens a stack like any other.
@@ -133,7 +142,7 @@ pConstraint21Rest =
         , noLead restJoin
         , vowelContinuation
         , noLead oneFinalMark
-        , noLead (mark Subfix GP.pSubConsonant)
+        , noLead (markSubfix GP.pSubConsonant)
         , pStackBody False
         ]
     where
@@ -150,7 +159,7 @@ pConstraint21Rest =
             if taken
                 then MP.empty
                 else do
-                    marks <- mark Vowel GP.pVowelAny
+                    marks <- markVowel GP.pVowelAny
                     noteVowelMark marks
                     resetWordTail
                     pure marks
@@ -203,14 +212,15 @@ pStackBody atStart = do
                 _ <- MP.optional (liftP GP.pToken)
                 fst <$> liftP GP.pSubjoinRun
             else pure []
-    let (pos, _) = markBase atStart base next0 below0
-    -- The base goes into the stacks before the choice below: whichever arm
-    -- wins keeps it, and a failed arm is rolled back to this point, not past
-    -- the letter that opened the stack.
-    baseMark <- placeMark pos base
+    -- The base goes into the stack before the choice below: whichever arm wins
+    -- keeps it, and a failed arm is rolled back to this point, not past the
+    -- letter that opened the stack. Its slot is decided by 'placeBase'; how it
+    -- stands is then read from the stack it opened.
+    baseMark <- placeBase atStart base next0 below0
+    standing <- gets (maybe (RoleRoot, False) standingOf . lastStack . scanStacks)
     MP.choice
         [ completeStack base baseMark
-        , bare base baseMark pos next0 below0
+        , bare base baseMark standing next0 below0
         ]
     where
         -- The subjoining run under the base is over and the stack next meets
@@ -251,19 +261,19 @@ pStackBody atStart = do
         bare ::
             Token
             -> TibetanSyllable
-            -> Position
+            -> (Role, Bool)
             -> Maybe Token
             -> [Token]
             -> SpellParser TibetanSyllable
-        bare base baseMark pos next below = do
+        bare base baseMark (role, over) next below = do
             named <- noteShutGate base next below
-            when (atStart && not named) (checkHead base pos)
-            settleBareHead base pos
+            when (atStart && not named) (checkHead base over)
+            settleBareHead base role over
             advanceWordTail base
             pure baseMark
 
         -- The gate rule 4.10 keeps shut: la below the root keeps the base an
-        -- ordinary root ('markBase'), so no pending lead reaches
+        -- ordinary root ('placeBase'), so no pending lead reaches
         -- 'settleVowelHead'. This bare stack therefore calls the same table
         -- window on the same run, and the finding is the one that window
         -- would name (grglam). The same window now names a superfix letter
@@ -296,8 +306,8 @@ pStackBody atStart = do
         -- a prefix whose root reached no vowel is the rule of the vowel after
         -- the prefix (@bk@); a superfix that gates nothing closes silently
         -- (@rk@). This bare stack may itself open the next pending lead.
-        settleBareHead :: Token -> Position -> SpellParser ()
-        settleBareHead base pos = do
+        settleBareHead :: Token -> Role -> Bool -> SpellParser ()
+        settleBareHead base role over = do
             pending <- gets scanLeading
             case pending of
                 Just (LeadPrefix, lead) ->
@@ -305,9 +315,9 @@ pStackBody atStart = do
                 Just (LeadSuperfix, _) -> pure ()
                 Nothing -> pure ()
             setLead $
-                case pos of
-                    Superfix -> Just (LeadSuperfix, base)
-                    Prefix -> Just (LeadPrefix, base)
+                case role of
+                    _ | over -> Just (LeadSuperfix, base)
+                    RolePrefix -> Just (LeadPrefix, base)
                     _ -> Nothing
 
         -- The suffix-count window of the word tail (4.15/4.16): after the
@@ -438,9 +448,9 @@ setStackVowel v = modify $ \s -> s{scanStackVowel = v}
 -- closes on the short vowel itself. Every other vowel - the long @a@ standing
 -- alone (@kA@ -> ཀཱ), a short vowel written out separately (@kAi@ -> ཀཱ +
 -- ཨི) - is the stack's vowel at once.
-noteVowelMark :: Seq.Seq (Position, Token) -> SpellParser ()
+noteVowelMark :: TibetanSyllable -> SpellParser ()
 noteVowelMark marks = case Seq.lookup 0 marks of
-    Just (_, v) -> do
+    Just v -> do
         pending <-
             if GP.isLongAVowelToken v
                 then liftP (MP.option False (MP.lookAhead (True <$ GP.pLongVowelHalf)))
@@ -450,9 +460,7 @@ noteVowelMark marks = case Seq.lookup 0 marks of
 
 -- | Whether a forced join ended in a vowel (@+e@).
 startsWithVowel :: TibetanSyllable -> Bool
-startsWithVowel w = case Seq.lookup 0 w of
-    Just (Vowel, _) -> True
-    _ -> False
+startsWithVowel = maybe False GP.isEatableVowel . Seq.lookup 0
 
 -- | The rest of a complete stack - consecutive vowels (@a@ among them, the
 -- letter that never prints), the caret and then finals, and forced subjoins
@@ -492,7 +500,7 @@ pConsumeTail vowelSeen baseIsA =
         pTailVowel
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- mark Vowel GP.pVowelAny
+                marks <- markVowel GP.pVowelAny
                 noteVowelMark marks
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
@@ -508,7 +516,7 @@ pConsumeTail vowelSeen baseIsA =
         pImplicitABranch
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- mark ImplicitVowel GP.pImplicitAWylie
+                marks <- markImplicitVowel GP.pImplicitAWylie
                 setStackVowel True
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
@@ -538,7 +546,9 @@ pConsumeTail vowelSeen baseIsA =
             -- stack - the a-chen branch below only fires before the first
             -- vowel, so the tail cannot take the letter there.
             inheritVowel <- case Seq.lookup 0 marks of
-                Just (Subfix, _) -> MP.option mempty (mark ImplicitVowel GP.pImplicitA)
+                Just t
+                    | not (GP.isEatableVowel t) ->
+                        MP.option mempty (markImplicitVowel GP.pImplicitA)
                 _ -> pure mempty
             -- A vowel of the join (a @+e@, or the implicit @a@ it pulled in)
             -- fills the stack; a join that only dragged a letter below a fresh
@@ -563,7 +573,9 @@ pConsumeTail vowelSeen baseIsA =
         -- of the @+@-after-vowel window (@ku+k@ blames @k@).
         joinHeadRaw :: TibetanSyllable -> Text
         joinHeadRaw w = case Seq.lookup 0 w of
-            Just (Subfix, tok) -> T.filter (/= '+') (tokenRaw tok)
+            Just tok
+                | not (GP.isEatableVowel tok) ->
+                    T.filter (/= '+') (tokenRaw tok)
             _ -> T.empty
 
 -- | The carets a subjoining run swallowed are spent, and the chain has to know
@@ -601,7 +613,7 @@ oneFinalMark = MP.try $ do
     tok <- liftP GP.pFinal
     fit <- claimFinal tok
     case fit of
-        GP.FinalFits -> placeMark Final tok
+        GP.FinalFits -> placeFinal tok
         GP.FinalOutOfChain -> do
             noteFinding (DuplicateFinalMark (tokenRaw tok))
             pure mempty
@@ -623,7 +635,7 @@ pForcedJoin = MP.try $ do
     void (liftP GP.pPlus)
     MP.choice
         [ MP.try pSubjoinBelow
-        , mark Vowel GP.pVowelAny
+        , markVowel GP.pVowelAny
         ]
     where
         -- \| The letter a forced join drags below the stack - a consonant or the
@@ -636,22 +648,23 @@ pForcedJoin = MP.try $ do
             next <- MP.choice [liftP GP.pConsonant, liftP GP.pSubConsonant]
             (subjoined, carets) <- liftP GP.pSubjoinRun
             noteRunCarets carets
-            first <- placeMark Subfix next
+            first <- placeSubfix next
             caret <- caretMark (listToMaybe carets)
             deeper <- subfixMarks (reverse subjoined)
             pure (first <> caret <> deeper)
 
 -- | Where the base stands: a word-initial prefix letter over a consonant is a
--- Prefix (bsgribs -> བ), a superfix letter over a non-subfix consonant is a
--- Superfix (rka -> རྐ), anything else is the Root. The renderer prints the
--- letter either way; the positions matter to the legality rules of wave 3.4.
+-- prefix (bsgribs -> བ), a superfix letter over a non-subfix consonant is a
+-- superfix (rka -> རྐ), anything else is a root. The slot is the field of the
+-- stack the base opens, and the legality rules of wave 3.4 read it from there.
 --
 -- One superfix letter gates nothing whatever: rule 4.10 keeps la below no
 -- superfix (its 15 triples take wa, ya and ra only), so a root that would
 -- subjoin it shuts the gate before it opens and the base is a root like any
 -- other (grglam -> གརགླམ, as the reference reads it).
-markBase :: Bool -> Token -> Maybe Token -> [Token] -> (Position, Token)
-markBase atStart base next below =
+placeBase ::
+    Bool -> Token -> Maybe Token -> [Token] -> SpellParser TibetanSyllable
+placeBase atStart base next below =
     case next of
         Just n
             -- The letter directly below the base belongs to its own stack
@@ -661,12 +674,24 @@ markBase atStart base next below =
                 && GP.isConsonantToken n
                 && not (GP.isSubjoinCandidate n)
                 && not (GP.isImplicitA n) ->
-                (Prefix, base)
+                placePrefix base
             | Just run <- superfixRun base n below
             , not (any isLa run)
             , gatedSuperfix base n ->
-                (Superfix, base)
-        _ -> (Root, base)
+                placeSuperfix base
+        _ -> placeRoot base
+
+-- | How the stack a base just opened stands: its role, and whether the base sits
+-- above it as a superfix.
+standingOf :: Stack -> (Role, Bool)
+standingOf st =
+    (stRole st, case stSuperfix st of Just _ -> True; Nothing -> False)
+
+-- | The last stack the run has built, if any.
+lastStack :: Seq.Seq Stack -> Maybe Stack
+lastStack stacks = case Seq.viewr stacks of
+    Seq.EmptyR -> Nothing
+    _ Seq.:> st -> Just st
 
 -- | The gate of rule 4.8 from the base's own side: the letters the root
 -- behind a superfix letter would subjoin, but only while that gate stands -
@@ -708,10 +733,10 @@ isLa t = case tokenCanonical t of
 -- prefix position: the prefix warnings are a W->U notion. The check decides
 -- by the pair predicate 'prefixAllows', like any other check of the grammar:
 -- no tables are probed over the raw run after the parse.
-checkHead :: Token -> Position -> SpellParser ()
-checkHead base pos =
+checkHead :: Token -> Bool -> SpellParser ()
+checkHead base over =
     when
-        (pos /= Superfix && tokenSource base == TsWylie)
+        (not over && tokenSource base == TsWylie)
         ( case tokenCanonical base of
             TcConsonant c
                 | c == Ca || T.null (tokenRaw base) -> pure ()
