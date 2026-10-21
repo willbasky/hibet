@@ -174,6 +174,17 @@ pSyllable :: SpellParser [SpellItem]
 pSyllable = do
     start <- MP.getInput
     startOffset <- MP.getOffset
+    -- A mark at the head of the run with no letter to attach to (wave 5.4):
+    -- the output escapes such a character, and this record says why nothing
+    -- read it. It is the run's own finding, so it enters the run's findings
+    -- here, at the parse - one record per source character: a continuation of
+    -- a decomposed form carries no character of its own, and the group's own
+    -- token speaks for it.
+    let orphans =
+            [ SignWithoutLetter (tokenRaw t)
+            | t <- takeWhile isToplessMark start
+            , not (T.null (tokenRaw t))
+            ]
     -- 'lookAhead' only guards the run: the head token must be a possible
     -- syllable start if the run is to be claimed below (numbers, punctuation
     -- and unknown tokens fall through to their own branches), but the head
@@ -182,6 +193,10 @@ pSyllable = do
     void $ MP.option mempty (MP.try pStructure)
     endOfStructure <- MP.getOffset
     let claimed = endOfStructure - startOffset
+    -- The structure has read the marks the run opened on, so their records
+    -- follow the windows of that structure, as the channel always ordered
+    -- them.
+    mapM_ noteFinding orphans
     -- A claimed run closes with what the stack above owns; an unclaimed one
     -- keeps swallowing its tail - it is one invalid item by construction and
     -- it has to consume its head, or the sentence would not advance.
@@ -193,17 +208,7 @@ pSyllable = do
     built <- takeStacks
     let content = take claimed start <> tailToks
         runSpan = wordSpan content
-        -- A mark at the head of the run with no letter to attach to (wave
-        -- 5.4): the output escapes such a character, and this record says
-        -- why nothing read it. One record per source character - a
-        -- continuation of a decomposed form carries no character of its
-        -- own, and the group's own token speaks for it.
-        orphans =
-            [ SignWithoutLetter (tokenRaw t)
-            | t <- takeWhile isToplessMark content
-            , not (T.null (tokenRaw t))
-            ]
-        diags = findingsDiagnostics runSpan (findings <> orphans)
+        diags = findingsDiagnostics runSpan findings
         stacks = withImplicitVowels built
         -- The signs the run swallowed but no stack took: separators are input
         -- syntax (REFACTOR-AST §8 B2) and the marks the grammar ate - a second
