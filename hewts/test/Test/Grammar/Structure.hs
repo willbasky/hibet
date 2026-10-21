@@ -10,7 +10,8 @@ import Convert.Grammar.Parser
     , runSpell
     )
 import Convert.Grammar.Structure
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable, VowelSlot (..))
+import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -86,17 +87,17 @@ wylieSpelling =
             -- the outer spelling label says, so the word stays one syllable.
             syllableCount Tibetan "ka" @?= Right 1
         , testCase "the a is kept in the word as an implicit vowel" $
-            wordMarks Wylie "ka" @?= Right [Root, ImplicitVowel]
+            wordVowels Wylie "ka" @?= Right ["implicit"]
         , testCase "ga likewise" $
-            wordMarks Wylie "ga" @?= Right [Root, ImplicitVowel]
+            wordVowels Wylie "ga" @?= Right ["implicit"]
         , testCase "dangs is one syllable in Wylie" $
             syllableCount Wylie "dangs" @?= Right 1
         , testCase "an explicit vowel still wins over the implicit a" $
-            wordMarks Wylie "ki" @?= Right [Root, Vowel]
-        , testCase "the word still covers the input" $
-            wordSpelling Wylie "ka" @?= Right "ka"
-        , testCase "the implicit vowel is a letter of the word, not a lost one" $
-            wordRaws Wylie "ka" @?= Right ["k", "a"]
+            wordVowels Wylie "ki" @?= Right ["written"]
+        , testCase "the letters that have tokens cover the word" $
+            wordSpelling Wylie "ka" @?= Right "k"
+        , testCase "the implicit vowel is a fact, not a token of its own" $
+            wordRaws Wylie "ka" @?= Right ["k"]
         ]
 
 -- | How many syllables the text came out as. One Wylie word is one syllable,
@@ -105,28 +106,33 @@ syllableCount :: Spelling -> Text -> Either Text Int
 syllableCount spelling input =
     fmap (length . filter isSyllable) (parseWylie spelling input)
 
--- | The marks of the single syllable in the text, which is what the renderer
--- will read: an 'ImplicitVowel' is a letter that prints nothing.
-wordMarks :: Spelling -> Text -> Either Text [Position]
-wordMarks spelling input =
+-- | The vowel slots of the single syllable in the text: @implicit@ is the
+-- @a@ that prints as a letter in Wylie and as nothing in the glyphs.
+wordVowels :: Spelling -> Text -> Either Text [Text]
+wordVowels spelling input = fmap (map slot) (wordStacks spelling input)
+    where
+        slot st = case Ast.stVowel st of
+            Nothing -> "none"
+            Just VowelImplicit -> "implicit"
+            Just (VowelWritten _ _) -> "written"
+
+wordStacks :: Spelling -> Text -> Either Text [Ast.Stack]
+wordStacks spelling input =
     case parseWylie spelling input of
         Left err -> Left err
         Right items -> case [s | SyllableItem s <- items] of
-            [s] -> Right [p | (Just p, _) <- toList (syllableTokens s)]
+            [s] -> Right (toList (sylStacks s))
             _ -> Left "expected the text to be exactly one syllable"
 
 -- | The letters of the single syllable, spelled as they came in.
 wordRaws :: Spelling -> Text -> Either Text [Text]
 wordRaws spelling input =
-    case parseWylie spelling input of
-        Left err -> Left err
-        Right items -> case [s | SyllableItem s <- items] of
-            [s] -> Right [tokenRaw t | (_, t) <- toList (syllableTokens s)]
-            _ -> Left "expected the text to be exactly one syllable"
+    fmap
+        (map tokenRaw . concatMap (toList . Ast.stackTokens))
+        (wordStacks spelling input)
 
--- | The syllable spelled back as it came in. This is the coverage invariant:
--- however the grammar cuts a word up, the letters must add up to the input,
--- which is why the implicit vowel is kept rather than swallowed.
+-- | The letters of the syllable that have tokens of their own. The implicit
+-- @a@ is a fact of the stack now (REFACTOR-AST §4), so it is not among them.
 wordSpelling :: Spelling -> Text -> Either Text Text
 wordSpelling spelling input = fmap T.concat (wordRaws spelling input)
 

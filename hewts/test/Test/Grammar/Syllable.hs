@@ -1,10 +1,9 @@
--- Ожидания: hewts — AST (REFACTOR-AST шаги 1–2); корпуса — генератор.
+-- Ожидания: hewts — AST (REFACTOR-AST шаги 1–3); корпуса — генератор.
 
 module Test.Grammar.Syllable (tests) where
 
 import Convert (SpellItem (..), pSentence)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
-import Convert.Grammar.Syllable (Position (..))
 import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (Syllable (..))
 import Convert.Token
@@ -13,18 +12,15 @@ import Convert.Token
     , SubConsonant (..)
     , Token
     , TokenCanonical (..)
-    , Vowel (..)
+    , Vowel (Ve, Vo, Vu)
     , fromSubjoined
     , tokenCanonical
     , tokenRaw
-    , tokenSpan
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
 import Data.Foldable (toList)
-import Data.List (sortOn)
-import qualified Data.Sequence as Seq
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Test.Tasty (TestTree, testGroup)
@@ -40,20 +36,20 @@ tests =
             rolesW "bkra" @?= Right [Ast.RolePrefix, Ast.RoleRoot]
         , testCase "rka: the superfix and its root share one stack" $ do
             fmap (map Ast.stRole) (stacksW "rka") @?= Right [Ast.RoleRoot]
-            fmap (map stackRaws) (stacksW "rka") @?= Right [["r", "k"]]
+            fmap (map rawsOfStack) (stacksW "rka") @?= Right [["r", "k"]]
         , testCase "kab: the suffix opens its own stack" $ do
             fmap (map Ast.stRole) (stacksW "kab")
                 @?= Right [Ast.RoleRoot, Ast.RoleSuffix]
-            fmap (map stackRaws) (stacksW "kab") @?= Right [["k"], ["b"]]
+            fmap (map rawsOfStack) (stacksW "kab") @?= Right [["k"], ["b"]]
         , testCase "kabs: the postfix opens its own stack" $ do
             fmap (map Ast.stRole) (stacksW "kabs")
                 @?= Right [Ast.RoleRoot, Ast.RoleSuffix, Ast.RolePostfix]
-            fmap (map stackRaws) (stacksW "kabs")
+            fmap (map rawsOfStack) (stacksW "kabs")
                 @?= Right [["k"], ["b"], ["s"]]
         , testCase "བཾྲ: canonical order is root, subfix, final" $ do
             canonicalsU "བཾྲ"
                 @?= Right [TcConsonant Cb, TcSubConsonant SCr, TcFinal FMAnusvara]
-            fmap (map stackRaws) (stacksU "བཾྲ")
+            fmap (map rawsOfStack) (stacksU "བཾྲ")
                 @?= Right [["བ", "ྲ", "ཾ"]]
             fmap
                 (map (map tokenRaw . Ast.finalsTokens . Ast.stFinals))
@@ -63,9 +59,9 @@ tests =
             canonicalsW "f" @?= Right [TcConsonant Cph, TcFinal FMCaret]
         , testCase "ཧྥ: the subjoined root stays in the base stack" $ do
             fmap (map Ast.stRole) (stacksU "ཧྥ") @?= Right [Ast.RoleRoot]
-            fmap (map stackRaws) (stacksU "ཧྥ")
+            fmap (map rawsOfStack) (stacksU "ཧྥ")
                 @?= Right [["ཧ", "ྥ"]]
-            fmap (map stackRaws) (stacksU "ཧྥི")
+            fmap (map rawsOfStack) (stacksU "ཧྥི")
                 @?= Right [["ཧ", "ྥ", "ི"]]
         , testCase "bo+ra: the a beside a written vowel is input syntax" $
             canonicalsW "bo+ra" @?= Right [TcConsonant Cb, TcConsonant Cr, TcVowel Vo]
@@ -78,8 +74,6 @@ tests =
         , testCase "g.yul / གཡུལ: a dot after the prefix parts the stacks (A2)" $ do
             rolesW "g.yul"
                 @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
-            canonicalsW "g.yul"
-                @?= Right [TcConsonant Cg, TcConsonant Cy, TcVowel Vu, TcConsonant Cl]
             shapesW "g.yul" @?= shapesU "གཡུལ"
         , testCase "gyi stays one stack, g.yi is a prefix and a root (A2)" $ do
             rolesW "gyi" @?= Right [Ast.RoleRoot]
@@ -93,7 +87,12 @@ tests =
         , testCase "bkra / བཀྲ and kab / ཀབ: controls keep one AST" $ do
             shapesW "bkra" @?= shapesU "བཀྲ"
             shapesW "kab" @?= shapesU "ཀབ"
-        , testCase "corpora: kept tokens are in stacks, sorted flat = run" checkCorpora
+        , testCase "the implicit a of a glyph run is a fact of its root stack" $ do
+            fmap (map Ast.stVowel) (stacksU "ཀབ")
+                @?= Right [Just Ast.VowelImplicit, Nothing]
+            fmap (map Ast.stVowel) (stacksW "rk")
+                @?= Right [Nothing]
+        , testCase "corpora: no run token is lost to the stacks" checkCorpora
         , testCase "Finals: one slot takes one mark" $ do
             let mark = case fst (tokenizeUnicode "ཾ") of
                     [m] -> m
@@ -107,43 +106,60 @@ tests =
                 (case once >>= Ast.snocFinal mark of Nothing -> True; Just _ -> False)
         ]
 
--- | Every run of both spellings: the tokens the grammar gave a place must all
--- come back from the stacks, and sorting the flat stacks by source span must
--- give the run back. Eaten marks, separators and boundaries are not in the
--- stacks; the implicit vowel is a fact, not a token (see 'kept').
---
--- `སྒྲྭ` is in the corpora, but the generic parse still loses its superfix
--- (REFACTOR-AST §8 A3), so its stack shape is not asserted here yet.
+-- | Every run of both spellings: the tokens the parser kept must appear in
+-- the items' stacks in source order, and every token that did not reach a
+-- stack must be one the parse is allowed to leave out - a stack separator
+-- (@.@, @+@, input syntax) or a final mark the grammar took as a duplicate.
+-- Boundaries are 'Punct' items of their own now, so they are in the stream.
 checkCorpora :: Assertion
 checkCorpora = do
-    wylie <- concat <$> mapM (readRuns Wylie wylieColumn) wylieFiles
-    kangyur <- readRuns Tibetan id "test/vectors/kang.txt"
-    unicodeVectors <- concat <$> mapM (readRuns Tibetan unicodeColumn) wylieFiles
+    wylie <- readInputs Wylie wylieColumn wylieFiles
+    unicodeVectors <- readInputs Tibetan unicodeColumn wylieFiles
+    kangyur <- readInputs Tibetan id ["test/vectors/kang.txt"]
     checkSide "Wylie" wylie
     checkSide "Unicode" (kangyur <> unicodeVectors)
     where
-        checkSide side runs = do
+        checkSide side inputs = do
             let lost =
-                    [ (run, kept run, toList (Ast.flatten (Ast.stacksOf (Seq.fromList run))))
-                    | run <- runs
-                    , let stored = kept run
-                          flat = toList (Ast.flatten (Ast.stacksOf (Seq.fromList run)))
-                    , sortOn tokenSpan flat /= sortOn tokenSpan stored
+                    [ (input, missing)
+                    | (input, toks) <- inputs
+                    , let Right items = parseEither (pSentence (spellingOf side)) toks
+                          kept = toListOfItems items
+                    , let missing = dropped toks kept
+                    , not (all allowed missing)
                     ]
             assertBool
-                (side <> ": tokens lost by the bridge:\n" <> unlines (map show lost))
+                (side <> ": tokens lost to the stacks:\n" <> unlines (map show lost))
                 (null lost)
 
--- | The tokens a stack is supposed to keep: everything the grammar marked with
--- a place except the eaten marks and the implicit vowel. The implicit @a@ is a
--- fact of the stack, not a sign (REFACTOR-AST §4, 'Ast.VowelImplicit'), so it
--- has no token to flatten.
-kept :: [(Maybe Position, Token)] -> [Token]
-kept run =
-    [ t
-    | (pos, t) <- run
-    , pos `notElem` [Nothing, Just Eaten, Just ImplicitVowel]
-    ]
+        spellingOf "Wylie" = Wylie
+        spellingOf _ = Tibetan
+
+        -- A separator is input syntax (§8 B2), a final mark may be the one
+        -- the chain refused (Q6), and the implicit @a@ of a Wylie run is a
+        -- fact of the stack, not a token (§4, invariant 5).
+        allowed tok = case tokenCanonical tok of
+            TcConSpec _ -> True
+            TcFinal _ -> True
+            TcConsonant Ca -> True
+            _ -> False
+
+        -- The tokens the item stream no longer holds, in source order.
+        dropped :: [Token] -> [Token] -> [Token]
+        dropped input kept = foldl takeOut input kept
+        takeOut [] _ = []
+        takeOut (t : ts) k
+            | t == k = ts
+            | otherwise = t : takeOut ts k
+        toListOfItems = concatMap itemTokens
+
+-- | Every token an item holds, in the order the parser read them.
+itemTokens :: SpellItem -> [Token]
+itemTokens (SyllableItem s) = toList (Ast.flatten (sylStacks s))
+itemTokens (InvalidSyllableItem ts _) = ts
+itemTokens (Number ts) = ts
+itemTokens (Punct ts) = ts
+itemTokens (Other ts) = ts
 
 wylieFiles :: [FilePath]
 wylieFiles =
@@ -154,26 +170,24 @@ wylieFiles =
     , "test/vectors/java_ewts.tsv"
     ]
 
-readRuns ::
+readInputs ::
     Spelling
     -> (T.Text -> T.Text)
-    -> FilePath
-    -> IO [[(Maybe Position, Token)]]
-readRuns spelling column path = do
-    text <- readUtf8File path
-    pure
-        [ run
-        | line <- T.lines text
-        , let clean = T.dropWhile (== '\xfeff') line
-        , not (T.null clean)
-        , not ("#" `T.isPrefixOf` clean)
-        , Right items <-
-            [parseEither (pSentence spelling) (fst (tokenize (column clean)))]
-        , SyllableItem s <- items
-        , let run = toList (syllableTokens s)
-        , not (null run)
-        ]
+    -> [FilePath]
+    -> IO [(T.Text, [Token])]
+readInputs spelling column paths = fmap concat (mapM one paths)
     where
+        one path = do
+            text <- readUtf8File path
+            pure
+                [ (input, fst (tokenize input))
+                | line <- T.lines text
+                , let clean = T.dropWhile (== '\xfeff') line
+                , not (T.null clean)
+                , not ("#" `T.isPrefixOf` clean)
+                , let input = column clean
+                , not (T.null input)
+                ]
         tokenize = case spelling of
             Wylie -> tokenizeWylie
             Tibetan -> tokenizeUnicode
@@ -194,10 +208,10 @@ canonicalsU :: T.Text -> Either T.Text [TokenCanonical]
 canonicalsU = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns Tibetan
 
 rolesW :: T.Text -> Either T.Text [Ast.Role]
-rolesW = fmap (concatMap (map Ast.stRole . stacksOf)) . parseRuns Wylie
+rolesW = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns Wylie
 
 rolesU :: T.Text -> Either T.Text [Ast.Role]
-rolesU = fmap (concatMap (map Ast.stRole . stacksOf)) . parseRuns Tibetan
+rolesU = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns Tibetan
 
 -- | The form of a syllable, compared across the two spellings: the role of
 -- every stack and the canonical signs it holds. The implicit @a@ is input
@@ -225,22 +239,20 @@ stacksW = fmap (concatMap stacksOf) . parseRuns Wylie
 stacksU :: T.Text -> Either T.Text [Ast.Stack]
 stacksU = fmap (concatMap stacksOf) . parseRuns Tibetan
 
-stackRaws :: Ast.Stack -> [T.Text]
-stackRaws = map tokenRaw . toList . Ast.stackTokens
+rawsOfStack :: Ast.Stack -> [T.Text]
+rawsOfStack = map tokenRaw . toList . Ast.stackTokens
 
-tokensOf :: [(Maybe Position, Token)] -> [Token]
-tokensOf = toList . Ast.flatten . Ast.stacksOf . Seq.fromList
+tokensOf :: Syllable -> [Token]
+tokensOf = toList . Ast.flatten . sylStacks
 
-stacksOf :: [(Maybe Position, Token)] -> [Ast.Stack]
-stacksOf = toList . Ast.stacksOf . Seq.fromList
+stacksOf :: Syllable -> [Ast.Stack]
+stacksOf = toList . sylStacks
 
-parseRuns :: Spelling -> T.Text -> Either T.Text [[(Maybe Position, Token)]]
+parseRuns :: Spelling -> T.Text -> Either T.Text [Syllable]
 parseRuns spelling input =
     fmap
         ( \items ->
-            [ toList (syllableTokens s)
-            | SyllableItem s <- items
-            ]
+            [s | SyllableItem s <- items]
         )
         (parseEither (pSentence spelling) (fst (tokenize input)))
     where

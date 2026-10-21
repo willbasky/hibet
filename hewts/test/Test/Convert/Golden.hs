@@ -3,12 +3,23 @@
 
 module Test.Convert.Golden (tests) where
 
-import Convert (OutputFormat (..), pSentence, renderItems)
+import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Syllable
+    ( Role (..)
+    , Stack (..)
+    , Subfixes (..)
+    , Syllable (..)
+    , VowelSlot (..)
+    , finalsTokens
+    )
+import Convert.Token (Token, TokenCanonical (..), tokenCanonical)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
+import Data.Foldable (toList)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -19,7 +30,7 @@ tests :: TestTree
 tests =
     testGroup
         "conversion golden"
-        [kangyurBackToWylie, vectorsBackToUnicode]
+        [kangyurBackToWylie, vectorsBackToUnicode, stacksSnapshot]
 
 -- | What we currently turn the Kangyur text into in Wylie, line by line.
 --
@@ -109,3 +120,102 @@ readVector path = do
     case TE.decodeUtf8' bytes of
         Left err -> error (path ++ ": not valid UTF-8: " ++ show err)
         Right text -> pure text
+
+-- | The stacks of every corpus syllable: the oracle REFACTOR-AST step 4 must
+-- reproduce when the grammar builds them itself. One row: corpus, corpus line,
+-- syllable index in the line, the stacks. A stack reads
+-- @Role:letters^vowel#finals@ - letters in writing order (superfix, root,
+-- subfixes), @^@ for the caret, @~@ for the implicit @a@ (a written vowel is
+-- @:@ and its mnemonics), @#@ and the final mnemonics in slot order.
+stacksSnapshot :: TestTree
+stacksSnapshot =
+    goldenVsString
+        "stack snapshot (step 4 oracle)"
+        "test/golden/stacks.golden"
+        renderStacks
+
+renderStacks :: IO BL.ByteString
+renderStacks = do
+    wylieRows <- concat <$> mapM (renderStackCorpus Wylie wylieColumn) vectors
+    unicodeRows <- concat <$> mapM (renderStackCorpus Tibetan unicodeColumn) vectors
+    kangyur <- renderStackCorpus Tibetan id ("kangyur", "test/vectors/kang.txt")
+    pure
+        (BL.fromStrict (TE.encodeUtf8 (T.unlines (wylieRows <> unicodeRows <> kangyur))))
+
+renderStackCorpus :: Spelling -> (Text -> Text) -> (Text, FilePath) -> IO [Text]
+renderStackCorpus spelling column (name, path) = do
+    text <- readVector path
+    pure
+        [ name
+            <> "\t"
+            <> T.pack (show n)
+            <> "\t"
+            <> T.pack (show i)
+            <> "\t"
+            <> syllableStacks s
+        | (n, line) <- zip [1 :: Int ..] (T.lines text)
+        , not ("#" `T.isPrefixOf` line)
+        , not (T.null line)
+        , let input = column line
+        , not (T.null input)
+        , Right items <- [parseEither (pSentence spelled) (fst (tokenize input))]
+        , (i, s) <- zip [1 :: Int ..] [s | SyllableItem s <- items]
+        ]
+    where
+        spelled = spelling
+        tokenize = case spelling of
+            Wylie -> tokenizeWylie
+            Tibetan -> tokenizeUnicode
+
+wylieColumn :: Text -> Text
+wylieColumn = T.takeWhile (/= '\t')
+
+unicodeColumn :: Text -> Text
+unicodeColumn line = case T.splitOn "\t" line of
+    (_ : u : _) -> u
+    _ -> line
+
+syllableStacks :: Syllable -> Text
+syllableStacks = T.unwords . map stackText . toList . sylStacks
+
+stackText :: Stack -> Text
+stackText st =
+    roleName (stRole st)
+        <> ":"
+        <> letters
+        <> caret
+        <> vowel
+        <> finals
+    where
+        letters =
+            T.intercalate
+                "+"
+                [ mnemonic tok
+                | tok <-
+                    maybe [] pure (stSuperfix st)
+                        <> maybe [] pure (stRoot st)
+                        <> subfixTokens (stSubfixes st)
+                ]
+        caret = maybe "" (const "^") (stCaret st)
+        vowel = case stVowel st of
+            Nothing -> ""
+            Just VowelImplicit -> "~"
+            Just (VowelWritten tok rest) -> ":" <> T.intercalate "+" (map mnemonic (tok : rest))
+        finals = case finalsTokens (stFinals st) of
+            [] -> ""
+            ts -> "#" <> T.concat (map mnemonic ts)
+
+subfixTokens :: Subfixes -> [Token]
+subfixTokens NoSubfix = []
+subfixTokens (OneSubfix a) = [a]
+subfixTokens (TwoSubfix a b) = [a, b]
+subfixTokens (ThreeSubfix a b c) = [a, b, c]
+
+roleName :: Role -> Text
+roleName RolePrefix = "Prefix"
+roleName RoleRoot = "Root"
+roleName RoleSuffix = "Suffix"
+roleName RolePostfix = "Postfix"
+
+mnemonic :: Token -> Text
+mnemonic tok = fromMaybe "" (wylieOf (tokenCanonical tok))

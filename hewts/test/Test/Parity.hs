@@ -59,6 +59,7 @@ tests =
         , testCase "ewts-rs rules 16" (checkCorpus CRules)
         , testCase "java EWTS 5" (checkCorpus CJava)
         , testCase "kangyur u2w+round-trip 254" (checkCorpus CKang)
+        , testCase "known divergences still diverge" checkDivergences
         , testCase "report file" writeReport
         ]
 
@@ -95,6 +96,7 @@ data Outcome
 data Item = Item
     { itemLabel :: !Text
     , itemKind :: !Kind
+    , itemLine :: !Int
     , itemOutcome :: !Outcome
     }
 
@@ -108,9 +110,10 @@ itemsFor corpus = do
     where
         caseItems c =
             concat
-                [ [Item (label c) KW2U (checkW2U c)]
-                , [Item (label c) KU2W (checkU2W c) | caseWylieBack c /= Nothing]
-                , [ Item (label c) KRoundtrip (checkRoundtrip c) | caseRoundtripDiffers c /= Nothing
+                [ [Item (label c) KW2U (caseLine c) (checkW2U c)]
+                , [Item (label c) KU2W (caseLine c) (checkU2W c) | caseWylieBack c /= Nothing]
+                , [ Item (label c) KRoundtrip (caseLine c) (checkRoundtrip c)
+                  | caseRoundtripDiffers c /= Nothing
                   ]
                 ]
 
@@ -130,8 +133,8 @@ kangItems = do
         | (n, raw, want) <- zip3 [1 :: Int ..] (T.lines (dropBom text)) (T.lines wylie)
         , not (T.null raw)
         , item <-
-            [ Item (kangLabel n raw) KRoundtrip (checkKangLine raw)
-            , Item (kangLabel n raw) KU2W (checkKangU2W raw want)
+            [ Item (kangLabel n raw) KRoundtrip n (checkKangLine raw)
+            , Item (kangLabel n raw) KU2W n (checkKangU2W raw want)
             ]
         ]
 
@@ -158,6 +161,9 @@ kangWylieFile = "test/vectors/wkang.txt"
 
 baselineFile :: FilePath
 baselineFile = "test/parity/parity_baseline.tsv"
+
+divergencesFile :: FilePath
+divergencesFile = "test/parity/known_divergences.tsv"
 
 reportFile :: FilePath
 reportFile = "test/parity/parity_report.txt"
@@ -411,6 +417,82 @@ lookupCorpus t = lookup (T.unpack t) [(corpusName c, c) | c <- [minBound .. maxB
 lookupKind :: Text -> Maybe Kind
 lookupKind t = lookup (T.unpack t) [(kindName k, k) | k <- [minBound .. maxBound]]
 
+-- | A case where our output is deliberately not the reference's: the input is
+-- read correctly and the difference is a decision recorded in REFACTOR-AST
+-- §11, not a defect. The parity check leaves such a case out of its counts and
+-- fails when the case starts to pass - then the row is closed and deleted.
+data Divergence = Divergence
+    { divCorpus :: !Corpus
+    , divKind :: !Kind
+    , divLine :: !Int
+    }
+
+readDivergences :: IO [Divergence]
+readDivergences = do
+    text <- readUtf8File divergencesFile
+    pure
+        [ Divergence c k n
+        | line <- T.lines text
+        , not ("#" `T.isPrefixOf` line)
+        , not (T.null line)
+        , let fs = T.splitOn "\t" line
+        , (length fs >= 3) || error ("known divergences: bad row: " <> show line)
+        , Just k <- [lookupKind (fs !! 0)]
+        , Just c <- [lookupCorpus (fs !! 1)]
+        , Just n <- [readIntText (fs !! 2)]
+        ]
+    where
+        readIntText t = case [n | (n, rest) <- reads (T.unpack t), all (== ' ') rest] of
+            (n : _) -> Just n
+            [] -> Nothing
+
+divergenceKey :: Corpus -> Kind -> Int -> (Corpus, Kind, Int)
+divergenceKey c k n = (c, k, n)
+
+-- | Every recorded divergence still differs, and points at a real case.
+checkDivergences :: Assertion
+checkDivergences = do
+    recorded <- readDivergences
+    corpusItems <- mapM (\c -> (,) c <$> itemsFor c) [minBound .. maxBound]
+    let allItems = concatMap snd corpusItems
+        byKey = map (\(c, items) -> (c, items)) corpusItems
+        findItem (c, k, n) =
+            [ item
+            | (c', items) <- byKey
+            , c' == c
+            , item <- items
+            , itemKind item == k
+            , itemLine item == n
+            ]
+        missing = [d | d <- recorded, null (findItem (divCorpus d, divKind d, divLine d))]
+        closed =
+            [ d
+            | d <- recorded
+            , item <- findItem (divCorpus d, divKind d, divLine d)
+            , itemOutcome item == Pass
+            ]
+    assertBool
+        ( "known divergences point at no case:\n"
+            <> unlines
+                [ corpusName c <> " " <> kindName k <> " line " <> show n
+                | Divergence c k n <- missing
+                ]
+        )
+        (null missing)
+    assertBool
+        ( "divergence closed - remove the row from "
+            <> divergencesFile
+            <> ":\n"
+            <> unlines
+                [ corpusName c <> " " <> kindName k <> " line " <> show n
+                | Divergence c k n <- closed
+                ]
+        )
+        (null closed)
+    assertBool
+        "no divergence rows read"
+        (not (null recorded) && not (null allItems))
+
 -- | A corpus plus its checks, one group per check kind that actually applies
 -- (a kind the corpus says nothing about is not a group, and needs no baseline
 -- row).
@@ -447,7 +529,18 @@ checkCorpus :: Corpus -> Assertion
 checkCorpus corpus = do
     items <- itemsFor corpus
     baseline <- readBaseline
-    mapM_ (ratchet corpus baseline) (grouped items)
+    divergences <- readDivergences
+    let expected =
+            [ divergenceKey (divCorpus d) (divKind d) (divLine d)
+            | d <- divergences
+            , divCorpus d == corpus
+            ]
+        kept =
+            [ item
+            | item <- items
+            , divergenceKey corpus (itemKind item) (itemLine item) `notElem` expected
+            ]
+    mapM_ (ratchet corpus baseline) (grouped kept)
     where
         ratchet c baselines (kind, group) = do
             let (total, passed) = counts group

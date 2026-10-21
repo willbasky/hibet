@@ -45,6 +45,7 @@ inline check that fires exactly where the grammar places the token.
 module Convert.Grammar.Constraint.Constraint21
     ( pConstraint21First
     , pConstraint21Rest
+    , superfixCombos
     ) where
 
 import Control.Monad (void, when)

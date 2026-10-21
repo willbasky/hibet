@@ -17,8 +17,14 @@ module Test.Grammar.Wylie (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
-import Convert.Grammar.Syllable (Position (..))
+import Convert.Grammar.Syllable
+    ( Role (..)
+    , Stack (..)
+    , VowelSlot (..)
+    , stackTokens
+    )
 import Convert.Sentence (Syllable (..), pSentence)
+import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
 import Data.Text (Text)
@@ -29,36 +35,40 @@ tests :: TestTree
 tests =
     testGroup
         "grammar wylie arms"
-        [ probed "kya -> root + subfix y" "kya" [Root, Subfix, ImplicitVowel] "ཀྱ"
+        [ probed "kya -> root + subfix y" "kya" [(RoleRoot, ["k", "y", "a"])] "ཀྱ"
         , probed
             "sgrwa -> superfix over a stack"
             "sgrwa"
-            [Superfix, Root, Subfix, Subfix, ImplicitVowel]
+            [(RoleRoot, ["s", "g", "r", "w", "a"])]
             "སྒྲྭ"
         , probed
             "grla backtracks to two stacks (no subjoined r)"
             "grla"
-            [Root, Root, Subfix, ImplicitVowel]
+            [(RoleRoot, ["g"]), (RoleRoot, ["r", "l", "a"])]
             "གརླ"
         , probed
             "rka -> superfix r before a root"
             "rka"
-            [Superfix, Root, ImplicitVowel]
+            [(RoleRoot, ["r", "k", "a"])]
             "རྐ"
         , probed
             "rsa -> r takes no superfix over s (4.8): two roots"
             "rsa"
-            [Root, Root, ImplicitVowel]
+            [(RoleRoot, ["r"]), (RoleRoot, ["s", "a"])]
             "རས"
         , probed
             "bsgribs -> prefix, superfix, root, subfix, vowel, suffix, postfix"
             "bsgribs"
-            [Prefix, Superfix, Root, Subfix, Vowel, Suffix, Postfix]
+            [ (RolePrefix, ["b"])
+            , (RoleRoot, ["s", "g", "r", "i"])
+            , (RoleSuffix, ["b"])
+            , (RolePostfix, ["s"])
+            ]
             "བསྒྲིབས"
         , probed
             "g.yon -> a dot after the prefix parts the stacks"
             "g.yon"
-            [Prefix, Root, Vowel, Suffix]
+            [(RolePrefix, ["g"]), (RoleRoot, ["y", "o"]), (RoleSuffix, ["n"])]
             "གཡོན"
         , renders "rta renders རྟ" "rta" "རྟ"
         , renders "rwa renders རྭ" "rwa" "རྭ"
@@ -82,12 +92,14 @@ tests =
             wylRender "bla" @?= Right "བླ"
         ]
 
--- | Assert the marks and the Unicode render of a one-word Wylie spelling.
-probed :: String -> Text -> [Position] -> Text -> TestTree
-probed label input marks render =
+-- | Assert the stack shape and the Unicode render of a one-word Wylie
+-- spelling: the role of every stack and the signs it holds, the implicit @a@
+-- included as the letter it is written with.
+probed :: String -> Text -> [(Role, [Text])] -> Text -> TestTree
+probed label input shape render =
     testGroup
         label
-        [ testCase "marks" $ wylMarks input @?= Right marks
+        [ testCase "stacks" $ wylShape input @?= Right shape
         , testCase "render" $ wylRender input @?= Right render
         ]
 
@@ -96,13 +108,20 @@ renders label input render =
     testCase label $
         wylRender input @?= Right render
 
-wylMarks :: Text -> Either Text [Position]
-wylMarks input =
+wylShape :: Text -> Either Text [(Role, [Text])]
+wylShape input =
     case parseW input of
         Left err -> Left err
         Right items -> case [s | SyllableItem s <- items] of
-            [s] -> Right [p | (Just p, _) <- toList (syllableTokens s)]
+            [s] -> Right (map shapeOf (toList (sylStacks s)))
             _ -> Left "expected the text to be exactly one syllable"
+
+shapeOf :: Stack -> (Role, [Text])
+shapeOf st =
+    ( stRole st
+    , map tokenRaw (toList (stackTokens st))
+        <> ["a" | stVowel st == Just VowelImplicit]
+    )
 
 wylRender :: Text -> Either Text Text
 wylRender input =

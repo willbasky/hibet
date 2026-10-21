@@ -29,11 +29,12 @@ cabal test hewts-test
 | Модуль | Источник ожиданий |
 |---|---|
 | `Test.Parity` + `test/vectors/` | **эталон**: копии тестов референсов (jsewts, Lingua, ewts-js, ewts-rs, java, Кангьюр) |
+| `test/parity/known_divergences.tsv` | **hewts**: принятые расхождения с эталоном (REFACTOR-AST §11.1); строки не считаются в паритете и падают, если случай закрылся |
 | `Test.Grammar.Constraint.Constraint01`, `08`–`20` | **книга** (Nyima Tashi), правило NN |
 | `Test.Grammar.Structure` | **книга** (Nyima Tashi): 37 структур слога |
 | `Test.Grammar.Wylie` | **книга** (структуры) + **оракулы EWTS** (совпадение с эталоном) |
 | `Test.Grammar.Stack` | **оракулы EWTS** (метки jsewts) + hewts (обобщённый стек) |
-| `Test.Grammar.Syllable` | **hewts**: AST (REFACTOR-AST шаги 1–2), корпуса — генератор |
+| `Test.Grammar.Syllable` | **hewts**: AST (REFACTOR-AST шаги 1–3), корпуса — генератор |
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
@@ -42,7 +43,7 @@ cabal test hewts-test
 | `Test.Tokenizer.Golden` | **hewts**: снимки токен-потока |
 | `Test.Convert` | **hewts**: публичный API (`splitSentences`, `syllables`, `pSentence`) |
 | `Test.Convert.Sentence` | **hewts**: уровень документа (тшег, shad, числа) |
-| `Test.Convert.Golden` | **hewts**: снимки конверсии — U→W поверх `kang.txt`, W→U поверх векторов паритета |
+| `Test.Convert.Golden` | **hewts**: снимки конверсии — U→W поверх `kang.txt`, W→U поверх векторов паритета, снимок стеков — оракул шага 4 |
 | `Test.Diagnostic` | **hewts**: канал диагностики (коды и формулировки наши, 30.09.2026) |
 
 Источники означают: **книга** — «Research on Tibetan Spelling Formal Language and

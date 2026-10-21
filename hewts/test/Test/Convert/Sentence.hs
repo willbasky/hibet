@@ -2,7 +2,9 @@
 
 module Test.Convert.Sentence (tests) where
 
+import Convert (OutputFormat (..), renderItems)
 import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Syllable (flatten)
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -30,19 +32,25 @@ tests =
         , consecutivePunct
         , allOther
         , longTextParses
+        , unicodeIdempotent
         ]
 
 itemRaws :: SpellItem -> [Text]
-itemRaws (SyllableItem s) = toList (fmap (tokenRaw . snd) (syllableTokens s))
-itemRaws (InvalidSyllableItem s) = toList (fmap (tokenRaw . snd) (syllableTokens s))
+itemRaws (SyllableItem s) = stackRaws s
+itemRaws (InvalidSyllableItem ts _) = map tokenRaw ts
 itemRaws (Number ts) = map tokenRaw ts
 itemRaws (Punct ts) = map tokenRaw ts
 itemRaws (Other ts) = map tokenRaw ts
 
+-- | The slices of a syllable in the canonical order of its stacks; its
+-- boundary is a 'Punct' item of its own (REFACTOR-AST Q4).
+stackRaws :: Syllable -> [Text]
+stackRaws = map tokenRaw . toList . flatten . sylStacks
+
 tagged :: [SpellItem] -> [(Text, [Text])]
 tagged = map $ \i -> case i of
-    SyllableItem s -> ("S", toList (fmap (tokenRaw . snd) (syllableTokens s)))
-    InvalidSyllableItem s -> ("O", toList (fmap (tokenRaw . snd) (syllableTokens s)))
+    SyllableItem s -> ("S", stackRaws s)
+    InvalidSyllableItem ts _ -> ("O", map tokenRaw ts)
     Number ts -> ("N", map tokenRaw ts)
     Punct ts -> ("P", map tokenRaw ts)
     Other ts -> ("O", map tokenRaw ts)
@@ -56,10 +64,12 @@ run =
 
 simple :: TestTree
 simple =
-    testCase "དེ་དུ་ -> syllables carry their trailing tsheg" $
+    testCase "དེ་དུ་ -> the tsheg is a Punct item of its own" $
         tagged (run "དེ་དུ་")
-            @?= [ ("S", ["ད", "ེ", "་"])
-                , ("S", ["ད", "ུ", "་"])
+            @?= [ ("S", ["ད", "ེ"])
+                , ("P", ["་"])
+                , ("S", ["ད", "ུ"])
+                , ("P", ["་"])
                 ]
 
 leadingPunct :: TestTree
@@ -72,9 +82,10 @@ leadingPunct =
 
 spaceRun :: TestTree
 spaceRun =
-    testCase "དེ དུ -> the space joins the first run" $
+    testCase "དེ དུ -> the space is a Punct item of its own" $
         tagged (run "དེ དུ")
-            @?= [ ("S", ["ད", "ེ", " "])
+            @?= [ ("S", ["ད", "ེ"])
+                , ("P", [" "])
                 , ("S", ["ད", "ུ"])
                 ]
 
@@ -82,20 +93,28 @@ realWords :: TestTree
 realWords =
     testCase "མཆོག་དེ་རིང་ཕྱི་ཚེས་དུ་སུ་ -> every syllable recognized" $
         tagged (run "མཆོག་དེ་རིང་ཕྱི་ཚེས་དུ་སུ་")
-            @?= [ ("S", ["མ", "ཆ", "ོ", "ག", "་"])
-                , ("S", ["ད", "ེ", "་"])
-                , ("S", ["ར", "ི", "ང", "་"])
-                , ("S", ["ཕ", "ྱ", "ི", "་"])
-                , ("S", ["ཚ", "ེ", "ས", "་"])
-                , ("S", ["ད", "ུ", "་"])
-                , ("S", ["ས", "ུ", "་"])
+            @?= [ ("S", ["མ", "ཆ", "ོ", "ག"])
+                , ("P", ["་"])
+                , ("S", ["ད", "ེ"])
+                , ("P", ["་"])
+                , ("S", ["ར", "ི", "ང"])
+                , ("P", ["་"])
+                , ("S", ["ཕ", "ྱ", "ི"])
+                , ("P", ["་"])
+                , ("S", ["ཚ", "ེ", "ས"])
+                , ("P", ["་"])
+                , ("S", ["ད", "ུ"])
+                , ("P", ["་"])
+                , ("S", ["ས", "ུ"])
+                , ("P", ["་"])
                 ]
 
 unknownAscii :: TestTree
 unknownAscii =
     testCase "དེ་xyz་ -> unrecognized tokens kept as Other" $
         tagged (run "དེ་xyz་")
-            @?= [ ("S", ["ད", "ེ", "་"])
+            @?= [ ("S", ["ད", "ེ"])
+                , ("P", ["་"])
                 , ("O", ["x", "y", "z"])
                 , ("P", ["་"])
                 ]
@@ -104,7 +123,8 @@ numbers :: TestTree
 numbers =
     testCase "དེ་༡༢་ -> number tokens grouped as Number" $
         tagged (run "དེ་༡༢་")
-            @?= [ ("S", ["ད", "ེ", "་"])
+            @?= [ ("S", ["ད", "ེ"])
+                , ("P", ["་"])
                 , ("N", ["༡", "༢"])
                 , ("P", ["་"])
                 ]
@@ -140,7 +160,7 @@ counts = foldl step (0, 0, 0, 0)
     where
         step (s, n, p, o) i = case i of
             SyllableItem _ -> (s + 1, n, p, o)
-            InvalidSyllableItem _ -> (s, n, p, o + 1)
+            InvalidSyllableItem _ _ -> (s, n, p, o + 1)
             Number _ -> (s, n + 1, p, o)
             Punct _ -> (s, n, p + 1, o)
             Other _ -> (s, n, p, o + 1)
@@ -153,7 +173,31 @@ longTextParses =
             Left e -> assertFailure (show e)
             Right items -> do
                 rawsOf items @?= map tokenRaw toks
-                counts items @?= (59, 1, 3, 2)
+                counts items @?= (59, 1, 62, 2)
+
+-- | U→U is idempotent: the second pass over the canonical spelling changes
+-- nothing (REFACTOR-AST §9.1, check 6).
+unicodeIdempotent :: TestTree
+unicodeIdempotent =
+    testCase "canonical Unicode output is idempotent" $
+        mapM_
+            check
+            [ "བཾྲ"
+            , "ཕ༹"
+            , "གཡུལ"
+            , "མངའ"
+            , "ཆུང་སྤངས་ཏེ་"
+            , "དྲྭ"
+            , "ཨི"
+            , "རྐ"
+            , "བསྒྲུབས"
+            , "༡༢་xyz"
+            ]
+    where
+        check input = do
+            let once = canonical input
+            canonical once @?= once
+        canonical = renderItems OutUnicode . run
 
 leadingShad :: TestTree
 leadingShad =
@@ -167,7 +211,8 @@ doubleShad :: TestTree
 doubleShad =
     testCase "དེ།། -> the shads join the run" $
         tagged (run "དེ།།")
-            @?= [ ("S", ["ད", "ེ", "།", "།"])
+            @?= [ ("S", ["ད", "ེ"])
+                , ("P", ["།", "།"])
                 ]
 
 newline :: TestTree
@@ -184,7 +229,8 @@ digtsAfterSpace :: TestTree
 digtsAfterSpace =
     testCase "སྒོ་ ༩༩ -> the space joins the run, digits become Number" $
         tagged (run "སྒོ་ ༩༩")
-            @?= [ ("S", ["ས", "ྒ", "ོ", "་", " "])
+            @?= [ ("S", ["ས", "ྒ", "ོ"])
+                , ("P", ["་", " "])
                 , ("N", ["༩", "༩"])
                 ]
 

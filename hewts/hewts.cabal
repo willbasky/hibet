@@ -16,6 +16,7 @@ extra-doc-files:
   CHANGELOG.md
   README.md
   test/parity/parity_baseline.tsv
+  test/parity/known_divergences.tsv
   test/README.md
   test/vectors/*.tsv
   test/vectors/kang.txt
@@ -66,6 +67,7 @@ library
     Convert.Token
     Convert.Tokenizer.Unicode
     Convert.Tokenizer.Wylie
+    Convert.Wylie.Tables
 
   other-modules:
     Convert.Grammar.Constraint.Constraint01

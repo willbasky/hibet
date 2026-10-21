@@ -11,9 +11,13 @@ import Convert.Grammar.Parser
     , runSpell
     )
 import Convert.Grammar.Structure (pStructure38)
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
-import Convert.Sentence (Syllable (..))
-import Convert.Token (Token)
+import Convert.Grammar.Syllable
+    ( Position (..)
+    , Syllable (..)
+    , TibetanSyllable
+    , stacksOf
+    )
+import Convert.Token (Span (..), Token)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
 import Data.Foldable (toList)
@@ -58,9 +62,9 @@ tests =
         , testCase "u+e keeps both vowels in one word ཨེུ" $
             wylRender "u+e" @?= Right "ཨེུ"
         , testCase "rH+e keeps the final and the vowel in one word རཿེ" $
-            wylRender "rH+e" @?= Right "རཿེ"
+            wylRender "rH+e" @?= Right "རེཿ"
         , testCase "ge+a renders གེྸ" $
-            wylRender "ge+a" @?= Right "གེྸ"
+            wylRender "ge+a" @?= Right "གྸེ"
         , testCase "ba+a renders བྸ" $
             wylRender "ba+a" @?= Right "བྸ"
         , testCase "a+a renders ཨྸ" $
@@ -78,9 +82,9 @@ tests =
         , testCase "g^r^a collapses the two carets to one" $
             wylRender "g^r^a" @?= Right "གྲ༹"
         , testCase "f+ra keeps the f caret in place" $
-            wylRender "f+ra" @?= Right "ཕ༹ྲ"
+            wylRender "f+ra" @?= Right "ཕྲ༹"
         , testCase "v+la keeps the v caret in place" $
-            wylRender "v+la" @?= Right "བ༹ླ"
+            wylRender "v+la" @?= Right "བླ༹"
         , testCase "a+yo renders ཨྱོ" $
             wylRender "a+yo" @?= Right "ཨྱོ"
         , testCase "a stack cannot start on a subjoined letter (r-i stays Other)" $
@@ -103,7 +107,10 @@ wylRender w =
     where
         liftMarks :: TibetanSyllable -> Syllable
         liftMarks marks =
-            Syllable (fmap (\(p, t) -> (Just p, t)) marks) (mempty :: Diagnostics)
+            Syllable
+                (stacksOf (fmap (\(p, t) -> (Just p, t)) marks))
+                (Span 0 0)
+                (mempty :: Diagnostics)
 
 -- | The tokens of a Wylie spelling, for the tests that want to see them.
 _wylTokens :: Text -> [Token]

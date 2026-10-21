@@ -2,7 +2,10 @@
 Tibetan spelling grammar 4.9 (token parser variant)
 -}
 
-module Convert.Grammar.Constraint.Constraint09 (pConstraint09) where
+module Convert.Grammar.Constraint.Constraint09
+    ( pConstraint09
+    , rootSubfixRows
+    ) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
@@ -41,21 +44,31 @@ parseConstraintUnicode09 parseSubfix parseRoot = do
     vowel <- MP.optional (mark Vowel GP.pVowel)
     pure (root <> subfix <> fromMaybe mempty vowel)
 
--- Roots above subfix 'ཝ' are [ 'ཀ', 'ཁ', 'ག', 'ཉ', 'ད', 'ཚ', 'ཞ', 'ཟ', 'ར', 'ལ', 'ཤ', 'ཧ' ]
+-- | The root groups of rule 4.9, one row per subjoined letter: the same data
+-- the parsers below read and the notation's solid-run table uses
+-- ('Convert.Wylie.Tables'), so the two cannot drift apart.
+rootSubfixRows :: [(Consonant, [Consonant])]
+rootSubfixRows =
+    [ (Cw, [Ck, Ckh, Cg, Cny, Cd, Ctsh, Czh, Cz, Cr, Cl, Csh, Ch])
+    , (Cy, [Ck, Ckh, Cg, Cp, Cph, Cb, Cm])
+    , (Cr, [Ck, Ckh, Cg, Ct, Cth, Cd, Cp, Cph, Cb, Cm, Cs, Ch])
+    , (Cl, [Ck, Cg, Cb, Cz, Cr, Cs])
+    ]
+
 pRootSubfixWa :: Parser Token
-pRootSubfixWa = pAllowedRoot [Ck, Ckh, Cg, Cny, Cd, Ctsh, Czh, Cz, Cr, Cl, Csh, Ch]
+pRootSubfixWa = pAllowedRoot (row Cw)
 
--- Roots above subfix 'ཡ' are [ 'ཀ', 'ཁ', 'ག', 'པ', 'ཕ', 'བ', 'མ' ]
 pRootSubfixYa :: Parser Token
-pRootSubfixYa = pAllowedRoot [Ck, Ckh, Cg, Cp, Cph, Cb, Cm]
+pRootSubfixYa = pAllowedRoot (row Cy)
 
--- Roots above subfix 'ར' are [ 'ཀ', 'ཁ', 'ག', 'ཏ', 'ཐ', 'ད', 'པ', 'ཕ', 'བ', 'མ', 'ས', 'ཧ' ]
 pRootSubfixRa :: Parser Token
-pRootSubfixRa = pAllowedRoot [Ck, Ckh, Cg, Ct, Cth, Cd, Cp, Cph, Cb, Cm, Cs, Ch]
+pRootSubfixRa = pAllowedRoot (row Cr)
 
--- Roots above subfix 'ལ' are [ 'ཀ', 'ག', 'བ', 'ཟ', 'ར', 'ས' ]
 pRootSubfixLa :: Parser Token
-pRootSubfixLa = pAllowedRoot [Ck, Cg, Cb, Cz, Cr, Cs]
+pRootSubfixLa = pAllowedRoot (row Cl)
+
+row :: Consonant -> [Consonant]
+row sub = maybe [] id (lookup sub rootSubfixRows)
 
 pAllowedRoot :: [Consonant] -> Parser Token
 pAllowedRoot allowed = do

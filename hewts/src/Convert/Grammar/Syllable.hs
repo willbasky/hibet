@@ -14,9 +14,8 @@
 --
 -- This module also holds the nested syllable of REFACTOR-AST: 'Stack' with its
 -- 'Role', 'Subfixes', 'VowelSlot' and 'Finals'. The flat 'TibetanSyllable' above
--- is the parse today; 'stacksOf' bridges it into the nested form so that the
--- renderers can be rewritten against the nested types before the grammar builds
--- them itself (REFACTOR-AST step 1).
+-- is the grammar's own product until step 4; 'stacksOf' bridges it into the
+-- nested form, and since step 3 everything outside the grammar reads that form.
 module Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
@@ -81,10 +80,9 @@ data Position
 
 -- | A Tibetan syllable (Def 4.10) as a flat list of marked tokens.
 --
--- This is the parse of today, and it stays the element type of the parser
--- until REFACTOR-AST step 4: the nested 'Stack' below is built from it by
--- 'stacksOf' in the meantime, so there is one reading of the marks and no
--- second parse. A 'Seq' rather than a list because the syllable is built by
+-- This is the grammar's own product, and it stays so until REFACTOR-AST
+-- step 4: the sentence builds the nested 'Stack' below from it with 'stacksOf'
+-- in the meantime, so there is one reading of the marks and no second parse. A 'Seq' rather than a list because the syllable is built by
 -- appending pieces (a prefix, a root, a subfix, a vowel) and read from both
 -- ends by the legality rules of wave 3.4. Be aware that this buys clarity
 -- more than speed: a syllable holds one to six letters, and at that size 'Seq'

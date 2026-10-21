@@ -20,11 +20,8 @@ import Convert.Diagnostic
     , diagnosticList
     , renderDiagnostics
     )
-import Convert.Grammar.Parser
-    ( Spelling (..)
-    , isPunctuationLike
-    , parseEither
-    )
+import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Syllable (flatten)
 import Convert.Sentence (Syllable (..), pSentence)
 import Convert.Token (Span (..), tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
@@ -52,22 +49,27 @@ tests =
         ]
 
 -- | The walk sees the same syllable runs the checker used to: a run is the
--- tokens up to the next boundary, and a stack dot, a caret or a plus stays
--- inside it.
+-- signs up to the next boundary, and a stack dot, a caret or a plus stays
+-- inside it (the separators are input syntax and leave no sign of their own -
+-- REFACTOR-AST §8 B2 - so the run count is what says they did not split it).
 runWalk :: TestTree
 runWalk =
     testGroup
         "the walk sees the whole run"
         [ testCase "words split at whitespace" $
-            rawWords "ka ba" @?= Right [["k", "a"], ["b", "a"]]
+            runCount "ka ba" @?= Right 2
         , testCase "the caret stays inside its word" $
-            rawWords "gra^ ba" @?= Right [["g", "r", "a", "^"], ["b", "a"]]
+            runCount "gra^ ba" @?= Right 2
         , testCase "the stack dot stays inside its word" $
-            rawWords "g.yag" @?= Right [["g", ".", "y", "a", "g"]]
+            runCount "g.yag" @?= Right 1
         , testCase "the plus stays inside its word" $
-            rawWords "sat+t+wa ba"
-                @?= Right [["s", "a", "t", "+", "t", "+", "w", "a"], ["b", "a"]]
+            runCount "sat+t+wa ba" @?= Right 2
         ]
+
+runCount :: Text -> Either Text Int
+runCount input = do
+    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    pure (length [() | SyllableItem _ <- items])
 
 -- | The channel stays silent where nothing is wrong.
 stillSilent :: TestTree
@@ -568,7 +570,7 @@ rawWords :: Text -> Either Text [[Text]]
 rawWords input = do
     items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
     pure
-        [ [tokenRaw t | (_, t) <- toList (syllableTokens s), not (isPunctuationLike t)]
+        [ [tokenRaw t | t <- toList (flatten (sylStacks s))]
         | SyllableItem s <- items
         ]
 

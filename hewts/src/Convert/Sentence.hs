@@ -1,13 +1,16 @@
 -- | Token-level sentence dispatcher.
 --
 -- Parses a token stream into a list of 'SpellItem' preserving every token:
--- syllables are recognized via the Convert.Grammar.Structure structures,
--- Tibetan digits ༠–༩ become 'Number', punctuation and whitespace tokens are
--- kept as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
+-- syllables are recognized via the Convert.Grammar.Structure structures and
+-- become the nested 'Convert.Grammar.Syllable.Syllable' of REFACTOR-AST,
+-- Tibetan digits become 'Number', punctuation and whitespace tokens are kept
+-- as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
 -- dropped).
 --
--- A syllable is one run of tokens up to and including its trailing boundary
--- (whitespace or punctuation): the whole run travels as the item (wave 3.4.2).
+-- A run is one stretch of tokens up to (not including) its boundary: the tsheg
+-- or space that closes it is a 'Punct' item of its own (REFACTOR-AST Q4). The
+-- bridge from the grammar's marked runs to the stacks is 'stacksOf' until the
+-- grammar builds the stacks itself (step 4).
 module Convert.Sentence
     ( SpellItem (..)
     , Syllable (..)
@@ -75,46 +78,46 @@ import Convert.Grammar.Structure
     , pStructure8
     , pStructure9
     )
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable
+    ( Position (..)
+    , Role (..)
+    , Stack (..)
+    , Syllable (..)
+    , TibetanSyllable
+    , VowelSlot (..)
+    , flatten
+    , stacksOf
+    )
 import Convert.Token
-    ( Span (..)
+    ( Consonant (Ca)
+    , Span (..)
     , Token
     , TokenCanonical (..)
+    , TokenSource (..)
     , isToplessMark
     , offsetEnd
     , offsetStart
     , tokenCanonical
     , tokenRaw
+    , tokenSource
     , tokenSpan
     )
 import Data.Foldable (toList)
+import Data.Maybe (listToMaybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import qualified Data.Set as Set
 import qualified Data.Text as T
 import qualified Text.Megaparsec as MP
 
--- | A syllable as the wave-3.4 dispatcher sees it: the tokens of the whole
--- run up to and including its trailing boundary, each tagged with the place
--- the grammar gave it - 'Nothing' for stack separators the grammar ate
--- without marking and for the boundary itself - plus the spelling warnings
--- the grammar's constraint windows recorded for the run (without the
--- trailing boundary, so the quoted span still covers exactly what the
--- warning blames).
-data Syllable = Syllable
-    { syllableTokens :: Seq (Maybe Position, Token)
-    , syllableDiags :: Diagnostics
-    }
-    deriving (Show, Eq)
-
 -- | One piece of a parsed sentence. A recognized run is a 'SyllableItem'; a
--- run that opens like a syllable but that no structure claims is an
--- 'InvalidSyllableItem' (the whole run unmarked; with no winning structure no
--- constraint window was hosted, so no warning fires for it) - such runs stay
--- visible and diagnosable instead of silently falling into 'Other'.
+-- run that opens like a syllable but that no structure claims, and the signs a
+-- claimed run could not place, are an 'InvalidSyllableItem' (kept as the tokens
+-- they were written as, with the warnings that came with them) - such runs
+-- stay visible and diagnosable instead of silently falling into 'Other'.
 data SpellItem
     = SyllableItem Syllable
-    | InvalidSyllableItem Syllable
+    | InvalidSyllableItem [Token] Diagnostics
     | Number [Token]
     | Punct [Token]
     | Other [Token]
@@ -123,7 +126,7 @@ data SpellItem
 -- | The sentence parse as a plain token parse: the stateful grammar
 -- ('pSentenceS') runs with a fresh state and the state is discarded - the
 -- warnings the constraint windows produced are already spelled into each
--- run's 'syllableDiags' - so the entry point stays as the pure 'Parser' the
+-- run's 'sylDiags' - so the entry point stays as the pure 'Parser' the
 -- converter and the tests drive.
 pSentence :: Spelling -> Parser [SpellItem]
 pSentence spelling = runSpell (pSentenceS spelling)
@@ -132,16 +135,16 @@ pSentence spelling = runSpell (pSentenceS spelling)
 -- grammar state across the runs, and each 'pSyllable' takes the findings of
 -- the run it owns.
 pSentenceS :: Spelling -> SpellParser [SpellItem]
-pSentenceS spelling = MP.many (pItem spelling) <* MP.eof
+pSentenceS spelling = concat <$> MP.many (pItem spelling) <* MP.eof
 
-pItem :: Spelling -> SpellParser SpellItem
+pItem :: Spelling -> SpellParser [SpellItem]
 pItem spelling =
     MP.choice
-        [ Punct <$> MP.some (liftP pPunctuation)
-        , Number <$> MP.some (liftP pNumber)
+        [ pure . Punct <$> MP.some (liftP pPunctuation)
+        , pure . Number <$> MP.some (liftP pNumber)
         , MP.try (pSyllable spelling)
-        , pStrayFinal
-        , Other <$> MP.some (MP.satisfy isJunk)
+        , pure <$> pStrayFinal
+        , pure . Other <$> MP.some (MP.satisfy isJunk)
         ]
 
 -- | A final mark with no letter in front of it (Mi, ???). A final hangs over
@@ -157,11 +160,8 @@ pStrayFinal = do
     let sp = tokenSpan tok
     pure $
         InvalidSyllableItem
-            Syllable
-                { syllableTokens = Seq.fromList [(Nothing, tok)]
-                , syllableDiags =
-                    findingsDiagnostics sp [FinalWithoutLetter (tokenRaw tok)]
-                }
+            [tok]
+            (findingsDiagnostics sp [FinalWithoutLetter (tokenRaw tok)])
 
 -- | What the otherwise-unrecognized branch may swallow: a token that is
 -- neither punctuation (its own branch above) nor the possible start of a
@@ -211,15 +211,14 @@ isSyllableTail token = case tokenCanonical token of
     TcHalfNumber _ -> False
     _ -> isSyllableStart token
 
--- | One syllable run: a run-starting token, the structure that claims the
--- most of it, what this stack owns of the rest - the tail tokens no fresh
--- run would claim, headed by the one dot the reference lets a stack take
--- after itself - and the boundary itself. The tail a fresh run does claim
--- stays in the input for the next item to read as itself: a tail that opens
--- a word is a fresh run, not this run's raw echo. The warnings of the
+-- | One syllable run: the tokens the winning structure claimed, the tail
+-- tokens no fresh run would claim, and the boundary stays in the input for
+-- the 'Punct' branch to read. The claimed run becomes the nested syllable;
+-- signs the run swallowed but could not place are handed on as an
+-- 'InvalidSyllableItem' behind it, so no token is lost. The warnings of the
 -- constraint windows name the run without the boundary: their span is
 -- resolved here from the run's own tokens, once the run is over.
-pSyllable :: Spelling -> SpellParser SpellItem
+pSyllable :: Spelling -> SpellParser [SpellItem]
 pSyllable spelling = do
     start <- MP.getInput
     -- 'lookAhead' only guards the run: the head token must be a possible
@@ -239,7 +238,6 @@ pSyllable spelling = do
                 toks <- pUnclaimedTail isSyllableTail
                 pure (toks, [])
             else stackClose
-    boundary <- MP.many (liftP pPunctuation)
     findings <- takeFindings
     let content = take claimed start <> tailToks
         markedContent = runItems (toList marked <> tailMarks) content
@@ -254,15 +252,29 @@ pSyllable spelling = do
             | (_, t) <- takeWhile (isToplessMark . snd) markedContent
             , not (T.null (tokenRaw t))
             ]
-        syllable =
-            Syllable
-                { syllableTokens = Seq.fromList (markedContent <> [(Nothing, t) | t <- boundary])
-                , syllableDiags = findingsDiagnostics runSpan (findings <> orphans)
-                }
+        diags = findingsDiagnostics runSpan (findings <> orphans)
+        stacks = withImplicitVowels markedContent (stacksOf (Seq.fromList markedContent))
+        -- The signs the run swallowed but no stack took: separators are input
+        -- syntax (REFACTOR-AST §8 B2) and the marks the grammar ate - a second
+        -- caret, a final the chain refused - live in the findings (Q6), so
+        -- what is left is a sign no structure placed.
+        leftovers =
+            [ t
+            | (Nothing, t) <- markedContent
+            , not (isConSpecTok t)
+            , not (isFinalTok t)
+            ]
     pure $
         if claimed == 0
-            then InvalidSyllableItem syllable
-            else SyllableItem syllable
+            then [InvalidSyllableItem content diags]
+            else
+                SyllableItem
+                    Syllable
+                        { sylStacks = stacks
+                        , sylSpan = stacksSpan stacks runSpan
+                        , sylDiags = diags
+                        }
+                    : [InvalidSyllableItem leftovers mempty | not (null leftovers)]
     where
         -- The span of the whole syllable run, from its first to its last
         -- token: the anchor both head warnings quote whole (@tgra@), resolved
@@ -325,13 +337,12 @@ pSyllable spelling = do
                     pure $ maybe False ((< length before) . length) after
 
         -- The marks the grammar emitted keep their emission order and the
-        -- unmarked tokens - separators it ate, the unclaimed tail, the
-        -- boundary - splice back into their source positions. The grammar
-        -- does not always emit in source order: a caret @^@ written mid-stack
-        -- is claimed as the stack's final, so the syllable keeps the emitted
-        -- order for the marked letters (the renderers follow it; g^ra is
-        -- གྲ༹, not ག༹ྲ) and restores every unmarked token to the gap it
-        -- stood in.
+        -- unmarked tokens - separators it ate, the unclaimed tail - splice
+        -- back into their source positions. The grammar does not always emit
+        -- in source order: a caret @^@ written mid-stack is claimed as the
+        -- stack's final, so the syllable keeps the emitted order for the
+        -- marked letters (the renderers follow it; g^ra is གྲ༹, not ག༹ྲ) and
+        -- restores every unmarked token to the gap it stood in.
         runItems :: [(Position, Token)] -> [Token] -> [(Maybe Position, Token)]
         runItems marked run =
             let matched = matchedIndices run marked
@@ -363,6 +374,48 @@ pSyllable spelling = do
                             (i, _) : rest -> go (before <> rest) more ((i, pos, tok) : acc)
                             -- unreachable: the structures only emit run tokens
                             [] -> reverse acc
+
+-- | The implicit @a@ of a root stack (REFACTOR-AST §4, invariant 5).
+--
+-- Glyphs write no implicit vowel, so a Unicode-sourced run owes one to every
+-- root that carries no written sign; a Wylie-sourced run says in the writing
+-- whether it read a vowel-less letter or implicit @a@ (rk is ར + ཀ, rka is
+-- རྐ), so its parse already decided and this adds nothing. An a-chen root is
+-- a vowel letter of its own (@ཨ@ is spelled @a@) and takes no second @a@.
+withImplicitVowels :: [(Maybe Position, Token)] -> Seq Stack -> Seq Stack
+withImplicitVowels marked stacks
+    | wylieSourced = stacks
+    | otherwise = fmap addImplicit stacks
+    where
+        wylieSourced = case listToMaybe (map snd marked) of
+            Just tok -> tokenSource tok == TsWylie
+            Nothing -> False
+        addImplicit st = case (stRole st, stRoot st, stVowel st) of
+            (RoleRoot, Just root, Nothing)
+                | writesVowel root -> st{stVowel = Just VowelImplicit}
+            _ -> st
+        writesVowel root = case tokenCanonical root of
+            TcConsonant Ca -> False
+            TcConsonant _ -> True
+            TcSubConsonant _ -> True
+            _ -> False
+
+-- | The span of the stacked signs; a syllable with no stack falls back to the
+-- span of its run.
+stacksSpan :: Seq Stack -> Span -> Span
+stacksSpan stacks fallback = case [tokenSpan t | t <- toList (flatten stacks)] of
+    [] -> fallback
+    spans -> Span (minimum (map offsetStart spans)) (maximum (map offsetEnd spans))
+
+isConSpecTok :: Token -> Bool
+isConSpecTok tok = case tokenCanonical tok of
+    TcConSpec _ -> True
+    _ -> False
+
+isFinalTok :: Token -> Bool
+isFinalTok tok = case tokenCanonical tok of
+    TcFinal _ -> True
+    _ -> False
 
 -- A syllable must match the structure that consumes the most tokens: a
 -- Tibetan syllable extends until the boundary marked by punctuation, exactly
