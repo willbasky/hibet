@@ -84,6 +84,17 @@ tests =
             rolesW "mnga'" @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
             rolesU "མངའ" @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
             shapesW "mnga'" @?= shapesU "མངའ"
+        , testCase "སྒྲྭ / sgrwa: a superfix over a root with two subfixes (A3)" $ do
+            fmap (map Ast.stRole) (stacksU "སྒྲྭ") @?= Right [Ast.RoleRoot]
+            fmap (map (fmap tokenRaw . Ast.stSuperfix)) (stacksU "སྒྲྭ")
+                @?= Right [Just "ས"]
+            fmap (map (fmap tokenRaw . Ast.stRoot)) (stacksU "སྒྲྭ")
+                @?= Right [Just "ྒ"]
+            fmap (map rawsOfStack) (stacksU "སྒྲྭ")
+                @?= Right [["ས", "ྒ", "ྲ", "ྭ"]]
+            fmap (map rawsOfStack) (stacksW "sgrwa")
+                @?= Right [["s", "g", "r", "w"]]
+            shapesW "sgrwa" @?= shapesU "སྒྲྭ"
         , testCase "bkra / བཀྲ and kab / ཀབ: controls keep one AST" $ do
             shapesW "bkra" @?= shapesU "བཀྲ"
             shapesW "kab" @?= shapesU "ཀབ"

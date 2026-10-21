@@ -221,14 +221,15 @@ isSyllableTail token = case tokenCanonical token of
 pSyllable :: Spelling -> SpellParser [SpellItem]
 pSyllable spelling = do
     start <- MP.getInput
+    startOffset <- MP.getOffset
     -- 'lookAhead' only guards the run: the head token must be a possible
     -- syllable start if the run is to be claimed below (numbers, punctuation
     -- and unknown tokens fall through to their own branches), but the head
     -- itself belongs to the structure probe, so nothing may be consumed here.
     void $ MP.lookAhead (MP.satisfy isSyllableHead)
     marked <- MP.option Seq.empty (MP.try (pStructure spelling))
-    endOfStructure <- MP.getInput
-    let claimed = length start - length endOfStructure
+    endOfStructure <- MP.getOffset
+    let claimed = endOfStructure - startOffset
     -- A claimed run closes with what the stack above owns; an unclaimed one
     -- keeps swallowing its tail - it is one invalid item by construction and
     -- it has to consume its head, or the sentence would not advance.
@@ -330,11 +331,11 @@ pSyllable spelling = do
                 -- both the input and the scan state back.
                 claimsFreshRun :: SpellParser Bool
                 claimsFreshRun = do
-                    before <- MP.getInput
+                    offset <- MP.getOffset
                     after <-
                         MP.optional
-                            (MP.try (MP.lookAhead (pStructure spelling *> MP.getInput)))
-                    pure $ maybe False ((< length before) . length) after
+                            (MP.try (MP.lookAhead (pStructure spelling *> MP.getOffset)))
+                    pure $ maybe False (> offset) after
 
         -- The marks the grammar emitted keep their emission order and the
         -- unmarked tokens - separators it ate, the unclaimed tail - splice
@@ -425,12 +426,11 @@ isFinalTok tok = case tokenCanonical tok of
 -- trains no findings; the four stateful ones (8, 9, 21 and the generic word)
 -- probe through their pure projection 'runSpell', so a probe can never write
 -- findings the real run of the winner would own. The longest match is then run
--- for real. On equal length the earlier (book) structure wins, exactly as the
--- book's order did - the two kinds are therefore probed in one book-ordered
--- list, not one kind after the other.
+-- for real. On equal length the earlier structure of 'candidates' wins; that
+-- order is a fit to the corpora, not the book's numbering (see 'candidates').
 pStructure :: Spelling -> SpellParser TibetanSyllable
 pStructure spelling = do
-    start <- MP.getInput
+    start <- MP.getOffset
     best <- foldl' better Nothing <$> mapM (probe start) candidates
     case best of
         Nothing -> MP.empty
@@ -443,20 +443,20 @@ pStructure spelling = do
             r <-
                 MP.option
                     Nothing
-                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (p spelling) <*> MP.getInput)))
+                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (p spelling) <*> MP.getOffset)))
             pure $ case r of
                 Nothing -> Nothing
-                Just (_, end) -> Just (length start - length end, Stateless p)
+                Just (_, end) -> Just (end - start, Stateless p)
         probeStateful start p = do
             r <-
                 MP.option
                     Nothing
                     ( Just
-                        <$> MP.try (MP.lookAhead ((,) <$> liftP (runSpell (p spelling)) <*> MP.getInput))
+                        <$> MP.try (MP.lookAhead ((,) <$> liftP (runSpell (p spelling)) <*> MP.getOffset))
                     )
             pure $ case r of
                 Nothing -> Nothing
-                Just (_, end) -> Just (length start - length end, Stateful p)
+                Just (_, end) -> Just (end - start, Stateful p)
         better Nothing c = c
         better c Nothing = c
         better acc@(Just (m, _)) c@(Just (n, _))
@@ -464,9 +464,17 @@ pStructure spelling = do
             | otherwise = c
 
 -- | The structures a syllable may be read as, each tagged by whether it keeps
--- spelling state, in the book's own order. The order is the tie-break and
--- therefore load-bearing: on an equal match the earlier structure wins, and the
--- list is kept exactly as the book orders the shapes.
+-- spelling state. The order is the tie-break and therefore load-bearing: on an
+-- equal match the earlier structure wins.
+--
+-- The order is a fit to the corpora, not the book's numbering (REFACTOR-AST
+-- Q10): on དང the book structures 8 (prefix + root, @dnga@) and 17 (root +
+-- suffix, @dang@) both match, and the corpora want @dang@; on དགས they want
+-- the prefix reading (9) while on བགས and མངས the root reading (21). No single
+-- structural rule satisfies all three, so the tie is lexical: the list keeps
+-- the readings the corpora prefer, with the generic word 38 last. Ties the
+-- corpora read the other way are logged in @test/parity/known_divergences.tsv@
+-- (Q2).
 data Candidate
     = Stateless (Spelling -> Parser TibetanSyllable)
     | Stateful (Spelling -> SpellParser TibetanSyllable)

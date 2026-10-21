@@ -208,9 +208,12 @@ stackText st =
         <> T.concat (map glyph (finalsTokens (stFinals st)))
     where
         -- A stack opened by a vowel has no letter to hang the sign on: Wylie
-        -- writes the sign alone, the glyphs need the a-chen (ཨི). Only a
-        -- Wylie-sourced stack can be built this way - a topless glyph is
-        -- echoed as written, not given a letter.
+        -- writes the sign alone (@E@), the glyphs need the a-chen (ཨི). Only a
+        -- Wylie-sourced stack gets the letter: a glyph run that splits a second
+        -- vowel off its root also leaves a rootless stack, and writing ཨ there
+        -- would turn ⊙ཱེ into ⊙ཱ⊙ེ on every pass. The stack's shape cannot
+        -- tell the two apart, so this is the one place the renderer reads the
+        -- token's source (REFACTOR-AST §9, шаг 3.3: exception in §11).
         aChen
             | isOrphanStack st = case stVowel st of
                 Just VowelImplicit -> "ཨ"
@@ -376,6 +379,10 @@ renderItems fmt items = case fmt of
 
         rawTokens ofmt = T.concat . map (echo ofmt)
 
+        -- A mark of a run the grammar could not place echoes the character it
+        -- was written as: the reference leaves a final with no letter to close
+        -- as it stands (Mi -> M, not ཾ), and a sign may have no cross-script
+        -- name at all (REFACTOR-AST §9, шаг 3.3: the one exception to П3).
         echo ofmt tok
             | isFinalMark tok = tokenRaw tok
             | otherwise = renderToken ofmt tok
@@ -392,12 +399,8 @@ renderItems fmt items = case fmt of
                 joinText JPlus = "+"
                 joinText JDot = "."
 
-        renderToken ofmt tok
-            | tokenSource tok == sourceOf ofmt = tokenRaw tok
-            -- a token without a cross-script spelling falls back to the text it
-            -- stands for: the content of a bracket block, the character of an
-            -- escape, and otherwise the raw slice
-            | otherwise = fromMaybe (unknownText tok) (scriptOf ofmt (tokenCanonical tok))
+        renderToken ofmt tok =
+            fromMaybe (unknownText tok) (scriptOf ofmt (tokenCanonical tok))
 
         unknownText tok =
             case tokenCanonical tok of

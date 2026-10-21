@@ -215,11 +215,8 @@ wave344 =
         , testCase "defect 9: rsa no longer stacks, but still names the combination" $
             rendered "rsa"
                 @?= Right ["line 1: \"rsa\": The superfix \"r\" does not occur above \"s\"."]
-        , testCase "s over g+r+w is no combination (the reference's domain)" $
-            rendered "sgrwa"
-                @?= Right
-                    [ "line 1: \"sgrwa\": The superfix \"s\" does not occur above \"g\" with \"rw\" below it."
-                    ]
+        , testCase "s over g+r+w is legal since A3 (our form, outside the reference)" $
+            rendered "sgrwa" @?= Right []
         , testCase "s over k+r stays legal" $
             rendered "skra" @?= Right []
         , testCase "a prefix whose stack never reaches a vowel" $

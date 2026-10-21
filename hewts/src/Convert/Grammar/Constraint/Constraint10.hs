@@ -46,8 +46,15 @@ parseConstraintUnicode10 parseSuperfix parseRoot parseSubfix = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix
+    -- REFACTOR-AST §8 A3: the book stops 4.10 at one subjoined sign, but
+    -- སྒྲྭ is a superfix over a root with two (ས + ྒ + ྲ + ྭ). The form is our
+    -- addition; the root groups stay 4.10's, and the second letter is one of
+    -- the subjoins 4.9 allows in second place (@l@ never is).
+    second <-
+        MP.optional (mark Subfix (GP.pSubfixYa <|> GP.pSubfixRa <|> GP.pSubfixWa))
     vowel <- MP.optional (mark Vowel GP.pVowel)
-    pure (superfix <> root <> subfix <> fromMaybe mempty vowel)
+    pure
+        (superfix <> root <> subfix <> fromMaybe mempty second <> fromMaybe mempty vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ
 pRoots1 :: Parser Token
@@ -82,8 +89,13 @@ parseConstraintWylie10 parseSuperfix parseRoot parseSubfix = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix
+    -- The second subjoin of REFACTOR-AST §8 A3: Wylie writes it as a bare
+    -- letter, like the first.
+    second <-
+        MP.optional
+            (mark Subfix (GP.pSubfixYaWylie <|> GP.pSubfixRaWylie <|> GP.pSubfixWaWylie))
     vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
-    pure (superfix <> root <> subfix <> vowel)
+    pure (superfix <> root <> subfix <> fromMaybe mempty second <> vowel)
 
 pRoots1Wylie :: Parser Token
 pRoots1Wylie = pAllowedRootWylie [Ck, Cg, Cm]
