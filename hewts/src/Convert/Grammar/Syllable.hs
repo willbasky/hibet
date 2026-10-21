@@ -19,10 +19,6 @@
 module Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
-    , mark
-    , markS
-    , subfixMarks
-    , caretMark
     , Role (..)
     , Subfixes (..)
     , VowelSlot (..)
@@ -40,7 +36,6 @@ module Convert.Grammar.Syllable
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Parser (Parser, SpellParser, liftP)
 import Convert.Token
     ( FinalMark (..)
     , Span
@@ -90,28 +85,6 @@ data Position
 -- is elsewhere - see 'Convert.Grammar.Structure.pStructure', which probes all 37
 -- structures in lookahead, so every syllable is parsed 37 times over.
 type TibetanSyllable = Seq (Position, Token)
-
--- | Give a parser a position, so it yields a one-element syllable. Marking at the
--- point of binding keeps the token parsers themselves unchanged: they parse
--- letters, they know nothing about syllables.
-mark :: Position -> Parser a -> Parser (Seq (Position, a))
-mark position parser = do
-    value <- parser
-    pure (Seq.singleton (position, value))
-
--- | 'mark' in the spell parser: the constraint windows that run statefully peg
--- their tokens the same way, then write whatever rule fires at the window.
-markS :: Position -> Parser a -> SpellParser (Seq (Position, a))
-markS position parser = liftP (mark position parser)
-
--- | The subfix letters of one stack, marked in order.
-subfixMarks :: [Token] -> TibetanSyllable
-subfixMarks = Seq.fromList . map (Subfix,)
-
--- | The one caret that survives a subjoining scan, marked 'Final', or nothing
--- when the scan kept no caret.
-caretMark :: Maybe Token -> TibetanSyllable
-caretMark = maybe mempty (Seq.singleton . (Final,))
 
 -- | The role a stack plays in its syllable (REFACTOR-AST §4). Needed for two
 -- printing decisions only: the implicit @a@ and the stack separator.

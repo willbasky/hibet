@@ -15,8 +15,8 @@ build-type: Simple
 extra-doc-files:
   CHANGELOG.md
   README.md
-  test/parity/parity_baseline.tsv
   test/parity/known_divergences.tsv
+  test/parity/parity_baseline.tsv
   test/README.md
   test/vectors/*.tsv
   test/vectors/kang.txt
@@ -106,6 +106,7 @@ test-suite hewts-test
   hs-source-dirs: test
   main-is: Spec.hs
   other-modules:
+    Test.Architecture
     Test.Convert
     Test.Convert.Golden
     Test.Convert.Sentence

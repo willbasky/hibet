@@ -59,9 +59,9 @@ module Convert.Grammar.Structure
     ) where
 
 import qualified Convert.Grammar.Constraint as C
-import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..), liftP)
+import Convert.Grammar.Parser (Parser, SpellParser, Spelling (..), liftP, mark)
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (Token)
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP

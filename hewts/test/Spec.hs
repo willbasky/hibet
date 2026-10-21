@@ -1,5 +1,6 @@
 module Main (main) where
 
+import qualified Test.Architecture as Architecture
 import qualified Test.Convert as Convert
 import qualified Test.Convert.Golden as ConvertGolden
 import qualified Test.Convert.Sentence as Sentence
@@ -38,7 +39,8 @@ tests :: TestTree
 tests =
     testGroup
         "hewts"
-        [ Classification.tests
+        [ Architecture.tests
+        , Classification.tests
         , Spans.tests
         , Tricky.tests
         , Integration.tests

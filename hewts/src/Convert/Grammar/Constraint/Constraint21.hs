@@ -58,22 +58,22 @@ import Convert.Grammar.Parser
     ( LeadRole (..)
     , SpellParser
     , WordTail (..)
+    , caretMark
     , claimFinal
     , liftP
+    , markS
     , noteFinding
     , resetFinalChain
     , scanLeading
     , scanStackVowel
     , scanTail
+    , subfixMarks
     )
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Superfix (superfixCombos, superfixRoots)
 import Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
-    , caretMark
-    , markS
-    , subfixMarks
     )
 import Convert.Token
     ( Consonant (..)

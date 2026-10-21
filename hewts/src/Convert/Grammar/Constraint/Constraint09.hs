@@ -7,9 +7,9 @@ module Convert.Grammar.Constraint.Constraint09
     , rootSubfixRows
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..), mark)
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token (..)

@@ -7,9 +7,9 @@ module Convert.Grammar.Constraint.Constraint17
     , pConstraint17Ya
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..), mark)
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token (..)

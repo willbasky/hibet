@@ -9,9 +9,9 @@ module Convert.Grammar.Constraint.Constraint16
     , suffixGroup16Sa
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..), mark)
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
     , Token

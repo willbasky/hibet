@@ -3,7 +3,10 @@ module Convert.Grammar.Parser where
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
 import Convert.Diagnostic (Finding (..))
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Void (Void)
@@ -85,6 +88,28 @@ runSpell = flip evalStateT initialScanState
 -- | Lift a plain token parser into the spell parser.
 liftP :: Parser a -> SpellParser a
 liftP = lift
+
+-- | Give a parser a position, so it yields a one-element syllable. Marking at
+-- the point of binding keeps the token parsers themselves unchanged: they parse
+-- letters, they know nothing about syllables.
+mark :: Position -> Parser a -> Parser (Seq (Position, a))
+mark position parser = do
+    value <- parser
+    pure (Seq.singleton (position, value))
+
+-- | 'mark' in the spell parser: the constraint windows that run statefully peg
+-- their tokens the same way, then write whatever rule fires at the window.
+markS :: Position -> Parser a -> SpellParser (Seq (Position, a))
+markS position parser = liftP (mark position parser)
+
+-- | The subfix letters of one stack, marked in order.
+subfixMarks :: [Token] -> TibetanSyllable
+subfixMarks = Seq.fromList . map (Subfix,)
+
+-- | The one caret that survives a subjoining scan, marked 'Final', or nothing
+-- when the scan kept no caret.
+caretMark :: Maybe Token -> TibetanSyllable
+caretMark = maybe mempty (Seq.singleton . (Final,))
 
 -- | Record one finding of a constraint window in the running state, before
 -- the run's span is known.

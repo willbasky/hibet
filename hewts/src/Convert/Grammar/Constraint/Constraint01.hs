@@ -6,9 +6,9 @@ module Convert.Grammar.Constraint.Constraint01
     , pConstraint01Sanskrit
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..))
+import Convert.Grammar.Parser (Parser, Spelling (..), mark)
 import qualified Convert.Grammar.Parser as GP
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
+import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Data.Maybe (fromMaybe)
 import qualified Data.Sequence as Seq
 import Text.Megaparsec (choice, optional)
