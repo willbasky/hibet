@@ -45,17 +45,11 @@ inline check that fires exactly where the grammar places the token.
 module Convert.Grammar.Constraint.Constraint21
     ( pConstraint21First
     , pConstraint21Rest
-    , superfixCombos
     ) where
 
 import Control.Monad (void, when)
 import Control.Monad.Trans.State.Strict (gets, modify)
 import Convert.Diagnostic (Finding (..))
-import Convert.Grammar.Constraint.Constraint08
-    ( lSuperfixRoots
-    , rSuperfixRoots
-    , sSuperfixRoots
-    )
 import Convert.Grammar.Constraint.Constraint16
     ( suffixGroup16Da
     , suffixGroup16Sa
@@ -73,6 +67,7 @@ import Convert.Grammar.Parser
     , scanTail
     )
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Superfix (superfixCombos, superfixRoots)
 import Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
@@ -376,43 +371,6 @@ checkSuperfixCombination lead base subjoined =
             noteFinding
                 (BadSuperfixCombination (tokenRaw lead) (tokenRaw base) (map tokenRaw subjoined))
         _ -> pure ()
-
--- | The roots each superfix letter may gate, read from 'Constraint08' (rule
--- 4.8, its own data): the same sets the book's structure 2 accepts, stated
--- once there as the data this window reads.
-superfixRoots :: Consonant -> [Consonant]
-superfixRoots Cr = rSuperfixRoots
-superfixRoots Cl = lSuperfixRoots
-superfixRoots Cs = sSuperfixRoots
-superfixRoots _ = []
-
--- | The (root, subfix) rows a superfix letter takes below those roots
--- (rules 4.8, 5.1): one letter only, so a run of two never matches a row;
--- @l@ takes none.
-superfixCombos :: Consonant -> [(Consonant, Consonant)]
-superfixCombos Cr =
-    [ (Ck, Cy)
-    , (Cg, Cy)
-    , (Cm, Cy)
-    , (Cb, Cw)
-    , (Cts, Cw)
-    , (Cg, Cw)
-    ]
-superfixCombos Cl = []
-superfixCombos Cs =
-    [ (Ck, Cy)
-    , (Cg, Cy)
-    , (Cp, Cy)
-    , (Cb, Cy)
-    , (Cm, Cy)
-    , (Ck, Cr)
-    , (Cg, Cr)
-    , (Cp, Cr)
-    , (Cb, Cr)
-    , (Cm, Cr)
-    , (Cn, Cr)
-    ]
-superfixCombos _ = []
 
 -- | Whether the pending superfix letter gates the given root with the given
 -- subjoined letters: the root must be in its 4.8 set and, when the stack

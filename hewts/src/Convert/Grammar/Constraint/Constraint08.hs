@@ -4,13 +4,11 @@ Tibetan spelling grammar 4.8 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint08
     ( pConstraint08
-    , lSuperfixRoots
-    , rSuperfixRoots
-    , sSuperfixRoots
     ) where
 
 import Convert.Grammar.Parser (Parser, Spelling (..))
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Superfix (lSuperfixRoots, rSuperfixRoots, sSuperfixRoots)
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable, mark)
 import Convert.Token
     ( Consonant (..)
@@ -22,20 +20,6 @@ import Convert.Token
     )
 import Data.Maybe (fromMaybe, mapMaybe)
 import qualified Text.Megaparsec as MP
-
--- | The roots the superfix ར may gate (rule 4.8). The same set is the data of
--- the generic word's superfix window
--- ('Convert.Grammar.Constraint.Constraint21'), so the rule lives here once.
-rSuperfixRoots :: [Consonant]
-rSuperfixRoots = [Ck, Cg, Cng, Cj, Cny, Ct, Cd, Cn, Cb, Cm, Cts, Cdz]
-
--- | The roots the superfix ལ may gate (rule 4.8); shared the same way.
-lSuperfixRoots :: [Consonant]
-lSuperfixRoots = [Ck, Cg, Cng, Cc, Cj, Ct, Cd, Cp, Cb, Ch]
-
--- | The roots the superfix ས may gate (rule 4.8); shared the same way.
-sSuperfixRoots :: [Consonant]
-sSuperfixRoots = [Ck, Cg, Cng, Cny, Ct, Cd, Cn, Cp, Cb, Cm, Cts]
 
 pConstraint08 :: Spelling -> Parser TibetanSyllable
 pConstraint08 = \case

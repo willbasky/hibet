@@ -10,7 +10,7 @@
 в `known_divergences.tsv` и закрываются на шаге 4. Работа шла после
 переписанного §4.1 (слои: знаки → слог; письмо ветвится только в чтении
 и в печати): входные промежуточные структуры отменены, вместо них `notate`
-на выходе. Отметки о выполнении — в §9.
+на выходе. Из шага 4 сделаны 4a и 4b. Отметки о выполнении — в §9.
 **Область:** `hibet/hewts` — грамматика (`Convert.Grammar.*`), `Convert.Sentence`,
 `Convert`.
 **Не трогаем:** токенизаторы (`Convert.Tokenizer.*`) — чтение не меняется; канал и
@@ -876,9 +876,13 @@ Subfix w` в обоих письмах (`Test.Grammar.Syllable`).
   `Sentence.hs` импортирует только `pStructure` и `claimsFreshRun`; списка
   структур и типа `Candidate` в нём нет. Поведение то же: `stacks.golden`,
   паритет и golden конверсии не сдвинулись, `cabal test` 1019/1019.
-- **4b.** Данные 4.8 и 5.1 (`superfixRoots`, `superfixCombos`, `rSuperfixRoots`
-  и т.д.) — в книжный модуль данных. `Convert.Wylie.Tables` и `Constraint21`
-  читают его. *Проверка:* `Convert/Wylie/Tables.hs` не импортирует `Constraint21`.
+- **4b.** ✅ **сделано 21.10.2026.** Данные 4.8 и 5.1 (`superfixRoots`,
+  `superfixCombos`, `rSuperfixRoots` и т.д.) — в книжном модуле данных
+  `Convert.Grammar.Superfix`. `Constraint08` и `Constraint21` импортируют его
+  (своих копий и экспортов таблиц у них больше нет), `Convert.Wylie.Tables` тоже.
+  *Проверка:* `Convert/Wylie/Tables.hs` не импортирует `Constraint21` (и вообще
+  `Constraint*`, кроме `Constraint09` с `rootSubfixRows` — его данные ещё не
+  переезжали). `cabal test`: 1019/1019, `stacks.golden` и паритет не сдвинулись.
 - **4c.** Хелперы `mark`, `markS`, `subfixMarks`, `caretMark` — из
   `Convert.Grammar.Syllable` в парсерный модуль. Домен не импортирует `Parser`.
   *Проверка:* тест на импорты (§9.1, пункт 7).

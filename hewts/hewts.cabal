@@ -62,6 +62,7 @@ library
     Convert.Grammar.Constraint
     Convert.Grammar.Parser
     Convert.Grammar.Structure
+    Convert.Grammar.Superfix
     Convert.Grammar.Syllable
     Convert.Sentence
     Convert.Token

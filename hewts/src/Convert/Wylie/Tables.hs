@@ -22,13 +22,13 @@ module Convert.Wylie.Tables
     , caretFold
     ) where
 
-import Convert.Grammar.Constraint.Constraint08
+import Convert.Grammar.Constraint.Constraint09 (rootSubfixRows)
+import Convert.Grammar.Superfix
     ( lSuperfixRoots
     , rSuperfixRoots
     , sSuperfixRoots
+    , superfixCombos
     )
-import Convert.Grammar.Constraint.Constraint09 (rootSubfixRows)
-import Convert.Grammar.Constraint.Constraint21 (superfixCombos)
 import Convert.Grammar.Syllable
     ( Stack (..)
     , Subfixes (..)
