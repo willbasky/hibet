@@ -33,6 +33,8 @@ tests =
             isLeft (parseRaws (pConstraint20 Tibetan) "ཀ") @?= True
         , testCase "marks each letter of the word" $
             parsePositions (pConstraint20 Tibetan) "འོ" @?= Right [Root, Vowel]
+        , testCase "a bare a-chung is the word's last suffix" $
+            parsePositions (pConstraint20 Tibetan) "འ" @?= Right [Suffix]
         ]
 
 parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]

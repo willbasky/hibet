@@ -56,9 +56,9 @@ tests =
             [Prefix, Superfix, Root, Subfix, Vowel, Suffix, Postfix]
             "བསྒྲིབས"
         , probed
-            "g.yon -> stack break, two roots and a vowel"
+            "g.yon -> a dot after the prefix parts the stacks"
             "g.yon"
-            [Root, Root, Vowel, Root]
+            [Prefix, Root, Vowel, Suffix]
             "གཡོན"
         , renders "rta renders རྟ" "rta" "རྟ"
         , renders "rwa renders རྭ" "rwa" "རྭ"

@@ -11,6 +11,8 @@ import Convert.Grammar.Parser
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Data.Either (isLeft)
 import Data.Foldable (toList)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
@@ -42,7 +44,17 @@ tests =
             parseRaws (pConstraint14 Tibetan) "འཁུ" @?= Right ["འ", "ཁ", "ུ"]
         , testCase "marks each letter of the word" $
             parsePositions (pConstraint14 Tibetan) "གཅུ" @?= Right [Prefix, Root, Vowel]
+        , testCase "a stack dot after the prefix parts the stacks" $
+            parseWyliePositions (pConstraint14 Wylie) "g.yu"
+                @?= Right [Prefix, Root, Vowel]
+        , testCase "without a dot the bare y is no root here" $
+            isLeft (parseWyliePositions (pConstraint14 Wylie) "gyu") @?= True
         ]
+
+parseWyliePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parseWyliePositions p input =
+    fmap (toList . fmap fst) $
+        parseEither p (fst (tokenizeWylie input))
 
 parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =

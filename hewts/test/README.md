@@ -33,7 +33,7 @@ cabal test hewts-test
 | `Test.Grammar.Structure` | **книга** (Nyima Tashi): 37 структур слога |
 | `Test.Grammar.Wylie` | **книга** (структуры) + **оракулы EWTS** (совпадение с эталоном) |
 | `Test.Grammar.Stack` | **оракулы EWTS** (метки jsewts) + hewts (обобщённый стек) |
-| `Test.Grammar.Syllable` | **hewts**: мост AST (REFACTOR-AST шаг 1), корпуса — генератор |
+| `Test.Grammar.Syllable` | **hewts**: AST (REFACTOR-AST шаги 1–2), корпуса — генератор |
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |

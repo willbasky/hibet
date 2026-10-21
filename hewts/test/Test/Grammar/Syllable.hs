@@ -1,4 +1,4 @@
--- Ожидания: hewts — мост AST (REFACTOR-AST шаг 1); корпуса — генератор.
+-- Ожидания: hewts — AST (REFACTOR-AST шаги 1–2); корпуса — генератор.
 
 module Test.Grammar.Syllable (tests) where
 
@@ -14,6 +14,7 @@ import Convert.Token
     , Token
     , TokenCanonical (..)
     , Vowel (..)
+    , fromSubjoined
     , tokenCanonical
     , tokenRaw
     , tokenSpan
@@ -74,11 +75,24 @@ tests =
         , testCase "g+m+r+a: three subjoined letters stay in the stack" $
             canonicalsW "g+m+r+a"
                 @?= Right [TcConsonant Cg, TcConsonant Cm, TcConsonant Cr, TcConsonant Ca]
-        , testCase "g.yul: today three roots (REFACTOR-AST §8 A2)" $ do
+        , testCase "g.yul / གཡུལ: a dot after the prefix parts the stacks (A2)" $ do
             rolesW "g.yul"
-                @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleRoot]
+                @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
             canonicalsW "g.yul"
                 @?= Right [TcConsonant Cg, TcConsonant Cy, TcVowel Vu, TcConsonant Cl]
+            shapesW "g.yul" @?= shapesU "གཡུལ"
+        , testCase "gyi stays one stack, g.yi is a prefix and a root (A2)" $ do
+            rolesW "gyi" @?= Right [Ast.RoleRoot]
+            rolesW "g.yi" @?= Right [Ast.RolePrefix, Ast.RoleRoot]
+            shapesW "gyi" @?= shapesU "གྱི"
+            shapesW "g.yi" @?= shapesU "གཡི"
+        , testCase "mnga' / མངའ: the bare a-chung in the tail is a suffix (A)" $ do
+            rolesW "mnga'" @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
+            rolesU "མངའ" @?= Right [Ast.RolePrefix, Ast.RoleRoot, Ast.RoleSuffix]
+            shapesW "mnga'" @?= shapesU "མངའ"
+        , testCase "bkra / བཀྲ and kab / ཀབ: controls keep one AST" $ do
+            shapesW "bkra" @?= shapesU "བཀྲ"
+            shapesW "kab" @?= shapesU "ཀབ"
         , testCase "corpora: kept tokens are in stacks, sorted flat = run" checkCorpora
         , testCase "Finals: one slot takes one mark" $ do
             let mark = case fst (tokenizeUnicode "ཾ") of
@@ -181,6 +195,29 @@ canonicalsU = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns Tibet
 
 rolesW :: T.Text -> Either T.Text [Ast.Role]
 rolesW = fmap (concatMap (map Ast.stRole . stacksOf)) . parseRuns Wylie
+
+rolesU :: T.Text -> Either T.Text [Ast.Role]
+rolesU = fmap (concatMap (map Ast.stRole . stacksOf)) . parseRuns Tibetan
+
+-- | The form of a syllable, compared across the two spellings: the role of
+-- every stack and the canonical signs it holds. The implicit @a@ is input
+-- syntax (Wylie spells it with a letter, the glyphs write nothing) and has no
+-- token, so 'Ast.stackTokens' already leaves it out of the comparison.
+shapesW :: T.Text -> Either T.Text [(Ast.Role, [TokenCanonical])]
+shapesW = fmap (map shape . concatMap stacksOf) . parseRuns Wylie
+
+shapesU :: T.Text -> Either T.Text [(Ast.Role, [TokenCanonical])]
+shapesU = fmap (map shape . concatMap stacksOf) . parseRuns Tibetan
+
+shape :: Ast.Stack -> (Ast.Role, [TokenCanonical])
+shape stack =
+    (Ast.stRole stack, map letter (toList (Ast.stackTokens stack)))
+    where
+        -- A subjoined glyph and the bare Wylie letter of the same stack carry
+        -- different canonical classes; the form compares the letters themselves.
+        letter tok = case tokenCanonical tok of
+            TcSubConsonant sc -> TcConsonant (fromSubjoined sc)
+            canonical -> canonical
 
 stacksW :: T.Text -> Either T.Text [Ast.Stack]
 stacksW = fmap (concatMap stacksOf) . parseRuns Wylie

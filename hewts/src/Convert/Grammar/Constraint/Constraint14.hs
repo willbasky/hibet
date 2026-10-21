@@ -13,7 +13,7 @@ import Convert.Token
     , TokenCanonical (TcConsonant)
     , tokenCanonical
     )
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isJust)
 import qualified Text.Megaparsec as MP
 
 pConstraint14 :: Spelling -> Parser TibetanSyllable
@@ -28,7 +28,7 @@ pConstraint14 = \case
             ]
     Wylie ->
         MP.choice
-            [ MP.try $ parseConstraintWylie14 GP.pPrefixGa pRoots1Wylie
+            [ MP.try $ parseConstraintWylie14 GP.pPrefixGa pRoots1
             , MP.try $ parseConstraintWylie14 GP.pPrefixDa pRoots2
             , MP.try $ parseConstraintWylie14 GP.pPrefixBa pRoots3
             , MP.try $ parseConstraintWylie14 GP.pPrefixMa pRoots4
@@ -46,14 +46,6 @@ parseConstraintUnicode14 parsePrefix parseRoot = do
 -- (1) root group [ 'ཅ', 'ཉ', 'ཏ', 'ད', 'ན', 'ཙ', 'ཞ', 'ཟ', 'ཡ', 'ཤ', 'ས' ] with prefix ག
 pRoots1 :: Parser Token
 pRoots1 = pAllowedRoot [Cc, Cny, Ct, Cd, Cn, Cts, Czh, Cz, Cy, Csh, Cs]
-
--- The same root group for Wylie input, without ཡ: the glyphs carry no
--- ambiguity (གྱ and ཡ are written apart), but a bare Wylie y after the
--- prefix is the subjoined ya of the stack - gyi reads གྱི, and the prefix
--- with a full ya is written with the dot, g.yi (གཡི), by the dotted
--- structures.
-pRoots1Wylie :: Parser Token
-pRoots1Wylie = pAllowedRoot [Cc, Cny, Ct, Cd, Cn, Cts, Czh, Cz, Csh, Cs]
 
 -- (2) root group [ 'ཀ', 'ག', 'ང', 'པ', 'བ', 'མ' ] with prefix ད
 pRoots2 :: Parser Token
@@ -80,12 +72,24 @@ pAllowedRoot allowed = do
         _ -> MP.empty
 
 -- The Wylie arm: the prefix and the root are full letters either way, so only
--- the vowel slot differs - Wylie writes it in every syllable.
-
+-- the vowel slot differs - Wylie writes it in every syllable - and the stack
+-- dot, which only Wylie has (REFACTOR-AST §8 A2).
+--
+-- A dot after the prefix breaks the stack, and the letter behind it is a root
+-- of the book group even when a stack would subjoin that letter: g.yi is གཡི.
+-- The same letter written without a dot stays the stack's subjoined letter
+-- (gyi -> གྱི, the reading of structure 4.17). Which of the two a token is, is
+-- read from the sign, not from the 'Spelling': a Tibetan subjoined sign is a
+-- 'TcSubConsonant' and never reaches this parser as a root.
 parseConstraintWylie14 ::
     Parser Token -> Parser Token -> Parser TibetanSyllable
 parseConstraintWylie14 parsePrefix parseRoot = do
     prefix <- mark Prefix parsePrefix
-    root <- mark Root parseRoot
+    dotted <- MP.optional GP.pDot
+    root <- mark Root $ do
+        tok <- parseRoot
+        if isJust dotted || not (GP.isSubjoinCandidate tok)
+            then pure tok
+            else MP.empty
     vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
     pure (prefix <> root <> vowel)
