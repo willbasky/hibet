@@ -87,7 +87,7 @@ data Position
 -- ends by the legality rules of wave 3.4. Be aware that this buys clarity
 -- more than speed: a syllable holds one to six letters, and at that size 'Seq'
 -- and a list append in the same handful of steps. The real cost in this layer
--- is elsewhere - see 'Convert.Sentence.pStructure', which probes all 37
+-- is elsewhere - see 'Convert.Grammar.Structure.pStructure', which probes all 37
 -- structures in lookahead, so every syllable is parsed 37 times over.
 type TibetanSyllable = Seq (Position, Token)
 

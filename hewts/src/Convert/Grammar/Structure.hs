@@ -11,6 +11,8 @@ their own, to host the ambiguous-spelling window at their tail ('spellAs'), and
 the generic word carries the spelling state of the word tail.
 Structures recognize a single syllable out of a 'Token' stream; punctuation is
 left unconsumed so it survives and is handled separately by 'Convert.Sentence'.
+Which structure reads a run is decided here too ('pStructure'): the longest
+match wins, and 'candidates' is the tie-break order.
 -}
 
 module Convert.Grammar.Structure
@@ -52,6 +54,8 @@ module Convert.Grammar.Structure
     , pStructure36
     , pStructure37
     , pStructure38
+    , pStructure
+    , claimsFreshRun
     ) where
 
 import qualified Convert.Grammar.Constraint as C
@@ -460,3 +464,119 @@ pStructure38 _spelling = do
     first <- C.pConstraint21First
     rest <- MP.many C.pConstraint21Rest
     pure (first <> mconcat rest)
+
+-- | A syllable must match the structure that consumes the most tokens: a
+-- Tibetan syllable extends until the boundary marked by punctuation, exactly
+-- as the char-level grammar selected it (e.g. ཕྱི is structure 3, not 1,
+-- and པོགས is structure 21, not 17 + 1). The 34 stateless book structures
+-- probe as plain parsers in lookahead - no state enters and the pure projection
+-- trains no findings; the four stateful ones (8, 9, 21 and the generic word)
+-- probe through their pure projection 'GP.runSpell', so a probe can never write
+-- findings the real run of the winner would own. The longest match is then run
+-- for real. On equal length the earlier structure of 'candidates' wins; that
+-- order is a fit to the corpora, not the book's numbering (see 'candidates').
+pStructure :: Spelling -> SpellParser TibetanSyllable
+pStructure spelling = do
+    start <- MP.getOffset
+    best <- foldl' better Nothing <$> mapM (probe start) candidates
+    case best of
+        Nothing -> MP.empty
+        Just (_, Stateless p) -> liftP (p spelling)
+        Just (_, Stateful p) -> p spelling
+    where
+        probe start (Stateless p) = probeStateless start p
+        probe start (Stateful p) = probeStateful start p
+        probeStateless start p = do
+            r <-
+                MP.option
+                    Nothing
+                    (Just <$> MP.try (MP.lookAhead ((,) <$> liftP (p spelling) <*> MP.getOffset)))
+            pure $ case r of
+                Nothing -> Nothing
+                Just (_, end) -> Just (end - start, Stateless p)
+        probeStateful start p = do
+            r <-
+                MP.option
+                    Nothing
+                    ( Just
+                        <$> MP.try
+                            (MP.lookAhead ((,) <$> liftP (GP.runSpell (p spelling)) <*> MP.getOffset))
+                    )
+            pure $ case r of
+                Nothing -> Nothing
+                Just (_, end) -> Just (end - start, Stateful p)
+        better Nothing c = c
+        better c Nothing = c
+        better acc@(Just (m, _)) c@(Just (n, _))
+            | m >= n = acc
+            | otherwise = c
+
+-- | Whether a run of its own starts at the current input: the grammar decides
+-- what opens a run, not the token class, so the tail is probed with the real
+-- structure choice. The probe reads - 'pStructure' runs its winner inside
+-- 'lookAhead', and a lookAhead rolls both the input and the scan state back.
+claimsFreshRun :: Spelling -> SpellParser Bool
+claimsFreshRun spelling = do
+    offset <- MP.getOffset
+    after <-
+        MP.optional
+            (MP.try (MP.lookAhead (pStructure spelling *> MP.getOffset)))
+    pure $ maybe False (> offset) after
+
+-- | The structures a syllable may be read as, each tagged by whether it keeps
+-- spelling state. The order is the tie-break and therefore load-bearing: on an
+-- equal match the earlier structure wins.
+--
+-- The order is a fit to the corpora, not the book's numbering (REFACTOR-AST
+-- Q10): on དང the book structures 8 (prefix + root, @dnga@) and 17 (root +
+-- suffix, @dang@) both match, and the corpora want @dang@; on དགས they want
+-- the prefix reading (9) while on བགས and མངས the root reading (21). No single
+-- structural rule satisfies all three, so the tie is lexical: the list keeps
+-- the readings the corpora prefer, with the generic word 38 last. Ties the
+-- corpora read the other way are logged in @test/parity/known_divergences.tsv@
+-- (Q2).
+data Candidate
+    = Stateless (Spelling -> Parser TibetanSyllable)
+    | Stateful (Spelling -> SpellParser TibetanSyllable)
+
+candidates :: [Candidate]
+candidates =
+    [ Stateless pStructure28
+    , Stateless pStructure29
+    , Stateless pStructure30
+    , Stateless pStructure31
+    , Stateless pStructure32
+    , Stateless pStructure33
+    , Stateless pStructure34
+    , Stateless pStructure35
+    , Stateless pStructure36
+    , Stateless pStructure37
+    , Stateful pStructure21
+    , Stateless pStructure22
+    , Stateless pStructure23
+    , Stateless pStructure24
+    , Stateless pStructure13
+    , Stateless pStructure14
+    , Stateless pStructure15
+    , Stateless pStructure16
+    , Stateless pStructure17
+    , Stateless pStructure18
+    , Stateless pStructure19
+    , Stateless pStructure20
+    , Stateful pStructure9
+    , Stateless pStructure10
+    , Stateless pStructure11
+    , Stateless pStructure12
+    , Stateless pStructure27
+    , Stateless pStructure26
+    , Stateless pStructure25
+    , Stateless pStructure4
+    , Stateless pStructure5
+    , Stateless pStructure6
+    , Stateless pStructure7
+    , Stateful pStructure8
+    , Stateless pStructure1
+    , Stateless pStructure2
+    , Stateless pStructure3
+    , Stateful pStructure38
+    ]
