@@ -3,7 +3,8 @@
 module Test.Grammar.Syllable (tests) where
 
 import Convert (SpellItem (..), pSentence)
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Diagnostic (Diagnostics)
+import Convert.Grammar.Parser (parseEither)
 import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (Syllable (..))
 import Convert.Token
@@ -124,9 +125,9 @@ tests =
 -- Boundaries are 'Punct' items of their own now, so they are in the stream.
 checkCorpora :: Assertion
 checkCorpora = do
-    wylie <- readInputs Wylie wylieColumn wylieFiles
-    unicodeVectors <- readInputs Tibetan unicodeColumn wylieFiles
-    kangyur <- readInputs Tibetan id ["test/vectors/kang.txt"]
+    wylie <- readInputs tokenizeWylie wylieColumn wylieFiles
+    unicodeVectors <- readInputs tokenizeUnicode unicodeColumn wylieFiles
+    kangyur <- readInputs tokenizeUnicode id ["test/vectors/kang.txt"]
     checkSide "Wylie" wylie
     checkSide "Unicode" (kangyur <> unicodeVectors)
     where
@@ -134,7 +135,7 @@ checkCorpora = do
             let lost =
                     [ (input, missing)
                     | (input, toks) <- inputs
-                    , let Right items = parseEither (pSentence (spellingOf side)) toks
+                    , let Right items = parseEither pSentence toks
                           kept = toListOfItems items
                     , let missing = dropped toks kept
                     , not (all allowed missing)
@@ -142,9 +143,6 @@ checkCorpora = do
             assertBool
                 (side <> ": tokens lost to the stacks:\n" <> unlines (map show lost))
                 (null lost)
-
-        spellingOf "Wylie" = Wylie
-        spellingOf _ = Tibetan
 
         -- A separator is input syntax (§8 B2), a final mark may be the one
         -- the chain refused (Q6), and the implicit @a@ of a Wylie run is a
@@ -182,11 +180,11 @@ wylieFiles =
     ]
 
 readInputs ::
-    Spelling
+    (T.Text -> ([Token], Diagnostics))
     -> (T.Text -> T.Text)
     -> [FilePath]
     -> IO [(T.Text, [Token])]
-readInputs spelling column paths = fmap concat (mapM one paths)
+readInputs tokenize column paths = fmap concat (mapM one paths)
     where
         one path = do
             text <- readUtf8File path
@@ -199,9 +197,6 @@ readInputs spelling column paths = fmap concat (mapM one paths)
                 , let input = column clean
                 , not (T.null input)
                 ]
-        tokenize = case spelling of
-            Wylie -> tokenizeWylie
-            Tibetan -> tokenizeUnicode
 
 wylieColumn :: T.Text -> T.Text
 wylieColumn = T.takeWhile (/= '\t')
@@ -213,26 +208,26 @@ unicodeColumn line = case T.splitOn "\t" line of
     _ -> line
 
 canonicalsW :: T.Text -> Either T.Text [TokenCanonical]
-canonicalsW = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns Wylie
+canonicalsW = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns tokenizeWylie
 
 canonicalsU :: T.Text -> Either T.Text [TokenCanonical]
-canonicalsU = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns Tibetan
+canonicalsU = fmap (concatMap (map tokenCanonical . tokensOf)) . parseRuns tokenizeUnicode
 
 rolesW :: T.Text -> Either T.Text [Ast.Role]
-rolesW = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns Wylie
+rolesW = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns tokenizeWylie
 
 rolesU :: T.Text -> Either T.Text [Ast.Role]
-rolesU = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns Tibetan
+rolesU = fmap (map Ast.stRole . concatMap stacksOf) . parseRuns tokenizeUnicode
 
 -- | The form of a syllable, compared across the two spellings: the role of
 -- every stack and the canonical signs it holds. The implicit @a@ is input
 -- syntax (Wylie spells it with a letter, the glyphs write nothing) and has no
 -- token, so 'Ast.stackTokens' already leaves it out of the comparison.
 shapesW :: T.Text -> Either T.Text [(Ast.Role, [TokenCanonical])]
-shapesW = fmap (map shape . concatMap stacksOf) . parseRuns Wylie
+shapesW = fmap (map shape . concatMap stacksOf) . parseRuns tokenizeWylie
 
 shapesU :: T.Text -> Either T.Text [(Ast.Role, [TokenCanonical])]
-shapesU = fmap (map shape . concatMap stacksOf) . parseRuns Tibetan
+shapesU = fmap (map shape . concatMap stacksOf) . parseRuns tokenizeUnicode
 
 shape :: Ast.Stack -> (Ast.Role, [TokenCanonical])
 shape stack =
@@ -245,10 +240,10 @@ shape stack =
             canonical -> canonical
 
 stacksW :: T.Text -> Either T.Text [Ast.Stack]
-stacksW = fmap (concatMap stacksOf) . parseRuns Wylie
+stacksW = fmap (concatMap stacksOf) . parseRuns tokenizeWylie
 
 stacksU :: T.Text -> Either T.Text [Ast.Stack]
-stacksU = fmap (concatMap stacksOf) . parseRuns Tibetan
+stacksU = fmap (concatMap stacksOf) . parseRuns tokenizeUnicode
 
 rawsOfStack :: Ast.Stack -> [T.Text]
 rawsOfStack = map tokenRaw . toList . Ast.stackTokens
@@ -259,17 +254,13 @@ tokensOf = toList . Ast.flatten . sylStacks
 stacksOf :: Syllable -> [Ast.Stack]
 stacksOf = toList . sylStacks
 
-parseRuns :: Spelling -> T.Text -> Either T.Text [Syllable]
-parseRuns spelling input =
+parseRuns :: (T.Text -> ([Token], Diagnostics)) -> T.Text -> Either T.Text [Syllable]
+parseRuns tokenize input =
     fmap
         ( \items ->
             [s | SyllableItem s <- items]
         )
-        (parseEither (pSentence spelling) (fst (tokenize input)))
-    where
-        tokenize = case spelling of
-            Wylie -> tokenizeWylie
-            Tibetan -> tokenizeUnicode
+        (parseEither pSentence (fst (tokenize input)))
 
 -- | Read a vector file as UTF-8 regardless of the locale, so the corpora decode
 -- identically everywhere. Same helper as in Test.Parity, kept local.

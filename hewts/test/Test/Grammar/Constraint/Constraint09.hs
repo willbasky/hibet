@@ -4,9 +4,9 @@ module Test.Grammar.Constraint.Constraint09 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( Parser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -21,33 +21,33 @@ tests =
     testGroup
         "grammar rule 09"
         [ testCase "wa-subfix without vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྭ" @?= Right ["ཀ", "ྭ"]
+            parseRaws (pConstraint09) "ཀྭ" @?= Right ["ཀ", "ྭ"]
         , testCase "wa-subfix with vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྭུ" @?= Right ["ཀ", "ྭ", "ུ"]
+            parseRaws (pConstraint09) "ཀྭུ" @?= Right ["ཀ", "ྭ", "ུ"]
         , testCase "ya-subfix without vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྱ" @?= Right ["ཀ", "ྱ"]
+            parseRaws (pConstraint09) "ཀྱ" @?= Right ["ཀ", "ྱ"]
         , testCase "ya-subfix with vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྱི" @?= Right ["ཀ", "ྱ", "ི"]
+            parseRaws (pConstraint09) "ཀྱི" @?= Right ["ཀ", "ྱ", "ི"]
         , testCase "ra-subfix without vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྲ" @?= Right ["ཀ", "ྲ"]
+            parseRaws (pConstraint09) "ཀྲ" @?= Right ["ཀ", "ྲ"]
         , testCase "ra-subfix with vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀྲེ" @?= Right ["ཀ", "ྲ", "ེ"]
+            parseRaws (pConstraint09) "ཀྲེ" @?= Right ["ཀ", "ྲ", "ེ"]
         , testCase "la-subfix without vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀླ" @?= Right ["ཀ", "ླ"]
+            parseRaws (pConstraint09) "ཀླ" @?= Right ["ཀ", "ླ"]
         , testCase "la-subfix with vowel" $
-            parseRaws (pConstraint09 Tibetan) "ཀླེ" @?= Right ["ཀ", "ླ", "ེ"]
+            parseRaws (pConstraint09) "ཀླེ" @?= Right ["ཀ", "ླ", "ེ"]
         , testCase "marks each letter of the word" $
-            parsePositions (pConstraint09 Tibetan) "ཀྭུ" @?= Right [Root, Subfix, Vowel]
+            parsePositions (pConstraint09) "ཀྭུ" @?= Right [Root, Subfix, Vowel]
         ]
 
-parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

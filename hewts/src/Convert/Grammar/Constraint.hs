@@ -8,7 +8,7 @@
 -- postfix / basic-syllable fragments) composed by 'Convert.Grammar.Structure'
 -- into complete syllable spelling structures; the generic-word parsers spell
 -- whatever the book's structures leave unspelled, and the ambiguous-syllable
--- rule ('recommendedSpelling' / 'noteAmbiguous') reads the marks of a
+-- rule ('recommendedSpelling' / 'noteAmbiguous') reads the stacks of a
 -- finished syllable at the tail of the structures that claim the ambiguous
 -- forms.
 module Convert.Grammar.Constraint

@@ -9,7 +9,7 @@ import Convert
     , renderItems
     , splitSentences
     )
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Token
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
@@ -104,7 +104,7 @@ caseRenderEscapeToUnicode =
 renderWylie :: Text -> Text
 renderWylie input =
     either (error . T.unpack) (renderItems OutUnicode) $
-        parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+        parseEither (pSentence) (fst (tokenizeWylie input))
 
 caseRenderCollapsedSpaces :: Assertion
 caseRenderCollapsedSpaces = do

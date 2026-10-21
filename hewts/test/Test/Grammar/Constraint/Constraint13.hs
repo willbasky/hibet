@@ -4,9 +4,9 @@ module Test.Grammar.Constraint.Constraint13 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( Parser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -21,30 +21,30 @@ tests =
     testGroup
         "grammar rule 13"
         [ testCase "ba-prefix + sa-superfix + roots + ya-subfix without vowel" $
-            parseRaws (pConstraint13 Tibetan) "བསྐྱ" @?= Right ["བ", "ས", "ྐ", "ྱ"]
+            parseRaws (pConstraint13) "བསྐྱ" @?= Right ["བ", "ས", "ྐ", "ྱ"]
         , testCase "ba-prefix + sa-superfix + roots + ya-subfix with vowel" $
-            parseRaws (pConstraint13 Tibetan) "བསྐྱུ" @?= Right ["བ", "ས", "ྐ", "ྱ", "ུ"]
+            parseRaws (pConstraint13) "བསྐྱུ" @?= Right ["བ", "ས", "ྐ", "ྱ", "ུ"]
         , testCase "ba-prefix + sa-superfix + roots + ra-subfix without vowel" $
-            parseRaws (pConstraint13 Tibetan) "བསྐྲ" @?= Right ["བ", "ས", "ྐ", "ྲ"]
+            parseRaws (pConstraint13) "བསྐྲ" @?= Right ["བ", "ས", "ྐ", "ྲ"]
         , testCase "ba-prefix + sa-superfix + roots + ra-subfix with vowel" $
-            parseRaws (pConstraint13 Tibetan) "བསྐྲོ" @?= Right ["བ", "ས", "ྐ", "ྲ", "ོ"]
+            parseRaws (pConstraint13) "བསྐྲོ" @?= Right ["བ", "ས", "ྐ", "ྲ", "ོ"]
         , testCase "ba-prefix + ra-superfix + roots + ya-subfix without vowel" $
-            parseRaws (pConstraint13 Tibetan) "བརྐྱ" @?= Right ["བ", "ར", "ྐ", "ྱ"]
+            parseRaws (pConstraint13) "བརྐྱ" @?= Right ["བ", "ར", "ྐ", "ྱ"]
         , testCase "ba-prefix + ra-superfix + roots + ya-subfix with vowel" $
-            parseRaws (pConstraint13 Tibetan) "བརྐྱུ" @?= Right ["བ", "ར", "ྐ", "ྱ", "ུ"]
+            parseRaws (pConstraint13) "བརྐྱུ" @?= Right ["བ", "ར", "ྐ", "ྱ", "ུ"]
         , testCase "marks each letter of the word" $
-            parsePositions (pConstraint13 Tibetan) "བསྐྱུ"
+            parsePositions (pConstraint13) "བསྐྱུ"
                 @?= Right [Prefix, Superfix, Root, Subfix, Vowel]
         ]
 
-parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

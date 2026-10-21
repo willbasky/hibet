@@ -3,8 +3,14 @@ module Convert.Grammar.Parser where
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
 import Convert.Diagnostic (Finding (..))
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable
+    ( Position (..)
+    , Stack
+    , TibetanSyllable
+    , placeToken
+    )
 import Convert.Token
+import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
@@ -15,17 +21,19 @@ import qualified Text.Megaparsec as MP
 
 type Parser = Parsec Void [Token]
 
--- | The spelling state that lives in the grammar parsers: the findings the
--- constraint windows recorded for the syllable run being parsed, plus the
--- context bits the rules of wave 3.4.4 thread across the stacks of one word -
--- the bare prefix or superfix the word opened on, still waiting for the stack
--- it leads ('scanLeading'), the consonant positions of the word tail after its
--- last vowel ('scanTail'), and how far the stack being spelled has filled the
--- chain of its final marks ('scanFinalSlot', 'scanCaret'). A new wave-3.4 rule
--- adds a constructor to 'Finding' and a window; these fields are the only
--- context the windows of a run share.
+-- | The spelling state that lives in the grammar parsers: the stacks the run
+-- has built so far ('scanStacks'), the findings the constraint windows
+-- recorded for the syllable run being parsed, plus the context bits the rules
+-- of wave 3.4.4 thread across the stacks of one word - the bare prefix or
+-- superfix the word opened on, still waiting for the stack it leads
+-- ('scanLeading'), the consonant positions of the word tail after its last
+-- vowel ('scanTail'), and how far the stack being spelled has filled the chain
+-- of its final marks ('scanFinalSlot', 'scanCaret'). A new wave-3.4 rule adds a
+-- constructor to 'Finding' and a window; these fields are the only context the
+-- windows of a run share.
 data ScanState = ScanState
-    { scanFindings :: [Finding]
+    { scanStacks :: Seq Stack
+    , scanFindings :: [Finding]
     , scanLeading :: Maybe (LeadRole, Token)
     , scanTail :: WordTail
     , scanStackVowel :: Bool
@@ -60,19 +68,21 @@ data WordTail
 -- of its own, not to the stack that closed (ae -> ཨ + ཨེ, kae -> ཀ + ཨེ).
 
 -- | The spell parser: the grammar runs in 'StateT' over the token parser, so
--- the state lives in the parsers themselves. Megaparsec's @MonadParsec@
--- instances for 'StateT' (its own README: wrap @ParsecT@ in these monads to
--- add backtracking state) give us the usual combinators, with its semantics:
--- @lookAhead@ resets the state, @try@ does not and @<|>@ runs the second arm
--- from the state before the first. Probes run their parsers in a pure
--- projection ('runSpell'), so only the real run of the winning structure
--- writes state.
+-- the state lives in the parsers themselves: the stacks built so far, the
+-- findings the windows recorded and the word context. Megaparsec's
+-- @MonadParsec@ instances for 'StateT' (its own README: wrap @ParsecT@ in these
+-- monads to add backtracking state) give us the usual combinators: @<|>@ runs
+-- the second arm from the state before the first, so a failed arm takes its
+-- tokens and its stacks with it. @lookAhead@ does not roll that state back (it
+-- is carried in the value, not in the parser's own state), so a probe runs the
+-- real parse in a projection that discards the state ('runSpell').
 type SpellParser = StateT ScanState Parser
 
 initialScanState :: ScanState
 initialScanState =
     ScanState
-        { scanFindings = []
+        { scanStacks = mempty
+        , scanFindings = []
         , scanLeading = Nothing
         , scanTail = TailVoid
         , scanStackVowel = False
@@ -89,27 +99,42 @@ runSpell = flip evalStateT initialScanState
 liftP :: Parser a -> SpellParser a
 liftP = lift
 
--- | Give a parser a position, so it yields a one-element syllable. Marking at
--- the point of binding keeps the token parsers themselves unchanged: they parse
--- letters, they know nothing about syllables.
-mark :: Position -> Parser a -> Parser (Seq (Position, a))
-mark position parser = do
-    value <- parser
-    pure (Seq.singleton (position, value))
+-- | Give a token its place: it is read, put into the stack being built (the
+-- grammar's own state) and returned as a one-element mark. Marking at the point
+-- of binding keeps the token parsers themselves unchanged: they parse letters,
+-- they know nothing about syllables.
+--
+-- The state is the one truth about stacks: the same call decides where the
+-- letter stands, so the parse no longer needs a grouping pass over the marked
+-- run. A failed arm is rolled back by '<|>' together with its tokens, so a
+-- probe or an alternative leaves no half-built stack behind.
+mark :: Position -> Parser Token -> SpellParser TibetanSyllable
+mark position parser = placeMark position =<< liftP parser
 
--- | 'mark' in the spell parser: the constraint windows that run statefully peg
--- their tokens the same way, then write whatever rule fires at the window.
-markS :: Position -> Parser a -> SpellParser (Seq (Position, a))
-markS position parser = liftP (mark position parser)
+-- | 'mark' for a token already read: the same placement, also for the
+-- structures that build a mark from a token in hand.
+placeMark :: Position -> Token -> SpellParser TibetanSyllable
+placeMark position tok = do
+    modify $ \s -> s{scanStacks = placeToken position tok (scanStacks s)}
+    pure (Seq.singleton (position, tok))
 
 -- | The subfix letters of one stack, marked in order.
-subfixMarks :: [Token] -> TibetanSyllable
-subfixMarks = Seq.fromList . map (Subfix,)
+subfixMarks :: [Token] -> SpellParser TibetanSyllable
+subfixMarks = fmap mconcat . mapM (placeMark Subfix)
 
 -- | The one caret that survives a subjoining scan, marked 'Final', or nothing
 -- when the scan kept no caret.
-caretMark :: Maybe Token -> TibetanSyllable
-caretMark = maybe mempty (Seq.singleton . (Final,))
+caretMark :: Maybe Token -> SpellParser TibetanSyllable
+caretMark = maybe (pure mempty) (placeMark Final)
+
+-- | The stacks the run's grammar built, and the state is cleared for the next
+-- run. Every token a structure places is already in the stack that owns it, so
+-- the caller reads the syllable instead of grouping the marks.
+takeStacks :: SpellParser (Seq Stack)
+takeStacks = do
+    stacks <- gets scanStacks
+    modify $ \s -> s{scanStacks = mempty}
+    pure stacks
 
 -- | Record one finding of a constraint window in the running state, before
 -- the run's span is known.
@@ -120,6 +145,10 @@ noteFinding f = modify $ \s -> s{scanFindings = f : scanFindings s}
 -- for a window that wants to know whether a sibling already warned.
 peekFindings :: SpellParser [Finding]
 peekFindings = gets scanFindings
+
+-- | The stacks the run has built so far, read without clearing them.
+peekStacks :: SpellParser (Seq Stack)
+peekStacks = gets scanStacks
 
 -- | The findings the current run's windows recorded, in order; the state is
 -- cleared for the next run ('pSyllable' collects the ones of the run it
@@ -192,47 +221,54 @@ pRootConsonant = satisfy isRootConsonantToken <?> "One of 30 Tibetan root conson
 pSanskrit :: Parser Token
 pSanskrit = satisfy isSanskritConsonantToken <?> "One of 5 Sanskrit consonants"
 
--- | The four subfix letters. The sets are the book's (rules 4.5, 4.6: subfixes
--- are @w y r l@, superfixes @r l s@). Wylie writes the bare letter where
--- Tibetan has a separate sign, so each gets a spelling: the letter is the same
--- token either way, only its canonical form differs.
--- | Which spelling the input is written in. The two agree on almost everything
--- - @i u e o@ are the same letters either way, a prefix is a prefix, a final is
--- a final - and differ where Tibetan lets a mark carry the meaning and Wylie
--- writes it out in letters: a bare @r y l w@ is the subjoined letter in Wylie
--- and a separate sign in Tibetan. So the switch changes which tokens fill a
--- slot, never what the slot means.
-data Spelling
-    = Tibetan
-    | Wylie
-    deriving (Show, Eq, Ord)
+-- | Whether the token is written in Wylie. The sign decides the spelling, not a
+-- label: a Wylie token is a plain letter where Tibetan has a joined sign.
+isWylieSign :: Token -> Bool
+isWylieSign t = tokenSource t == TsWylie
+
+-- | A letter the book writes as a joined sign in Tibetan and as the full letter
+-- in Wylie (rules 4.5, 4.6: subfixes are @w y r l@). The sign decides which form
+-- it may take; the other form is not this letter.
+isJoinedAt :: SubConsonant -> Consonant -> Token -> Bool
+isJoinedAt sc c t
+    | isWylieSign t = isSpecificConsonant c t
+    | otherwise = isSpecificSubConsonant sc t
 
 pSubfixWa :: Parser Token
-pSubfixWa = satisfy (isSpecificSubConsonant SCw) <?> "Subfix wa token"
+pSubfixWa = satisfy (isJoinedAt SCw Cw) <?> "Subfix wa token"
 
 pSubfixYa :: Parser Token
-pSubfixYa = satisfy (isSpecificSubConsonant SCy) <?> "Subfix ya token"
+pSubfixYa = satisfy (isJoinedAt SCy Cy) <?> "Subfix ya token"
 
 pSubfixRa :: Parser Token
-pSubfixRa = satisfy (isSpecificSubConsonant SCr) <?> "Subfix ra token"
+pSubfixRa = satisfy (isJoinedAt SCr Cr) <?> "Subfix ra token"
 
 pSubfixLa :: Parser Token
-pSubfixLa = satisfy (isSpecificSubConsonant SCl) <?> "Subfix la token"
+pSubfixLa = satisfy (isJoinedAt SCl Cl) <?> "Subfix la token"
 
--- | Wylie writes the subfix letters with their full letters (@rky@ -> ཀྱ);
--- the subjoined signs exist only in the Tibetan spelling, so each subfix slot
--- has a Wylie twin that matches the plain letter.
-pSubfixYaWylie :: Parser Token
-pSubfixYaWylie = satisfy (isSpecificConsonant Cy) <?> "Wylie subfix ya letter"
+-- | A subjoined root from a group of letters: the joined sign in Tibetan, the
+-- full letter in Wylie.
+pJoinedRoot :: [Consonant] -> Parser Token
+pJoinedRoot allowed = satisfy (maybe False (`elem` allowed) . letterOfSign) <?> "Subjoined root token"
 
-pSubfixRaWylie :: Parser Token
-pSubfixRaWylie = satisfy (isSpecificConsonant Cr) <?> "Wylie subfix ra letter"
+letterOfSign :: Token -> Maybe Consonant
+letterOfSign t = case (isWylieSign t, tokenCanonical t) of
+    (True, TcConsonant c) -> Just c
+    (False, TcSubConsonant sc) -> Just (fromSubjoined sc)
+    _ -> Nothing
 
-pSubfixLaWylie :: Parser Token
-pSubfixLaWylie = satisfy (isSpecificConsonant Cl) <?> "Wylie subfix la letter"
+-- | Whether the stack written so far is Wylie: its letters carry the Wylie source.
+isWylieStack :: TibetanSyllable -> Bool
+isWylieStack = any (isWylieSign . snd)
 
-pSubfixWaWylie :: Parser Token
-pSubfixWaWylie = satisfy (isSpecificConsonant Cw) <?> "Wylie subfix wa letter"
+-- | The vowel slot after a stack. Wylie writes a vowel in every syllable (a
+-- vowel letter, or the letter @a@ where none stands), so its slot is
+-- obligatory; Tibetan may leave it out. @written@ are the vowel letters the rule
+-- allows.
+vowelSlot :: TibetanSyllable -> [SpellParser TibetanSyllable] -> SpellParser TibetanSyllable
+vowelSlot stack written
+    | isWylieStack stack = MP.choice (written ++ [mark ImplicitVowel pImplicitA])
+    | otherwise = fromMaybe mempty <$> MP.optional (MP.choice written)
 
 pVowel :: Parser Token
 pVowel = satisfy isVowelToken <?> "Vowel token"

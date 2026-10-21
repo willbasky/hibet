@@ -6,21 +6,22 @@ import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Diagnostic (Diagnostics)
 import Convert.Grammar.Parser
     ( SpellParser
-    , Spelling (..)
     , parseEither
     , runSpell
+    , takeStacks
     )
 import Convert.Grammar.Structure (pStructure38)
 import Convert.Grammar.Syllable
     ( Position (..)
+    , Stack
     , Syllable (..)
     , TibetanSyllable
-    , stacksOf
     )
 import Convert.Token (Span (..), Token)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
 import Data.Foldable (toList)
+import Data.Sequence (Seq)
 import Data.Text (Text)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
@@ -88,27 +89,33 @@ tests =
         , testCase "a+yo renders ཨྱོ" $
             wylRender "a+yo" @?= Right "ཨྱོ"
         , testCase "a stack cannot start on a subjoined letter (r-i stays Other)" $
-            isLeft (wylParse (pStructure38 Wylie) "r-i") @?= True
+            isLeft (wylParse (pStructure38) "r-i") @?= True
         , testCase "a stack cannot start on a plus" $
-            isLeft (wylParse (pStructure38 Wylie) "+a") @?= True
+            isLeft (wylParse (pStructure38) "+a") @?= True
         ]
+
+-- | The stacks the grammar built while parsing: the state it leaves behind.
+-- This is what 'Convert.Sentence' reads instead of grouping the marks itself.
+grammarStacks :: Text -> Either Text (Seq Stack)
+grammarStacks input =
+    parseEither (runSpell (pStructure38 *> takeStacks)) (fst (tokenizeWylie input))
 
 wylParse :: SpellParser TibetanSyllable -> Text -> Either Text TibetanSyllable
 wylParse p input = parseEither (runSpell p) (fst (tokenizeWylie input))
 
 wylPositions :: Text -> Either Text [Position]
-wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38 Wylie)
+wylPositions = fmap (toList . fmap fst) . wylParse (pStructure38)
 
 wylRender :: Text -> Either Text Text
 wylRender w =
     fmap
-        (renderItems OutUnicode . pure . SyllableItem . liftMarks)
-        (wylParse (pStructure38 Wylie) w)
+        (renderItems OutUnicode . pure . SyllableItem . liftStacks)
+        (grammarStacks w)
     where
-        liftMarks :: TibetanSyllable -> Syllable
-        liftMarks marks =
+        liftStacks :: Seq Stack -> Syllable
+        liftStacks stacks =
             Syllable
-                (stacksOf (fmap (\(p, t) -> (Just p, t)) marks))
+                stacks
                 (Span 0 0)
                 (mempty :: Diagnostics)
 

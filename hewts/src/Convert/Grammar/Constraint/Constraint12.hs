@@ -4,7 +4,7 @@ Tibetan spelling grammar 4.12 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint12 (pConstraint12) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..), mark)
+import Convert.Grammar.Parser (Parser, SpellParser, mark, vowelSlot)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token
@@ -13,48 +13,32 @@ import Convert.Token
     , TokenCanonical (TcConsonant)
     , tokenCanonical
     )
-import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint12 :: Spelling -> Parser TibetanSyllable
-pConstraint12 = \case
-    Tibetan ->
-        MP.choice
-            [ MP.try $ parseConstraintUnicode12 GP.pPrefixDa pRoots1 GP.pSubfixYa
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixDa pRoots2 GP.pSubfixRa
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixBa pRoots3 GP.pSubfixYa
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixBa pRoots4 GP.pSubfixRa
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixBa pRoots5 GP.pSubfixLa
-            , MP.try $
-                parseConstraintUnicode12 GP.pPrefixMa pRoots6 (GP.pSubfixYa <|> GP.pSubfixRa)
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixA pRoots7 GP.pSubfixYa
-            , MP.try $ parseConstraintUnicode12 GP.pPrefixA pRoots8 GP.pSubfixRa
-            ]
-    Wylie ->
-        MP.choice
-            [ MP.try $ parseConstraintWylie12 GP.pPrefixDa pRoots1 GP.pSubfixYaWylie
-            , MP.try $ parseConstraintWylie12 GP.pPrefixDa pRoots2 GP.pSubfixRaWylie
-            , MP.try $ parseConstraintWylie12 GP.pPrefixBa pRoots3 GP.pSubfixYaWylie
-            , MP.try $ parseConstraintWylie12 GP.pPrefixBa pRoots4 GP.pSubfixRaWylie
-            , MP.try $ parseConstraintWylie12 GP.pPrefixBa pRoots5 GP.pSubfixLaWylie
-            , MP.try $
-                parseConstraintWylie12
-                    GP.pPrefixMa
-                    pRoots6
-                    (GP.pSubfixYaWylie <|> GP.pSubfixRaWylie)
-            , MP.try $ parseConstraintWylie12 GP.pPrefixA pRoots7 GP.pSubfixYaWylie
-            , MP.try $ parseConstraintWylie12 GP.pPrefixA pRoots8 GP.pSubfixRaWylie
-            ]
+pConstraint12 :: SpellParser TibetanSyllable
+pConstraint12 =
+    MP.choice
+        [ MP.try $ parseConstraint12 GP.pPrefixDa pRoots1 GP.pSubfixYa
+        , MP.try $ parseConstraint12 GP.pPrefixDa pRoots2 GP.pSubfixRa
+        , MP.try $ parseConstraint12 GP.pPrefixBa pRoots3 GP.pSubfixYa
+        , MP.try $ parseConstraint12 GP.pPrefixBa pRoots4 GP.pSubfixRa
+        , MP.try $ parseConstraint12 GP.pPrefixBa pRoots5 GP.pSubfixLa
+        , MP.try $
+            parseConstraint12 GP.pPrefixMa pRoots6 (GP.pSubfixYa <|> GP.pSubfixRa)
+        , MP.try $ parseConstraint12 GP.pPrefixA pRoots7 GP.pSubfixYa
+        , MP.try $ parseConstraint12 GP.pPrefixA pRoots8 GP.pSubfixRa
+        ]
 
-parseConstraintUnicode12 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
-parseConstraintUnicode12 parsePrefix parseRoot parseSubfix = do
+parseConstraint12 ::
+    Parser Token -> Parser Token -> Parser Token -> SpellParser TibetanSyllable
+parseConstraint12 parsePrefix parseRoot parseSubfix = do
     prefix <- mark Prefix parsePrefix
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix
-    vowel <- MP.optional (mark Vowel GP.pVowel)
-    pure (prefix <> root <> subfix <> fromMaybe mempty vowel)
+    let stack = prefix <> root <> subfix
+    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    pure (stack <> vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] with prefix ད under subfix ཡ
 pRoots1 :: Parser Token
@@ -95,16 +79,3 @@ pAllowedRoot allowed = do
         TcConsonant c
             | c `elem` allowed -> pure tok
         _ -> MP.empty
-
--- The Wylie arm: the root above the subfix is a full letter either way and the
--- groups are shared; only the subfix is a plain letter here and the vowel is
--- always written.
-
-parseConstraintWylie12 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
-parseConstraintWylie12 parsePrefix parseRoot parseSubfix = do
-    prefix <- mark Prefix parsePrefix
-    root <- mark Root parseRoot
-    subfix <- mark Subfix parseSubfix
-    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
-    pure (prefix <> root <> subfix <> vowel)

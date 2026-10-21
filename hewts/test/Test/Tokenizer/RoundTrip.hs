@@ -17,7 +17,7 @@ import Convert
     , renderItems
     , splitSentences
     )
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Token
 import Convert.Tokenizer.Unicode (unicodeOf)
 import Convert.Tokenizer.Wylie
@@ -59,7 +59,7 @@ parseU input =
 -- 'ImplicitVowel' - the spelling is fully covered, and the renderer skips it.
 parseW :: Text -> [SpellItem]
 parseW input =
-    case parseEither (pSentence Wylie) (fst (tokenizeWylie input)) of
+    case parseEither (pSentence) (fst (tokenizeWylie input)) of
         Left err -> error ("RoundTrip.parseW: " <> show err)
         Right items -> items
 

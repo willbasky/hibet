@@ -4,9 +4,9 @@ module Test.Grammar.Constraint.Constraint20 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( Parser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -22,29 +22,29 @@ tests =
     testGroup
         "grammar rule 20"
         [ testCase "parses root འ" $
-            parseRaws (pConstraint20 Tibetan) "འ" @?= Right ["འ"]
+            parseRaws (pConstraint20) "འ" @?= Right ["འ"]
         , testCase "parses root འ with vowel" $
-            parseRaws (pConstraint20 Tibetan) "འི" @?= Right ["འ", "ི"]
+            parseRaws (pConstraint20) "འི" @?= Right ["འ", "ི"]
         , testCase "parses root འ with subroot ང" $
-            parseRaws (pConstraint20 Tibetan) "འྔ" @?= Right ["འ", "ྔ"]
+            parseRaws (pConstraint20) "འྔ" @?= Right ["འ", "ྔ"]
         , testCase "parses root འ with subroot མ" $
-            parseRaws (pConstraint20 Tibetan) "འྨ" @?= Right ["འ", "ྨ"]
+            parseRaws (pConstraint20) "འྨ" @?= Right ["འ", "ྨ"]
         , testCase "rejects root ཀ" $
-            isLeft (parseRaws (pConstraint20 Tibetan) "ཀ") @?= True
+            isLeft (parseRaws (pConstraint20) "ཀ") @?= True
         , testCase "marks each letter of the word" $
-            parsePositions (pConstraint20 Tibetan) "འོ" @?= Right [Root, Vowel]
+            parsePositions (pConstraint20) "འོ" @?= Right [Root, Vowel]
         , testCase "a bare a-chung is the word's last suffix" $
-            parsePositions (pConstraint20 Tibetan) "འ" @?= Right [Suffix]
+            parsePositions (pConstraint20) "འ" @?= Right [Suffix]
         ]
 
-parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

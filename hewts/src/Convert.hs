@@ -11,7 +11,7 @@ module Convert
     ) where
 
 import Convert.Diagnostic (Diagnostics, addDiagnostic, noTibetanCharacters)
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable
     ( Stack (..)
     , Subfixes (..)
@@ -60,7 +60,7 @@ splitSentences input =
 splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
 splitSentencesWith input = do
     let (tokens, diagnostics) = tokenizeUnicode input
-    items <- parseEither (pSentence Tibetan) tokens
+    items <- parseEither pSentence tokens
     pure (items, diagnostics <> legality items)
 
 -- | The spelling warnings for a whole parsed sentence: the 'sylDiags' of

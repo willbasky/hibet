@@ -4,9 +4,9 @@ module Test.Grammar.Constraint.Constraint16 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( Parser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -22,35 +22,35 @@ tests =
     testGroup
         "grammar rule 16"
         [ testCase "parses suffix ན before postfix ད" $
-            parseRaws (pConstraint16Da Tibetan) "ན" @?= Right ["ན"]
+            parseRaws (pConstraint16Da) "ན" @?= Right ["ན"]
         , testCase "parses suffix ར before postfix ད" $
-            parseRaws (pConstraint16Da Tibetan) "ར" @?= Right ["ར"]
+            parseRaws (pConstraint16Da) "ར" @?= Right ["ར"]
         , testCase "parses suffix ལ before postfix ད" $
-            parseRaws (pConstraint16Da Tibetan) "ལ" @?= Right ["ལ"]
+            parseRaws (pConstraint16Da) "ལ" @?= Right ["ལ"]
         , testCase "rejects ག for postfix ད rule" $
-            isLeft (parseRaws (pConstraint16Da Tibetan) "ག") @?= True
+            isLeft (parseRaws (pConstraint16Da) "ག") @?= True
         , testCase "parses suffix ག before postfix ས" $
-            parseRaws (pConstraint16Sa Tibetan) "ག" @?= Right ["ག"]
+            parseRaws (pConstraint16Sa) "ག" @?= Right ["ག"]
         , testCase "parses suffix ང before postfix ས" $
-            parseRaws (pConstraint16Sa Tibetan) "ང" @?= Right ["ང"]
+            parseRaws (pConstraint16Sa) "ང" @?= Right ["ང"]
         , testCase "parses suffix བ before postfix ས" $
-            parseRaws (pConstraint16Sa Tibetan) "བ" @?= Right ["བ"]
+            parseRaws (pConstraint16Sa) "བ" @?= Right ["བ"]
         , testCase "parses suffix མ before postfix ས" $
-            parseRaws (pConstraint16Sa Tibetan) "མ" @?= Right ["མ"]
+            parseRaws (pConstraint16Sa) "མ" @?= Right ["མ"]
         , testCase "rejects ན for postfix ས rule" $
-            isLeft (parseRaws (pConstraint16Sa Tibetan) "ན") @?= True
+            isLeft (parseRaws (pConstraint16Sa) "ན") @?= True
         , testCase "marks each letter of the word" $
-            parsePositions (pConstraint16Da Tibetan) "ན" @?= Right [Suffix]
+            parsePositions (pConstraint16Da) "ན" @?= Right [Suffix]
         ]
 
-parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

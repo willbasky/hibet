@@ -4,45 +4,27 @@ Tibetan spelling grammar 4.10 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint10 (pConstraint10) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..), mark)
+import Convert.Grammar.Parser (Parser, SpellParser, mark, pJoinedRoot, vowelSlot)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
-import Convert.Token
-    ( Consonant (..)
-    , SubConsonant (..)
-    , Token (..)
-    , TokenCanonical (TcConsonant, TcSubConsonant)
-    , tokenCanonical
-    )
+import Convert.Token (Consonant (..), Token)
 import Data.Maybe (fromMaybe)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 
-pConstraint10 :: Spelling -> Parser TibetanSyllable
-pConstraint10 = \case
-    Tibetan ->
-        MP.choice
-            [ MP.try $ parseConstraintUnicode10 GP.pSuperfixRa pRoots1 GP.pSubfixYa
-            , MP.try $
-                parseConstraintUnicode10 GP.pSuperfixSa pRoots2 (GP.pSubfixYa <|> GP.pSubfixRa)
-            , MP.try $ parseConstraintUnicode10 GP.pSuperfixSa pRoot3 GP.pSubfixRa
-            , MP.try $ parseConstraintUnicode10 GP.pSuperfixRa pRoot4 GP.pSubfixWa
-            ]
-    Wylie ->
-        MP.choice
-            [ MP.try $ parseConstraintWylie10 GP.pSuperfixRa pRoots1Wylie GP.pSubfixYaWylie
-            , MP.try $
-                parseConstraintWylie10
-                    GP.pSuperfixSa
-                    pRoots2Wylie
-                    (GP.pSubfixYaWylie <|> GP.pSubfixRaWylie)
-            , MP.try $ parseConstraintWylie10 GP.pSuperfixSa pRoot3Wylie GP.pSubfixRaWylie
-            , MP.try $ parseConstraintWylie10 GP.pSuperfixRa pRoot4Wylie GP.pSubfixWaWylie
-            ]
+pConstraint10 :: SpellParser TibetanSyllable
+pConstraint10 =
+    MP.choice
+        [ MP.try $ parseConstraint10 GP.pSuperfixRa pRoots1 GP.pSubfixYa
+        , MP.try $
+            parseConstraint10 GP.pSuperfixSa pRoots2 (GP.pSubfixYa <|> GP.pSubfixRa)
+        , MP.try $ parseConstraint10 GP.pSuperfixSa pRoot3 GP.pSubfixRa
+        , MP.try $ parseConstraint10 GP.pSuperfixRa pRoot4 GP.pSubfixWa
+        ]
 
-parseConstraintUnicode10 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
-parseConstraintUnicode10 parseSuperfix parseRoot parseSubfix = do
+parseConstraint10 ::
+    Parser Token -> Parser Token -> Parser Token -> SpellParser TibetanSyllable
+parseConstraint10 parseSuperfix parseRoot parseSubfix = do
     superfix <- mark Superfix parseSuperfix
     root <- mark Root parseRoot
     subfix <- mark Subfix parseSubfix
@@ -52,68 +34,22 @@ parseConstraintUnicode10 parseSuperfix parseRoot parseSubfix = do
     -- the subjoins 4.9 allows in second place (@l@ never is).
     second <-
         MP.optional (mark Subfix (GP.pSubfixYa <|> GP.pSubfixRa <|> GP.pSubfixWa))
-    vowel <- MP.optional (mark Vowel GP.pVowel)
-    pure
-        (superfix <> root <> subfix <> fromMaybe mempty second <> fromMaybe mempty vowel)
+    let stack = superfix <> root <> subfix <> fromMaybe mempty second
+    vowel <- vowelSlot stack [mark Vowel GP.pVowel]
+    pure (stack <> vowel)
 
 -- (1) root group [ 'ཀ', 'ག', 'མ' ] under superfix ར and above subfix ཡ
 pRoots1 :: Parser Token
-pRoots1 = pAllowedRoot [SCk, SCg, SCm]
+pRoots1 = pJoinedRoot [Ck, Cg, Cm]
 
 -- (2) root group [ 'ཀ', 'ག', 'པ', 'བ', 'མ' ] under superfix ས and above subfix ཡ or ར
 pRoots2 :: Parser Token
-pRoots2 = pAllowedRoot [SCk, SCg, SCp, SCb, SCm]
+pRoots2 = pJoinedRoot [Ck, Cg, Cp, Cb, Cm]
 
 -- ན
 pRoot3 :: Parser Token
-pRoot3 = pAllowedRoot [SCn]
+pRoot3 = pJoinedRoot [Cn]
 
 -- ཙ
 pRoot4 :: Parser Token
-pRoot4 = pAllowedRoot [SCts]
-
-pAllowedRoot :: [SubConsonant] -> Parser Token
-pAllowedRoot allowed = do
-    tok <- GP.pSubConsonant
-    case tokenCanonical tok of
-        TcSubConsonant sc
-            | sc `elem` allowed -> pure tok
-        _ -> MP.empty
-
--- The Wylie arm: the root under the superfix and the subfix are plain letters,
--- so each group has a full-letter twin and the vowel is always written.
-
-parseConstraintWylie10 ::
-    Parser Token -> Parser Token -> Parser Token -> Parser TibetanSyllable
-parseConstraintWylie10 parseSuperfix parseRoot parseSubfix = do
-    superfix <- mark Superfix parseSuperfix
-    root <- mark Root parseRoot
-    subfix <- mark Subfix parseSubfix
-    -- The second subjoin of REFACTOR-AST §8 A3: Wylie writes it as a bare
-    -- letter, like the first.
-    second <-
-        MP.optional
-            (mark Subfix (GP.pSubfixYaWylie <|> GP.pSubfixRaWylie <|> GP.pSubfixWaWylie))
-    vowel <- MP.choice [mark Vowel GP.pVowel, mark ImplicitVowel GP.pImplicitA]
-    pure (superfix <> root <> subfix <> fromMaybe mempty second <> vowel)
-
-pRoots1Wylie :: Parser Token
-pRoots1Wylie = pAllowedRootWylie [Ck, Cg, Cm]
-
-pRoots2Wylie :: Parser Token
-pRoots2Wylie = pAllowedRootWylie [Ck, Cg, Cp, Cb, Cm]
-
-pRoot3Wylie :: Parser Token
-pRoot3Wylie = pAllowedRootWylie [Cn]
-
-pRoot4Wylie :: Parser Token
-pRoot4Wylie = pAllowedRootWylie [Cts]
-
--- | A full consonant letter from a group (Wylie spells stacked letters in full).
-pAllowedRootWylie :: [Consonant] -> Parser Token
-pAllowedRootWylie allowed = do
-    tok <- GP.pConsonant
-    case tokenCanonical tok of
-        TcConsonant c
-            | c `elem` allowed -> pure tok
-        _ -> MP.empty
+pRoot4 = pJoinedRoot [Cts]

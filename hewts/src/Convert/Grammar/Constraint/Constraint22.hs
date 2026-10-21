@@ -1,7 +1,7 @@
 -- | The ambiguous-syllable rule of wave 3.4.5: a syllable whose letters stand
 -- the same way in two readings, where the corpus prefers one of them.
 --
--- The rule is a pure function of the marks a completed syllable carries, and
+-- The rule is a pure function of the stacks a completed syllable carries, and
 -- the window that runs it is hosted where the syllable ends - the tail of the
 -- three structures that claim the ambiguous forms. It cannot live inside
 -- 'Convert.Grammar.Constraint.Constraint14': that rule is also the first half
@@ -24,12 +24,20 @@ module Convert.Grammar.Constraint.Constraint22
 import Control.Monad (guard)
 import Convert.Diagnostic (Finding (PreferredSpelling))
 import Convert.Grammar.Constraint.Constraint15 (suffixConsonants15)
+import Control.Monad (guard)
 import Convert.Grammar.Parser
     ( SpellParser
     , noteFinding
     , peekFindings
+    , peekStacks
     )
-import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
+import Convert.Grammar.Syllable
+    ( Role (..)
+    , Stack (..)
+    , Subfixes (..)
+    , VowelSlot (..)
+    , finalsTokens
+    )
 import Convert.Token
     ( Consonant (..)
     , Token
@@ -38,6 +46,8 @@ import Convert.Token
     , tokenRaw
     )
 import Data.Foldable (toList)
+import Data.Maybe (isNothing)
+import Data.Sequence (Seq)
 import Data.Text (Text)
 
 -- | Where the preferred reading of a three-letter form puts its root: the first
@@ -79,20 +89,16 @@ ambiguousForm _ = Nothing
 -- letter, which is the whole of the suffix group of rule 4.15 read from its
 -- own data. The three-letter forms are listed in 'ambiguousForm', and the rule
 -- speaks only where the parse put the root where that listing does not.
-recommendedSpelling :: TibetanSyllable -> Maybe Text
-recommendedSpelling syllable
-    | not (any isImplicitVowelMark marked) = Nothing
-    | otherwise = case marked of
-        [(Prefix, prefixLetter), (Root, rootLetter), (ImplicitVowel, _)] ->
-            twoLetters prefixLetter rootLetter
-        [(Prefix, c0), (Root, c1), (ImplicitVowel, _), (Suffix, c2)] ->
-            preferredByForm RootSecond [c0, c1, c2]
-        [(Root, c0), (ImplicitVowel, _), (Suffix, c1), (Postfix, c2)] ->
-            preferredByForm RootFirst [c0, c1, c2]
-        _ -> Nothing
+recommendedSpelling :: Seq Stack -> Maybe Text
+recommendedSpelling stacks = case traverse plainStack (toList stacks) of
+    Just [(RolePrefix, prefixLetter, False), (RoleRoot, rootLetter, True)] ->
+        twoLetters prefixLetter rootLetter
+    Just [(RolePrefix, c0, False), (RoleRoot, c1, True), (RoleSuffix, c2, False)] ->
+        preferredByForm RootSecond [c0, c1, c2]
+    Just [(RoleRoot, c0, True), (RoleSuffix, c1, False), (RolePostfix, c2, False)] ->
+        preferredByForm RootFirst [c0, c1, c2]
+    _ -> Nothing
     where
-        marked = toList syllable
-
         -- The recommended reading of two consonants is the one with the root
         -- first, so the Wylie is the letters with the @a@ between them.
         twoLetters prefixLetter rootLetter =
@@ -111,27 +117,42 @@ recommendedSpelling syllable
             guard (rootAt /= preferred)
             pure spelling
 
-isImplicitVowelMark :: (Position, Token) -> Bool
-isImplicitVowelMark (ImplicitVowel, _) = True
-isImplicitVowelMark _ = False
+-- | A stack that is its base letter and nothing else, with or without the
+-- implicit @a@ (the flag): the only shape the three readings above are written
+-- for. A stack with a written vowel, a superfix, a subfix, a caret or a final
+-- is a different reading and matches none of them.
+plainStack :: Stack -> Maybe (Role, Token, Bool)
+plainStack st = do
+    root <- stRoot st
+    guard $
+        isNothing (stSuperfix st)
+            && stSubfixes st == NoSubfix
+            && isNothing (stCaret st)
+            && null (finalsTokens (stFinals st))
+    implicit <- case stVowel st of
+        Nothing -> Just False
+        Just VowelImplicit -> Just True
+        Just VowelWritten{} -> Nothing
+    pure (stRole st, root, implicit)
 
 consonantOf :: Token -> Maybe Consonant
 consonantOf token = case tokenCanonical token of
     TcConsonant consonant -> Just consonant
     _ -> Nothing
 
--- | The window: the syllable is complete, so the rule reads the marks the
--- structures have just placed and records what it finds.
+-- | The window: the syllable is complete, so the rule reads the stacks the
+-- structure has just built and records what it finds.
 --
 -- The reference keeps quiet when the run carries a warning already, and so
 -- does this: a run that another window has already blamed has no business
 -- carrying a second, vaguer one. (The book structures host no other window
 -- yet, so the gate holds by construction today and names the intent
 -- tomorrow.)
-noteAmbiguous :: TibetanSyllable -> SpellParser ()
-noteAmbiguous syllable = do
+noteAmbiguous :: SpellParser ()
+noteAmbiguous = do
     others <- peekFindings
-    case recommendedSpelling syllable of
+    stacks <- peekStacks
+    case recommendedSpelling stacks of
         Just spelling
             | null others -> noteFinding (PreferredSpelling spelling)
         _ -> pure ()

@@ -61,8 +61,9 @@ import Convert.Grammar.Parser
     , caretMark
     , claimFinal
     , liftP
-    , markS
+    , mark
     , noteFinding
+    , placeMark
     , resetFinalChain
     , scanLeading
     , scanStackVowel
@@ -105,7 +106,7 @@ pConstraint21First =
     where
         vowelStart :: SpellParser TibetanSyllable
         vowelStart = do
-            marks <- markS Vowel GP.pVowelAny
+            marks <- mark Vowel GP.pVowelAny
             noteVowelMark marks
             resetWordTail
             -- A word that opens on a vowel opens a stack like any other.
@@ -132,7 +133,7 @@ pConstraint21Rest =
         , noLead restJoin
         , vowelContinuation
         , noLead oneFinalMark
-        , noLead (markS Subfix GP.pSubConsonant)
+        , noLead (mark Subfix GP.pSubConsonant)
         , pStackBody False
         ]
     where
@@ -149,7 +150,7 @@ pConstraint21Rest =
             if taken
                 then MP.empty
                 else do
-                    marks <- markS Vowel GP.pVowelAny
+                    marks <- mark Vowel GP.pVowelAny
                     noteVowelMark marks
                     resetWordTail
                     pure marks
@@ -203,7 +204,10 @@ pStackBody atStart = do
                 fst <$> liftP GP.pSubjoinRun
             else pure []
     let (pos, _) = markBase atStart base next0 below0
-        baseMark = Seq.singleton (pos, base)
+    -- The base goes into the stacks before the choice below: whichever arm
+    -- wins keeps it, and a failed arm is rolled back to this point, not past
+    -- the letter that opened the stack.
+    baseMark <- placeMark pos base
     MP.choice
         [ completeStack base baseMark
         , bare base baseMark pos next0 below0
@@ -229,9 +233,13 @@ pStackBody atStart = do
                     -- is exactly what its rule asks for; either way the
                     -- pending lead is over.
                     settleVowelHead base subjoined
+                    -- The letters below the base are written before the vowel
+                    -- that ends the stack, so they are placed before the tail
+                    -- reads it; the tail then finds the stack it joins.
+                    subfixMarks' <- subfixMarks subjoined
+                    caret <- caretMark (listToMaybe carets)
                     tailMarks <- pConsumeTail False (GP.isImplicitAWylie base)
-                    pure
-                        (baseMark <> subfixMarks subjoined <> caretMark (listToMaybe carets) <> tailMarks)
+                    pure (baseMark <> subfixMarks' <> caret <> tailMarks)
                 _ -> MP.empty
 
         -- The bare head (3.4.3): the word's first stack closed bare, so the
@@ -484,7 +492,7 @@ pConsumeTail vowelSeen baseIsA =
         pTailVowel
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- markS Vowel GP.pVowelAny
+                marks <- mark Vowel GP.pVowelAny
                 noteVowelMark marks
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
@@ -500,7 +508,7 @@ pConsumeTail vowelSeen baseIsA =
         pImplicitABranch
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- markS ImplicitVowel GP.pImplicitAWylie
+                marks <- mark ImplicitVowel GP.pImplicitAWylie
                 setStackVowel True
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
@@ -530,7 +538,7 @@ pConsumeTail vowelSeen baseIsA =
             -- stack - the a-chen branch below only fires before the first
             -- vowel, so the tail cannot take the letter there.
             inheritVowel <- case Seq.lookup 0 marks of
-                Just (Subfix, _) -> MP.option mempty (markS ImplicitVowel GP.pImplicitA)
+                Just (Subfix, _) -> MP.option mempty (mark ImplicitVowel GP.pImplicitA)
                 _ -> pure mempty
             -- A vowel of the join (a @+e@, or the implicit @a@ it pulled in)
             -- fills the stack; a join that only dragged a letter below a fresh
@@ -578,11 +586,10 @@ noteRunCarets = mapM_ noteRunCaret
                 GP.FinalRepeatedCaret -> noteFinding SecondCaret
                 _ -> pure ()
 
--- | One final mark, taken against the chain this stack's earlier finals built
--- and marked 'Eaten' when it does not fit: the mark stays in the parse and in
--- the run, the finding names it, and it prints nothing - which is what the
--- second caret of @g^r^a@ already does here, and what the reference does with
--- the mark it drops (@oMM@ -> ཨོཾ).
+-- | One final mark, taken against the chain this stack's earlier finals built.
+-- A mark that does not fit is dropped: the finding names it, and it prints
+-- nothing - which is what the second caret of @g^r^a@ already does here, and
+-- what the reference does with the mark it drops (@oMM@ -> ཨོཾ).
 --
 -- Both windows that claim a final mark come through this one. Which window
 -- claims a spelling is a matter of how the stack before it closed - a Wylie
@@ -594,13 +601,13 @@ oneFinalMark = MP.try $ do
     tok <- liftP GP.pFinal
     fit <- claimFinal tok
     case fit of
-        GP.FinalFits -> pure (Seq.singleton (Final, tok))
+        GP.FinalFits -> placeMark Final tok
         GP.FinalOutOfChain -> do
             noteFinding (DuplicateFinalMark (tokenRaw tok))
-            pure (Seq.singleton (Eaten, tok))
+            pure mempty
         GP.FinalRepeatedCaret -> do
             noteFinding SecondCaret
-            pure (Seq.singleton (Eaten, tok))
+            pure mempty
 
 -- | The forced join sign @+@ (Wylie syntax only), with two readings: the
 -- letter after it is dragged below the stack as a subfix together with its
@@ -616,7 +623,7 @@ pForcedJoin = MP.try $ do
     void (liftP GP.pPlus)
     MP.choice
         [ MP.try pSubjoinBelow
-        , markS Vowel GP.pVowelAny
+        , mark Vowel GP.pVowelAny
         ]
     where
         -- \| The letter a forced join drags below the stack - a consonant or the
@@ -629,10 +636,10 @@ pForcedJoin = MP.try $ do
             next <- MP.choice [liftP GP.pConsonant, liftP GP.pSubConsonant]
             (subjoined, carets) <- liftP GP.pSubjoinRun
             noteRunCarets carets
-            pure $
-                Seq.singleton (Subfix, next)
-                    <> caretMark (listToMaybe carets)
-                    <> Seq.fromList [(Subfix, s) | s <- reverse subjoined]
+            first <- placeMark Subfix next
+            caret <- caretMark (listToMaybe carets)
+            deeper <- subfixMarks (reverse subjoined)
+            pure (first <> caret <> deeper)
 
 -- | Where the base stands: a word-initial prefix letter over a consonant is a
 -- Prefix (bsgribs -> བ), a superfix letter over a non-subfix consonant is a

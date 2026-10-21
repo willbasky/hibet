@@ -4,9 +4,9 @@ module Test.Grammar.Constraint.Constraint17 (tests) where
 
 import Convert.Grammar.Constraint
 import Convert.Grammar.Parser
-    ( Parser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
+    , runSpell
     )
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
 import Convert.Token (tokenRaw)
@@ -22,35 +22,35 @@ tests =
     testGroup
         "grammar rule 17"
         [ testCase "parses root ག above subfix ར" $
-            parseRaws (pConstraint17Ra Tibetan) "གྲྭ" @?= Right ["ག", "ྲ", "ྭ"]
+            parseRaws (pConstraint17Ra) "གྲྭ" @?= Right ["ག", "ྲ", "ྭ"]
         , testCase "parses root ད above subfix ར" $
-            parseRaws (pConstraint17Ra Tibetan) "དྲྭ" @?= Right ["ད", "ྲ", "ྭ"]
+            parseRaws (pConstraint17Ra) "དྲྭ" @?= Right ["ད", "ྲ", "ྭ"]
         , testCase "parses root ག with vowel above subfix ར" $
-            parseRaws (pConstraint17Ra Tibetan) "གྲྭི" @?= Right ["ག", "ྲ", "ྭ", "ི"]
+            parseRaws (pConstraint17Ra) "གྲྭི" @?= Right ["ག", "ྲ", "ྭ", "ི"]
         , testCase "rejects root ཀ above subfix ར" $
-            isLeft (parseRaws (pConstraint17Ra Tibetan) "ཀྲྭ") @?= True
+            isLeft (parseRaws (pConstraint17Ra) "ཀྲྭ") @?= True
         , testCase "rejects missing subfix ཝ" $
-            isLeft (parseRaws (pConstraint17Ra Tibetan) "གྲ") @?= True
+            isLeft (parseRaws (pConstraint17Ra) "གྲ") @?= True
         , testCase "parses root ཕ above subfix ཡ" $
-            parseRaws (pConstraint17Ya Tibetan) "ཕྱྭ" @?= Right ["ཕ", "ྱ", "ྭ"]
+            parseRaws (pConstraint17Ya) "ཕྱྭ" @?= Right ["ཕ", "ྱ", "ྭ"]
         , testCase "parses root ཕ with vowel above subfix ཡ" $
-            parseRaws (pConstraint17Ya Tibetan) "ཕྱྭི" @?= Right ["ཕ", "ྱ", "ྭ", "ི"]
+            parseRaws (pConstraint17Ya) "ཕྱྭི" @?= Right ["ཕ", "ྱ", "ྭ", "ི"]
         , testCase "rejects root ག above subfix ཡ" $
-            isLeft (parseRaws (pConstraint17Ya Tibetan) "གྱྭ") @?= True
+            isLeft (parseRaws (pConstraint17Ya) "གྱྭ") @?= True
         , testCase "rejects missing subfix ཝ" $
-            isLeft (parseRaws (pConstraint17Ya Tibetan) "ཕྱ") @?= True
+            isLeft (parseRaws (pConstraint17Ya) "ཕྱ") @?= True
         , testCase "marks each letter of the word" $
-            parsePositions (pConstraint17Ra Tibetan) "གྲྭ" @?= Right [Root, Subfix, Subfix]
+            parsePositions (pConstraint17Ra) "གྲྭ" @?= Right [Root, Subfix, Subfix]
         ]
 
-parseRaws :: Parser TibetanSyllable -> Text -> Either Text [Text]
+parseRaws :: SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
 -- | The positions the rule gives each letter of the word: the marks the
 -- renderer will read in wave 3, step 3.3.
-parsePositions :: Parser TibetanSyllable -> Text -> Either Text [Position]
+parsePositions :: SpellParser TibetanSyllable -> Text -> Either Text [Position]
 parsePositions p input =
     fmap (toList . fmap fst) $
-        parseEither p (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

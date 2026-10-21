@@ -3,9 +3,7 @@
 module Test.Grammar.Structure (tests) where
 
 import Convert.Grammar.Parser
-    ( Parser
-    , SpellParser
-    , Spelling (..)
+    ( SpellParser
     , parseEither
     , runSpell
     )
@@ -13,7 +11,8 @@ import Convert.Grammar.Structure
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable, VowelSlot (..))
 import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
-import Convert.Token (tokenRaw)
+import Convert.Diagnostic (Diagnostics)
+import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
@@ -79,66 +78,60 @@ wylieSpelling =
     testGroup
         "wylie spelling"
         [ testCase "ka is one syllable in Wylie" $
-            syllableCount Wylie "ka" @?= Right 1
-        , testCase "ka is one syllable even under the Tibetan spelling" $
-            -- Before wave 3.3 the book grammar read the trailing @a@ as the root
-            -- ཨ under the Tibetan spelling. The generic stack (3.3) patterns the
-            -- references instead: a trailing @a@ is the implicit vowel whatever
-            -- the outer spelling label says, so the word stays one syllable.
-            syllableCount Tibetan "ka" @?= Right 1
+            syllableCount tokenizeWylie "ka" @?= Right 1
         , testCase "the a is kept in the word as an implicit vowel" $
-            wordVowels Wylie "ka" @?= Right ["implicit"]
+            wordVowels tokenizeWylie "ka" @?= Right ["implicit"]
         , testCase "ga likewise" $
-            wordVowels Wylie "ga" @?= Right ["implicit"]
+            wordVowels tokenizeWylie "ga" @?= Right ["implicit"]
         , testCase "dangs is one syllable in Wylie" $
-            syllableCount Wylie "dangs" @?= Right 1
+            syllableCount tokenizeWylie "dangs" @?= Right 1
         , testCase "an explicit vowel still wins over the implicit a" $
-            wordVowels Wylie "ki" @?= Right ["written"]
+            wordVowels tokenizeWylie "ki" @?= Right ["written"]
         , testCase "the letters that have tokens cover the word" $
-            wordSpelling Wylie "ka" @?= Right "k"
+            wordSpelling tokenizeWylie "ka" @?= Right "k"
         , testCase "the implicit vowel is a fact, not a token of its own" $
-            wordRaws Wylie "ka" @?= Right ["k"]
+            wordRaws tokenizeWylie "ka" @?= Right ["k"]
         ]
 
 -- | How many syllables the text came out as. One Wylie word is one syllable,
 -- so this is the count that the implicit vowel changes.
-syllableCount :: Spelling -> Text -> Either Text Int
-syllableCount spelling input =
-    fmap (length . filter isSyllable) (parseWylie spelling input)
+syllableCount :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text Int
+syllableCount tokenize input =
+    fmap (length . filter isSyllable) (parseWylie tokenize input)
 
 -- | The vowel slots of the single syllable in the text: @implicit@ is the
 -- @a@ that prints as a letter in Wylie and as nothing in the glyphs.
-wordVowels :: Spelling -> Text -> Either Text [Text]
-wordVowels spelling input = fmap (map slot) (wordStacks spelling input)
+wordVowels :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Text]
+wordVowels tokenize input = fmap (map slot) (wordStacks tokenize input)
     where
         slot st = case Ast.stVowel st of
             Nothing -> "none"
             Just VowelImplicit -> "implicit"
             Just (VowelWritten _ _) -> "written"
 
-wordStacks :: Spelling -> Text -> Either Text [Ast.Stack]
-wordStacks spelling input =
-    case parseWylie spelling input of
+wordStacks :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Ast.Stack]
+wordStacks tokenize input =
+    case parseWylie tokenize input of
         Left err -> Left err
         Right items -> case [s | SyllableItem s <- items] of
             [s] -> Right (toList (sylStacks s))
             _ -> Left "expected the text to be exactly one syllable"
 
 -- | The letters of the single syllable, spelled as they came in.
-wordRaws :: Spelling -> Text -> Either Text [Text]
-wordRaws spelling input =
+wordRaws :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Text]
+wordRaws tokenize input =
     fmap
         (map tokenRaw . concatMap (toList . Ast.stackTokens))
-        (wordStacks spelling input)
+        (wordStacks tokenize input)
 
 -- | The letters of the syllable that have tokens of their own. The implicit
 -- @a@ is a fact of the stack now (REFACTOR-AST §4), so it is not among them.
-wordSpelling :: Spelling -> Text -> Either Text Text
-wordSpelling spelling input = fmap T.concat (wordRaws spelling input)
+wordSpelling :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text Text
+wordSpelling tokenize input = fmap T.concat (wordRaws tokenize input)
 
-parseWylie :: Spelling -> Text -> Either Text [SpellItem]
-parseWylie spelling input =
-    parseEither (pSentence spelling) (fst (tokenizeWylie input))
+parseWylie :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [SpellItem]
+parseWylie tokenize input =
+    parseEither pSentence (fst (tokenize input))
 
 isSyllable :: SpellItem -> Bool
 isSyllable (SyllableItem _) = True
@@ -613,17 +606,18 @@ structure37 =
 -- call sites above therefore read @parseRaws pStructure7@ and stay free of
 -- spelling noise; the wave 3 tests pass 'Wylie' and add their own cases.
 parseRaws ::
-    (Spelling -> Parser TibetanSyllable) -> Text -> Either Text [Text]
+    SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRaws p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither (p Tibetan) (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))
 
--- | The same helper for the three structures that host a window (8, 9, 21):
--- they run statefully, and what these tests read is the marks their parse
--- emitted, so the state is projected away here exactly as a probe projects it.
--- The finding the window records is a matter of 'Test.Diagnostic'.
+-- | The same helper for the structures that host a window (8, 9, 21): they are
+-- spell parsers like every structure now, and what these tests read is the
+-- marks their parse emitted, so the state is projected away here exactly as a
+-- probe projects it. The finding the window records is a matter of
+-- 'Test.Diagnostic'.
 parseRawsStateful ::
-    (Spelling -> SpellParser TibetanSyllable) -> Text -> Either Text [Text]
+    SpellParser TibetanSyllable -> Text -> Either Text [Text]
 parseRawsStateful p input =
     fmap (toList . fmap (tokenRaw . snd)) $
-        parseEither (runSpell (p Tibetan)) (fst (tokenizeUnicode input))
+        parseEither (runSpell p) (fst (tokenizeUnicode input))

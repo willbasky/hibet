@@ -35,7 +35,7 @@ import Convert
     , renderItems
     )
 import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -243,7 +243,7 @@ differs t
 -- walk's own (wave 3.4), which our own tests read; the corpus checkers compare
 -- the converted text only (30.09.2026).
 convertW2U :: Text -> (Either Text Text, Diagnostics)
-convertW2U input = go (parseItems Wylie tokens)
+convertW2U input = go (parseItems tokens)
     where
         (tokens, diags) = tokenizeWylie input
         go (Left err) = (Left err, diags)
@@ -253,14 +253,14 @@ convertW2U input = go (parseItems Wylie tokens)
             )
 
 convertU2W :: Text -> (Either Text Text, Diagnostics)
-convertU2W input = go (parseItems Tibetan tokens)
+convertU2W input = go (parseItems tokens)
     where
         (tokens, diags) = tokenizeUnicode input
         go (Left err) = (Left err, diags)
         go (Right items) = (Right (renderItems OutWylie items), diags <> legality items)
 
-parseItems :: Spelling -> [Token] -> Either Text [SpellItem]
-parseItems spelling = parseEither (pSentence spelling)
+parseItems :: [Token] -> Either Text [SpellItem]
+parseItems = parseEither pSentence
 
 -- | Wylie -> Unicode -> Wylie -> Unicode, all with our own converter.
 roundTripW2U :: Text -> Either Text Text

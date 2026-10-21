@@ -20,10 +20,11 @@ import Convert.Diagnostic
     , diagnosticList
     , renderDiagnostics
     )
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable (flatten)
 import Convert.Sentence (Syllable (..), pSentence)
-import Convert.Token (Span (..), tokenRaw)
+import Convert.Diagnostic (Diagnostics)
+import Convert.Token (Span (..), Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
@@ -68,7 +69,7 @@ runWalk =
 
 runCount :: Text -> Either Text Int
 runCount input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure (length [() | SyllableItem _ <- items])
 
 -- | The channel stays silent where nothing is wrong.
@@ -500,7 +501,7 @@ documentLevel =
 -- | The document warning alone, as the channel renders it.
 documentWarnings :: Text -> Either Text [Text]
 documentWarnings input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure (renderDiagnostics input (documentDiagnostics input items))
 
 -- | The assembled W->U channel: the tokenizer's diagnostics, then the
@@ -508,7 +509,7 @@ documentWarnings input = do
 documentChannel :: Text -> Either Text [Text]
 documentChannel input = do
     let (tokens, diags) = tokenizeWylie input
-    items <- parseEither (pSentence Wylie) tokens
+    items <- parseEither (pSentence) tokens
     pure (renderDiagnostics input (diags <> documentDiagnostics input items))
 
 -- | The one document-level message, as the channel renders it.
@@ -518,20 +519,20 @@ documentLine = "line 1: The input holds no Tibetan letters."
 -- | The codes of the document warning alone.
 documentRecordsOf :: Text -> Either Text [DiagnosticCode]
 documentRecordsOf input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure [diagCode d | d <- diagnosticList (documentDiagnostics input items)]
 
 -- | The spans of the document warning alone.
 documentSpans :: Text -> Either Text [Span]
 documentSpans input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure [diagSpan d | d <- diagnosticList (documentDiagnostics input items)]
 
 -- | The quoted word of the document warning alone ('Nothing': the warning is
 -- about the document, not about a word).
 documentWords :: Text -> Either Text [Maybe Span]
 documentWords input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure [diagWord d | d <- diagnosticList (documentDiagnostics input items)]
 
 -- | The diagnostic record: the code, the severity and the quoted word, so the
@@ -565,7 +566,7 @@ records =
 -- every run).
 rawWords :: Text -> Either Text [[Text]]
 rawWords input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure
         [ [tokenRaw t | t <- toList (flatten (sylStacks s))]
         | SyllableItem s <- items
@@ -575,7 +576,7 @@ rawWords input = do
 -- (@line N: "word": message@).
 rendered :: Text -> Either Text [Text]
 rendered input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure (renderDiagnostics input (legality items))
 
 -- | The same for a Tibetan-script input. A rule the two arms of the grammar
@@ -584,7 +585,7 @@ rendered input = do
 -- stays silent.
 renderedTibetan :: Text -> Either Text [Text]
 renderedTibetan input = do
-    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
+    items <- parseEither (pSentence) (fst (tokenizeUnicode input))
     pure (renderDiagnostics input (legality items))
 
 -- | What a Wylie input becomes. A rule that changes how the input is read has
@@ -592,28 +593,24 @@ renderedTibetan input = do
 -- since the two can disagree: the message names the problem, the text shows
 -- what was made of the input instead.
 converted :: Text -> Either Text Text
-converted = spellingToUnicode Wylie
+converted = spellingToUnicode tokenizeWylie
 
 -- | The same for a Tibetan-script input.
 tibetanConverted :: Text -> Either Text Text
-tibetanConverted = spellingToUnicode Tibetan
+tibetanConverted = spellingToUnicode tokenizeUnicode
 
 -- | What a Tibetan input becomes in Wylie output (wave 5.4): the escape the
 -- reference writes for a sign with no letter to attach to and for a glyph no
 -- table can name.
 tibetanWylie :: Text -> Either Text Text
 tibetanWylie input = do
-    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
+    items <- parseEither (pSentence) (fst (tokenizeUnicode input))
     pure (renderItems OutWylie items)
 
-spellingToUnicode :: Spelling -> Text -> Either Text Text
-spellingToUnicode spelling input = do
-    items <- parseEither (pSentence spelling) (fst (tokenize input))
+spellingToUnicode :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text Text
+spellingToUnicode tokenize input = do
+    items <- parseEither pSentence (fst (tokenize input))
     pure (renderItems OutUnicode items)
-    where
-        tokenize = case spelling of
-            Wylie -> tokenizeWylie
-            Tibetan -> tokenizeUnicode
 
 -- | Every preferred spelling a Wylie input is recommended, so that a form
 -- which must stay quiet is checked by what it recommends and not by the whole
@@ -621,26 +618,22 @@ spellingToUnicode spelling input = do
 -- recommendation carries ('noteAmbiguous') is there precisely to keep the two
 -- apart.
 recommendations :: Text -> Either Text [Text]
-recommendations = recommended Wylie
+recommendations = recommended tokenizeWylie
 
 -- | The same for a Tibetan-script input. The rule speaks in Wylie, and the
 -- Tibetan spelling writes no implicit vowel, so the same syllable read the
 -- other way round is left alone.
 tibetanRecommendations :: Text -> Either Text [Text]
-tibetanRecommendations = recommended Tibetan
+tibetanRecommendations = recommended tokenizeUnicode
 
-recommended :: Spelling -> Text -> Either Text [Text]
-recommended spelling input = do
-    items <- parseEither (pSentence spelling) (fst (tokenize input))
+recommended :: (Text -> ([Token], Diagnostics)) -> Text -> Either Text [Text]
+recommended tokenize input = do
+    items <- parseEither pSentence (fst (tokenize input))
     pure
         [ prefers d
         | d <- diagnosticList (legality items)
         , diagCode d == AmbiguousSpelling
         ]
-    where
-        tokenize = case spelling of
-            Wylie -> tokenizeWylie
-            Tibetan -> tokenizeUnicode
 
 -- | The spelling one recommendation names: our own message with the prefix and
 -- the closing quote and period taken off, so a form reads as the word the rule
@@ -657,7 +650,7 @@ prefers d =
 -- | The codes and severities of the walk's messages, in order.
 recordsOf :: Text -> Either Text [(DiagnosticCode, Severity)]
 recordsOf input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure
         [ (diagCode d, diagSeverity d)
         | d <- diagnosticList (legality items)
@@ -666,7 +659,7 @@ recordsOf input = do
 -- | The same for a Tibetan-script input.
 recordsOfTibetan :: Text -> Either Text [(DiagnosticCode, Severity)]
 recordsOfTibetan input = do
-    items <- parseEither (pSentence Tibetan) (fst (tokenizeUnicode input))
+    items <- parseEither (pSentence) (fst (tokenizeUnicode input))
     pure
         [ (diagCode d, diagSeverity d)
         | d <- diagnosticList (legality items)
@@ -690,7 +683,7 @@ glyphRecords input =
 -- wording.
 wordsOf :: Text -> Either Text [Text]
 wordsOf input = do
-    items <- parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+    items <- parseEither (pSentence) (fst (tokenizeWylie input))
     pure (map wordPrefix (renderDiagnostics input (legality items)))
     where
         -- @line N: "word": message@: the first two @:@-separated segments are

@@ -6,13 +6,10 @@ module Convert.Grammar.Constraint.Constraint01
     , pConstraint01Sanskrit
     ) where
 
-import Convert.Grammar.Parser (Parser, Spelling (..), mark)
+import Convert.Grammar.Parser (SpellParser, mark, vowelSlot)
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable (Position (..), TibetanSyllable)
-import Data.Maybe (fromMaybe)
 import qualified Data.Sequence as Seq
-import Text.Megaparsec (choice, optional)
-import qualified Text.Megaparsec as MP
 
 -- | The root a stack already spelled: the a-chen standing there is no
 -- consonant waiting for its vowel - it already is that vowel, and a stack
@@ -24,63 +21,22 @@ import qualified Text.Megaparsec as MP
 rootIsA :: TibetanSyllable -> Bool
 rootIsA = maybe False (GP.isImplicitA . snd) . Seq.lookup 0
 
-pConstraint01 :: Spelling -> Parser TibetanSyllable
-pConstraint01 = \case
-    Tibetan -> do
-        root <- mark Root GP.pRootConsonant
-        vowel <- optional (mark Vowel GP.pVowel)
-        pure (root <> fromMaybe mempty vowel)
-    Wylie -> do
-        root <- mark Root GP.pRootConsonant
-        vowel <-
-            if rootIsA root
-                then pure mempty
-                else
-                    MP.choice
-                        [ mark Vowel GP.pVowel
-                        , mark ImplicitVowel GP.pImplicitA
-                        ]
-        pure (root <> vowel)
+-- | The root, then its vowel slot. The Wylie a-chen root takes no vowel.
+rooted :: SpellParser TibetanSyllable -> [SpellParser TibetanSyllable] -> SpellParser TibetanSyllable
+rooted root vowels = do
+    r <- root
+    v <-
+        if rootIsA r && GP.isWylieStack r
+            then pure mempty
+            else vowelSlot r vowels
+    pure (r <> v)
 
-pConstraint01WithLong :: Spelling -> Parser TibetanSyllable
-pConstraint01WithLong = \case
-    Tibetan -> do
-        root <- mark Root GP.pRootConsonant
-        vowel <-
-            optional
-                (choice [mark Vowel GP.pVowel, mark Vowel GP.pVowelLongA])
-        pure (root <> fromMaybe mempty vowel)
-    Wylie -> do
-        root <- mark Root GP.pRootConsonant
-        vowel <-
-            if rootIsA root
-                then pure mempty
-                else
-                    MP.choice
-                        [ mark Vowel GP.pVowel
-                        , mark Vowel GP.pVowelLongA
-                        , mark ImplicitVowel GP.pImplicitA
-                        ]
-        pure (root <> vowel)
+pConstraint01 :: SpellParser TibetanSyllable
+pConstraint01 = rooted (mark Root GP.pRootConsonant) [mark Vowel GP.pVowel]
 
-pConstraint01Sanskrit :: Spelling -> Parser TibetanSyllable
-pConstraint01Sanskrit = \case
-    Tibetan -> do
-        root <- mark Root GP.pSanskrit
-        vowel <- optional (mark Vowel GP.pVowel)
-        pure (root <> fromMaybe mempty vowel)
-    Wylie -> do
-        root <- mark Root GP.pSanskrit
-        vowel <-
-            if rootIsA root
-                then pure mempty
-                else
-                    MP.choice
-                        [ mark Vowel GP.pVowel
-                        , mark ImplicitVowel GP.pImplicitA
-                        ]
-        pure (root <> vowel)
+pConstraint01WithLong :: SpellParser TibetanSyllable
+pConstraint01WithLong =
+    rooted (mark Root GP.pRootConsonant) [mark Vowel GP.pVowel, mark Vowel GP.pVowelLongA]
 
--- The Wylie arm: the vowel slot is the only difference - every Wylie syllable
--- writes its vowel, either as a vowel letter or as the letter @a@ that never
--- prints, so it is obligatory.
+pConstraint01Sanskrit :: SpellParser TibetanSyllable
+pConstraint01Sanskrit = rooted (mark Root GP.pSanskrit) [mark Vowel GP.pVowel]

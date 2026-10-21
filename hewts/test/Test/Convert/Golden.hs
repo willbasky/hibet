@@ -4,7 +4,7 @@
 module Test.Convert.Golden (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
@@ -13,6 +13,7 @@ import Convert.Grammar.Syllable
     , VowelSlot (..)
     , finalsTokens
     )
+import Convert.Diagnostic (Diagnostics)
 import Convert.Token (Token, TokenCanonical (..), tokenCanonical)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
@@ -56,7 +57,7 @@ entry n raw = T.pack (show n) <> "\t" <> converted raw
 
 converted :: Text -> Text
 converted input =
-    case parseEither (pSentence Tibetan) (fst (tokenizeUnicode input)) of
+    case parseEither (pSentence) (fst (tokenizeUnicode input)) of
         Left err -> "<parse error: " <> err <> ">"
         Right items -> renderItems OutWylie items
 
@@ -99,7 +100,7 @@ renderCorpus (name, path) = do
 
 convertedW2U :: Text -> Text
 convertedW2U input =
-    case parseEither (pSentence Wylie) (fst (tokenizeWylie input)) of
+    case parseEither (pSentence) (fst (tokenizeWylie input)) of
         Left err -> "<parse error: " <> err <> ">"
         Right items -> renderItems OutUnicode items
 
@@ -136,14 +137,14 @@ stacksSnapshot =
 
 renderStacks :: IO BL.ByteString
 renderStacks = do
-    wylieRows <- concat <$> mapM (renderStackCorpus Wylie wylieColumn) vectors
-    unicodeRows <- concat <$> mapM (renderStackCorpus Tibetan unicodeColumn) vectors
-    kangyur <- renderStackCorpus Tibetan id ("kangyur", "test/vectors/kang.txt")
+    wylieRows <- concat <$> mapM (renderStackCorpus tokenizeWylie wylieColumn) vectors
+    unicodeRows <- concat <$> mapM (renderStackCorpus tokenizeUnicode unicodeColumn) vectors
+    kangyur <- renderStackCorpus tokenizeUnicode id ("kangyur", "test/vectors/kang.txt")
     pure
         (BL.fromStrict (TE.encodeUtf8 (T.unlines (wylieRows <> unicodeRows <> kangyur))))
 
-renderStackCorpus :: Spelling -> (Text -> Text) -> (Text, FilePath) -> IO [Text]
-renderStackCorpus spelling column (name, path) = do
+renderStackCorpus :: (Text -> ([Token], Diagnostics)) -> (Text -> Text) -> (Text, FilePath) -> IO [Text]
+renderStackCorpus tokenize column (name, path) = do
     text <- readVector path
     pure
         [ name
@@ -158,14 +159,9 @@ renderStackCorpus spelling column (name, path) = do
         , not (T.null line)
         , let input = column line
         , not (T.null input)
-        , Right items <- [parseEither (pSentence spelled) (fst (tokenize input))]
+        , Right items <- [parseEither pSentence (fst (tokenize input))]
         , (i, s) <- zip [1 :: Int ..] [s | SyllableItem s <- items]
         ]
-    where
-        spelled = spelling
-        tokenize = case spelling of
-            Wylie -> tokenizeWylie
-            Tibetan -> tokenizeUnicode
 
 wylieColumn :: Text -> Text
 wylieColumn = T.takeWhile (/= '\t')

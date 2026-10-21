@@ -13,9 +13,12 @@
 -- its invariants alone (input coverage).
 --
 -- This module also holds the nested syllable of REFACTOR-AST: 'Stack' with its
--- 'Role', 'Subfixes', 'VowelSlot' and 'Finals'. The flat 'TibetanSyllable' above
--- is the grammar's own product until step 4; 'stacksOf' bridges it into the
--- nested form, and since step 3 everything outside the grammar reads that form.
+-- 'Role', 'Subfixes', 'VowelSlot' and 'Finals'. Since step 4d the grammar
+-- places every sign into those stacks as it parses ('placeToken', reached from
+-- 'Convert.Grammar.Parser.mark'), and the sentence takes the stacks from the
+-- parser state. The grammar still returns the flat marks of its run as well;
+-- the windows and the structural tests read them, and step 4e removes them
+-- together with 'Position'.
 module Convert.Grammar.Syllable
     ( Position (..)
     , TibetanSyllable
@@ -29,7 +32,7 @@ module Convert.Grammar.Syllable
     , Syllable (..)
     , Stack (..)
     , stackTokens
-    , stacksOf
+    , placeToken
     , flatten
     ) where
 
@@ -45,7 +48,6 @@ import Convert.Token
     , tokenCanonical
     )
 import Data.Foldable (toList)
-import Data.List (foldl')
 import Data.Maybe (catMaybes, isNothing)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
@@ -66,24 +68,23 @@ data Position
     | Vowel
     | Final
     | ImplicitVowel
-    | -- | A mark the grammar took and the window named: it stays in the parse
-      -- and in the run, but it prints nothing, exactly as the second caret of
-      -- @g^r^a@ does. Nothing is lost from the token stream - the finding
-      -- quotes the run, so the mark is still there to be read.
-      Eaten
     deriving (Show, Eq, Ord)
 
 -- | A Tibetan syllable (Def 4.10) as a flat list of marked tokens.
 --
--- This is the grammar's own product, and it stays so until REFACTOR-AST
--- step 4: the sentence builds the nested 'Stack' below from it with 'stacksOf'
--- in the meantime, so there is one reading of the marks and no second parse. A 'Seq' rather than a list because the syllable is built by
--- appending pieces (a prefix, a root, a subfix, a vowel) and read from both
--- ends by the legality rules of wave 3.4. Be aware that this buys clarity
--- more than speed: a syllable holds one to six letters, and at that size 'Seq'
--- and a list append in the same handful of steps. The real cost in this layer
--- is elsewhere - see 'Convert.Grammar.Structure.pStructure', which probes all 37
--- structures in lookahead, so every syllable is parsed 37 times over.
+-- The marks are what a rule placed where: they serve the windows that read a
+-- finished syllable ('Convert.Grammar.Constraint.Constraint22') and the
+-- structural tests. The stacks themselves no longer come from this list: since
+-- REFACTOR-AST step 4d the grammar places every mark into the parser state as
+-- it goes ('Convert.Grammar.Parser.mark'), and this list is removed together
+-- with 'Position' in step 4e. A 'Seq' rather than a list because the syllable
+-- is built by appending pieces (a prefix, a root, a subfix, a vowel) and read
+-- from both ends by the legality rules of wave 3.4. Be aware that this buys
+-- clarity more than speed: a syllable holds one to six letters, and at that
+-- size 'Seq' and a list append in the same handful of steps. The real cost in
+-- this layer is elsewhere - see 'Convert.Grammar.Structure.pStructure', which
+-- probes all 37 structures in lookahead, so every syllable is parsed 37 times
+-- over.
 type TibetanSyllable = Seq (Position, Token)
 
 -- | The role a stack plays in its syllable (REFACTOR-AST §4). Needed for two
@@ -128,8 +129,8 @@ emptyFinals :: Finals
 emptyFinals = Finals (Seq.replicate 8 Nothing)
 
 -- | Add a final mark to its slot; refuses a mark whose slot is already filled
--- or whose chain has passed it. Such a mark is 'Eaten' in today's parse, so a
--- refusal here means the bridge met a shape the grammar did not mark that way.
+-- or whose chain has passed it. The grammar drops such a mark before it gets
+-- here, so a refusal means the placement met a shape the grammar did not allow.
 snocFinal :: Token -> Finals -> Maybe Finals
 snocFinal tok (Finals slots) = case tokenCanonical tok of
     TcFinal mark -> do
@@ -188,64 +189,56 @@ stackTokens Stack{..} =
         vowelTokens (Just VowelImplicit) = mempty
         vowelTokens (Just (VowelWritten t rest)) = t Seq.<| Seq.fromList rest
 
--- | The bridge of REFACTOR-AST step 1: group today's marked run into stacks.
---
--- The rule is the one the plan states: 'Prefix', 'Suffix' and 'Postfix' open a
--- stack of their own, 'Superfix' opens the stack whose 'Root' follows it, and
--- 'Subfix', 'Vowel', 'ImplicitVowel' and 'Final' join the stack already open.
--- A subjoined token marked 'Root' (the Tibetan half of 4.18) joins the open
--- root too: a subjoined sign cannot open a stack, so ཧྥ stays one stack.
--- Unmarked tokens (the separators the grammar ate and the run's boundary) and
--- 'Eaten' marks are not part of any stack (REFACTOR-AST §8 B2, Q6).
---
--- One limit of the bridge, recorded in REFACTOR-AST and to be fixed after the
--- main refactor: an 'ImplicitVowel' beside a written vowel is dropped (the
--- @a@ of @bo+ra@, which prints nothing and is input syntax, not a sign).
+-- | Put one marked token into the stacks of a syllable, in the canonical order
+-- of the fields. The grammar's own placement ('Convert.Grammar.Parser.mark')
+-- goes through here, so the group of a mark is decided once: a prefix, suffix
+-- or postfix opens a stack of its own, a superfix opens the stack whose root
+-- follows it, a subjoined root joins the open root, and a subfix, vowel,
+-- implicit vowel, caret or final joins the stack already open. An
+-- 'ImplicitVowel' beside a written vowel is dropped: it prints nothing and is
+-- input syntax, not a sign (the @a@ of @bo+ra@).
 --
 -- shortcut: a fourth subjoined letter (none in the corpora; the type stops at
--- 'ThreeSubfix') is dropped too - add a form when such input surfaces.
-stacksOf :: Seq (Maybe Position, Token) -> Seq Stack
-stacksOf = Seq.fromList . reverse . foldl' step [] . toList
+-- 'ThreeSubfix') is dropped - add a form when such input surfaces.
+placeToken :: Position -> Token -> Seq Stack -> Seq Stack
+placeToken pos tok stacks = case pos of
+    Prefix -> stacks Seq.|> new RolePrefix tok
+    Suffix -> stacks Seq.|> new RoleSuffix tok
+    Postfix -> stacks Seq.|> new RolePostfix tok
+    Superfix -> stacks Seq.|> (emptyStack RoleRoot){stSuperfix = Just tok}
+    Root -> case Seq.viewr stacks of
+        rest Seq.:> top
+            | Just _ <- stRoot top
+            , TcSubConsonant _ <- tokenCanonical tok ->
+                rest Seq.|> top{stSubfixes = pushSubfix tok (stSubfixes top)}
+            | Just _ <- stSuperfix top
+            , Nothing <- stRoot top ->
+                rest Seq.|> top{stRoot = Just tok}
+        _ -> stacks Seq.|> new RoleRoot tok
+    Subfix -> onTop $ \st -> st{stSubfixes = pushSubfix tok (stSubfixes st)}
+    Vowel -> onTop $ \st -> st{stVowel = Just (pushVowel tok (stVowel st))}
+    ImplicitVowel -> onTop $ \st ->
+        st{stVowel = case stVowel st of Nothing -> Just VowelImplicit; v -> v}
+    Final
+        | isCaret tok -> onTop $ \st -> st{stCaret = stCaret st <|> Just tok}
+        | otherwise -> onTop $ \st ->
+            st{stFinals = maybe (stFinals st) id (snocFinal tok (stFinals st))}
     where
-        step stacks (Nothing, _) = stacks
-        step stacks (Just Eaten, _) = stacks
-        step stacks (Just ImplicitVowel, _) = onTop stacks $ \st ->
-            st{stVowel = case stVowel st of Nothing -> Just VowelImplicit; v -> v}
-        step stacks (Just pos, tok) = case pos of
-            Prefix -> new RolePrefix tok : stacks
-            Suffix -> new RoleSuffix tok : stacks
-            Postfix -> new RolePostfix tok : stacks
-            Superfix -> (emptyStack RoleRoot){stSuperfix = Just tok} : stacks
-            Root -> case stacks of
-                (top : rest)
-                    | Just _ <- stRoot top
-                    , TcSubConsonant _ <- tokenCanonical tok ->
-                        top{stSubfixes = pushSubfix tok (stSubfixes top)} : rest
-                    | Just _ <- stSuperfix top
-                    , Nothing <- stRoot top ->
-                        top{stRoot = Just tok} : rest
-                _ -> new RoleRoot tok : stacks
-            Subfix -> onTop stacks $ \st -> st{stSubfixes = pushSubfix tok (stSubfixes st)}
-            Vowel -> onTop stacks $ \st -> st{stVowel = Just (pushVowel tok (stVowel st))}
-            Final
-                | isCaret tok -> onTop stacks $ \st -> st{stCaret = stCaret st <|> Just tok}
-                | otherwise -> onTop stacks $ \st ->
-                    st{stFinals = maybe (stFinals st) id (snocFinal tok (stFinals st))}
-        new role tok = (emptyStack role){stRoot = Just tok}
+        new role tok' = (emptyStack role){stRoot = Just tok'}
         emptyStack role = Stack role Nothing Nothing NoSubfix Nothing Nothing emptyFinals
-        onTop [] f = [f (emptyStack RoleRoot)]
-        onTop (top : rest) f = f top : rest
-        pushSubfix tok NoSubfix = OneSubfix tok
-        pushSubfix tok (OneSubfix a) = TwoSubfix a tok
-        pushSubfix tok (TwoSubfix a b) = ThreeSubfix a b tok
+        onTop f = case Seq.viewr stacks of
+            Seq.EmptyR -> Seq.singleton (f (emptyStack RoleRoot))
+            rest Seq.:> top -> rest Seq.|> f top
+        pushSubfix tok' NoSubfix = OneSubfix tok'
+        pushSubfix tok' (OneSubfix a) = TwoSubfix a tok'
+        pushSubfix tok' (TwoSubfix a b) = ThreeSubfix a b tok'
         pushSubfix _ three = three
-        pushVowel tok Nothing = VowelWritten tok []
-        pushVowel tok (Just (VowelWritten t rest)) = VowelWritten t (rest <> [tok])
-        pushVowel tok (Just VowelImplicit) = VowelWritten tok []
+        pushVowel tok' Nothing = VowelWritten tok' []
+        pushVowel tok' (Just (VowelWritten t rest)) = VowelWritten t (rest <> [tok'])
+        pushVowel tok' (Just VowelImplicit) = VowelWritten tok' []
         isCaret t = tokenCanonical t == TcFinal FMCaret
 
--- | The tokens of the stacks, each in its canonical place: the inverse of
--- 'stacksOf' on the tokens it keeps. Implicit vowels, dropped subfixes, eaten
--- marks and separators have no token here (see 'stacksOf').
+-- | The tokens of the stacks, each in its canonical place. Implicit vowels,
+-- dropped subfixes and separators have no token here.
 flatten :: Seq Stack -> Seq Token
 flatten = foldMap stackTokens

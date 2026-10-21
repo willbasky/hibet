@@ -7,7 +7,7 @@
 -- vowel ('ImplicitVowel'), a superfix is a full letter over a root, and so on.
 -- These tests pin the standard spellings that used to reach only the generic
 -- stack to their new home in the arms, so the coverage survives the stack's
--- retirement. Every case here runs @pSentence Wylie@ (the w2u direction) and
+-- retirement. Every case here runs @pSentence@ (the w2u direction) and
 -- expects exactly one syllable whose marks and Unicode match the reference.
 --
 -- Where the arms disagree with the old stack, they do so on purpose: bsgribs
@@ -16,7 +16,7 @@
 module Test.Grammar.Wylie (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
-import Convert.Grammar.Parser (Spelling (..), parseEither)
+import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
@@ -133,4 +133,4 @@ wylRender input =
 
 -- | The Wylie input through the tokenizer and the Wylie arm of the grammar.
 parseW :: Text -> Either Text [SpellItem]
-parseW input = parseEither (pSentence Wylie) (fst (tokenizeWylie input))
+parseW input = parseEither (pSentence) (fst (tokenizeWylie input))

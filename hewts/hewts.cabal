@@ -141,10 +141,12 @@ test-suite hewts-test
     bytestring,
     containers,
     hewts,
+    megaparsec,
     tasty,
     tasty-golden,
     tasty-hunit,
     text,
+    transformers,
     unordered-containers,
 
   ghc-options:

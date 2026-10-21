@@ -2,15 +2,12 @@
 --
 -- Parses a token stream into a list of 'SpellItem' preserving every token:
 -- syllables are recognized via the Convert.Grammar.Structure structures and
--- become the nested 'Convert.Grammar.Syllable.Syllable' of REFACTOR-AST,
--- Tibetan digits become 'Number', punctuation and whitespace tokens are kept
--- as 'Punct', and anything unrecognized is kept as 'Other' (nothing is
--- dropped).
+-- become the nested 'Convert.Grammar.Syllable.Syllable' of REFACTOR-AST: the
+-- grammar itself places every sign into its stack, and the sentence only takes
+-- the stacks the winning structure left in the parser state (step 4d).
 --
 -- A run is one stretch of tokens up to (not including) its boundary: the tsheg
--- or space that closes it is a 'Punct' item of its own (REFACTOR-AST Q4). The
--- bridge from the grammar's marked runs to the stacks is 'stacksOf' until the
--- grammar builds the stacks itself (step 4).
+-- or space that closes it is a 'Punct' item of its own (REFACTOR-AST Q4).
 module Convert.Sentence
     ( SpellItem (..)
     , Syllable (..)
@@ -26,7 +23,6 @@ import Convert.Diagnostic
 import Convert.Grammar.Parser
     ( Parser
     , SpellParser
-    , Spelling (..)
     , isDot
     , isPunctuationLike
     , liftP
@@ -37,16 +33,15 @@ import Convert.Grammar.Parser
     , pUnclaimedTail
     , runSpell
     , takeFindings
+    , takeStacks
     )
 import Convert.Grammar.Structure (claimsFreshRun, pStructure)
 import Convert.Grammar.Syllable
-    ( Position (..)
-    , Role (..)
+    ( Role (..)
     , Stack (..)
     , Syllable (..)
     , VowelSlot (..)
     , flatten
-    , stacksOf
     )
 import Convert.Token
     ( Consonant (Ca)
@@ -63,10 +58,7 @@ import Convert.Token
     , tokenSpan
     )
 import Data.Foldable (toList)
-import Data.Maybe (listToMaybe)
 import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
-import qualified Data.Set as Set
 import qualified Data.Text as T
 import qualified Text.Megaparsec as MP
 
@@ -88,21 +80,21 @@ data SpellItem
 -- warnings the constraint windows produced are already spelled into each
 -- run's 'sylDiags' - so the entry point stays as the pure 'Parser' the
 -- converter and the tests drive.
-pSentence :: Spelling -> Parser [SpellItem]
-pSentence spelling = runSpell (pSentenceS spelling)
+pSentence :: Parser [SpellItem]
+pSentence = runSpell pSentenceS
 
 -- | The stateful sentence parse: 'StateT ScanState Parser' threads the
 -- grammar state across the runs, and each 'pSyllable' takes the findings of
 -- the run it owns.
-pSentenceS :: Spelling -> SpellParser [SpellItem]
-pSentenceS spelling = concat <$> MP.many (pItem spelling) <* MP.eof
+pSentenceS :: SpellParser [SpellItem]
+pSentenceS = concat <$> MP.many pItem <* MP.eof
 
-pItem :: Spelling -> SpellParser [SpellItem]
-pItem spelling =
+pItem :: SpellParser [SpellItem]
+pItem =
     MP.choice
         [ pure . Punct <$> MP.some (liftP pPunctuation)
         , pure . Number <$> MP.some (liftP pNumber)
-        , MP.try (pSyllable spelling)
+        , MP.try pSyllable
         , pure <$> pStrayFinal
         , pure . Other <$> MP.some (MP.satisfy isJunk)
         ]
@@ -173,13 +165,13 @@ isSyllableTail token = case tokenCanonical token of
 
 -- | One syllable run: the tokens the winning structure claimed, the tail
 -- tokens no fresh run would claim, and the boundary stays in the input for
--- the 'Punct' branch to read. The claimed run becomes the nested syllable;
--- signs the run swallowed but could not place are handed on as an
--- 'InvalidSyllableItem' behind it, so no token is lost. The warnings of the
--- constraint windows name the run without the boundary: their span is
--- resolved here from the run's own tokens, once the run is over.
-pSyllable :: Spelling -> SpellParser [SpellItem]
-pSyllable spelling = do
+-- the 'Punct' branch to read. The claimed run becomes the nested syllable the
+-- grammar built in its state; signs the run swallowed but could not place are
+-- handed on as an 'InvalidSyllableItem' behind it, so no token is lost. The
+-- warnings of the constraint windows name the run without the boundary: their
+-- span is resolved here from the run's own tokens, once the run is over.
+pSyllable :: SpellParser [SpellItem]
+pSyllable = do
     start <- MP.getInput
     startOffset <- MP.getOffset
     -- 'lookAhead' only guards the run: the head token must be a possible
@@ -187,21 +179,19 @@ pSyllable spelling = do
     -- and unknown tokens fall through to their own branches), but the head
     -- itself belongs to the structure probe, so nothing may be consumed here.
     void $ MP.lookAhead (MP.satisfy isSyllableHead)
-    marked <- MP.option Seq.empty (MP.try (pStructure spelling))
+    void $ MP.option mempty (MP.try pStructure)
     endOfStructure <- MP.getOffset
     let claimed = endOfStructure - startOffset
     -- A claimed run closes with what the stack above owns; an unclaimed one
     -- keeps swallowing its tail - it is one invalid item by construction and
     -- it has to consume its head, or the sentence would not advance.
-    (tailToks, tailMarks) <-
+    tailToks <-
         if claimed == 0
-            then do
-                toks <- pUnclaimedTail isSyllableTail
-                pure (toks, [])
+            then pUnclaimedTail isSyllableTail
             else stackClose
     findings <- takeFindings
+    built <- takeStacks
     let content = take claimed start <> tailToks
-        markedContent = runItems (toList marked <> tailMarks) content
         runSpan = wordSpan content
         -- A mark at the head of the run with no letter to attach to (wave
         -- 5.4): the output escapes such a character, and this record says
@@ -210,21 +200,16 @@ pSyllable spelling = do
         -- own, and the group's own token speaks for it.
         orphans =
             [ SignWithoutLetter (tokenRaw t)
-            | (_, t) <- takeWhile (isToplessMark . snd) markedContent
+            | t <- takeWhile isToplessMark content
             , not (T.null (tokenRaw t))
             ]
         diags = findingsDiagnostics runSpan (findings <> orphans)
-        stacks = withImplicitVowels markedContent (stacksOf (Seq.fromList markedContent))
+        stacks = withImplicitVowels built
         -- The signs the run swallowed but no stack took: separators are input
         -- syntax (REFACTOR-AST §8 B2) and the marks the grammar ate - a second
         -- caret, a final the chain refused - live in the findings (Q6), so
         -- what is left is a sign no structure placed.
-        leftovers =
-            [ t
-            | (Nothing, t) <- markedContent
-            , not (isConSpecTok t)
-            , not (isFinalTok t)
-            ]
+        leftovers = [t | t <- tailToks, not (isConSpecTok t), not (isFinalTok t)]
     pure $
         if claimed == 0
             then [InvalidSyllableItem content diags]
@@ -259,94 +244,50 @@ pSyllable spelling = do
         -- @....yag@, the @e@ of @ba.e@ - stays in the input for the next
         -- item to read as itself, so a tail that opens a word is not this
         -- run's raw echo.
-        stackClose :: SpellParser ([Token], [(Position, Token)])
+        stackClose :: SpellParser [Token]
         stackClose = close False
             where
                 -- @dotSeen@: whether the tail's first dot already went past -
                 -- only it is eaten and blamed, the dots behind it stay written.
-                close :: Bool -> SpellParser ([Token], [(Position, Token)])
+                close :: Bool -> SpellParser [Token]
                 close dotSeen = do
                     next <- MP.lookAhead (MP.optional (liftP pToken))
                     case next of
                         Just tok | isSyllableTail tok -> do
-                            fresh <- claimsFreshRun spelling
+                            fresh <- claimsFreshRun
                             if fresh
-                                then pure ([], [])
+                                then pure []
                                 else do
                                     void (liftP pToken)
                                     let isDotTok = isDot tok
                                         eat = not dotSeen && isDotTok
                                     when eat $ noteFinding UnplacedDot
-                                    (toks, marks) <- close (dotSeen || isDotTok)
-                                    pure
-                                        ( tok : toks
-                                        , (if eat then [(Eaten, tok)] else []) <> marks
-                                        )
-                        _ -> pure ([], [])
-
-        -- The marks the grammar emitted keep their emission order and the
-        -- unmarked tokens - separators it ate, the unclaimed tail - splice
-        -- back into their source positions. The grammar does not always emit
-        -- in source order: a caret @^@ written mid-stack is claimed as the
-        -- stack's final, so the syllable keeps the emitted order for the
-        -- marked letters (the renderers follow it; g^ra is གྲ༹, not ག༹ྲ) and
-        -- restores every unmarked token to the gap it stood in.
-        runItems :: [(Position, Token)] -> [Token] -> [(Maybe Position, Token)]
-        runItems marked run =
-            let matched = matchedIndices run marked
-                taken = Set.fromList [i | (i, _, _) <- matched]
-                unmarked = [(i, t) | (i, t) <- zip [0 ..] run, i `Set.notMember` taken]
-             in interleave matched unmarked
-
-        interleave ::
-            [(Int, Position, Token)] -> [(Int, Token)] -> [(Maybe Position, Token)]
-        interleave [] rest = [(Nothing, t) | (_, t) <- rest]
-        interleave ((i, pos, tok) : ms) rest =
-            let (before, after) = span (\(j, _) -> j < i) rest
-             in [(Nothing, t) | (_, t) <- before]
-                    <> [(Just pos, tok)]
-                    <> interleave ms after
-
-        -- The source index of every emitted (marked) token: each is found in
-        -- the run by its value and the search peers around both sides, so a
-        -- reordering (a caret claimed after its stack) still lands on its
-        -- physical token, and a letter emitted twice matches its two
-        -- occurrences in order.
-        matchedIndices :: [Token] -> [(Position, Token)] -> [(Int, Position, Token)]
-        matchedIndices run marked = go (zip [0 ..] run) marked []
-            where
-                go _ [] acc = reverse acc
-                go indexeds ((pos, tok) : more) acc =
-                    let (before, after) = break ((== tok) . snd) indexeds
-                     in case after of
-                            (i, _) : rest -> go (before <> rest) more ((i, pos, tok) : acc)
-                            -- unreachable: the structures only emit run tokens
-                            [] -> reverse acc
+                                    toks <- close (dotSeen || isDotTok)
+                                    pure (tok : toks)
+                        _ -> pure []
 
 -- | The implicit @a@ of a root stack (REFACTOR-AST §4, invariant 5).
 --
--- Glyphs write no implicit vowel, so a Unicode-sourced run owes one to every
--- root that carries no written sign; a Wylie-sourced run says in the writing
--- whether it read a vowel-less letter or implicit @a@ (rk is ར + ཀ, rka is
--- རྐ), so its parse already decided and this adds nothing. An a-chen root is
--- a vowel letter of its own (@ཨ@ is spelled @a@) and takes no second @a@.
-withImplicitVowels :: [(Maybe Position, Token)] -> Seq Stack -> Seq Stack
-withImplicitVowels marked stacks
-    | wylieSourced = stacks
-    | otherwise = fmap addImplicit stacks
+-- Glyphs write no implicit vowel, so a Unicode-sourced root token owes one
+-- when the stack carries no written sign; a Wylie-sourced token says in the
+-- writing whether it read a vowel-less letter or implicit @a@ (rk is ར + ཀ,
+-- rka is རྐ), so its parse already decided and this adds nothing. An a-chen
+-- root is a vowel letter of its own (@ཨ@ is spelled @a@) and takes no second
+-- @a@.
+withImplicitVowels :: Seq Stack -> Seq Stack
+withImplicitVowels = fmap addImplicit
     where
-        wylieSourced = case listToMaybe (map snd marked) of
-            Just tok -> tokenSource tok == TsWylie
-            Nothing -> False
         addImplicit st = case (stRole st, stRoot st, stVowel st) of
             (RoleRoot, Just root, Nothing)
                 | writesVowel root -> st{stVowel = Just VowelImplicit}
             _ -> st
-        writesVowel root = case tokenCanonical root of
-            TcConsonant Ca -> False
-            TcConsonant _ -> True
-            TcSubConsonant _ -> True
-            _ -> False
+        writesVowel root =
+            tokenSource root == TsUnicode
+                && case tokenCanonical root of
+                    TcConsonant Ca -> False
+                    TcConsonant _ -> True
+                    TcSubConsonant _ -> True
+                    _ -> False
 
 -- | The span of the stacked signs; a syllable with no stack falls back to the
 -- span of its run.
