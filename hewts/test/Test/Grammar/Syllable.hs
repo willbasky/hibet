@@ -3,29 +3,41 @@
 module Test.Grammar.Syllable (tests) where
 
 import Convert (SpellItem (..), pSentence)
-import Convert.Diagnostic (Diagnostics)
-import Convert.Grammar.Parser (parseEither)
+import Convert.Diagnostic
+    ( Diagnostic (..)
+    , DiagnosticCode (DuplicateFinal, RepeatedCaret)
+    , Diagnostics
+    , diagnosticList
+    )
+import Convert.Grammar.Parser (parseEither, runSpell, takeStacks)
+import Convert.Grammar.Structure (pStructure)
 import qualified Convert.Grammar.Syllable as Ast
 import Convert.Sentence (Syllable (..))
 import Convert.Token
-    ( Consonant (..)
+    ( ConSpec (..)
+    , Consonant (..)
     , FinalMark (..)
     , SubConsonant (..)
     , Token
     , TokenCanonical (..)
+    , TokenSource (TsWylie)
     , Vowel (Ve, Vo, Vu)
     , fromSubjoined
+    , offsetStart
     , tokenCanonical
     , tokenRaw
+    , tokenSource
+    , tokenSpan
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
 import Data.Foldable (toList)
+import Data.List (partition, sortOn)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
+import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
 tests :: TestTree
 tests =
@@ -104,7 +116,18 @@ tests =
                 @?= Right [Just Ast.VowelImplicit, Nothing]
             fmap (map Ast.stVowel) (stacksW "rk")
                 @?= Right [Nothing]
-        , testCase "corpora: no run token is lost to the stacks" checkCorpora
+        , testCase "corpora: the items cover every run token exactly once" checkCorpora
+        , testCase "coverage fails on a duplicate kept token" $
+            coverageFails [kTok] [kTok, kTok]
+        , testCase "coverage fails on a lost run token" $
+            coverageFails [kTok, mTok] [kTok]
+        , testCase "coverage fails on a foreign token" $
+            coverageFails [kTok] [mTok]
+        , testCase "coverage accepts the implicit a of a Wylie run" $
+            checkRun [kTok, aTok] [kTok] [] @?= Right ()
+        , testCase
+            "the structure's returned tokens agree with its stacks"
+            checkStructureReturn
         , testCase "Finals: one slot takes one mark" $ do
             let mark = case fst (tokenizeUnicode "ཾ") of
                     [m] -> m
@@ -118,11 +141,9 @@ tests =
                 (case once >>= Ast.snocFinal mark of Nothing -> True; Just _ -> False)
         ]
 
--- | Every run of both spellings: the tokens the parser kept must appear in
--- the items' stacks in source order, and every token that did not reach a
--- stack must be one the parse is allowed to leave out - a stack separator
--- (@.@, @+@, input syntax) or a final mark the grammar took as a duplicate.
--- Boundaries are 'Punct' items of their own now, so they are in the stream.
+-- | Every run of both spellings, one item slice at a time: the run ends where
+-- the next item begins, so the signs a claimed run swallowed into its tail
+-- stay with that run. 'checkRun' proves the slice is covered exactly.
 checkCorpora :: Assertion
 checkCorpora = do
     wylie <- readInputs tokenizeWylie wylieColumn wylieFiles
@@ -131,36 +152,181 @@ checkCorpora = do
     checkSide "Wylie" wylie
     checkSide "Unicode" (kangyur <> unicodeVectors)
     where
-        checkSide side inputs = do
-            let lost =
-                    [ (input, missing)
+        checkSide side inputs =
+            let bad =
+                    [ (input, err)
                     | (input, toks) <- inputs
-                    , let Right items = parseEither pSentence toks
-                          kept = toListOfItems items
-                    , let missing = dropped toks kept
-                    , not (all allowed missing)
+                    , let items = either (error . T.unpack) id (parseEither pSentence toks)
+                    , Left err <- [checkItems toks items]
                     ]
-            assertBool
-                (side <> ": tokens lost to the stacks:\n" <> unlines (map show lost))
-                (null lost)
+             in assertBool
+                    (side <> ": run tokens uncovered:\n" <> unlines (map show bad))
+                    (null bad)
 
-        -- A separator is input syntax (§8 B2), a final mark may be the one
-        -- the chain refused (Q6), and the implicit @a@ of a Wylie run is a
-        -- fact of the stack, not a token (§4, invariant 5).
-        allowed tok = case tokenCanonical tok of
-            TcConSpec _ -> True
-            TcFinal _ -> True
-            TcConsonant Ca -> True
-            _ -> False
+-- | The run of an item is the slice from the previous item's end to the next
+-- item's first token: a run that is not a syllable item holds its whole slice,
+-- while a claimed run may leave signs on the allowlist behind.
+checkItems :: [Token] -> [SpellItem] -> Either T.Text ()
+checkItems input = go input
+    where
+        go rest [] =
+            if null rest
+                then Right ()
+                else Left ("tokens after the last item: " <> raws rest)
+        go rest (item : more) =
+            let (slice, after) = case more of
+                    [] -> (rest, [])
+                    (next : _) -> break (== firstToken next) rest
+             in checkRun slice (itemTokens item) (itemDiags item) *> go after more
 
-        -- The tokens the item stream no longer holds, in source order.
-        dropped :: [Token] -> [Token] -> [Token]
-        dropped input kept = foldl takeOut input kept
-        takeOut [] _ = []
-        takeOut (t : ts) k
-            | t == k = ts
-            | otherwise = t : takeOut ts k
-        toListOfItems = concatMap itemTokens
+        firstToken item = case itemTokens item of
+            (t : _) -> t
+            [] -> error "an item without tokens"
+
+-- | Every token of a run is either held by an item or on the exact allowlist:
+-- a stack separator (input syntax, §8 B2), the Wylie letter @a@ that spells
+-- the implicit vowel (a sign that never prints), or a final mark the run's own
+-- findings name - a duplicate final or a second caret. Nothing else may
+-- vanish, and an item token the run does not hold fails as well.
+checkRun :: [Token] -> [Token] -> [Diagnostic] -> Either T.Text ()
+checkRun input kept diags = do
+    -- Stack order is canonical, run order is by span: the coverage rule is
+    -- about which tokens are held, so the kept list is put back in run order.
+    dropped <- coverRun input (sortOn (offsetStart . tokenSpan) kept)
+    let (_, noSeps) = partition isSeparator dropped
+        (_, noImplicit) = partition isImplicitA noSeps
+        (finals, other) = partition isFinal noImplicit
+    case other of
+        [] -> checkFinals finals
+        _ -> Left ("signs that no item holds: " <> raws other)
+    where
+        checkFinals finals
+            | length carets /= repeatedCarets =
+                Left ("dropped carets without a finding: " <> raws carets)
+            | sortOn id droppedMarks /= sortOn id blamedMarks =
+                Left
+                    ( "dropped finals and their findings differ: dropped "
+                        <> T.intercalate ", " droppedMarks
+                        <> ", blamed "
+                        <> T.intercalate ", " blamedMarks
+                    )
+            | otherwise = Right ()
+            where
+                carets = filter isCaret finals
+                repeatedCarets =
+                    length [d | d <- diags, diagCode d == RepeatedCaret]
+                droppedMarks = map tokenRaw (filter (not . isCaret) finals)
+                blamedMarks =
+                    [ quoted (diagMessage d)
+                    | d <- diags
+                    , diagCode d == DuplicateFinal
+                    ]
+
+        -- The duplicate-final wording quotes the mark it dropped.
+        quoted msg = case T.splitOn "\"" msg of
+            (_ : mark : _) -> mark
+            _ -> ""
+
+-- | Match the tokens an item holds against its run, in source order. A kept
+-- token that is nowhere left in the run is a foreign token or a duplicate; the
+-- run tokens left unmatched are the signs the grammar dropped.
+coverRun :: [Token] -> [Token] -> Either T.Text [Token]
+coverRun input kept = go [] input kept
+    where
+        go dropped [] remaining
+            | null remaining = Right (reverse dropped)
+            | otherwise =
+                Left
+                    ( "item tokens the run does not hold: "
+                        <> raws remaining
+                    )
+        go dropped (t : ts) remaining = case remaining of
+            (k : ks) | k == t -> go dropped ts ks
+            _ -> go (t : dropped) ts remaining
+
+coverageFails :: [Token] -> [Token] -> Assertion
+coverageFails input kept = case checkRun input kept [] of
+    Left _ -> pure ()
+    Right () ->
+        assertFailure
+            ("coverage accepted a broken run: kept " <> T.unpack (raws kept))
+
+-- | The structure hands back the signs it read as a flat 'Seq Token' (4e-C),
+-- and the sentence does not use that list today. The stacks must tell the same
+-- story: every stacked sign is in the returned stream, and the only extras are
+-- the implicit @a@ signs of Wylie (input syntax, no slot). Both the returned
+-- stream and the stacks are put back in run order by span, because a stack
+-- writes its signs in canonical order and the return in construction order.
+checkStructureReturn :: Assertion
+checkStructureReturn = do
+    wylie <- readInputs tokenizeWylie wylieColumn wylieFiles
+    unicodeVectors <- readInputs tokenizeUnicode unicodeColumn wylieFiles
+    kangyur <- readInputs tokenizeUnicode id ["test/vectors/kang.txt"]
+    let inputs = wylie <> unicodeVectors <> kangyur
+        bad =
+            [ (input, err)
+            | (input, toks) <- inputs
+            , Left err <- [checkReturned toks]
+            ]
+    assertBool
+        ("the structure's return and its stacks disagree:\n" <> unlines (map show bad))
+        (null bad)
+    where
+        checkReturned toks =
+            case parseEither (runSpell ((,) <$> pStructure <*> takeStacks)) toks of
+                Left _ -> Right () -- no structure claims this run: an invalid item
+                Right (returned, stacks) -> do
+                    let sortedReturned =
+                            sortOn (offsetStart . tokenSpan) (toList returned)
+                        flatSorted =
+                            sortOn
+                                (offsetStart . tokenSpan)
+                                (toList (Ast.flatten stacks))
+                    -- Read order, put back by span: a long vowel's two halves
+                    -- share a zero-width span, and the stable sort keeps their
+                    -- order. A kept token with no match is foreign or repeated.
+                    _ <- coverRun toks sortedReturned
+                    extras <- coverRun sortedReturned flatSorted
+                    case filter (not . isImplicitA) extras of
+                        [] -> Right ()
+                        bad ->
+                            Left
+                                ( "returned signs that are neither stacked nor the implicit a: "
+                                    <> raws bad
+                                )
+
+isSeparator :: Token -> Bool
+isSeparator tok = case tokenCanonical tok of
+    TcConSpec CSDot -> True
+    TcConSpec CSPlus -> True
+    _ -> False
+
+-- | The bare Wylie @a@ that spells the implicit vowel. A Tibetan a-chen is a
+-- real letter with a slot of its own, so it is not on this list.
+isImplicitA :: Token -> Bool
+isImplicitA tok = case tokenCanonical tok of
+    TcConsonant Ca -> tokenSource tok == TsWylie
+    _ -> False
+
+isFinal :: Token -> Bool
+isFinal tok = case tokenCanonical tok of
+    TcFinal _ -> True
+    _ -> False
+
+isCaret :: Token -> Bool
+isCaret tok = tokenCanonical tok == TcFinal FMCaret
+
+raws :: [Token] -> T.Text
+raws = T.intercalate ", " . map tokenRaw
+
+-- | The signs the three negative coverage cases are built from.
+probeTokens :: [Token]
+probeTokens = fst (tokenizeWylie "kaM")
+
+kTok, aTok, mTok :: Token
+kTok = probeTokens !! 0
+aTok = probeTokens !! 1
+mTok = probeTokens !! 2
 
 -- | Every token an item holds, in the order the parser read them.
 itemTokens :: SpellItem -> [Token]
@@ -169,6 +335,13 @@ itemTokens (InvalidSyllableItem ts _) = ts
 itemTokens (Number ts) = ts
 itemTokens (Punct ts) = ts
 itemTokens (Other ts) = ts
+
+-- | The warnings that came with an item; only a syllable carries findings
+-- today (the marks of its own run).
+itemDiags :: SpellItem -> [Diagnostic]
+itemDiags (SyllableItem s) = diagnosticList (sylDiags s)
+itemDiags (InvalidSyllableItem _ ds) = diagnosticList ds
+itemDiags _ = []
 
 wylieFiles :: [FilePath]
 wylieFiles =
