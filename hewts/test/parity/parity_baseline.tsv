@@ -257,7 +257,9 @@
 # the total. The other legs hold. The remaining kangyur rows are role holes
 # (structure 38 leaves a closing consonant a root: བའམ, ཁྱེའུས), the book's own
 # w-row not allowing c+w (བཅྭ), and one harness artefact (the comparison drops
-# spaces from the input, which fuses two runs) - step 4/Q10 close the roles.
+# spaces from the input, which fuses two runs). Each open row's reason is in
+# test/parity/known_divergences.tsv: the role holes are the tails, the rest are
+# the book's own table and the harness artefact.
 jsewts	w2u	204	204
 jsewts	u2w	187	187
 jsewts	roundtrip	205	205
