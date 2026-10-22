@@ -45,6 +45,7 @@ inline check that fires exactly where the grammar places the token.
 module Convert.Grammar.Constraint.Constraint21
     ( pConstraint21First
     , pConstraint21Rest
+    , closeWord
     ) where
 
 import Control.Monad (void, when)
@@ -73,7 +74,6 @@ import Convert.Grammar.Parser
     , placeSuperfix
     , resetFinalChain
     , scanLeading
-    , scanStackVowel
     , scanStacks
     , scanTail
     , subfixMarks
@@ -83,7 +83,9 @@ import Convert.Grammar.Superfix (superfixCombos, superfixRoots)
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
+    , Subfixes (NoSubfix)
     , TibetanSyllable
+    , VowelSlot (..)
     )
 import Convert.Token
     ( Consonant (..)
@@ -95,6 +97,7 @@ import Convert.Token
     , tokenRaw
     , tokenSource
     )
+import Data.Foldable (toList)
 import Data.Maybe (listToMaybe)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
@@ -116,7 +119,6 @@ pConstraint21First =
         vowelStart :: SpellParser TibetanSyllable
         vowelStart = do
             marks <- markVowel GP.pVowelAny
-            noteVowelMark marks
             resetWordTail
             -- A word that opens on a vowel opens a stack like any other.
             resetFinalChain
@@ -155,12 +157,11 @@ pConstraint21Rest =
         -- forces for ba.e.
         vowelContinuation :: SpellParser TibetanSyllable
         vowelContinuation = do
-            taken <- gets scanStackVowel
+            taken <- stackVowelTaken
             if taken
                 then MP.empty
                 else do
                     marks <- markVowel GP.pVowelAny
-                    noteVowelMark marks
                     resetWordTail
                     pure marks
 
@@ -170,9 +171,7 @@ pConstraint21Rest =
         restJoin :: SpellParser TibetanSyllable
         restJoin = do
             marks <- pForcedJoin
-            when (startsWithVowel marks) $ do
-                setStackVowel True
-                resetWordTail
+            when (startsWithVowel marks) $ resetWordTail
             pure marks
 
         -- A continuation that is not a consonant-led stack ends the head
@@ -190,15 +189,46 @@ pDotBreak =
         *> resetFinalChain
         *> pure mempty
 
+-- | The word is over: the sign that closes its tail is a suffix (REFACTOR-AST
+-- §8 A5). The closing sign is the last stack, when it is a bare consonant
+-- behind the word's root - no written vowel (a second root carries one), no
+-- superfix (that stack is a root), and not the root stack itself. Everything
+-- before the closing sign keeps its role: a second root with its own vowel
+-- (@khye'us@, @pa'e@) and the a-chung that carries the implicit @a@ of the
+-- spelling (@pa'am@) are no suffixes. The book is silent about tails outside
+-- 4.15/4.16/4.20, so this is our rule, named here and not guessed by a
+-- renderer.
+closeWord :: SpellParser ()
+closeWord = modify $ \s -> s{scanStacks = closeTail (scanStacks s)}
+
+closeTail :: Seq.Seq Stack -> Seq.Seq Stack
+closeTail stacks = case Seq.viewr stacks of
+    rest Seq.:> top
+        | closesTail rest top -> rest Seq.|> top{stRole = RoleSuffix}
+    _ -> stacks
+    where
+        closesTail rest top =
+            stRole top == RoleRoot
+                && stSuperfix top == Nothing
+                && stSubfixes top == NoSubfix
+                && stVowel top == Nothing
+                && maybe False isSuffixLetter (stRoot top)
+                && any isRoot (toList rest)
+
+        isRoot st = stRole st == RoleRoot && stRoot st /= Nothing
+
+        -- The ten closing letters of classical orthography (§8 A5). A letter
+        -- outside them is no suffix: ཨཟ is a second root with implicit @a@.
+        isSuffixLetter tok = case tokenCanonical tok of
+            TcConsonant c -> c `elem` GP.suffixConsonants
+            _ -> False
+
 pStackBody :: Bool -> SpellParser TibetanSyllable
 pStackBody atStart = do
     base <- liftP GP.pConsonant
     -- A new stack closes its own finals: the chain the previous one filled
     -- does not reach into it.
     resetFinalChain
-    -- The stack opens with its own vowel state: a Wylie a-chen base is the
-    -- letter that already is the vowel, every other base waits for one.
-    setStackVowel (GP.isImplicitAWylie base)
     next0 <-
         MP.lookAhead (MP.skipMany (liftP GP.pCaret) *> MP.optional (liftP GP.pToken))
     -- The letters the root behind the base would subjoin. Only a superfix
@@ -436,27 +466,33 @@ clearLead = modify $ \s -> s{scanLeading = Nothing}
 resetWordTail :: SpellParser ()
 resetWordTail = modify $ \s -> s{scanTail = TailOpen Nothing Nothing}
 
--- | Write whether the word's last open stack carries its vowel ('scanStackVowel').
-setStackVowel :: Bool -> SpellParser ()
-setStackVowel v = modify $ \s -> s{scanStackVowel = v}
-
--- | Record a vowel the tail just placed - the head of the marks it made - and
--- decide whether the stack now carries its vowel. A long @a@ token that the
--- bare short vowel of its own mnemonic follows (@I@ -> @A@ + @i@, that second
--- token written by nothing, see 'GP.pLongVowelHalf') is not yet the stack's
--- vowel: the flag stays open so the completion joins the same stack, and it
--- closes on the short vowel itself. Every other vowel - the long @a@ standing
--- alone (@kA@ -> ཀཱ), a short vowel written out separately (@kAi@ -> ཀཱ +
--- ཨི) - is the stack's vowel at once.
-noteVowelMark :: TibetanSyllable -> SpellParser ()
-noteVowelMark marks = case Seq.lookup 0 marks of
-    Just v -> do
-        pending <-
-            if GP.isLongAVowelToken v
-                then liftP (MP.option False (MP.lookAhead (True <$ GP.pLongVowelHalf)))
-                else pure False
-        setStackVowel (not pending)
-    Nothing -> setStackVowel True
+-- | Whether the word's last open stack already carries its vowel. A written
+-- sign closes the slot, the bare implicit @a@ closes it, and a Wylie a-chen
+-- base is the vowel itself - unless a forced join has subjoined a letter below
+-- it (@a+yo@ -> ཨྱོ), which turns the base into a root still waiting for one.
+-- A long @a@ token that the bare short vowel of its own mnemonic follows
+-- (@I@ -> @A@ + @i@, the second token written by nothing, see
+-- 'GP.pLongVowelHalf') leaves the slot open: the completion joins the same
+-- stack.
+stackVowelTaken :: SpellParser Bool
+stackVowelTaken = do
+    top <- gets (lastStack . scanStacks)
+    case top of
+        Nothing -> pure False
+        Just st -> case stVowel st of
+            Just VowelImplicit -> pure True
+            Just (VowelWritten tok rest)
+                | null rest && GP.isLongAVowelToken tok -> do
+                    half <-
+                        liftP
+                            (MP.option False (MP.lookAhead (True <$ GP.pLongVowelHalf)))
+                    pure (not half)
+                | otherwise -> pure True
+            Nothing -> pure (isAChenRoot st)
+    where
+        isAChenRoot st = case stRoot st of
+            Just tok -> GP.isImplicitAWylie tok && stSubfixes st == NoSubfix
+            Nothing -> False
 
 -- | Whether a forced join ended in a vowel (@+e@).
 startsWithVowel :: TibetanSyllable -> Bool
@@ -501,7 +537,6 @@ pConsumeTail vowelSeen baseIsA =
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
                 marks <- markVowel GP.pVowelAny
-                noteVowelMark marks
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
                 pure (marks <> rest)
@@ -517,13 +552,12 @@ pConsumeTail vowelSeen baseIsA =
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
                 marks <- markImplicitVowel GP.pImplicitAWylie
-                setStackVowel True
                 resetWordTail
                 rest <- pConsumeTail True baseIsA
                 pure (marks <> rest)
 
-        -- One final mark, then the rest of the tail: a final does not place a
-        -- vowel, so the flag the stack reached is the one the tail keeps.
+        -- One final mark, then the rest of the tail: a final places no vowel,
+        -- so the vowel state the tail reached is the one it keeps.
         pTailFinal :: SpellParser TibetanSyllable
         pTailFinal = MP.try $ do
             marks <- oneFinalMark
@@ -553,10 +587,7 @@ pConsumeTail vowelSeen baseIsA =
             -- A vowel of the join (a @+e@, or the implicit @a@ it pulled in)
             -- fills the stack; a join that only dragged a letter below a fresh
             -- a-chen base turns that base into a root still waiting for one
-            -- (a+yo -> ཨྱོ), while below any other base the vowel state stands.
-            if startsWithVowel marks || not (Seq.null inheritVowel)
-                then setStackVowel True
-                else when baseIsA (setStackVowel False)
+            -- (a+yo -> ཨྱོ) - 'stackVowelTaken' reads both from the stack.
             rest <- pConsumeTail (vowelSeen || startsWithVowel marks) baseIsA
             pure (marks <> inheritVowel <> rest)
 
@@ -673,7 +704,8 @@ placeBase atStart base next below =
                 && GP.isPrefixLetter base
                 && GP.isConsonantToken n
                 && not (GP.isSubjoinCandidate n)
-                && not (GP.isImplicitA n) ->
+                && not (GP.isImplicitA n)
+                && prefixAllows base n ->
                 placePrefix base
             | Just run <- superfixRun base n below
             , not (any isLa run)

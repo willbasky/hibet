@@ -6,6 +6,7 @@ import Convert.Diagnostic (Finding (..))
 import Convert.Grammar.Syllable
     ( Stack
     , TibetanSyllable
+    , closeTop
     , putFinal
     , putImplicitVowel
     , putPostfix
@@ -43,7 +44,6 @@ data ScanState = ScanState
     , scanFindings :: [Finding]
     , scanLeading :: Maybe (LeadRole, Token)
     , scanTail :: WordTail
-    , scanStackVowel :: Bool
     , scanFinalSlot :: Int
     , scanCaret :: Bool
     }
@@ -65,15 +65,6 @@ data WordTail
     | TailOpen (Maybe Token) (Maybe Token)
     deriving (Show, Eq)
 
--- | Whether the word's currently open stack already carries its vowel: a Wylie
--- a-chen base (the letter that already is the vowel an implicit @a@ would
--- spell) sets it when the stack opens, a sign or the bare implicit @a@ sets it
--- where the tail places them, and a forced join that drags a letter below a
--- fresh a-chen base clears it again (that base is then a root waiting for its
--- vowel, a+yo -> ཨྱོ). A stack carries a single vowel, so a lone vowel that
--- reaches the word loop while this flag stands belongs to a fresh a-chen stack
--- of its own, not to the stack that closed (ae -> ཨ + ཨེ, kae -> ཀ + ཨེ).
-
 -- | The spell parser: the grammar runs in 'StateT' over the token parser, so
 -- the state lives in the parsers themselves: the stacks built so far, the
 -- findings the windows recorded and the word context. Megaparsec's
@@ -92,7 +83,6 @@ initialScanState =
         , scanFindings = []
         , scanLeading = Nothing
         , scanTail = TailVoid
-        , scanStackVowel = False
         , scanFinalSlot = 0
         , scanCaret = False
         }
@@ -174,14 +164,14 @@ subfixMarks = fmap mconcat . mapM placeSubfix
 caretMark :: Maybe Token -> SpellParser TibetanSyllable
 caretMark = maybe (pure mempty) placeFinal
 
--- | The stacks the run's grammar built, and the state is cleared for the next
--- run. Every token a structure places is already in the stack that owns it, so
--- the caller reads the syllable instead of grouping the marks.
+-- | The stacks the run's grammar built, closed, and the state is cleared for
+-- the next run. Every token a structure places is already in the stack that
+-- owns it, so the caller reads the syllable instead of grouping the marks.
 takeStacks :: SpellParser (Seq Stack)
 takeStacks = do
     stacks <- gets scanStacks
     modify $ \s -> s{scanStacks = mempty}
-    pure stacks
+    pure (closeTop stacks)
 
 -- | Record one finding of a constraint window in the running state, before
 -- the run's span is known.
@@ -209,7 +199,6 @@ takeFindings = do
             { scanFindings = []
             , scanLeading = Nothing
             , scanTail = TailVoid
-            , scanStackVowel = False
             }
     pure (reverse fs)
 

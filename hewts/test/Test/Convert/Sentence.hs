@@ -24,6 +24,7 @@ tests =
         , unknownAscii
         , numbers
         , longA
+        , aFive
         , roundtrip
         , leadingShad
         , doubleShad
@@ -135,6 +136,18 @@ longA =
         tagged (run "ཊཱ")
             @?= [ ("S", ["ཊ", "ཱ"])
                 ]
+
+-- | REFACTOR-AST §8 A5: the sign that closes the word's tail is a suffix, so
+-- it carries no implicit @a@; the a-chung before it stays a root and keeps its
+-- own implicit @a@ (@pa'am@, not @pa'm@).
+aFive :: TestTree
+aFive =
+    testCase "the closing tail sign prints without an implicit a (A5)" $ do
+        let wylie = renderItems OutWylie . run
+        wylie "པའམ" @?= "pa'am"
+        wylie "བའམ" @?= "ba'am"
+        wylie "ཁྱེའུས" @?= "khye'us"
+        wylie "བརས" @?= "b.ras"
 
 roundtrip :: TestTree
 roundtrip =

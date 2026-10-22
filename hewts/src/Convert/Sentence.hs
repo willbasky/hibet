@@ -37,24 +37,19 @@ import Convert.Grammar.Parser
     )
 import Convert.Grammar.Structure (claimsFreshRun, pStructure)
 import Convert.Grammar.Syllable
-    ( Role (..)
-    , Stack (..)
+    ( Stack
     , Syllable (..)
-    , VowelSlot (..)
     , flatten
     )
 import Convert.Token
-    ( Consonant (Ca)
-    , Span (..)
+    ( Span (..)
     , Token
     , TokenCanonical (..)
-    , TokenSource (..)
     , isToplessMark
     , offsetEnd
     , offsetStart
     , tokenCanonical
     , tokenRaw
-    , tokenSource
     , tokenSpan
     )
 import Data.Foldable (toList)
@@ -209,7 +204,6 @@ pSyllable = do
     let content = take claimed start <> tailToks
         runSpan = wordSpan content
         diags = findingsDiagnostics runSpan findings
-        stacks = withImplicitVowels built
         -- The signs the run swallowed but no stack took: separators are input
         -- syntax (REFACTOR-AST §8 B2) and the marks the grammar ate - a second
         -- caret, a final the chain refused - live in the findings (Q6), so
@@ -221,8 +215,8 @@ pSyllable = do
             else
                 SyllableItem
                     Syllable
-                        { sylStacks = stacks
-                        , sylSpan = stacksSpan stacks runSpan
+                        { sylStacks = built
+                        , sylSpan = stacksSpan built runSpan
                         , sylDiags = diags
                         }
                     : [InvalidSyllableItem leftovers mempty | not (null leftovers)]
@@ -270,29 +264,6 @@ pSyllable = do
                                     toks <- close (dotSeen || isDotTok)
                                     pure (tok : toks)
                         _ -> pure []
-
--- | The implicit @a@ of a root stack (REFACTOR-AST §4, invariant 5).
---
--- Glyphs write no implicit vowel, so a Unicode-sourced root token owes one
--- when the stack carries no written sign; a Wylie-sourced token says in the
--- writing whether it read a vowel-less letter or implicit @a@ (rk is ར + ཀ,
--- rka is རྐ), so its parse already decided and this adds nothing. An a-chen
--- root is a vowel letter of its own (@ཨ@ is spelled @a@) and takes no second
--- @a@.
-withImplicitVowels :: Seq Stack -> Seq Stack
-withImplicitVowels = fmap addImplicit
-    where
-        addImplicit st = case (stRole st, stRoot st, stVowel st) of
-            (RoleRoot, Just root, Nothing)
-                | writesVowel root -> st{stVowel = Just VowelImplicit}
-            _ -> st
-        writesVowel root =
-            tokenSource root == TsUnicode
-                && case tokenCanonical root of
-                    TcConsonant Ca -> False
-                    TcConsonant _ -> True
-                    TcSubConsonant _ -> True
-                    _ -> False
 
 -- | The span of the stacked signs; a syllable with no stack falls back to the
 -- span of its run.

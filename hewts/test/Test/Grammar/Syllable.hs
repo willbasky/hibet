@@ -116,6 +116,17 @@ tests =
                 @?= Right [Just Ast.VowelImplicit, Nothing]
             fmap (map Ast.stVowel) (stacksW "rk")
                 @?= Right [Nothing]
+        , testCase "the closing sign of the tail is a suffix (A5)" $ do
+            rolesU "པའམ" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
+            rolesU "བའམ" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
+            rolesU "ཁྱེའུས" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
+            rolesU "པའེ" @?= Right [Ast.RoleRoot, Ast.RoleRoot]
+            rolesW "pa'am" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
+            rolesW "khye'us" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
+        , testCase "a prefix its table cannot lead is a root (4.2)" $ do
+            rolesW "bdza" @?= Right [Ast.RoleRoot, Ast.RoleRoot]
+            rolesW "grla" @?= Right [Ast.RoleRoot, Ast.RoleRoot]
+            rolesU "བརྟ" @?= Right [Ast.RolePrefix, Ast.RoleRoot]
         , testCase "corpora: the items cover every run token exactly once" checkCorpora
         , testCase "coverage fails on a duplicate kept token" $
             coverageFails [kTok] [kTok, kTok]

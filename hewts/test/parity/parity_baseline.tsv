@@ -254,23 +254,30 @@
 # three large corpora and 9 kangyur u2w rows. The w2u totals drop by those six
 # (210 -> 204, 218 -> 212, 212 -> 206) and the kangyur u2w total by nine
 # (254 -> 245); every remaining check of those kinds passes, so the floor is
-# the total. The other legs hold. The remaining kangyur rows are role holes
-# (structure 38 leaves a closing consonant a root: བའམ, ཁྱེའུས), the book's own
-# w-row not allowing c+w (བཅྭ), and one harness artefact (the comparison drops
-# spaces from the input, which fuses two runs). Each open row's reason is in
-# test/parity/known_divergences.tsv: the role holes are the tails, the rest are
-# the book's own table and the harness artefact.
+# the total. The other legs hold. At step 3 the remaining kangyur rows were
+# role holes (structure 38 leaves a closing consonant a root: བའམ, ཁྱེའུས), the
+# book's own w-row not allowing c+w (བཅྭ), and one harness artefact (the
+# comparison drops spaces from the input, which fuses two runs); each open row's
+# reason is in test/parity/known_divergences.tsv.
+#
+# REFACTOR-AST step 6a (the tail roles): the closing sign of the generic word is
+# a suffix, and a head prefix letter its own table cannot lead is a root. The
+# role-hole rows left test/parity/known_divergences.tsv, so the u2w floors rise
+# by them: jsewts 187 -> 193, lingua 185 -> 194, ewts-js 188 -> 195, kangyur
+# 245 -> 250; the round-trip legs by one each (205 -> 206, 213 -> 214,
+# 206 -> 207). The rows still open are the book's own w-row and subjoin set,
+# the Q10 ties, the 6c escape case and the harness artefact.
 jsewts	w2u	204	204
-jsewts	u2w	187	187
-jsewts	roundtrip	205	205
+jsewts	u2w	193	193
+jsewts	roundtrip	206	206
 lingua	w2u	212	212
-lingua	u2w	185	185
-lingua	roundtrip	213	213
+lingua	u2w	194	194
+lingua	roundtrip	214	214
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	206	206
-ewts-js	u2w	188	188
-ewts-js	roundtrip	206	206
+ewts-js	u2w	195	195
+ewts-js	roundtrip	207	207
 java	u2w	1	1
 kangyur	roundtrip	254	254
-kangyur	u2w	245	245
+kangyur	u2w	250	250

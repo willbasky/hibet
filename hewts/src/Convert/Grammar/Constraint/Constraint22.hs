@@ -10,12 +10,13 @@
 -- rule must read as the two-letter form (dga). Only the completed syllable
 -- says which reading won.
 --
--- The recommendation speaks of Wylie, so the input must be Wylie too: a
--- stack's vowel slot holds 'VowelImplicit' exactly when the letter @a@ was
--- written where a vowel would be, and the Tibetan spelling never writes it
--- (དག is read root ད + suffix ག, with no letter standing in for a vowel).
--- That slot is therefore also what keeps the rule off a syllable with a real
--- vowel (dgi is དགི, not དག).
+-- The recommendation speaks of Wylie, so the implicit @a@ must be the letter
+-- @a@ the Wylie writer wrote, not just a fact of the stack: after 6b every
+-- glyph-sourced root stack carries 'VowelImplicit' too, because the glyphs
+-- write no inherent vowel, and a Tibetan syllable is no recommendation. The
+-- source of the root sign says which of the two it is; a written vowel closes
+-- the slot in both. That slot is therefore also what keeps the rule off a
+-- syllable with a real vowel (dgi is དགི, not དག).
 module Convert.Grammar.Constraint.Constraint22
     ( recommendedSpelling
     , noteAmbiguous
@@ -41,8 +42,10 @@ import Convert.Token
     ( Consonant (..)
     , Token
     , TokenCanonical (TcConsonant)
+    , TokenSource (TsWylie)
     , tokenCanonical
     , tokenRaw
+    , tokenSource
     )
 import Data.Foldable (toList)
 import Data.Maybe (isNothing)
@@ -130,7 +133,9 @@ plainStack st = do
             && null (finalsTokens (stFinals st))
     implicit <- case stVowel st of
         Nothing -> Just False
-        Just VowelImplicit -> Just True
+        -- The written letter @a@ is the only implicit vowel the rule speaks
+        -- about: a glyph's 'VowelImplicit' is the same slot holding no letter.
+        Just VowelImplicit -> Just (tokenSource root == TsWylie)
         Just VowelWritten{} -> Nothing
     pure (stRole st, root, implicit)
 

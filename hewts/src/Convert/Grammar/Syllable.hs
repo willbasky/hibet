@@ -10,7 +10,8 @@
 -- the field itself ('Stack.stSuperfix', 'stRoot' and so on). The parser places
 -- each sign through the 'put…' functions below, one per field; the flat run of
 -- tokens is what the structures return and what the coverage checks read, and it
--- carries no marks (step 4e removed 'Position').
+-- carries no marks (step 4e removed 'Position'). The one fact no sign carries -
+-- the implicit @a@ - is set when the stack closes ('closeStack').
 module Convert.Grammar.Syllable
     ( TibetanSyllable
     , Role (..)
@@ -32,6 +33,7 @@ module Convert.Grammar.Syllable
     , putVowel
     , putImplicitVowel
     , putFinal
+    , closeTop
     , flatten
     ) where
 
@@ -39,12 +41,15 @@ import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Convert.Diagnostic (Diagnostics)
 import Convert.Token
-    ( FinalMark (..)
+    ( Consonant (Ca)
+    , FinalMark (..)
     , Span
     , Token
     , TokenCanonical (..)
+    , TokenSource (..)
     , finalSlot
     , tokenCanonical
+    , tokenSource
     )
 import Data.Foldable (toList)
 import Data.Maybe (catMaybes, isNothing)
@@ -179,7 +184,7 @@ putPrefix
 putPrefix tok = opens RolePrefix tok
 putSuffix tok = opens RoleSuffix tok
 putPostfix tok = opens RolePostfix tok
-putSuperfix tok stacks = stacks Seq.|> (emptyStack RoleRoot){stSuperfix = Just tok}
+putSuperfix tok stacks = snocStack ((emptyStack RoleRoot){stSuperfix = Just tok}) stacks
 putRoot tok stacks = case Seq.viewr stacks of
     rest Seq.:> top
         | Just _ <- stRoot top
@@ -188,12 +193,15 @@ putRoot tok stacks = case Seq.viewr stacks of
         | Just _ <- stSuperfix top
         , Nothing <- stRoot top ->
             rest Seq.|> top{stRoot = Just tok}
-    _ -> stacks Seq.|> (emptyStack RoleRoot){stRoot = Just tok}
+    _ -> snocStack ((emptyStack RoleRoot){stRoot = Just tok}) stacks
 putSubfix tok = onTop $ \st -> st{stSubfixes = pushSubfix tok (stSubfixes st)}
 putVowel tok = onTop $ \st -> st{stVowel = Just (pushVowel tok (stVowel st))}
 
--- | The implicit @a@ is a fact of the slot, not a sign: it prints nothing and is
--- input syntax, so a written vowel beside it wins (the @a@ of @bo+ra@).
+-- | The implicit @a@ is a fact of the slot, not a sign: it prints nothing, so
+-- a written vowel beside it wins (the @a@ of @bo+ra@). The grammar sets it when
+-- a root stack closes ('closeStack'); Wylie writes the letter @a@, which the
+-- grammar places as it reads it, so a Wylie stack without that letter and
+-- without a vowel sign has no implicit @a@.
 putImplicitVowel _ = onTop $ \st ->
     st{stVowel = case stVowel st of Nothing -> Just VowelImplicit; v -> v}
 
@@ -203,7 +211,42 @@ putFinal tok
         st{stFinals = maybe (stFinals st) id (snocFinal tok (stFinals st))}
 
 opens :: Role -> Token -> Seq Stack -> Seq Stack
-opens role tok stacks = stacks Seq.|> (emptyStack role){stRoot = Just tok}
+opens role tok stacks = snocStack ((emptyStack role){stRoot = Just tok}) stacks
+
+-- | Append a stack, closing the one before it: a new stack begins where the
+-- previous one is complete.
+snocStack :: Stack -> Seq Stack -> Seq Stack
+snocStack st stacks = closeTop stacks Seq.|> st
+
+-- | Close the last stack of a run; the earlier ones closed when the stacks
+-- after them opened. The sentence reads the stacks through here, after the
+-- word-level rules (the closing suffix of §8 A5) have named their roles.
+closeTop :: Seq Stack -> Seq Stack
+closeTop stacks = case Seq.viewr stacks of
+    rest Seq.:> top -> rest Seq.|> closeStack top
+    Seq.EmptyR -> stacks
+
+-- | The implicit @a@ of a closed root stack (REFACTOR-AST §4, invariant 5):
+-- a root stack with no written vowel carries it. Glyphs write the vowel of no
+-- root, so a glyph-sourced stack owes one; Wylie writes the vowel of every
+-- syllable, the letter @a@ where no sign stands, so its slices already say
+-- which stacks have it. An a-chen root is a vowel letter of its own (@ཨ@ is
+-- spelled @a@) and takes no second @a@.
+closeStack :: Stack -> Stack
+closeStack st = case (stRole st, stRoot st, stVowel st) of
+    (RoleRoot, Just root, Nothing)
+        | isGlyphRoot root -> st{stVowel = Just VowelImplicit}
+    _ -> st
+    where
+        -- A glyph root that is not the a-chen: the glyph writes no vowel, so
+        -- the slot holds the implicit @a@.
+        isGlyphRoot tok =
+            tokenSource tok == TsUnicode
+                && case tokenCanonical tok of
+                    TcConsonant Ca -> False
+                    TcConsonant _ -> True
+                    TcSubConsonant _ -> True
+                    _ -> False
 
 emptyStack :: Role -> Stack
 emptyStack role = Stack role Nothing Nothing NoSubfix Nothing Nothing emptyFinals

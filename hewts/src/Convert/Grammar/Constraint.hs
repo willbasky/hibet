@@ -32,6 +32,7 @@ module Convert.Grammar.Constraint
     , pConstraint20
     , pConstraint21First
     , pConstraint21Rest
+    , closeWord
     , recommendedSpelling
     , noteAmbiguous
     ) where
@@ -61,7 +62,8 @@ import Convert.Grammar.Constraint.Constraint18 (pConstraint18)
 import Convert.Grammar.Constraint.Constraint19 (pConstraint19)
 import Convert.Grammar.Constraint.Constraint20 (pConstraint20)
 import Convert.Grammar.Constraint.Constraint21
-    ( pConstraint21First
+    ( closeWord
+    , pConstraint21First
     , pConstraint21Rest
     )
 import Convert.Grammar.Constraint.Constraint22

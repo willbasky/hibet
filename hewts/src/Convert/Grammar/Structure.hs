@@ -444,6 +444,9 @@ pStructure38 :: SpellParser TibetanSyllable
 pStructure38 = do
     first <- C.pConstraint21First
     rest <- MP.many C.pConstraint21Rest
+    -- The rule of §8 A5 names the closing sign of the tail: it runs once the
+    -- word has stopped, on the stacks the generic word built.
+    C.closeWord
     pure (first <> mconcat rest)
 
 -- | A syllable must match the structure that consumes the most tokens: a
