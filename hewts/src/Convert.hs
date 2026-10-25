@@ -241,6 +241,13 @@ glyph tok = fromMaybe "" (unicodeOf (tokenCanonical tok))
 isOrphanStack :: Stack -> Bool
 isOrphanStack st = stRoot st == Nothing && stSuperfix st == Nothing
 
+-- | Whether every sign of the stack was read from glyphs. A stack opened by
+-- a Wylie sign has the same headless shape (@i@, @E@, @oM@) but is no
+-- escape case: only a glyph run the grammar left without a letter is
+-- escaped (REFACTOR-AST §6.2).
+isUnicodeStack :: Stack -> Bool
+isUnicodeStack = all ((== TsUnicode) . tokenSource) . toList . stackTokens
+
 subfixList :: Subfixes -> [Token]
 subfixList NoSubfix = []
 subfixList (OneSubfix a) = [a]
@@ -284,7 +291,8 @@ renderItems fmt items = case fmt of
         wyliePieces :: SpellItem -> [Piece]
         wyliePieces (SyllableItem s) = case toList (sylStacks s) of
             (st : rest)
-                | isOrphanStack st ->
+                | isOrphanStack st
+                , isUnicodeStack st ->
                     orphanEscapes (toList (stackTokens st))
                         <> [runPiece (notateText (s{sylStacks = foldMap pure rest}))]
             _ -> [runPiece (notateText s)]

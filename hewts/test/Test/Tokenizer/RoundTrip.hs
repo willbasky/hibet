@@ -8,7 +8,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, assertBool, testCase)
+import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
 
 import Convert
     ( OutputFormat (..)
@@ -43,6 +43,7 @@ tests =
         [ unicodeToWylieToUnicode
         , wylieToUnicodeToWylie
         , compounds
+        , wylieStaysWylie
         ]
 
 -- | Parse Tibetan text as Unicode and run the token-level grammar.
@@ -248,3 +249,14 @@ checkCompoundSpelling spelling = do
     assertBool
         (unwords ["compound unicode leg unstable:", show spelling, show u, show back])
         (u == back)
+
+-- | REFACTOR-AST §6.2: a Wylie run the grammar leaves without a letter is no
+-- escape case - it spells through the notation as written. Only a glyph run
+-- the grammar could not read escapes (a lone ཱ).
+wylieStaysWylie :: TestTree
+wylieStaysWylie =
+    testGroup
+        "wylie -> wylie keeps a headless run as written"
+        [ testCase (T.unpack s) (renderW (parseW s) @?= s)
+        | s <- ["i", "E", "oM", "Mi"]
+        ]
