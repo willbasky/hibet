@@ -68,7 +68,7 @@ wylieCases :: [(String, Assertion)]
 wylieCases =
     [ ("consonant basic k", singleWylie "k" (TkConsonant, TcConsonant Ck))
     , ("consonant aspirated kh", singleWylie "kh" (TkConsonant, TcConsonant Ckh))
-    , ("consonant alias W -> Cw", singleWylie "W" (TkConsonant, TcConsonant Cw))
+    , ("raised subjoined W", singleWylie "W" (TkSubConsonant, TcSubConsonant SCW))
     , ("vowel short i", singleWylie "i" (TkVowel, TcVowel Vi))
     , ("vowel composite au", singleWylie "au" (TkVowel, TcVowel Vau))
     , ("final anusvara M", singleWylie "M" (TkFinal, TcFinal FMAnusvara))
@@ -155,8 +155,6 @@ wylieAliasCases =
     , aliasesWylie "retroflex da aliases" ["D", "-d"] (TkConsonant, TcConsonant CD)
     , aliasesWylie "retroflex na aliases" ["N", "-n"] (TkConsonant, TcConsonant CN)
     , aliasesWylie "sha aliases" ["Sh", "-sh"] (TkConsonant, TcConsonant CSh)
-    , aliasesWylie "wa aliases" ["w", "W"] (TkConsonant, TcConsonant Cw)
-    , aliasesWylie "ya aliases" ["y", "Y"] (TkConsonant, TcConsonant Cy)
     , aliasesWylie
         "a-chung aliases"
         ["'", "\x2019", "\x2018"]
@@ -388,12 +386,12 @@ wylieConsonants =
     , ("tsh", (TkConsonant, TcConsonant Ctsh))
     , ("dz", (TkConsonant, TcConsonant Cdz))
     , ("w", (TkConsonant, TcConsonant Cw))
-    , ("W", (TkConsonant, TcConsonant Cw))
+    , ("W", (TkSubConsonant, TcSubConsonant SCW))
     , ("zh", (TkConsonant, TcConsonant Czh))
     , ("z", (TkConsonant, TcConsonant Cz))
     , ("'", (TkConsonant, TcConsonant C'))
     , ("y", (TkConsonant, TcConsonant Cy))
-    , ("Y", (TkConsonant, TcConsonant Cy))
+    , ("Y", (TkSubConsonant, TcSubConsonant SCY))
     , ("r", (TkConsonant, TcConsonant Cr))
     , ("l", (TkConsonant, TcConsonant Cl))
     , ("sh", (TkConsonant, TcConsonant Csh))

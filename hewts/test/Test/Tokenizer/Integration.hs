@@ -58,7 +58,7 @@ caseUnicodeRawRoundtrip =
 
 caseWylieCanonicalRender :: Assertion
 caseWylieCanonicalRender =
-    canonicalWylieFromWylie "W O ~M`" @?= "w Ao ~M`"
+    canonicalWylieFromWylie "W O ~M`" @?= "W Ao ~M`"
 
 caseWylieFvCanonicalDistinct :: Assertion
 caseWylieFvCanonicalDistinct =

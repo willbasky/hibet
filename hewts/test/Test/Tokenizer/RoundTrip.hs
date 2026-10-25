@@ -29,6 +29,7 @@ import Convert.Tokenizer.Wylie
     , wylieNumber
     , wylieOrnament
     , wyliePunctuation
+    , wylieRaisedSubjoined
     , wylieSanskritMark
     , wylieSign
     , wylieSpace
@@ -43,6 +44,7 @@ tests =
         [ unicodeToWylieToUnicode
         , wylieToUnicodeToWylie
         , compounds
+        , raisedSubjoined
         , wylieStaysWylie
         ]
 
@@ -152,7 +154,7 @@ wylieReps =
         <> [wylieSpace m | m <- [minBound .. maxBound :: SpaceMark]]
 
 wylieAliasKeys :: [Text]
-wylieAliasKeys = map fst wylieConsonantAliases
+wylieAliasKeys = map fst wylieConsonantAliases <> map fst wylieRaisedSubjoined
 
 wylieToUnicodeToWylie :: TestTree
 wylieToUnicodeToWylie =
@@ -249,6 +251,32 @@ checkCompoundSpelling spelling = do
     assertBool
         (unwords ["compound unicode leg unstable:", show spelling, show u, show back])
         (u == back)
+
+-- | REFACTOR-AST §10.3 Р3 (подшаг 6d): the raised subjoined @w@ and @y@ are
+-- signs of their own (U+0FBA/0FBB), so a stack prints the glyph it was written
+-- with, and a glyph stack writes back the raised spelling it read.
+raisedSubjoined :: TestTree
+raisedSubjoined =
+    testGroup
+        "raised subjoined w and y"
+        ( [ testCase "W -> W keeps the raised spelling" $ do
+                renderW (parseW "s+Wa") @?= "s+Wa"
+                renderW (parseW "s+Ya") @?= "s+Ya"
+                renderW (parseW "R+Ya") @?= "R+Ya"
+          ]
+            <> [ testCase (T.unpack s) $ do
+                    renderU (parseW s) @?= u
+                    renderU (parseU u) @?= u
+               | (s, u) <-
+                    [ ("s+Wa", "སྺ")
+                    , ("s+wa", "སྭ")
+                    , ("s+Ya", "སྻ")
+                    , ("s+ya", "སྱ")
+                    , ("R+Ya", "ཪྻ")
+                    , ("r+Y", "རྻ")
+                    ]
+               ]
+        )
 
 -- | REFACTOR-AST §6.2: a Wylie run the grammar leaves without a letter is no
 -- escape case - it spells through the notation as written. Only a glyph run

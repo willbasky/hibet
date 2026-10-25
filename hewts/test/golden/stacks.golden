@@ -34,10 +34,10 @@ jsewts	34	1	Root:sh~
 jsewts	35	1	Root:Sh~
 jsewts	36	1	Root:s+h~
 jsewts	37	1	Root:s+w~
-jsewts	38	1	Root:s+w~
+jsewts	38	1	Root:s+W~
 jsewts	39	1	Root:s+y~
 jsewts	40	1	Root:s+y~
-jsewts	41	1	Root:s+y~
+jsewts	41	1	Root:s+Y~
 jsewts	42	1	Root:s+r~
 jsewts	43	1	Root:s+r~
 jsewts	44	1	Root:s+R~
@@ -280,10 +280,10 @@ lingua	33	1	Root:sh~
 lingua	34	1	Root:Sh~
 lingua	35	1	Root:s+h~
 lingua	36	1	Root:s+w~
-lingua	37	1	Root:s+w~
+lingua	37	1	Root:s+W~
 lingua	38	1	Root:s+y~
 lingua	39	1	Root:s+y~
-lingua	40	1	Root:s+y~
+lingua	40	1	Root:s+Y~
 lingua	41	1	Root:s+r~
 lingua	42	1	Root:s+r~
 lingua	43	1	Root:s+R~
@@ -550,10 +550,10 @@ ewts-js	34	1	Root:sh~
 ewts-js	35	1	Root:Sh~
 ewts-js	36	1	Root:s+h~
 ewts-js	37	1	Root:s+w~
-ewts-js	38	1	Root:s+w~
+ewts-js	38	1	Root:s+W~
 ewts-js	39	1	Root:s+y~
 ewts-js	40	1	Root:s+y~
-ewts-js	41	1	Root:s+y~
+ewts-js	41	1	Root:s+Y~
 ewts-js	42	1	Root:s+r~
 ewts-js	43	1	Root:s+r~
 ewts-js	44	1	Root:s+R~
@@ -799,15 +799,15 @@ ewts-rs	27	1	Root:m:A
 ewts-rs	27	2	Root:d:u#H
 ewts-rs	27	3	Root:ph~ Root:T
 ewts-rs	29	1	Root:R+n~
-ewts-rs	29	2	Root:R+y~
+ewts-rs	29	2	Root:R+Y~
 ewts-rs	29	3	Root:R+y~
 ewts-rs	31	1	Root:r+ny~
 ewts-rs	31	2	Root:r+l~
 ewts-rs	31	3	Root:r+w~
 ewts-rs	33	1	Root:r+r
 ewts-rs	33	2	Root:r+R
-ewts-rs	33	3	Root:s+w~
-ewts-rs	33	4	Root:r+y
+ewts-rs	33	3	Root:s+W~
+ewts-rs	33	4	Root:r+Y
 ewts-rs	35	1	Root:r+sh~
 ewts-rs	35	2	Root:l+r~
 ewts-rs	35	3	Root:h+w~

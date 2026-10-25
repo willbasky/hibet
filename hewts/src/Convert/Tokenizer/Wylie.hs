@@ -44,6 +44,7 @@ longTokenList =
             , [s | s <- map wylieSymbol [minBound .. maxBound], T.length s > 1]
             , [s | s <- map wylieSpace [minBound .. maxBound], T.length s > 1]
             , map fst wylieConsonantAliases
+            , map fst wylieRaisedSubjoined
             , map fst wylieExpansions
             , ["b+l", "\r\n"]
             ]
@@ -223,6 +224,7 @@ lookupSpelling :: Span -> Text -> Text -> Maybe Token
 lookupSpelling sp raw key =
     asum
         [ mkConsonant TsWylie sp raw <$> withAliases inverseWylieConsonant key
+        , mkSubConsonant TsWylie sp raw <$> lookup key wylieRaisedSubjoined
         , mkVowel TsWylie sp raw <$> inverseWylieVowel key
         , mkFinal TsWylie sp raw <$> inverseWylieFinal key
         , mkNumber TsWylie sp raw <$> inverseWylieNumber key
@@ -523,11 +525,19 @@ wylieConsonantAliases =
     , ("-th", CTh)
     , ("-d", CD)
     , ("-n", CN)
-    , ("W", Cw)
-    , ("Y", Cy)
     , ("-sh", CSh)
     , ("\x2019", C') -- U+2019: the typographic apostrophe is the a-chung too
     , ("\x2018", C') -- U+2018: so is the left typographic quote ('ga' in ewts-js)
+    ]
+
+-- | EWTS raised spellings of the subjoined w and y. They are signs of their
+-- own, not spellings of the full letters: the reference writes them for the
+-- raised glyphs ྺ/ྻ (U+0FBA/0FBB), and a stack that read one prints it back
+-- (REFACTOR-AST §10.3 Р3).
+wylieRaisedSubjoined :: [(Text, SubConsonant)]
+wylieRaisedSubjoined =
+    [ ("W", SCW)
+    , ("Y", SCY)
     ]
 
 -- | Wylie spellings that expand to several canonical tokens.

@@ -530,18 +530,6 @@ fromSubjoined = \case
     SCY -> Cy
     SCR -> CR
 
--- | The subjoined form a token prints as. Source-aware: the EWTS raised
--- letters @W@ and @Y@ stay raised (their Wylie slices are @\"W\"@ and
--- @\"Y\"@), and a token that is already a subconsonant carries its own
--- subjoined form.
-subjoinOf :: Token -> Maybe SubConsonant
-subjoinOf Token{tokenRaw = raw, tokenCanonical = TcConsonant c}
-    | raw == "W" = Just SCW
-    | raw == "Y" = Just SCY
-    | otherwise = toSubjoined c
-subjoinOf Token{tokenCanonical = TcSubConsonant sc} = Just sc
-subjoinOf _ = Nothing
-
 data PunctuationMark
     = PMTsheg -- ་ \u0f0b
     | PMNonBreakingTsheg -- ༌ \u0f0c

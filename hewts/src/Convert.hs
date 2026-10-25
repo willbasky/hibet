@@ -29,7 +29,7 @@ import Convert.Token
     , UnknownMark (..)
     , isToplessMark
     , mkSpan
-    , subjoinOf
+    , toSubjoined
     , tokenCanonical
     , tokenRaw
     , tokenSource
@@ -221,14 +221,14 @@ stackText st =
                 _ -> ""
             | otherwise = ""
         rootGlyph tok = case tokenCanonical tok of
-            TcSubConsonant _ -> subGlyph tok
             TcConsonant _ | stSuperfix st /= Nothing, stVowel st /= Nothing -> subGlyph tok
             _ -> glyph tok
 
 subGlyph :: Token -> Text
-subGlyph tok = case subjoinOf tok of
-    Just sc -> fromMaybe "" (unicodeOf (TcSubConsonant sc))
-    Nothing -> glyph tok
+subGlyph tok = case tokenCanonical tok of
+    -- A Wylie letter writes its subjoined form; a glyph sign already is one.
+    TcConsonant c -> fromMaybe (glyph tok) (unicodeOf . TcSubConsonant =<< toSubjoined c)
+    _ -> glyph tok
 
 vowelText :: Maybe VowelSlot -> Text
 vowelText Nothing = ""
