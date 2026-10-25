@@ -110,6 +110,7 @@ test-suite hewts-test
     Test.Convert
     Test.Convert.Golden
     Test.Convert.Sentence
+    Test.Corpus
     Test.Diagnostic
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
@@ -130,12 +131,14 @@ test-suite hewts-test
     Test.Grammar.Syllable
     Test.Grammar.Wylie
     Test.Parity
+    Test.Performance
     Test.Tokenizer.Classification
     Test.Tokenizer.Golden
     Test.Tokenizer.Integration
     Test.Tokenizer.RoundTrip
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky
+    Test.Wylie.Output
 
   build-depends:
     bytestring,
@@ -159,7 +162,11 @@ benchmark hewts-benchmark
   type: exitcode-stdio-1.0
   hs-source-dirs: benchmark
   main-is: Main.hs
-  -- build-depends:  hewts
+  build-depends:
+    bytestring,
+    hewts,
+    text,
+
   ghc-options:
     -threaded
     -rtsopts

@@ -8,6 +8,16 @@
 cabal test hewts-test
 ```
 
+Замер линейности разбора (REFACTOR-AST §9.1 п. 9) — отдельно, потому что он
+меряет корпус целиком:
+
+```
+cabal run hewts-benchmark
+```
+
+Читает `test/vectors/kang.txt`, печатает время на 10k/20k/40k символов и
+падает, если удвоение входа замедлило разбор больше чем в 2.5 раза.
+
 ## Два слоя
 
 Набор делится на два слоя по происхождению ожидания:
@@ -38,6 +48,9 @@ cabal test hewts-test
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
+| `Test.Wylie.Output` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса — генератор |
+| `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
+| `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Tokenizer.Integration` | **hewts**: рендер, raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |
 | `Test.Tokenizer.Golden` | **hewts**: снимки токен-потока |
