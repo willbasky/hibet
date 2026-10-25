@@ -1,11 +1,12 @@
-{- Tibetan spelling grammar 4.8 and 5.1: the superfix data
+{- Tibetan spelling grammar 4.8, 4.9 and 5.1: the letter-combination data
 
-The roots each superfix letter may gate (4.8) and the (root, subfix) rows it
-takes below them (5.1), stated once: the book's structure 2 parses by them
-('Convert.Grammar.Constraint.Constraint08'), the generic word's superfix window
-checks against them ('Convert.Grammar.Constraint.Constraint21'), and the Wylie
-notation writes solid only what they allow ('Convert.Wylie.Tables'). None of
-the three owns the table.
+The roots each superfix letter may gate (4.8), the (root, subfix) rows it takes
+below them (5.1) and the root groups of 4.9, stated once: the book's structures
+parse by them ('Convert.Grammar.Constraint.Constraint08', 09), the generic
+word's superfix window checks against them
+('Convert.Grammar.Constraint.Constraint21'), and the Wylie notation writes
+solid only what they allow ('Convert.Wylie.Tables'). None of them owns the
+table.
 -}
 
 module Convert.Grammar.Superfix
@@ -14,6 +15,7 @@ module Convert.Grammar.Superfix
     , sSuperfixRoots
     , superfixRoots
     , superfixCombos
+    , rootSubfixRows
     ) where
 
 import Convert.Token (Consonant (..))
@@ -65,3 +67,13 @@ superfixCombos Cs =
     , (Cn, Cr)
     ]
 superfixCombos _ = []
+
+-- | The root groups of rule 4.9, one row per subjoined letter. Read by the
+-- book's structure 3 and by the notation's solid-run table.
+rootSubfixRows :: [(Consonant, [Consonant])]
+rootSubfixRows =
+    [ (Cw, [Ck, Ckh, Cg, Cny, Cd, Ctsh, Czh, Cz, Cr, Cl, Csh, Ch])
+    , (Cy, [Ck, Ckh, Cg, Cp, Cph, Cb, Cm])
+    , (Cr, [Ck, Ckh, Cg, Ct, Cth, Cd, Cp, Cph, Cb, Cm, Cs, Ch])
+    , (Cl, [Ck, Cg, Cb, Cz, Cr, Cs])
+    ]

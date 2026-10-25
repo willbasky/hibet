@@ -13,7 +13,14 @@ import Convert
     , legality
     , renderItems
     )
-import Convert.Diagnostic (Diagnostic (..), DiagnosticCode (..), Diagnostics, Severity (..), diagnosticList, renderDiagnostics)
+import Convert.Diagnostic
+    ( Diagnostic (..)
+    , DiagnosticCode (..)
+    , Diagnostics
+    , Severity (..)
+    , diagnosticList
+    , renderDiagnostics
+    )
 import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Syllable (flatten)
 import Convert.Sentence (Syllable (..), pSentence)

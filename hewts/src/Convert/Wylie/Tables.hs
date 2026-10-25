@@ -22,10 +22,10 @@ module Convert.Wylie.Tables
     , caretFold
     ) where
 
-import Convert.Grammar.Constraint.Constraint09 (rootSubfixRows)
 import Convert.Grammar.Superfix
     ( lSuperfixRoots
     , rSuperfixRoots
+    , rootSubfixRows
     , sSuperfixRoots
     , superfixCombos
     )

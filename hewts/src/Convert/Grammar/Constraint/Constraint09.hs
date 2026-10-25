@@ -4,7 +4,6 @@ Tibetan spelling grammar 4.9 (token parser variant)
 
 module Convert.Grammar.Constraint.Constraint09
     ( pConstraint09
-    , rootSubfixRows
     ) where
 
 import Convert.Grammar.Parser
@@ -16,6 +15,7 @@ import Convert.Grammar.Parser
     , vowelSlot
     )
 import qualified Convert.Grammar.Parser as GP
+import Convert.Grammar.Superfix (rootSubfixRows)
 import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token
     ( Consonant (..)
@@ -42,17 +42,6 @@ parseConstraint09 parseSubfix parseRoot = do
     subfix <- markSubfix parseSubfix
     vowel <- vowelSlot (root <> subfix) [markVowel GP.pVowel]
     pure (root <> subfix <> vowel)
-
--- | The root groups of rule 4.9, one row per subjoined letter: the same data
--- the parsers below read and the notation's solid-run table uses
--- ('Convert.Wylie.Tables'), so the two cannot drift apart.
-rootSubfixRows :: [(Consonant, [Consonant])]
-rootSubfixRows =
-    [ (Cw, [Ck, Ckh, Cg, Cny, Cd, Ctsh, Czh, Cz, Cr, Cl, Csh, Ch])
-    , (Cy, [Ck, Ckh, Cg, Cp, Cph, Cb, Cm])
-    , (Cr, [Ck, Ckh, Cg, Ct, Cth, Cd, Cp, Cph, Cb, Cm, Cs, Ch])
-    , (Cl, [Ck, Cg, Cb, Cz, Cr, Cs])
-    ]
 
 pRootSubfixWa :: Parser Token
 pRootSubfixWa = pAllowedRoot (row Cw)

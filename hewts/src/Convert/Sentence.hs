@@ -36,11 +36,7 @@ import Convert.Grammar.Parser
     , takeStacks
     )
 import Convert.Grammar.Structure (claimsFreshRun, pStructure)
-import Convert.Grammar.Syllable
-    ( Stack
-    , Syllable (..)
-    , flatten
-    )
+import Convert.Grammar.Syllable (Syllable (..))
 import Convert.Token
     ( Span (..)
     , Token
@@ -52,8 +48,6 @@ import Convert.Token
     , tokenRaw
     , tokenSpan
     )
-import Data.Foldable (toList)
-import Data.Sequence (Seq)
 import qualified Data.Text as T
 import qualified Text.Megaparsec as MP
 
@@ -216,10 +210,14 @@ pSyllable = do
                 SyllableItem
                     Syllable
                         { sylStacks = built
-                        , sylSpan = stacksSpan built runSpan
+                        , sylSpan = runSpan
                         , sylDiags = diags
                         }
-                    : [InvalidSyllableItem leftovers mempty | not (null leftovers)]
+                    -- shortcut: the leftovers are part of the run, so they
+                    -- carry its warnings and a run with both would report twice;
+                    -- in the corpora no run has leftovers, so split the findings
+                    -- by element when such input surfaces.
+                    : [InvalidSyllableItem leftovers diags | not (null leftovers)]
     where
         -- The span of the whole syllable run, from its first to its last
         -- token: the anchor both head warnings quote whole (@tgra@), resolved
@@ -264,13 +262,6 @@ pSyllable = do
                                     toks <- close (dotSeen || isDotTok)
                                     pure (tok : toks)
                         _ -> pure []
-
--- | The span of the stacked signs; a syllable with no stack falls back to the
--- span of its run.
-stacksSpan :: Seq Stack -> Span -> Span
-stacksSpan stacks fallback = case [tokenSpan t | t <- toList (flatten stacks)] of
-    [] -> fallback
-    spans -> Span (minimum (map offsetStart spans)) (maximum (map offsetEnd spans))
 
 isConSpecTok :: Token -> Bool
 isConSpecTok tok = case tokenCanonical tok of
