@@ -267,13 +267,14 @@ raisedSubjoined =
             <> [ testCase (T.unpack s) $ do
                     renderU (parseW s) @?= u
                     renderU (parseU u) @?= u
+                    renderW (parseU u) @?= s
                | (s, u) <-
                     [ ("s+Wa", "སྺ")
                     , ("s+wa", "སྭ")
                     , ("s+Ya", "སྻ")
                     , ("s+ya", "སྱ")
                     , ("R+Ya", "ཪྻ")
-                    , ("r+Y", "རྻ")
+                    , ("r+Ya", "རྻ")
                     ]
                ]
         )

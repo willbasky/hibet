@@ -17,7 +17,7 @@ import Convert.Grammar.Syllable
     , Syllable (..)
     , TibetanSyllable
     )
-import Convert.Token (Span (..), Token)
+import Convert.Token (Token)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Either (isLeft)
 import Data.Foldable (toList)
@@ -118,7 +118,6 @@ wylRender w =
         liftStacks stacks =
             Syllable
                 stacks
-                (Span 0 0)
                 (mempty :: Diagnostics)
 
 -- | The tokens of a Wylie spelling, for the tests that want to see them.

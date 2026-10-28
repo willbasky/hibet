@@ -24,13 +24,13 @@ module Convert.Grammar.Constraint.Constraint22
 
 import Control.Monad (guard)
 import Convert.Diagnostic (Finding (PreferredSpelling))
-import Convert.Grammar.Constraint.Constraint15 (suffixConsonants15)
 import Convert.Grammar.Parser
     ( SpellParser
     , noteFinding
     , peekFindings
     , peekStacks
     )
+import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
@@ -106,7 +106,7 @@ recommendedSpelling stacks = case traverse plainStack (toList stacks) of
         twoLetters prefixLetter rootLetter =
             case consonantOf rootLetter of
                 Just rootConsonant
-                    | rootConsonant `elem` suffixConsonants15 ->
+                    | rootConsonant `elem` GP.suffixConsonants ->
                         Just (tokenRaw prefixLetter <> "a" <> tokenRaw rootLetter)
                 _ -> Nothing
 

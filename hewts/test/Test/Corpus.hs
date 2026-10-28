@@ -7,6 +7,7 @@ module Test.Corpus
     , readRows
     , Row (..)
     , kangyurText
+    , kangyurWylie
     ) where
 
 import qualified Data.ByteString as BS
@@ -51,6 +52,11 @@ readRows path = do
 -- own, so it is dropped before anything reads the text.
 kangyurText :: IO Text
 kangyurText = T.dropWhile (== '\xfeff') <$> readUtf8File "test/vectors/kang.txt"
+
+-- | The Kangyur Wylie column: the reference's own @toWylie@ export of the same
+-- text (@wkang.txt@), line for line.
+kangyurWylie :: IO Text
+kangyurWylie = readUtf8File "test/vectors/wkang.txt"
 
 -- | Read a vector file as UTF-8 regardless of the locale, so the corpora
 -- decode identically everywhere.

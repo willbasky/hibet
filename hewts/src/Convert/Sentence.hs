@@ -210,7 +210,6 @@ pSyllable = do
                 SyllableItem
                     Syllable
                         { sylStacks = built
-                        , sylSpan = runSpan
                         , sylDiags = diags
                         }
                     -- shortcut: the leftovers are part of the run, so they

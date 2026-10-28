@@ -43,7 +43,6 @@ import Convert.Diagnostic (Diagnostics)
 import Convert.Token
     ( Consonant (Ca)
     , FinalMark (..)
-    , Span
     , Token
     , TokenCanonical (..)
     , TokenSource (..)
@@ -120,10 +119,10 @@ finalsTokens :: Finals -> [Token]
 finalsTokens (Finals slots) = catMaybes (toList slots)
 
 -- | A syllable as the nested structure of REFACTOR-AST §4: the stacks in
--- writing order, the run's span and the warnings the run recorded.
+-- writing order and the warnings the run recorded. The run's span lives in the
+-- diagnostics ('Convert.Diagnostic.Diagnostic'), which is the only reader.
 data Syllable = Syllable
     { sylStacks :: Seq Stack
-    , sylSpan :: Span
     , sylDiags :: Diagnostics
     }
     deriving (Show, Eq)

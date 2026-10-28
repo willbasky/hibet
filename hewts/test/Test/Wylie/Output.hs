@@ -40,7 +40,7 @@ import Data.Maybe (fromMaybe, mapMaybe)
 import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as T
-import Test.Corpus (Row (..), corpora, kangyurText, readRows)
+import Test.Corpus (Row (..), corpora, kangyurText, kangyurWylie, readRows)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
@@ -125,24 +125,36 @@ driftOf s
         back = concatMap content (syllables (parseWylie (notation s)))
 
 -- | REFACTOR-AST §9.1 item 4: a Wylie run written Wylie again keeps the glyphs
--- it had after W→U. Separators may normalize (§8 B2), glyphs may not.
+-- it had after W→U. Separators may normalize (§8 B2), glyphs may not. The
+-- Kangyur joins through the reference's own @toWylie@ export (@wkang.txt@).
 w2wCorpus :: Assertion
 w2wCorpus = do
     rows <- concat <$> mapM (readRows . snd) corpora
+    kangTibetan <- filter (not . T.null) . T.lines <$> kangyurText
+    kang <- filter (not . T.null) . T.lines <$> kangyurWylie
+    -- A truncated Wylie column would make the Kangyur leg check less than the
+    -- text it comes from, silently.
+    assertBool
+        ( "kangyur Wylie: "
+            <> show (length kang)
+            <> " lines, text has "
+            <> show (length kangTibetan)
+        )
+        (length kang == length kangTibetan)
     assertDrifts
         "W->W"
-        (nub (mapMaybe driftOfRow rows))
+        (nub (mapMaybe (driftOf . rowWylie) rows <> mapMaybe driftOf kang))
         [ ("grywa", "gr+y+wa")
         , ("g....yag", "gyag")
         ]
     where
-        driftOfRow row
+        driftOf input
             | renderItems OutUnicode (parseWylie wylie)
-                /= renderItems OutUnicode (parseWylie (rowWylie row)) =
-                Just (rowWylie row, wylie)
+                /= renderItems OutUnicode (parseWylie input) =
+                Just (input, wylie)
             | otherwise = Nothing
             where
-                wylie = renderItems OutWylie (parseWylie (rowWylie row))
+                wylie = renderItems OutWylie (parseWylie input)
 
 -- | The exact set of known drifts, in both directions.
 assertDrifts :: String -> [(Text, Text)] -> [(Text, Text)] -> Assertion

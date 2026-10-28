@@ -49,7 +49,7 @@ cabal run hewts-benchmark
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
-| `Test.Wylie.Output` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса — генератор |
+| `Test.Wylie.Output` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Tokenizer.Integration` | **hewts**: рендер, raw-roundtrip, escape |
