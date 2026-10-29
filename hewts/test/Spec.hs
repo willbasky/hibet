@@ -1,5 +1,6 @@
 module Main (main) where
 
+import qualified Test.Api as Api
 import qualified Test.Architecture as Architecture
 import qualified Test.Convert as Convert
 import qualified Test.Convert.Golden as ConvertGolden
@@ -68,6 +69,7 @@ tests =
         , Syllable.tests
         , Wylie.tests
         , WylieOutput.tests
+        , Api.tests
         , Sentence.tests
         , Convert.tests
         , ConvertGolden.tests

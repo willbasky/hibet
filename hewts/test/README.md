@@ -51,6 +51,7 @@ cabal run hewts-benchmark
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
 | `Test.Wylie.Output` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
+| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S6): дверь API, режимы, O6; корпус ewts-rs — сквозной прогон |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Tokenizer.Integration` | **hewts**: рендер, raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |

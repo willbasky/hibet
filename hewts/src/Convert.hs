@@ -1,6 +1,12 @@
 module Convert
     ( splitSentences
     , splitSentencesWith
+    , InputFormat (..)
+    , Settings (..)
+    , defaultSettings
+    , convertWylieToUnicode
+    , convertUnicodeToWylie
+    , checkSpelling
     , syllables
     , renderItems
     , legality
@@ -35,7 +41,7 @@ import Convert.Token
     , tokenSource
     )
 import Convert.Tokenizer.Unicode (tokenizeUnicode, unicodeOf)
-import Convert.Tokenizer.Wylie (wylieOf)
+import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
 import Convert.Wylie.Tables (Join (..), notate)
 import Data.Char (ord)
 import Data.Foldable (toList)
@@ -57,11 +63,74 @@ splitSentences input =
 -- | Like 'splitSentences', but also hands back what the tokenizer noticed
 -- while reading the text and what the grammar's constraint windows found for
 -- each syllable run.
+--
+-- The document-level warning is **not** part of this contract: it needs the
+-- input as a whole and is nobody's per-run finding, so the converters
+-- ('convertWylieToUnicode', 'convertUnicodeToWylie') add it themselves. A
+-- caller that assembles a conversion by hand has to add
+-- 'documentDiagnostics' too (that was O6 in `REFACTOR-AST.md` §13.5).
 splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
-splitSentencesWith input = do
-    let (tokens, diagnostics) = tokenizeUnicode input
+splitSentencesWith = parseSettings defaultSettings
+
+-- | Which tokenizer reads the input. There is no auto-detection: a Latin
+-- letter may be foreign text inside Tibetan (@bi na ya@), so the caller says
+-- which writing it hands over - the reference keeps two entry points as well.
+data InputFormat
+    = InWylie
+    | InUnicode
+    deriving (Show, Eq)
+
+-- | What the caller may switch off. 'withChecks' is the difference between the
+-- two modes of the product: with it off the conversion is a fast pass that
+-- records nothing.
+--
+-- There is no strict/normal split in this record yet: 'Severity' is
+-- warning/error, and which of our findings belong to a strict mode is a
+-- decision that has not been made (ROADMAP.md, т. 6). A field that no code
+-- reads would be worse than none.
+data Settings = Settings
+    { inputFormat :: InputFormat
+    , withChecks :: Bool
+    }
+    deriving (Show, Eq)
+
+-- | Tibetan script in, checks on.
+defaultSettings :: Settings
+defaultSettings = Settings{inputFormat = InUnicode, withChecks = True}
+
+-- | The one door both directions use: tokenize the writing the settings name,
+-- parse it, and collect what the tokenizer noticed and the grammar found.
+parseSettings :: Settings -> Text -> Either Text ([SpellItem], Diagnostics)
+parseSettings st input = do
+    let (tokens, noticed) = case inputFormat st of
+            InWylie -> tokenizeWylie input
+            InUnicode -> tokenizeUnicode input
     items <- parseEither pSentence tokens
-    pure (items, diagnostics <> legality items)
+    pure (items, if withChecks st then noticed <> legality items else mempty)
+
+-- | Wylie to the Tibetan script, with the findings.
+convertWylieToUnicode :: Settings -> Text -> Either Text (Text, Diagnostics)
+convertWylieToUnicode st = convert st{inputFormat = InWylie} OutUnicode
+
+-- | The Tibetan script to Wylie, with the findings.
+convertUnicodeToWylie :: Settings -> Text -> Either Text (Text, Diagnostics)
+convertUnicodeToWylie st = convert st{inputFormat = InUnicode} OutWylie
+
+-- | Spelling only: the same findings the converters report, and no text. The
+-- input is not touched - the result is the run's records. Checks are this
+-- function's whole job, so 'withChecks' is not consulted here.
+checkSpelling :: Settings -> Text -> Either Text Diagnostics
+checkSpelling st input = do
+    (items, diags) <- parseSettings st{withChecks = True} input
+    pure (diags <> documentDiagnostics input items)
+
+-- | One direction of the conversion: the text of the target writing and the
+-- findings, the document-level warning among them.
+convert :: Settings -> OutputFormat -> Text -> Either Text (Text, Diagnostics)
+convert st fmt input = do
+    (items, diags) <- parseSettings st input
+    let document = if withChecks st then documentDiagnostics input items else mempty
+    pure (renderItems fmt items, diags <> document)
 
 -- | The spelling warnings for a whole parsed sentence: the 'sylDiags' of
 -- every syllable run, in source order.
