@@ -44,7 +44,7 @@ tests =
         , probed
             "grla backtracks to two stacks (no subjoined r)"
             "grla"
-            [(RoleRoot, ["g"]), (RoleRoot, ["r", "l", "a"])]
+            [(RoleRoot, ["g", "a"]), (RoleRoot, ["r", "l", "a"])]
             "གརླ"
         , probed
             "rka -> superfix r before a root"
@@ -54,7 +54,7 @@ tests =
         , probed
             "rsa -> r takes no superfix over s (4.8): two roots"
             "rsa"
-            [(RoleRoot, ["r"]), (RoleRoot, ["s", "a"])]
+            [(RoleRoot, ["r", "a"]), (RoleRoot, ["s", "a"])]
             "རས"
         , probed
             "bsgribs -> prefix, superfix, root, subfix, vowel, suffix, postfix"

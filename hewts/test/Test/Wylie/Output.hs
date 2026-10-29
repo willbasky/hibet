@@ -9,10 +9,9 @@
 -- not compared either (§9.1 item 3), and an a-chen that only carries a written
 -- vowel is not written at all (§5: ཨུ -> @u@), so its root letter is left out.
 --
--- Two drifts the corpora reproduce are recorded below instead of fixed: the
--- plan makes a drift a defect of @+@/@.@ to journal first and decide later
--- (§6.1), and neither fix is a local one. The check fails on a new drift and
--- on a recorded one that closes, so the list cannot rot.
+-- Both lists are empty today: the two drifts the corpora reproduce (grywa and
+-- g....yag) closed with R1 step B, when every root stack gained the implicit
+-- @a@ and the notation started writing it.
 module Test.Wylie.Output (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
@@ -96,7 +95,7 @@ outsideTheBook =
             (showContent <$> syllables (parseWylie (notation s))) @?= [showContent s]
         , testCase "grla needs no dot: the parse parts it by itself" $ do
             s <- lone "grla"
-            notation s @?= "grla"
+            notation s @?= "garla"
             (showContent <$> syllables (parseWylie (notation s))) @?= [showContent s]
         ]
     where
@@ -111,10 +110,7 @@ outsideTheBook =
 notationCorpus :: Assertion
 notationCorpus = do
     cases <- corpusCases
-    assertDrifts
-        "notation"
-        (nub (mapMaybe driftOf cases))
-        [("gr+y+wa", "g+r+y+w")]
+    assertDrifts "notation" (nub (mapMaybe driftOf cases)) []
 
 -- | A notation drift: the writing it produced and the units it reads back as.
 driftOf :: Syllable -> Maybe (Text, Text)
@@ -144,9 +140,7 @@ w2wCorpus = do
     assertDrifts
         "W->W"
         (nub (mapMaybe (driftOf . rowWylie) rows <> mapMaybe driftOf kang))
-        [ ("grywa", "gr+y+wa")
-        , ("g....yag", "gyag")
-        ]
+        []
     where
         driftOf input
             | renderItems OutUnicode (parseWylie wylie)

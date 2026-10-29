@@ -267,17 +267,25 @@
 # 245 -> 250; the round-trip legs by one each (205 -> 206, 213 -> 214,
 # 206 -> 207). The rows still open are the book's own w-row and subjoin set,
 # the Q10 ties, the 6c escape case and the harness artefact.
+#
+# REFACTOR-AST R1 step A (29.10.2026, a full letter under a superfix is no
+# stack): the grammar stopped building a Wylie superfix stack whose root never
+# reaches a vowel (rt is ར + ཏ, not རྟ) and a glyph stack whose root is a full
+# letter rather than a joined sign. W->U does not move; U->W and the
+# round-trip each gain two rows on the three big corpora, exactly the
+# bart/gabsp rows whose journal entries closed: u2w 193 -> 195, 194 -> 196,
+# 195 -> 197 and roundtrip 206 -> 208, 214 -> 216, 207 -> 209.
 jsewts	w2u	204	204
-jsewts	u2w	193	193
-jsewts	roundtrip	206	206
+jsewts	u2w	195	195
+jsewts	roundtrip	208	208
 lingua	w2u	212	212
-lingua	u2w	194	194
-lingua	roundtrip	214	214
+lingua	u2w	196	196
+lingua	roundtrip	216	216
 ewts-rs	w2u	16	16
 java	w2u	5	5
 ewts-js	w2u	206	206
-ewts-js	u2w	195	195
-ewts-js	roundtrip	207	207
+ewts-js	u2w	197	197
+ewts-js	roundtrip	209	209
 java	u2w	1	1
 kangyur	roundtrip	254	254
 kangyur	u2w	250	250

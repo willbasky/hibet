@@ -41,7 +41,7 @@ jsewts	41	1	Root:s+Y~
 jsewts	42	1	Root:s+r~
 jsewts	43	1	Root:s+r~
 jsewts	44	1	Root:s+R~
-jsewts	45	1	Root:s+a
+jsewts	45	1	Root:s+a~
 jsewts	46	1	Root:ph^~
 jsewts	47	1	Root:b^~
 jsewts	48	1	Root:ph+r^~
@@ -69,7 +69,7 @@ jsewts	69	1	Root::o#M
 jsewts	70	1	Root::o#~M`
 jsewts	71	1	Root::o#~M
 jsewts	72	1	Root:a#H
-jsewts	73	1	Root:k#?
+jsewts	73	1	Root:k~#?
 jsewts	74	1	Root:a#HX
 jsewts	75	1	Root:a#H~X
 jsewts	76	1	Root:ph^~
@@ -117,7 +117,7 @@ jsewts	112	1	Root:m:o#X
 jsewts	113	1	Root:m:o
 jsewts	114	1	Root:s+g+r~
 jsewts	115	1	Root:s+g+r+w~
-jsewts	116	1	Root:t Root:g+r~
+jsewts	116	1	Root:t~ Root:g+r~
 jsewts	117	1	Root:g+r^~
 jsewts	118	1	Root:g+r^~
 jsewts	119	1	Root:g+r^~
@@ -133,18 +133,18 @@ jsewts	128	1	Root:a+a
 jsewts	129	1	Root:b+a~
 jsewts	130	1	Root:b+a:e
 jsewts	131	1	Root:a+y:o
-jsewts	132	1	Root:c
+jsewts	132	1	Root:c~
 jsewts	133	1	Root:g+r~
 jsewts	134	1	Root:g+r+w~
-jsewts	135	1	Root:g Root:r+y+w~
-jsewts	136	1	Root:g Root:r+l~
+jsewts	135	1	Root:g~ Root:r+y+w~
+jsewts	136	1	Root:g~ Root:r+l~
 jsewts	137	1	Prefix:b Root:r+l~
 jsewts	138	1	Root:c+l~
 jsewts	139	1	Root:r+b+y~
 jsewts	140	1	Root:g+m+r~
 jsewts	141	1	Root:g+m+r~
-jsewts	142	1	Root:g+m+r+a
-jsewts	143	1	Root:g#X
+jsewts	142	1	Root:g+m+r+a~
+jsewts	143	1	Root:g~#X
 jsewts	144	1	Root:g+a:e
 jsewts	145	1	Root:g+r:e
 jsewts	146	1	Root::o#M
@@ -153,21 +153,21 @@ jsewts	148	1	Root::o#~M`
 jsewts	149	1	Root::o#~M`
 jsewts	150	1	Root:g+y~ Suffix:g
 jsewts	151	1	Prefix:g Root:y~ Suffix:g
-jsewts	152	1	Root:g
+jsewts	152	1	Root:g~
 jsewts	152	2	Root:y~ Suffix:g
-jsewts	153	1	Root:g Root:r Root:g+l~ Suffix:m
+jsewts	153	1	Root:g~ Root:r~ Root:g+l~ Suffix:m
 jsewts	154	1	Root::A#H
 jsewts	155	1	Prefix:b Root:g+r:u
-jsewts	156	1	Root:p Root:g+r:u
+jsewts	156	1	Root:p~ Root:g+r:u
 jsewts	157	1	Prefix:b Root:z~
-jsewts	158	1	Root:b Root:dz~
-jsewts	159	1	Prefix:b Root:z
-jsewts	160	1	Root:a Root:z
-jsewts	161	1	Root:b~ Root:r Suffix:s
-jsewts	162	1	Root:b~ Root:r+t
+jsewts	158	1	Root:b~ Root:dz~
+jsewts	159	1	Prefix:b Root:z~
+jsewts	160	1	Root:a Root:z~
+jsewts	161	1	Root:b~ Root:r~ Suffix:s
+jsewts	162	1	Root:b~ Root:r~ Root:t~
 jsewts	163	1	Root:g~ Suffix:b Postfix:s
-jsewts	164	1	Root:g~ Root:b Root:s+p
-jsewts	165	1	Root:b
+jsewts	164	1	Root:g~ Root:b~ Root:s~ Root:p~
+jsewts	165	1	Root:b~
 jsewts	166	1	Root:d~ Suffix:g
 jsewts	167	1	Prefix:d Root:g~
 jsewts	168	1	Prefix:d Root:g~ Suffix:s
@@ -287,7 +287,7 @@ lingua	40	1	Root:s+Y~
 lingua	41	1	Root:s+r~
 lingua	42	1	Root:s+r~
 lingua	43	1	Root:s+R~
-lingua	44	1	Root:s+a
+lingua	44	1	Root:s+a~
 lingua	45	1	Root:ph^~
 lingua	46	1	Root:b^~
 lingua	47	1	Root:ph+r^~
@@ -315,7 +315,7 @@ lingua	68	1	Root::o#M
 lingua	69	1	Root::o#~M`
 lingua	70	1	Root::o#~M
 lingua	71	1	Root:a#H
-lingua	72	1	Root:k#?
+lingua	72	1	Root:k~#?
 lingua	73	1	Root:a#HX
 lingua	74	1	Root:a#H~X
 lingua	75	1	Root:ph^~
@@ -364,7 +364,7 @@ lingua	113	1	Root:m:o#X
 lingua	114	1	Root:m:o
 lingua	115	1	Root:s+g+r~
 lingua	116	1	Root:s+g+r+w~
-lingua	117	1	Root:t Root:g+r~
+lingua	117	1	Root:t~ Root:g+r~
 lingua	118	1	Root:g+r^~
 lingua	119	1	Root:g+r^~
 lingua	120	1	Root:g+r^~
@@ -380,18 +380,18 @@ lingua	129	1	Root:a+a
 lingua	130	1	Root:b+a~
 lingua	131	1	Root:b+a:e
 lingua	132	1	Root:a+y:o
-lingua	133	1	Root:c
+lingua	133	1	Root:c~
 lingua	134	1	Root:g+r~
 lingua	135	1	Root:g+r+w~
-lingua	136	1	Root:g Root:r+y+w~
-lingua	137	1	Root:g Root:r+l~
+lingua	136	1	Root:g~ Root:r+y+w~
+lingua	137	1	Root:g~ Root:r+l~
 lingua	138	1	Prefix:b Root:r+l~
 lingua	139	1	Root:c+l~
 lingua	140	1	Root:r+b+y~
 lingua	141	1	Root:g+m+r~
 lingua	142	1	Root:g+m+r~
-lingua	143	1	Root:g+m+r+a
-lingua	144	1	Root:g#X
+lingua	143	1	Root:g+m+r+a~
+lingua	144	1	Root:g~#X
 lingua	145	1	Root:g+a:e
 lingua	146	1	Root:g+r:e
 lingua	147	1	Root::o#M
@@ -400,21 +400,21 @@ lingua	149	1	Root::o#~M`
 lingua	150	1	Root::o#~M`
 lingua	151	1	Root:g+y~ Suffix:g
 lingua	152	1	Prefix:g Root:y~ Suffix:g
-lingua	153	1	Root:g
+lingua	153	1	Root:g~
 lingua	153	2	Root:y~ Suffix:g
-lingua	154	1	Root:g Root:r Root:g+l~ Suffix:m
+lingua	154	1	Root:g~ Root:r~ Root:g+l~ Suffix:m
 lingua	155	1	Root::A#H
 lingua	156	1	Prefix:b Root:g+r:u
-lingua	157	1	Root:p Root:g+r:u
+lingua	157	1	Root:p~ Root:g+r:u
 lingua	158	1	Prefix:b Root:z~
-lingua	159	1	Root:b Root:dz~
-lingua	160	1	Prefix:b Root:z
-lingua	161	1	Root:a Root:z
-lingua	162	1	Root:b~ Root:r Suffix:s
-lingua	163	1	Root:b~ Root:r+t
+lingua	159	1	Root:b~ Root:dz~
+lingua	160	1	Prefix:b Root:z~
+lingua	161	1	Root:a Root:z~
+lingua	162	1	Root:b~ Root:r~ Suffix:s
+lingua	163	1	Root:b~ Root:r~ Root:t~
 lingua	164	1	Root:g~ Suffix:b Postfix:s
-lingua	165	1	Root:g~ Root:b Root:s+p
-lingua	166	1	Root:b
+lingua	165	1	Root:g~ Root:b~ Root:s~ Root:p~
+lingua	166	1	Root:b~
 lingua	167	1	Root:d~ Suffix:g
 lingua	168	1	Prefix:d Root:g~
 lingua	169	1	Prefix:d Root:g~ Suffix:s
@@ -557,7 +557,7 @@ ewts-js	41	1	Root:s+Y~
 ewts-js	42	1	Root:s+r~
 ewts-js	43	1	Root:s+r~
 ewts-js	44	1	Root:s+R~
-ewts-js	45	1	Root:s+a
+ewts-js	45	1	Root:s+a~
 ewts-js	46	1	Root:ph^~
 ewts-js	47	1	Root:b^~
 ewts-js	48	1	Root:ph+r^~
@@ -585,7 +585,7 @@ ewts-js	69	1	Root::o#M
 ewts-js	70	1	Root::o#~M`
 ewts-js	71	1	Root::o#~M
 ewts-js	72	1	Root:a#H
-ewts-js	73	1	Root:k#?
+ewts-js	73	1	Root:k~#?
 ewts-js	74	1	Root:a#HX
 ewts-js	75	1	Root:a#H~X
 ewts-js	76	1	Root:ph^~
@@ -633,7 +633,7 @@ ewts-js	113	1	Root:m:o#X
 ewts-js	114	1	Root:m:o
 ewts-js	115	1	Root:s+g+r~
 ewts-js	116	1	Root:s+g+r+w~
-ewts-js	117	1	Root:t Root:g+r~
+ewts-js	117	1	Root:t~ Root:g+r~
 ewts-js	118	1	Root:g+r^~
 ewts-js	119	1	Root:g+r^~
 ewts-js	120	1	Root:g+r^~
@@ -649,18 +649,18 @@ ewts-js	129	1	Root:a+a
 ewts-js	130	1	Root:b+a~
 ewts-js	131	1	Root:b+a:e
 ewts-js	132	1	Root:a+y:o
-ewts-js	133	1	Root:c
+ewts-js	133	1	Root:c~
 ewts-js	134	1	Root:g+r~
 ewts-js	135	1	Root:g+r+w~
-ewts-js	136	1	Root:g Root:r+y+w~
-ewts-js	137	1	Root:g Root:r+l~
+ewts-js	136	1	Root:g~ Root:r+y+w~
+ewts-js	137	1	Root:g~ Root:r+l~
 ewts-js	138	1	Prefix:b Root:r+l~
 ewts-js	139	1	Root:c+l~
 ewts-js	140	1	Root:r+b+y~
 ewts-js	141	1	Root:g+m+r~
 ewts-js	142	1	Root:g+m+r~
-ewts-js	143	1	Root:g+m+r+a
-ewts-js	144	1	Root:g#X
+ewts-js	143	1	Root:g+m+r+a~
+ewts-js	144	1	Root:g~#X
 ewts-js	145	1	Root:g+a:e
 ewts-js	146	1	Root:g+r:e
 ewts-js	147	1	Root::o#M
@@ -669,21 +669,21 @@ ewts-js	149	1	Root::o#~M`
 ewts-js	150	1	Root::o#~M`
 ewts-js	151	1	Root:g+y~ Suffix:g
 ewts-js	152	1	Prefix:g Root:y~ Suffix:g
-ewts-js	153	1	Root:g
+ewts-js	153	1	Root:g~
 ewts-js	153	2	Root:y~ Suffix:g
-ewts-js	154	1	Root:g Root:r Root:g+l~ Suffix:m
+ewts-js	154	1	Root:g~ Root:r~ Root:g+l~ Suffix:m
 ewts-js	155	1	Root::A#H
 ewts-js	156	1	Prefix:b Root:g+r:u
-ewts-js	157	1	Root:p Root:g+r:u
+ewts-js	157	1	Root:p~ Root:g+r:u
 ewts-js	158	1	Prefix:b Root:z~
-ewts-js	159	1	Root:b Root:dz~
-ewts-js	160	1	Prefix:b Root:z
-ewts-js	161	1	Root:a Root:z
-ewts-js	162	1	Root:b~ Root:r Suffix:s
-ewts-js	163	1	Root:b~ Root:r+t
+ewts-js	159	1	Root:b~ Root:dz~
+ewts-js	160	1	Prefix:b Root:z~
+ewts-js	161	1	Root:a Root:z~
+ewts-js	162	1	Root:b~ Root:r~ Suffix:s
+ewts-js	163	1	Root:b~ Root:r~ Root:t~
 ewts-js	164	1	Root:g~ Suffix:b Postfix:s
-ewts-js	165	1	Root:g~ Root:b Root:s+p
-ewts-js	166	1	Root:b
+ewts-js	165	1	Root:g~ Root:b~ Root:s~ Root:p~
+ewts-js	166	1	Root:b~
 ewts-js	167	1	Root:d~ Suffix:g
 ewts-js	168	1	Prefix:d Root:g~
 ewts-js	169	1	Prefix:d Root:g~ Suffix:s
@@ -792,29 +792,29 @@ ewts-rs	23	2	Root:l~
 ewts-rs	23	3	Root:y:o Suffix:d
 ewts-rs	25	1	Root:a
 ewts-rs	25	2	Root:kh:u
-ewts-rs	25	3	Root::u Root:g
+ewts-rs	25	3	Root::u Root:g~
 ewts-rs	25	4	Root:p~
 ewts-rs	25	5	Root:a#M
 ewts-rs	27	1	Root:m:A
 ewts-rs	27	2	Root:d:u#H
-ewts-rs	27	3	Root:ph~ Root:T
+ewts-rs	27	3	Root:ph~ Root:T~
 ewts-rs	29	1	Root:R+n~
 ewts-rs	29	2	Root:R+Y~
 ewts-rs	29	3	Root:R+y~
 ewts-rs	31	1	Root:r+ny~
 ewts-rs	31	2	Root:r+l~
 ewts-rs	31	3	Root:r+w~
-ewts-rs	33	1	Root:r+r
-ewts-rs	33	2	Root:r+R
+ewts-rs	33	1	Root:r+r~
+ewts-rs	33	2	Root:r+R~
 ewts-rs	33	3	Root:s+W~
-ewts-rs	33	4	Root:r+Y
+ewts-rs	33	4	Root:r+Y~
 ewts-rs	35	1	Root:r+sh~
 ewts-rs	35	2	Root:l+r~
 ewts-rs	35	3	Root:h+w~
 ewts-rs	35	4	Root:h+y~
-java	4	1	Root:p~ Root:' Root:ng
+java	4	1	Root:p~ Root:'~ Root:ng~
 java	5	1	Root:b:e Root:':u Root:':i Root:':o
-java	6	1	Root:p~ Root:' Root:m
+java	6	1	Root:p~ Root:'~ Root:m~
 java	7	1	Root:g~#&
 java	8	1	Root:s:A+o
 jsewts	2	1	Root:d~ Suffix:ng Postfix:s
@@ -982,9 +982,9 @@ jsewts	158	1	Root:b~ Root:dz~
 jsewts	159	1	Prefix:b Root:z~
 jsewts	160	1	Root:a Root:z~
 jsewts	161	1	Prefix:b Root:r~ Suffix:s
-jsewts	162	1	Prefix:b Root:r+t~
+jsewts	162	1	Prefix:b Root:r~ Root:t~
 jsewts	163	1	Root:g~ Suffix:b Postfix:s
-jsewts	164	1	Root:g~ Root:b~ Root:s+p~
+jsewts	164	1	Root:g~ Root:b~ Root:s~ Root:p~
 jsewts	165	1	Root:b~
 jsewts	166	1	Root:d~ Suffix:g
 jsewts	167	1	Root:d~ Suffix:g
@@ -1230,9 +1230,9 @@ lingua	159	1	Root:b~ Root:dz~
 lingua	160	1	Prefix:b Root:z~
 lingua	161	1	Root:a Root:z~
 lingua	162	1	Prefix:b Root:r~ Suffix:s
-lingua	163	1	Prefix:b Root:r+t~
+lingua	163	1	Prefix:b Root:r~ Root:t~
 lingua	164	1	Root:g~ Suffix:b Postfix:s
-lingua	165	1	Root:g~ Root:b~ Root:s+p~
+lingua	165	1	Root:g~ Root:b~ Root:s~ Root:p~
 lingua	166	1	Root:b~
 lingua	167	1	Root:d~ Suffix:g
 lingua	168	1	Root:d~ Suffix:g
@@ -1498,9 +1498,9 @@ ewts-js	159	1	Root:b~ Root:dz~
 ewts-js	160	1	Prefix:b Root:z~
 ewts-js	161	1	Root:a Root:z~
 ewts-js	162	1	Prefix:b Root:r~ Suffix:s
-ewts-js	163	1	Prefix:b Root:r+t~
+ewts-js	163	1	Prefix:b Root:r~ Root:t~
 ewts-js	164	1	Root:g~ Suffix:b Postfix:s
-ewts-js	165	1	Root:g~ Root:b~ Root:s+p~
+ewts-js	165	1	Root:g~ Root:b~ Root:s~ Root:p~
 ewts-js	166	1	Root:b~
 ewts-js	167	1	Root:d~ Suffix:g
 ewts-js	168	1	Root:d~ Suffix:g
@@ -1595,7 +1595,7 @@ ewts-rs	5	1	Prefix:b Root:s+g+r:i Suffix:b Postfix:s
 ewts-rs	7	1	Prefix:m Root:kh~ Suffix:n
 ewts-rs	9	1	Root:g+y:o Suffix:n
 ewts-rs	9	2	Prefix:g Root:y:o Suffix:n
-ewts-rs	11	1	Root:s+t+t+w~
+ewts-rs	11	1	Root:s~ Root:t+t+w~
 ewts-rs	13	1	Root:b+r:u
 ewts-rs	13	2	Root::e
 ewts-rs	13	3	Root:r+d:o

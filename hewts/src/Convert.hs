@@ -220,8 +220,11 @@ stackText st =
                 Just (VowelWritten tok _) | tokenSource tok == TsWylie -> "ཨ"
                 _ -> ""
             | otherwise = ""
+        -- A stack that reaches no vowel is no superfix stack: the base prints
+        -- as the full letter the writer wrote (རཏ is ར + ཏ, རྟ is written
+        -- @rta@). The grammar never builds the vowel-less shape (step A of R1).
         rootGlyph tok = case tokenCanonical tok of
-            TcConsonant _ | stSuperfix st /= Nothing, stVowel st /= Nothing -> subGlyph tok
+            TcConsonant _ | stSuperfix st /= Nothing -> subGlyph tok
             _ -> glyph tok
 
 subGlyph :: Token -> Text

@@ -220,32 +220,48 @@ snocStack st stacks = closeTop stacks Seq.|> st
 -- | Close the last stack of a run; the earlier ones closed when the stacks
 -- after them opened. The sentence reads the stacks through here, after the
 -- word-level rules (the closing suffix of §8 A5) have named their roles.
+--
+-- A stack stands on a root the writing joins to it: a glyph writes the joined
+-- sign (@ྟ@), a Wylie stack closes on the vowel the writer spelled (a sign or
+-- the letter @a@). A full letter under a superfix is neither, so the letters
+-- stand as full letters of their own (@rt@ is ར + ཏ, @rta@ is རྟ).
 closeTop :: Seq Stack -> Seq Stack
 closeTop stacks = case Seq.viewr stacks of
+    rest Seq.:> top
+        | Just _ <- stSuperfix top
+        , notJoined (stRoot top) (stVowel top) ->
+            rest
+                Seq.|> closeStack ((emptyStack RoleRoot){stRoot = stSuperfix top})
+                Seq.|> closeStack top{stSuperfix = Nothing}
     rest Seq.:> top -> rest Seq.|> closeStack top
     Seq.EmptyR -> stacks
+    where
+        notJoined (Just root) vowel = case tokenCanonical root of
+            -- A glyph joins a stack with its subjoined sign; a full letter
+            -- joins nothing. Wylie writes the letter full, so there the
+            -- vowel is what says the letter joined.
+            TcConsonant _ -> tokenSource root == TsUnicode || vowel == Nothing
+            _ -> False
+        notJoined Nothing _ = False
 
 -- | The implicit @a@ of a closed root stack (REFACTOR-AST §4, invariant 5):
--- a root stack with no written vowel carries it. Glyphs write the vowel of no
--- root, so a glyph-sourced stack owes one; Wylie writes the vowel of every
--- syllable, the letter @a@ where no sign stands, so its slices already say
--- which stacks have it. An a-chen root is a vowel letter of its own (@ཨ@ is
--- spelled @a@) and takes no second @a@.
+-- a root stack with no written vowel carries it, whichever script wrote the
+-- stack. A glyph writes no vowel sign; Wylie writes the letter @a@, which the
+-- grammar reads as this same fact - so a Wylie root that spelled no @a@ (a
+-- shorthand like @c@ or @rk@) still reads with one, and the two scripts meet
+-- in one AST. An a-chen root is a vowel letter of its own (ཨ is spelled @a@)
+-- and takes no second @a@.
 closeStack :: Stack -> Stack
 closeStack st = case (stRole st, stRoot st, stVowel st) of
     (RoleRoot, Just root, Nothing)
-        | isGlyphRoot root -> st{stVowel = Just VowelImplicit}
+        | carriesImplicit root -> st{stVowel = Just VowelImplicit}
     _ -> st
     where
-        -- A glyph root that is not the a-chen: the glyph writes no vowel, so
-        -- the slot holds the implicit @a@.
-        isGlyphRoot tok =
-            tokenSource tok == TsUnicode
-                && case tokenCanonical tok of
-                    TcConsonant Ca -> False
-                    TcConsonant _ -> True
-                    TcSubConsonant _ -> True
-                    _ -> False
+        carriesImplicit tok = case tokenCanonical tok of
+            TcConsonant Ca -> False
+            TcConsonant _ -> True
+            TcSubConsonant _ -> True
+            _ -> False
 
 emptyStack :: Role -> Stack
 emptyStack role = Stack role Nothing Nothing NoSubfix Nothing Nothing emptyFinals

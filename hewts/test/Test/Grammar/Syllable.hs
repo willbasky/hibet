@@ -50,6 +50,17 @@ tests =
         , testCase "rka: the superfix and its root share one stack" $ do
             fmap (map Ast.stRole) (stacksW "rka") @?= Right [Ast.RoleRoot]
             fmap (map rawsOfStack) (stacksW "rka") @?= Right [["r", "k"]]
+        , testCase "a full letter under a superfix is no stack (R1 step A)" $ do
+            -- rta is རྟ: the root joins the superfix as its joined sign
+            fmap (map rawsOfStack) (stacksW "rta") @?= Right [["r", "t"]]
+            fmap (map rawsOfStack) (stacksU "རྟ") @?= Right [["ར", "ྟ"]]
+            -- rt writes two full letters: nothing joins, no stack
+            fmap (map rawsOfStack) (stacksW "rk") @?= Right [["r"], ["k"]]
+            fmap (map rawsOfStack) (stacksU "རཏ") @?= Right [["ར"], ["ཏ"]]
+            fmap (map Ast.stVowel) (stacksU "རཏ")
+                @?= Right [Just Ast.VowelImplicit, Just Ast.VowelImplicit]
+            fmap (map Ast.stVowel) (stacksW "rk")
+                @?= Right [Just Ast.VowelImplicit, Just Ast.VowelImplicit]
         , testCase "kab: the suffix opens its own stack" $ do
             fmap (map Ast.stRole) (stacksW "kab")
                 @?= Right [Ast.RoleRoot, Ast.RoleSuffix]
@@ -111,11 +122,13 @@ tests =
         , testCase "bkra / བཀྲ and kab / ཀབ: controls keep one AST" $ do
             shapesW "bkra" @?= shapesU "བཀྲ"
             shapesW "kab" @?= shapesU "ཀབ"
-        , testCase "the implicit a of a glyph run is a fact of its root stack" $ do
+        , testCase "the implicit a is one fact in both scripts (R1)" $ do
             fmap (map Ast.stVowel) (stacksU "ཀབ")
                 @?= Right [Just Ast.VowelImplicit, Nothing]
-            fmap (map Ast.stVowel) (stacksW "rk")
-                @?= Right [Nothing]
+            fmap (map Ast.stVowel) (stacksW "c")
+                @?= Right [Just Ast.VowelImplicit]
+            fmap (map Ast.stVowel) (stacksU "ཅ")
+                @?= Right [Just Ast.VowelImplicit]
         , testCase "the closing sign of the tail is a suffix (A5)" $ do
             rolesU "པའམ" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
             rolesU "བའམ" @?= Right [Ast.RoleRoot, Ast.RoleRoot, Ast.RoleSuffix]
@@ -128,6 +141,7 @@ tests =
             rolesW "grla" @?= Right [Ast.RoleRoot, Ast.RoleRoot]
             rolesU "བརྟ" @?= Right [Ast.RolePrefix, Ast.RoleRoot]
         , testCase "corpora: the items cover every run token exactly once" checkCorpora
+        , testCase "corpora: every root stack carries a vowel slot (R1)" checkRootVowels
         , testCase "coverage fails on a duplicate kept token" $
             coverageFails [kTok] [kTok, kTok]
         , testCase "coverage fails on a lost run token" $
@@ -173,6 +187,35 @@ checkCorpora = do
              in assertBool
                     (side <> ": run tokens uncovered:\n" <> unlines (map show bad))
                     (null bad)
+
+-- | R1, the fact of the language rather than of one script: a root stack reads
+-- with a vowel, so its slot never stays empty - it holds the written signs, the
+-- letter a Wylie writer spelled, or the implicit @a@ the grammar sets when the
+-- stack closes. Shorthand like @c@ or @rk@ is no exception.
+checkRootVowels :: Assertion
+checkRootVowels = do
+    wylie <- readInputs tokenizeWylie wylieColumn wylieFiles
+    unicodeVectors <- readInputs tokenizeUnicode unicodeColumn wylieFiles
+    kangyur <- readInputs tokenizeUnicode id ["test/vectors/kang.txt"]
+    let bad =
+            [ input
+            | (input, toks) <- wylie <> unicodeVectors <> kangyur
+            , let items = either (error . T.unpack) id (parseEither pSentence toks)
+            , SyllableItem s <- items
+            , st <- toList (sylStacks s)
+            , Ast.stRole st == Ast.RoleRoot
+            , Ast.stVowel st == Nothing
+            , not (isAChen st)
+            ]
+    assertBool
+        ("root stacks without a vowel slot:\n" <> unlines (map T.unpack (take 20 bad)))
+        (null bad)
+    where
+        -- The a-chen is the vowel letter itself (ཨ is spelled @a@); it takes
+        -- no second @a@ and its empty slot is the fact, not a hole.
+        isAChen st = case Ast.stRoot st of
+            Just tok -> tokenCanonical tok == TcConsonant Ca
+            Nothing -> False
 
 -- | The run of an item is the slice from the previous item's end to the next
 -- item's first token: a run that is not a syllable item holds its whole slice,
