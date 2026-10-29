@@ -380,6 +380,14 @@ wave346 =
                     @?= Right ["line 1: \"ka.\": The stack dot \".\" joins no stack to a letter."]
             , testCase "the dot after the stack is eaten as the reference eats it" $
                 converted "ka." @?= Right "ཀ"
+            , testCase "a final behind the dot joins no stack (D3)" $ do
+                -- The dot parted the mark from the letter, so the mark is a
+                -- run of its own: it stands as written and is blamed, instead
+                -- of vanishing without a record (§13.1 D3).
+                converted "g.M" @?= Right "གM"
+                converted "ga.M" @?= Right "གM"
+                recordsOf "ga.M"
+                    @?= Right [(LeadingFinal, SevWarning), (OrphanDot, SevWarning)]
             , testCase "one finding for the run, however many dots it holds" $
                 rendered "ka.."
                     @?= Right ["line 1: \"ka..\": The stack dot \".\" joins no stack to a letter."]

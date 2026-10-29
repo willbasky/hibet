@@ -251,7 +251,12 @@ pSyllable = do
                     case next of
                         Just tok | isSyllableTail tok -> do
                             fresh <- claimsFreshRun
-                            if fresh
+                            -- A final mark behind the run's own dot joins no
+                            -- stack either: the dot parted it from the letter,
+                            -- so 'pStrayFinal' must take it (echoed as written,
+                            -- with its finding) instead of the tail swallowing
+                            -- it silently (D3, REFACTOR-AST §13.1).
+                            if fresh || (dotSeen && isStrayFinal tok)
                                 then pure []
                                 else do
                                     void (liftP pToken)
