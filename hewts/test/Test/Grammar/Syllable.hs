@@ -5,7 +5,7 @@ module Test.Grammar.Syllable (tests) where
 import Convert (SpellItem (..), pSentence)
 import Convert.Diagnostic
     ( Diagnostic (..)
-    , DiagnosticCode (DuplicateFinal, RepeatedCaret)
+    , DiagnosticCode (DuplicateFinal, LeadingFinal, RepeatedCaret)
     , Diagnostics
     , diagnosticList
     )
@@ -153,6 +153,8 @@ tests =
         , testCase
             "the structure's returned tokens agree with its stacks"
             checkStructureReturn
+        , testCase "an invalid item carries the warning of its run (T4)" $
+            checkInvalidCarries
         , testCase "Finals: one slot takes one mark" $ do
             let mark = case fst (tokenizeUnicode "ཾ") of
                     [m] -> m
@@ -349,6 +351,22 @@ checkStructureReturn = do
                                     <> raws bad
                                 )
 
+-- | T4: an 'InvalidSyllableItem' is no silent remainder: the warnings of its run
+-- travel with it, resolved on the span of its own tokens. @g.M@ is the shortest
+-- input whose sentence holds both a syllable and a remainder behind it.
+checkInvalidCarries :: Assertion
+checkInvalidCarries = case itemsW "g.M" of
+    [SyllableItem _, InvalidSyllableItem toks diags] ->
+        case (toks, diagnosticList diags) of
+            ([tok], [d]) -> do
+                diagCode d @?= LeadingFinal
+                diagSpan d @?= tokenSpan tok
+                diagWord d @?= Just (tokenSpan tok)
+            _ ->
+                assertFailure
+                    ("the remainder of g.M: " <> show toks <> ", " <> show diags)
+    items -> assertFailure ("g.M is no syllable and a remainder: " <> show items)
+
 isSeparator :: Token -> Bool
 isSeparator tok = case tokenCanonical tok of
     TcConSpec CSDot -> True
@@ -480,6 +498,11 @@ tokensOf = toList . Ast.flatten . sylStacks
 
 stacksOf :: Syllable -> [Ast.Stack]
 stacksOf = toList . sylStacks
+
+-- | Every item of a Wylie input, for the checks that read the 'SpellItem'
+-- itself rather than the syllables behind it.
+itemsW :: T.Text -> [SpellItem]
+itemsW = either (error . T.unpack) id . parseEither pSentence . fst . tokenizeWylie
 
 parseRuns ::
     (T.Text -> ([Token], Diagnostics)) -> T.Text -> Either T.Text [Syllable]
