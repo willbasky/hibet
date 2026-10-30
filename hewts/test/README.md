@@ -45,7 +45,7 @@ cabal run hewts-benchmark
 | `Test.Grammar.Wylie` | **книга** (структуры) + **оракулы EWTS** (совпадение с эталоном) |
 | `Test.Grammar.Stack` | **оракулы EWTS** (метки jsewts) + hewts (обобщённый стек) |
 | `Test.Grammar.Syllable` | **hewts**: AST (REFACTOR-AST шаги 1–6), корпуса — генератор |
-| `Test.Architecture` | **hewts**: слои и постоянные исключения §11.2 (REFACTOR-AST §9.1 п. 7) |
+| `Test.Architecture` | **hewts**: слои, постоянные исключения §11.2 и поимённый allowlist импортов печатающего слоя (REFACTOR-AST §9.1 п. 7, долг T2) |
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
