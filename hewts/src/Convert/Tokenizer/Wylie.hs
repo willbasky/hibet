@@ -54,10 +54,11 @@ longTokenList =
 -- as aspirates and long vowels): see 'wylieExpansions'.
 --
 -- Alongside the tokens, the diagnostics collected on the way are returned:
--- BOM and ZWSP are skipped silently, line breaks collapse, brackets mark
--- foreign text, and characters that occur where nothing expects them are
--- reported. Only the token layer knows positions; line numbers are worked out
--- later, in 'Convert.Diagnostic'.
+-- BOM and ZWSP are skipped silently, a line break stands as written (the
+-- spaces behind it are eaten, as the reference's fix_spacing eats them),
+-- brackets mark foreign text, and characters that occur where nothing expects
+-- them are reported. Only the token layer knows positions; line numbers are
+-- worked out later, in 'Convert.Diagnostic'.
 --
 -- Leading whitespace of the whole input is dropped, as the reference does when
 -- fixing spacing (@^\s+@): a document starts at its first real letter, so an
@@ -73,7 +74,18 @@ tokenizeWylie input = (reverse tokensRev, diagnosticsInOrder diagsRev)
             | T.null rest = (accT, accD)
         go accT accD offset rest
             | isSkipped rest = go accT accD (offset + 1) (T.drop 1 rest)
-            | brk > 0 = go accT accD (offset + brk) (T.drop brk rest)
+            | brk > 0 =
+                -- A line break stands as it was written: both references keep
+                -- it in the Tibetan output (jsewts, ewts-js) and print it as
+                -- itself on the way back. The spaces behind it are eaten, as
+                -- the reference's fix_spacing eats them, so one line break
+                -- never leaves two tshegs behind; a space *before* the break
+                -- has already spelled its one tsheg.
+                let sp = mkSpan (fromIntegral offset) (fromIntegral (offset + brk))
+                    tok = mkUnknown TsWylie sp (T.take brk rest)
+                    after = T.drop brk rest
+                    eaten = T.length (T.takeWhile (== ' ') after)
+                 in go (tok : accT) accD (offset + brk + eaten) (T.drop eaten after)
             | otherwise =
                 let (chunk, next, commentClosed) = nextChunk rest
                     end = offset + T.length chunk
@@ -91,8 +103,9 @@ isSkipped txt =
         Just (c, _) -> c == '\xfeff' || c == '\x200b'
         Nothing -> False
 
--- | Line breaks end a line but produce nothing: like the reference, runs of
--- whitespace (and any line break) collapse instead of reaching the output.
+-- | Line breaks end a line and stand as written: the reference keeps them in
+-- its Tibetan output and prints them as themselves on the way back, so a
+-- wrapped line stays a wrapped line instead of turning into a tsheg.
 lineBreakLen :: Text -> Int
 lineBreakLen txt
     | T.isPrefixOf "\r\n" txt = 2

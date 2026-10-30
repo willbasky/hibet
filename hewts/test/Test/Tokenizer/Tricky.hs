@@ -96,7 +96,14 @@ wylieLexicalCases =
         ( "zero-width space is skipped silently"
         , wylieRaws ("k\x200b" <> "a") @?= ["k", "a"]
         )
-    , ("line breaks collapse", wylieRaws "a\r\nb\rc\nd" @?= ["a", "b", "c", "d"])
+    ,
+        ( "line breaks stand as written"
+        , wylieRaws "a\r\nb\rc\nd" @?= ["a", "\r\n", "b", "\r", "c", "\n", "d"]
+        )
+    ,
+        ( "the spaces behind a break are eaten"
+        , wylieRaws "a \n  b" @?= ["a", " ", "\n", "b"]
+        )
     ,
         ( "a bare letter is unexpected"
         , wylieWarnings "x"
@@ -244,7 +251,7 @@ wyliePrefixCases =
     , ("k+Sh beats k", "k+Sha", ["k+Sh", "a"])
     , ("CRLF collapses, leaving a", "\r\na", ["a"])
     , ("lone CR collapses, leaving a", "\ra", ["a"])
-    , ("LF collapses between words", "a\nb", ["a", "b"])
+    , ("LF stands between words, as the reference keeps it", "a\nb", ["a", "\n", "b"])
     ]
 
 caseWylieDzh :: Assertion

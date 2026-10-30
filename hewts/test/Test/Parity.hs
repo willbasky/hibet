@@ -311,9 +311,8 @@ checkRoundtrip c =
             Nothing -> Fail "corpus row has no round-trip flag"
 
 -- | Mirror the reference's own normalising before comparing Kangyur lines:
--- drop ASCII spaces and expand the double shad. jsewts normalises both sides
--- of the comparison, so we must too — otherwise every ༎ reads as a
--- regression.
+-- expand the double shad (see 'normalise'). Spaces no longer need it: since
+-- wave 6, slice 2 we spell an input space the way the reference does.
 checkKangLine :: Text -> Outcome
 checkKangLine raw =
     case roundTripU2W (normalise raw) of
@@ -326,25 +325,26 @@ checkKangLine raw =
         want = normalise raw
 
 -- | The Kangyur U->W leg (wave 5.0): our Unicode -> Wylie of the line against
--- the reference's own export (@wkang.txt@), under the same normalisation the
--- round-trip leg uses. The Wylie side also drops @_@ because that is how the
--- reference spells the input ASCII space it received (@m_tib_other(' ')@ ->
--- @_@); the input side dropped that space, so the matching @_@ must go too —
--- otherwise every spaced line fails on a representation, not a conversion
--- (space handling itself is wave 5.12).
+-- the reference's own export (@wkang.txt@). Compared exactly: the reference
+-- spells an input ASCII space @_@ (@m_tib_other(' ')@ -> @_@) and we spell it
+-- the same way since wave 6, slice 2, so the line is read as written - no
+-- space is dropped on either side.
 checkKangU2W :: Text -> Text -> Outcome
 checkKangU2W raw want =
-    case fst (convertU2W (normalise raw)) of
+    case fst (convertU2W raw) of
         Left err -> Fail ("parse error: " <> err)
         Right out
-            | normalise out == normalise want -> Pass
+            | out == want -> Pass
             | otherwise ->
-                Fail ("got " <> quoted (normalise out) <> " want " <> quoted (normalise want))
+                Fail ("got " <> quoted out <> " want " <> quoted want)
 
--- | Drop ASCII spaces (both scripts spell a space one way each: U+0F0B output
--- for tsheg, @_@ for an input space) and expand the double shad.
+-- | Expand the double shad: the reference's export writes it as two single
+-- shads, and the round trip brings back the component signs, so that is a
+-- representation, not a conversion. Spaces are compared as they are since
+-- wave 6, slice 2: '@_@' is the reference's spelling of an input space and we
+-- spell it the same way.
 normalise :: Text -> Text
-normalise = T.replace "\x0f0e" "\x0f0d\x0f0d" . T.filter (\c -> c /= ' ' && c /= '_')
+normalise = T.replace "\x0f0e" "\x0f0d\x0f0d"
 
 -- | One line of the reference's own corpus, named by its rule where the corpus
 -- names it, and by its line otherwise.

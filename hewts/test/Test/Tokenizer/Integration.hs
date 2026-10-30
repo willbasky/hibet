@@ -44,6 +44,9 @@ tests =
         , testCase
             "render collapses space runs to one tsheg"
             caseRenderCollapsedSpaces
+        , testCase
+            "a line break stands as written (fix_spacing)"
+            caseRenderLineBreaks
         ]
 
 caseWylieRawRoundtrip :: Assertion
@@ -106,6 +109,11 @@ renderWylie input =
     either (error . T.unpack) (renderItems OutUnicode) $
         parseEither (pSentence) (fst (tokenizeWylie input))
 
+-- | The Unicode -> Wylie leg of the same pipeline.
+unicodeToWylie :: Text -> Text
+unicodeToWylie input =
+    either (error . T.unpack) (renderItems OutWylie) (splitSentences input)
+
 caseRenderCollapsedSpaces :: Assertion
 caseRenderCollapsedSpaces = do
     renderWylie "a     " @?= "ཨ་"
@@ -113,6 +121,19 @@ caseRenderCollapsedSpaces = do
     renderWylie "\r  bla" @?= "བླ"
     renderWylie "a " @?= "ཨ་"
     renderWylie "a b" @?= "ཨ་བ"
+
+-- | fix_spacing, the line-break half (wave 6, slice 2): a break stands as
+-- written, the spaces behind it are eaten, and the space before it keeps its
+-- one tsheg. The expectations are the reference's own: jsewts and ewts-js
+-- agree on all five cases.
+caseRenderLineBreaks :: Assertion
+caseRenderLineBreaks = do
+    renderWylie "bkra\nshis" @?= "བཀྲ\nཤིས"
+    renderWylie "bkra \n shis" @?= "བཀྲ་\nཤིས"
+    renderWylie "bkra\n\nshis" @?= "བཀྲ\n\nཤིས"
+    renderWylie "bkra\t shis" @?= "བཀྲ\t་ཤིས"
+    -- and the way back prints the break as itself
+    unicodeToWylie "བཀྲ་\nཤིས" @?= "bkra \nshis"
     renderWylie "   " @?= ""
 
 rawRoundtripWylie :: Text -> Text

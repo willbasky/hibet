@@ -275,6 +275,13 @@
 # round-trip each gain two rows on the three big corpora, exactly the
 # bart/gabsp rows whose journal entries closed: u2w 193 -> 195, 194 -> 196,
 # 195 -> 197 and roundtrip 206 -> 208, 214 -> 216, 207 -> 209.
+# Wave 6, slice 2 (30.10.2026, fix_spacing): a line break in Wylie input now
+# stands as written (both references keep it) instead of collapsing into a
+# tsheg, and the spaces behind a break are eaten, so one break can no longer
+# leave two tshegs; the Kangyur Wylie leg is compared exactly, the `_` spelling
+# of an input space no longer dropped on either side. No number moves: the four
+# open Kangyur rows are the same ones, but the space shapes are now checked
+# instead of normalised away.
 jsewts	w2u	204	204
 jsewts	u2w	195	195
 jsewts	roundtrip	208	208
