@@ -54,8 +54,10 @@ import qualified Text.Megaparsec as MP
 -- | One piece of a parsed sentence. A recognized run is a 'SyllableItem'; a
 -- run that opens like a syllable but that no structure claims, and the signs a
 -- claimed run could not place, are an 'InvalidSyllableItem' (kept as the tokens
--- they were written as, with the warnings that came with them) - such runs
--- stay visible and diagnosable instead of silently falling into 'Other'.
+-- they were written as) - such runs stay visible instead of silently falling
+-- into 'Other'. An unclaimed run carries the warnings of its own run; the
+-- signs a claimed run could not place carry none, because no window read them -
+-- their run's warnings are the claimed structure's and stay on the syllable.
 data SpellItem
     = SyllableItem Syllable
     | InvalidSyllableItem [Token] Diagnostics
@@ -212,11 +214,11 @@ pSyllable = do
                         { sylStacks = built
                         , sylDiags = diags
                         }
-                    -- shortcut: the leftovers are part of the run, so they
-                    -- carry its warnings and a run with both would report twice;
-                    -- in the corpora no run has leftovers, so split the findings
-                    -- by element when such input surfaces.
-                    : [InvalidSyllableItem leftovers diags | not (null leftovers)]
+                    -- No finding of the run blames a leftover: the windows
+                    -- read only the claimed structure, and a tail sign no
+                    -- structure took was read by none of them. So the run's
+                    -- diagnostics stay on the syllable and report once (T8).
+                    : [InvalidSyllableItem leftovers mempty | not (null leftovers)]
     where
         -- The span of the whole syllable run, from its first to its last
         -- token: the anchor both head warnings quote whole (@tgra@), resolved

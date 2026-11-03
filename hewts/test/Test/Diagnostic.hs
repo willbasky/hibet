@@ -185,6 +185,17 @@ wave344 =
                 @?= Right
                     [ "line 1: \"\x0f40\x0f7e\x0f7e\": The final \"\x0f7e\" does not fit the final chain: it fills one slot, in order, once."
                     ]
+        , testCase "a remainder and a warning of one run report once (T8)" $ do
+            -- The warning belongs to the claimed run; the sign no structure
+            -- took is that run's leftover, not a second run with its own copy.
+            renderedTibetan "\x0f40\x0f7e\x0f7e\x0f01"
+                @?= Right
+                    [ "line 1: \"\x0f40\x0f7e\x0f7e\x0f01\": The final \"\x0f7e\" does not fit the final chain: it fills one slot, in order, once."
+                    ]
+            renderedTibetan "\x0f72\x0f40\x0f01"
+                @?= Right
+                    [ "line 1: \"\x0f72\x0f40\x0f01\": The sign \"\x0f72\" has no letter to attach to."
+                    ]
         , testCase "two finals in a row stay legal" $
             rendered "kaM~M`" @?= Right []
         , testCase "the visarga before the srog med stays legal" $
