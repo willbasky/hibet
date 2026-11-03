@@ -118,6 +118,7 @@ test-suite hewts-test
     Test.Convert.Golden
     Test.Corpus
     Test.Diagnostic
+    Test.Fuzz
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
     Test.Grammar.Constraint.Constraint09

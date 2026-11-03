@@ -60,6 +60,7 @@ cabal run hewts-benchmark
 | `Test.Grammar.Sentence` | **hewts**: уровень документа (тшег, shad, числа) |
 | `Test.Convert.Golden` | **hewts**: снимки конверсии — U→W поверх `kang.txt`, W→U поверх векторов паритета, снимок стеков — оракул шага 4 |
 | `Test.Diagnostic` | **hewts**: канал диагностики (коды и формулировки наши, 30.09.2026) |
+| `Test.Fuzz` | **hewts**: инвариант «второй проход ничего не меняет» на случайных срезах Кангьюра; входы — генератор с закреплённым зерном |
 
 Источники означают: **книга** — «Research on Tibetan Spelling Formal Language and
 Automata with Application» (Nyima Tashi) в `Documents/`; **спецификация EWTS** —
@@ -71,7 +72,8 @@ Automata with Application» (Nyima Tashi) в `Documents/`; **специфика�
 `Test/Tokenizer/*` — чтение, `Test/Grammar/*` — разбор, `Test/Render/*` —
 печать. Сквозные проверки остаются в корне и слоем не притворяются: `Test.Api`,
 `Test.Integration`, `Test.Convert`, `Test.Convert.Golden`, `Test.Parity`,
-`Test.Performance`, `Test.Architecture`, `Test.Corpus`, `Test.Diagnostic`.
+`Test.Performance`, `Test.Architecture`, `Test.Corpus`, `Test.Diagnostic`,
+`Test.Fuzz`.
 
 ## Эталонные векторы (`test/vectors/`)
 
@@ -193,6 +195,16 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
   `Wylie.pm` выдаёт `Syllable should probably be "mags".`: вендоренный корпус
   Lingua слегка устарел относительно вендоренного модуля. На конверсию это не
   влияет, а сверки предупреждений больше нет (см. «Про предупреждения»).
+
+## Нечёткий прогон (`Test.Fuzz`)
+
+Случайные срезы эталонного текста (`kang.txt` и `wkang.txt`, по 500 штук на
+направление) гоняются туда-обратно, и второй проход обязан ничего не менять:
+`W→U→W→U` на Wylie-срезе и `U→W→U→W` на Юникод-срезе. Зерно и домен
+закреплены в модуле, поэтому падение воспроизводится, а сообщение печатает сам
+срез. Вырожденные формы (escape-запись, чужой текст в скобках, пара а-чунгов) в
+домен не входят: через петлю они не устойчивы (Волна 5), и это их известная
+форма, а не регрессия конверсии.
 
 ## Harness паритета (`test/parity/`)
 
