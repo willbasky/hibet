@@ -51,7 +51,7 @@ cabal run hewts-benchmark
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
 | `Test.Render.Wylie` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
-| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S8): дверь API, режимы, sloppy, O6; корпуса ewts-rs и java_sloppy — сквозной прогон |
+| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S8): дверь API, режимы, sloppy, строгость, O6; корпуса ewts-rs и java_sloppy — сквозной прогон |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Integration` | **hewts**: сквозной прогон (чтение → разбор → печать), raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |
@@ -134,7 +134,11 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
 парсер пропускает, проверок по ним нет и в baseline строк нет. Диагностика, её
 коды и формулировки — наши (`Convert.Diagnostic`), свои ожидания лежат в
 `Test.Diagnostic`; эталон как оракул предупреждений не используется (решение
-30.09.2026).
+30.09.2026). Строгий режим (`Settings.strict`) **добавляет** находки, а не
+меняет их важность: строгие коды — `AmbiguousSpelling` и
+`IllegalSuperfixCombination` (`Convert.Diagnostic.strictOnly`), `Severity`
+остаётся warning. Обычный режим их не показывает; обычные дефекты видны в обоих
+(`Test.Api`).
 
 **Что в диагностиках есть.** Канал наполняют и токенизатор, и грамматика:
 неожиданный символ, незакрытая скобка, битый escape, окна легальности

@@ -67,6 +67,18 @@ tests =
             assertBool
                 ("the strict door corrected the input: " <> show got)
                 (got /= Right (rowUnicode row))
+        , testCase "strict: the preferred spelling is reported only when asked (S8)" $ do
+            fmap codes (checkSpelling wylieStrict "dga") @?= Right []
+            fmap codes (checkSpelling strictChecks "dga") @?= Right [AmbiguousSpelling]
+        , testCase
+            "strict: the rare superfix combination is reported only when asked (S8)"
+            $ do
+                fmap codes (checkSpelling wylieStrict "rkwa") @?= Right []
+                fmap codes (checkSpelling strictChecks "rkwa")
+                    @?= Right [IllegalSuperfixCombination]
+        , testCase "strict: a real defect is reported in both modes (S8)" $ do
+            fmap codes (checkSpelling wylieStrict "tgra") @?= Right [InvalidPrefix]
+            fmap codes (checkSpelling strictChecks "tgra") @?= Right [InvalidPrefix]
         ]
 
 -- | The codes of the findings, in order.
@@ -80,6 +92,11 @@ sloppySettings = defaultSettings{inputFormat = InWylie, sloppy = True}
 -- | Wylie read as written: no corrections.
 wylieStrict :: Settings
 wylieStrict = defaultSettings{inputFormat = InWylie}
+
+-- | Wylie with the strict spelling check on: the normal findings plus the
+-- strict-only ones.
+strictChecks :: Settings
+strictChecks = wylieStrict{strict = True}
 
 -- | The whole sloppy vector: the reference converts these only through its
 -- sloppy path, so the flag has to be on for the door to match.

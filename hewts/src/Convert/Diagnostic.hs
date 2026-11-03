@@ -14,6 +14,8 @@ module Convert.Diagnostic
     , DiagnosticCode (..)
     , Diagnostic (..)
     , Diagnostics
+    , strictOnly
+    , applyStrictness
     , addDiagnostic
     , diagnosticsInOrder
     , diagnosticList
@@ -113,6 +115,29 @@ diagnosticsInOrder (Diagnostics ds) = Diagnostics (reverse ds)
 -- | The diagnostics as a list, in the order the value carries them.
 diagnosticList :: Diagnostics -> [Diagnostic]
 diagnosticList (Diagnostics ds) = ds
+
+-- | Whether a finding belongs to the strict mode only. Strict mode is our
+-- answer to the reference's @check_strict@: it adds checks for what is rare
+-- rather than wrong. We put two findings there - the superfix combination
+-- (@rkwa@, @lkya@, @rpa@), which the reference also checks only in strict
+-- mode, and the preferred-spelling recommendation, which the reference reports
+-- in both modes but which only suggests a better spelling. Diagnostics are
+-- ours (30.09.2026), and the normal mode should not nag. Everything else flags
+-- a real defect and is reported in both modes; a dropped letter
+-- (@FourthSubfix@) stays normal, because staying silent would drop the letter
+-- unnoticed.
+strictOnly :: DiagnosticCode -> Bool
+strictOnly = \case
+    AmbiguousSpelling -> True
+    IllegalSuperfixCombination -> True
+    _ -> False
+
+-- | Drop the strict-only findings unless the strict mode is on.
+applyStrictness :: Bool -> Diagnostics -> Diagnostics
+applyStrictness strict ds
+    | strict = ds
+    | otherwise =
+        Diagnostics (filter (not . strictOnly . diagCode) (diagnosticList ds))
 
 -- | A letter or a sign that stands where no Wylie spelling expects one: the
 -- character is echoed as it was written, and this says why it was not read.

@@ -16,7 +16,12 @@ module Convert
     , pSentence
     ) where
 
-import Convert.Diagnostic (Diagnostics, addDiagnostic, noTibetanCharacters)
+import Convert.Diagnostic
+    ( Diagnostics
+    , addDiagnostic
+    , applyStrictness
+    , noTibetanCharacters
+    )
 import Convert.Grammar.Parser (parseEither)
 import Convert.Grammar.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Render (OutputFormat (..), renderItems)
@@ -61,25 +66,34 @@ data InputFormat
 -- two modes of the product: with it off the conversion is a fast pass that
 -- records nothing. 'sloppy' is the "with corrections" mode: Wylie input is
 -- normalized first ('normalizeSloppy'), the leading and repeated spaces are
--- already corrected by the tokenizer itself.
+-- already corrected by the tokenizer itself. 'strict' is the strict spelling
+-- check: it adds the findings that are rare rather than wrong
+-- ('Convert.Diagnostic.strictOnly') and leaves them out otherwise.
 --
--- There is no strict/normal split in this record yet: 'Severity' is
--- warning/error, and which of our findings belong to a strict mode is a
--- decision that has not been made (ROADMAP.md, т. 6). A field that no code
--- reads would be worse than none.
+-- 'Severity' has no strict/normal split: every finding stays a warning, as in
+-- the reference, and the mode decides what is reported, not how loudly.
 data Settings = Settings
     { inputFormat :: InputFormat
     , withChecks :: Bool
     , sloppy :: Bool
+    , strict :: Bool
     }
     deriving (Show, Eq)
 
--- | Tibetan script in, checks on, input read as written.
+-- | Tibetan script in, checks on, input read as written, normal spelling.
 defaultSettings :: Settings
-defaultSettings = Settings{inputFormat = InUnicode, withChecks = True, sloppy = False}
+defaultSettings =
+    Settings
+        { inputFormat = InUnicode
+        , withChecks = True
+        , sloppy = False
+        , strict = False
+        }
 
 -- | The one door both directions use: tokenize the writing the settings name,
 -- parse it, and collect what the tokenizer noticed and the grammar found.
+-- Strictness is not applied here: it is a policy of the product modes
+-- ('convert', 'checkSpelling'), while this door hands over the raw channel.
 parseSettings :: Settings -> Text -> Either Text ([SpellItem], Diagnostics)
 parseSettings st input = do
     let corrected = case inputFormat st of
@@ -105,7 +119,7 @@ convertUnicodeToWylie st = convert st{inputFormat = InUnicode} OutWylie
 checkSpelling :: Settings -> Text -> Either Text Diagnostics
 checkSpelling st input = do
     (items, diags) <- parseSettings st{withChecks = True} input
-    pure (diags <> documentDiagnostics input items)
+    pure (applyStrictness (strict st) (diags <> documentDiagnostics input items))
 
 -- | One direction of the conversion: the text of the target writing and the
 -- findings, the document-level warning among them.
@@ -113,7 +127,7 @@ convert :: Settings -> OutputFormat -> Text -> Either Text (Text, Diagnostics)
 convert st fmt input = do
     (items, diags) <- parseSettings st input
     let document = if withChecks st then documentDiagnostics input items else mempty
-    pure (renderItems fmt items, diags <> document)
+    pure (renderItems fmt items, applyStrictness (strict st) (diags <> document))
 
 -- | The spelling warnings for a whole parsed sentence: the 'sylDiags' of
 -- every syllable run, in source order.
