@@ -110,13 +110,17 @@ outsideTheBook =
 notationCorpus :: Assertion
 notationCorpus = do
     cases <- corpusCases
-    assertDrifts "notation" (nub (mapMaybe driftOf cases)) []
+    assertDrifts "notation" (nub (mapMaybe (uncurry driftOf) cases)) []
 
--- | A notation drift: the writing it produced and the units it reads back as.
-driftOf :: Syllable -> Maybe (Text, Text)
-driftOf s
+-- | A notation drift: the input it came from, the writing that input produced
+-- and the units the writing reads back as. The input is part of the row, as in
+-- @w2wCorpus@: a fresh input that only reproduces a recorded writing and reading
+-- is a drift of its own (REFACTOR-AST §13.4 T6).
+driftOf :: Text -> Syllable -> Maybe (Text, Text)
+driftOf input s
     | back == content s = Nothing
-    | otherwise = Just (notation s, T.intercalate " | " back)
+    | otherwise =
+        Just (input, notation s <> " reads back as " <> T.intercalate " | " back)
     where
         back = concatMap content (syllables (parseWylie (notation s)))
 
@@ -172,24 +176,23 @@ assertDrifts what seen recorded = do
         )
         (null closed)
 
--- | Every syllabic run of the corpora, as the syllable the grammar built.
-corpusCases :: IO [Syllable]
+-- | Every syllabic run of the corpora, as the syllable the grammar built and
+-- the input it was built from.
+corpusCases :: IO [(Text, Syllable)]
 corpusCases = do
     vectors <- concat <$> mapM vectorCases corpora
     kang <- kangyurText
     pure
         ( vectors
-            <> concatMap
-                (syllables . parseUnicode)
-                (filter (not . T.null) (T.lines kang))
+            <> concatMap withInput (filter (not . T.null) (T.lines kang))
         )
     where
+        withInput input = map (input,) (syllables (parseUnicode input))
         vectorCases (_, path) = do
             rows <- readRows path
-            pure
-                ( concatMap (syllables . parseWylie . rowWylie) rows
-                    <> concatMap (syllables . parseUnicode . rowUnicode) rows
-                )
+            pure (concatMap ofWylie rows <> concatMap ofUnicode rows)
+        ofWylie row = map (rowWylie row,) (syllables (parseWylie (rowWylie row)))
+        ofUnicode row = map (rowUnicode row,) (syllables (parseUnicode (rowUnicode row)))
 
 -- | The notation as the Wylie render writes it: the joins and the signs.
 notation :: Syllable -> Text

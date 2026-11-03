@@ -45,6 +45,9 @@ tests =
             "render collapses space runs to one tsheg"
             caseRenderCollapsedSpaces
         , testCase
+            "a space between Tibetan bits prints as _"
+            caseSpaceBetweenTibetan
+        , testCase
             "a line break stands as written (fix_spacing)"
             caseRenderLineBreaks
         ]
@@ -121,6 +124,19 @@ caseRenderCollapsedSpaces = do
     renderWylie "\r  bla" @?= "བླ"
     renderWylie "a " @?= "ཨ་"
     renderWylie "a b" @?= "ཨ་བ"
+
+-- | REFERENCES-FEATURES 7.11: a space between two Tibetan bits prints as @_@,
+-- one for each space (java @handleSpaces@); a space that runs into foreign text
+-- stays an ordinary space inside the brackets (java @followedByNonTibetan@).
+caseSpaceBetweenTibetan :: Assertion
+caseSpaceBetweenTibetan = do
+    unicodeToWylie "བཀྲ ཤིས" @?= "bkra_shis"
+    unicodeToWylie "བཀྲ  ཤིས" @?= "bkra__shis"
+    unicodeToWylie "བཀྲ abc" @?= "bkra[ abc]"
+    unicodeToWylie "བཀྲ  abc" @?= "bkra[  abc]"
+    -- the tail of the space after a single-stack run: the reference shape
+    unicodeToWylie "བླ x" @?= "bla[ x]"
+    unicodeToWylie "བླ  x" @?= "bla[  x]"
 
 -- | fix_spacing, the line-break half (wave 6, slice 2): a break stands as
 -- written, the spaces behind it are eaten, and the space before it keeps its

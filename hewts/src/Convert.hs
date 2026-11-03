@@ -354,12 +354,6 @@ renderItems fmt items = case fmt of
         -- reaches the notation: the reference escapes such a character
         -- (@needs a top symbol@), so an orphan prefix becomes escapes and the
         -- rest of the run spells as before (wave 5.4).
-        --
-        -- shortcut: an ASCII space the run's own boundary closes with is a
-        -- 'Punct' item of its own now, so the reference shape of a space
-        -- between a run and foreign text (@bla[ x]@) is not produced; the
-        -- Wylie arm spells that space @_@ (@bla_[x]@). Split the space off
-        -- the boundary when a corpus needs the other shape.
         wyliePieces :: SpellItem -> [Piece]
         wyliePieces (SyllableItem s) = case toList (sylStacks s) of
             (st : rest)
