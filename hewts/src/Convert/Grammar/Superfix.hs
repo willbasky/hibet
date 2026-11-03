@@ -5,7 +5,7 @@ below them (5.1) and the root groups of 4.9, stated once: the book's structures
 parse by them ('Convert.Grammar.Constraint.Constraint08', 09), the generic
 word's superfix window checks against them
 ('Convert.Grammar.Constraint.Constraint21'), and the Wylie notation writes
-solid only what they allow ('Convert.Wylie.Tables'). None of them owns the
+solid only what they allow ('Convert.Render.Wylie.Notation'). None of them owns the
 table.
 -}
 

@@ -22,8 +22,8 @@ import Convert.Diagnostic
     , renderDiagnostics
     )
 import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Sentence (Syllable (..), pSentence)
 import Convert.Grammar.Syllable (flatten)
-import Convert.Sentence (Syllable (..), pSentence)
 import Convert.Token (Span (..), Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)

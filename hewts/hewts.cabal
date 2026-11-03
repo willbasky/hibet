@@ -61,14 +61,20 @@ library
     Convert.Diagnostic
     Convert.Grammar.Constraint
     Convert.Grammar.Parser
+    Convert.Grammar.Sentence
     Convert.Grammar.Structure
     Convert.Grammar.Superfix
     Convert.Grammar.Syllable
-    Convert.Sentence
+    Convert.Render
+    Convert.Render.Token
+    Convert.Render.Unicode
+    Convert.Render.Wylie
+    Convert.Render.Wylie.Notation
     Convert.Token
+    Convert.Token.Unicode
+    Convert.Token.Wylie
     Convert.Tokenizer.Unicode
     Convert.Tokenizer.Wylie
-    Convert.Wylie.Tables
 
   other-modules:
     Convert.Grammar.Constraint.Constraint01
@@ -110,7 +116,6 @@ test-suite hewts-test
     Test.Architecture
     Test.Convert
     Test.Convert.Golden
-    Test.Convert.Sentence
     Test.Corpus
     Test.Diagnostic
     Test.Grammar.Constraint.Constraint01
@@ -127,23 +132,26 @@ test-suite hewts-test
     Test.Grammar.Constraint.Constraint18
     Test.Grammar.Constraint.Constraint19
     Test.Grammar.Constraint.Constraint20
+    Test.Grammar.Sentence
     Test.Grammar.Stack
     Test.Grammar.Structure
     Test.Grammar.Syllable
     Test.Grammar.Wylie
+    Test.Integration
     Test.Parity
     Test.Performance
+    Test.Render.Wylie
     Test.Tokenizer.Classification
     Test.Tokenizer.Golden
-    Test.Tokenizer.Integration
     Test.Tokenizer.RoundTrip
     Test.Tokenizer.Spans
     Test.Tokenizer.Tricky
-    Test.Wylie.Output
 
   build-depends:
     bytestring,
     containers,
+    directory,
+    filepath,
     hewts,
     megaparsec,
     tasty,

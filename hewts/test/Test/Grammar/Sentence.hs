@@ -1,11 +1,11 @@
 -- Ожидания: hewts — уровень документа: тшег, shad, числа.
 
-module Test.Convert.Sentence (tests) where
+module Test.Grammar.Sentence (tests) where
 
 import Convert (OutputFormat (..), renderItems)
 import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Grammar.Syllable (flatten)
-import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Data.Foldable (toList)

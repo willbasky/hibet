@@ -372,7 +372,7 @@ unnameableGlyph sp glyph =
 
 -- | A finding a constraint window of the grammar records before the run is
 -- over: the run's whole span is only known once the structures have claimed
--- it, so the window records the pieces and 'Convert.Sentence' resolves them
+-- it, so the window records the pieces and 'Convert.Grammar.Sentence' resolves them
 -- into finished 'Diagnostic's with the run's span, through 'resolveFinding'.
 -- The sum grows one constructor per wave-3.4 rule as the windows land; the
 -- words are quoted whole, as the reference quotes @tgra@.

@@ -12,10 +12,13 @@
 -- failed test, not a silent second way to decide a role (T2).
 module Test.Architecture (tests) where
 
+import Control.Monad (forM)
 import Data.Char (isSpace)
 import Data.List (isInfixOf, nub, sort)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import System.Directory (doesDirectoryExist, listDirectory)
+import System.FilePath (takeExtension, (</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (assertBool, testCase, (@?=))
 
@@ -28,15 +31,17 @@ tests =
             let leaks = importsOfModule "Convert.Grammar.Parser" imports
             assertBool ("Convert.Grammar.Syllable imports " <> show leaks) (null leaks)
         , testCase "the notation does not import a constraint" $ do
-            imports <- importsOf "src/Convert/Wylie/Tables.hs"
+            imports <- importsOf "src/Convert/Render/Wylie/Notation.hs"
             let leaks = importsOfModule "Convert.Grammar.Constraint" imports
-            assertBool ("Convert.Wylie.Tables imports " <> show leaks) (null leaks)
+            assertBool ("Convert.Render.Wylie.Notation imports " <> show leaks) (null leaks)
         , testCase "the renderer reads the sign only at the §11.2 places" $ do
-            sites <- symbolSites "src/Convert.hs" (map fst renderExceptions)
+            sites <-
+                concat <$> traverse (`symbolSites` map fst renderExceptions) rendererFiles
             let seen symbol = nub (sort [decl | (found, decl) <- sites, found == symbol])
             [(symbol, seen symbol) | (symbol, _) <- renderExceptions] @?= renderExceptions
         , testCase "the notation never reads the sign" $ do
-            sites <- symbolSites "src/Convert/Wylie/Tables.hs" (map fst renderExceptions)
+            sites <-
+                symbolSites "src/Convert/Render/Wylie/Notation.hs" (map fst renderExceptions)
             sites @?= []
         , testCase "the printing layer imports only the recorded names" $ do
             let paths = [p | (p, _, _) <- printingModules]
@@ -44,16 +49,58 @@ tests =
             let flatten ms = sort [n | (_, ns) <- ms, n <- ns]
                 recorded = [(p, flatten ms) | (p, _, ms) <- printingModules]
             [(p, flatten ms) | (p, ms) <- zip paths seen] @?= recorded
+        , testCase "the token layer does not import a higher layer" $ do
+            leaks <-
+                layerLeaks
+                    ["src/Convert/Token.hs", "src/Convert/Token"]
+                    ["Convert.Diagnostic", "Convert.Tokenizer", "Convert.Grammar", "Convert.Render"]
+            leaks @?= []
+        , testCase "the tokenizer does not import the grammar or printing" $ do
+            leaks <-
+                layerLeaks ["src/Convert/Tokenizer"] ["Convert.Grammar", "Convert.Render"]
+            leaks @?= []
+        , testCase "the grammar does not import reading or printing" $ do
+            leaks <-
+                layerLeaks ["src/Convert/Grammar"] ["Convert.Tokenizer", "Convert.Render"]
+            leaks @?= []
+        , testCase "the printing layer does not import reading or the parser" $ do
+            leaks <-
+                layerLeaks
+                    ["src/Convert/Render"]
+                    [ "Convert.Tokenizer"
+                    , "Convert.Grammar.Parser"
+                    , "Convert.Grammar.Constraint"
+                    , "Convert.Grammar.Structure"
+                    ]
+            leaks @?= []
         ]
 
--- | The exceptions of REFACTOR-AST §11.2 and the `Convert.hs` declarations
--- each one lives in. They are permanent (Р7), not "until step N": each prints
--- a sign as it was written, and no step of the refactor changes that.
+-- | The exceptions of REFACTOR-AST §11.2 and the declarations each one lives
+-- in. They are permanent (Р7), not "until step N": each prints a sign as it
+-- was written, and no step of the refactor changes that.
 renderExceptions :: [(String, [String])]
 renderExceptions =
-    [ ("tokenRaw", ["renderItems"]) -- echo of an unplaced sign, orphan escapes
+    [
+        ( "tokenRaw"
+        ,
+            [ "orphanEscapes"
+            , "rawTokens"
+            , "renderUnicodeItems"
+            , "unknownText"
+            , "wyliePiece" -- echo of an unplaced sign, orphan escapes
+            ]
+        )
     , ("tokenSource", ["isUnicodeStack", "stackText"]) -- the escape branch, the a-chen
     , ("subjoinOf", []) -- closed by 6d: a subjoin prints from its canon
+    ]
+
+-- | The modules that print signs: the Unicode arm, the Wylie arm and the
+-- shared spelling of one sign. The notation is checked separately above.
+rendererFiles :: [FilePath]
+rendererFiles =
+    [ "src/Convert/Render/Unicode.hs"
+    , "src/Convert/Render/Wylie.hs"
+    , "src/Convert/Render/Token.hs"
     ]
 
 -- | What the printing layer may import, by module: the names it uses to spell
@@ -63,46 +110,87 @@ renderExceptions =
 printingModules :: [(FilePath, String, [(String, [String])])]
 printingModules =
     [
-        ( "src/Convert.hs"
-        , "Convert"
+        ( "src/Convert/Render.hs"
+        , "Convert.Render"
         ,
-            [ ("Convert.Diagnostic", ["Diagnostics", "addDiagnostic", "noTibetanCharacters"])
-            , ("Convert.Grammar.Parser", ["parseEither"])
+            [ ("Convert.Grammar.Sentence", ["SpellItem"])
+            , ("Convert.Render.Unicode", ["renderUnicodeItems"])
+            , ("Convert.Render.Wylie", ["renderWylie"])
+            , ("Data.Text", ["Text"])
+            ]
+        )
+    ,
+        ( "src/Convert/Render/Token.hs"
+        , "Convert.Render.Token"
+        ,
+            [
+                ( "Convert.Token"
+                , ["Token", "TokenCanonical", "UnknownMark", "tokenCanonical", "tokenRaw"]
+                )
+            , ("Data.Maybe", ["fromMaybe"])
+            , ("Data.Text", ["Text"])
+            ]
+        )
+    ,
+        ( "src/Convert/Render/Unicode.hs"
+        , "Convert.Render.Unicode"
+        ,
+            [ ("Convert.Grammar.Sentence", ["SpellItem"])
             ,
                 ( "Convert.Grammar.Syllable"
-                , ["Stack", "Subfixes", "VowelSlot", "finalsTokens", "stackTokens"]
+                , ["Stack", "Subfixes", "Syllable", "VowelSlot", "finalsTokens", "stackTokens"]
                 )
-            , ("Convert.Sentence", ["SpellItem", "Syllable", "pSentence"])
+            , ("Convert.Render.Token", ["spellToken"])
             ,
                 ( "Convert.Token"
                 ,
-                    [ "FinalMark"
-                    , "SpaceMark"
-                    , "Token"
+                    [ "Token"
                     , "TokenCanonical"
                     , "TokenSource"
-                    , "UnknownMark"
-                    , "isToplessMark"
-                    , "mkSpan"
                     , "toSubjoined"
                     , "tokenCanonical"
                     , "tokenRaw" -- §11.2: the echo of an unplaced sign
                     , "tokenSource" -- §11.2: the escape branch and the a-chen
                     ]
                 )
-            , ("Convert.Tokenizer.Unicode", ["tokenizeUnicode", "unicodeOf"])
-            , ("Convert.Tokenizer.Wylie", ["tokenizeWylie", "wylieOf"])
-            , ("Convert.Wylie.Tables", ["Join", "notate"])
-            , ("Data.Char", ["ord"])
+            , ("Convert.Token.Unicode", ["unicodeOf"])
             , ("Data.Foldable", ["toList"])
             , ("Data.Maybe", ["fromMaybe"])
+            , ("Data.Text", ["Text"])
+            ]
+        )
+    ,
+        ( "src/Convert/Render/Wylie.hs"
+        , "Convert.Render.Wylie"
+        ,
+            [ ("Convert.Grammar.Sentence", ["SpellItem"])
+            , ("Convert.Grammar.Syllable", ["Syllable", "stackTokens"])
+            , ("Convert.Render.Token", ["spellToken", "unknownText"])
+            , ("Convert.Render.Unicode", ["isOrphanStack", "isUnicodeStack"])
+            , ("Convert.Render.Wylie.Notation", ["Join", "notate"])
+            ,
+                ( "Convert.Token"
+                ,
+                    [ "SpaceMark"
+                    , "Token"
+                    , "TokenCanonical"
+                    , "UnknownMark"
+                    , "isToplessMark"
+                    , "tokenCanonical"
+                    , "tokenRaw" -- §11.2: the echo of an unplaced sign
+                    ]
+                )
+            , ("Convert.Token.Unicode", ["unicodeOf"])
+            , ("Convert.Token.Wylie", ["wylieOf"])
+            , ("Data.Char", ["ord"])
+            , ("Data.Foldable", ["toList"])
             , ("Data.Text", ["Text"])
             , ("Numeric", ["showHex"])
             ]
         )
     ,
-        ( "src/Convert/Wylie/Tables.hs"
-        , "Convert.Wylie.Tables"
+        ( "src/Convert/Render/Wylie/Notation.hs"
+        , "Convert.Render.Wylie.Notation"
         ,
             [
                 ( "Convert.Grammar.Superfix"
@@ -122,7 +210,7 @@ printingModules =
                 ( "Convert.Token"
                 , ["Consonant", "FinalMark", "Token", "TokenCanonical", "tokenCanonical"]
                 )
-            , ("Convert.Tokenizer.Wylie", ["wylieExpansions", "wylieOf"])
+            , ("Convert.Token.Wylie", ["wylieExpansions", "wylieOf"])
             , ("Data.Foldable", ["toList"])
             , ("Data.Maybe", ["fromMaybe"])
             , ("Data.Sequence", ["Seq"])
@@ -131,6 +219,26 @@ printingModules =
             ]
         )
     ]
+
+-- | Every import of a layer that names a module it must not know about, by
+-- file. The roots may be files or directories: a directory is walked, so the
+-- check follows the tree instead of a hand-written list.
+layerLeaks :: [FilePath] -> [String] -> IO [(FilePath, [String])]
+layerLeaks roots forbidden = do
+    files <- concat <$> traverse hsFiles roots
+    fmap concat $ forM files $ \path -> do
+        imports <- importsOf path
+        let leaks = [line | line <- imports, any (`isInfixOf` line) forbidden]
+        pure [(path, leaks) | not (null leaks)]
+
+hsFiles :: FilePath -> IO [FilePath]
+hsFiles path = do
+    isDir <- doesDirectoryExist path
+    if isDir
+        then do
+            entries <- listDirectory path
+            concat <$> traverse (hsFiles . (path </>)) entries
+        else pure [path | takeExtension path == ".hs"]
 
 importsOfModule :: String -> [String] -> [String]
 importsOfModule moduleName = filter (moduleName `isInfixOf`)

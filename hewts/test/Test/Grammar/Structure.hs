@@ -8,10 +8,10 @@ import Convert.Grammar.Parser
     , parseEither
     , runSpell
     )
+import Convert.Grammar.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Grammar.Structure
 import Convert.Grammar.Syllable (TibetanSyllable, VowelSlot (..))
 import qualified Convert.Grammar.Syllable as Ast
-import Convert.Sentence (SpellItem (..), Syllable (..), pSentence)
 import Convert.Token (Token, tokenRaw)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)

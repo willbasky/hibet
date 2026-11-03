@@ -128,7 +128,7 @@ Sloppy-слой чинит это *до* токенизации, иначе та
 
 **В hewts**: сделано (срез 2 Волны 6): ведущие и хвостовые пробелы сняты,
 прогон пробелов → один тшег, перенос строки стоит как написан, пробелы за ним
-съедены; `Test.Tokenizer.Integration` («render collapses space runs»,
+съедены; `Test.Integration` («render collapses space runs»,
 «a line break stands as written»).
 
 ### 2.3 lenient search (только [java]) — ❌ (резерв)
@@ -562,7 +562,7 @@ bgs→bags  mngs→mangs  mgs→mags
 
 > **Актуальность (26.10.2026).** Разделы 7.2, 7.4–7.6 описывают **эталонные
 > алгоритмы** и историческую реализацию hewts. Текущая реализация — `Syllable`
-> из `Stack` и `Convert.Wylie.Tables.notate`; `wylieFromGlyphs`, `regularStacks`,
+> из `Stack` и `Convert.Render.Wylie.Notation.notate`; `wylieFromGlyphs`, `regularStacks`,
 > `prefixRoots`, `suffixLetters`, `suff2Before`, `ambiguousRoot` удалены
 > рефакторингом 20–25.10.2026. Открытые пункты — `REFACTOR-AST.md` §13.
 
@@ -600,7 +600,7 @@ U→W логики.
 
 **В hewts** (`Unicode.hs:31-49`): классификация реализована на токенном уровне
 (`classifyCanonical`) ✅; сборка стеков в слоги — грамматика (`Syllable`/`Stack`),
-печать — `renderSyllable` и `Convert.Wylie.Tables.notate`; `wylieFromGlyphs`
+печать — `renderSyllable` и `Convert.Render.Wylie.Notation.notate`; `wylieFromGlyphs`
 удалён рефакторингом 20–25.10.2026.
 
 ### 7.3 Wylie-имена субскриптов — ✅ (сделано 3.4.11)
@@ -634,7 +634,7 @@ s+t, s+ts, s+w, sh+r, sh+w, t+r, t+w, th+r, ts+w, tsh+w, z+l, z+w, zh+w
 
 **В hewts**: ✅ (5.7) как историческая табличная резолюция; после рефакторинга
 `regularStacks` удалён. Слитную запись разрешает `solidStacks` в
-`Convert.Wylie.Tables`, построенный из книжных `rootSubfixRows` (4.9) и
+`Convert.Render.Wylie.Notation`, построенный из книжных `rootSubfixRows` (4.9) и
 `superfixCombos` (5.1): незнакомое сочетание пишется через `+`. `dz+r` в
 книжных строках 4.9 нет, поэтому `badzra` пишется `badz+ra` и остаётся
 принятым расхождением jsewts/ewts-js (`known_divergences.tsv`), а не
@@ -656,7 +656,7 @@ s+t, s+ts, s+w, sh+r, sh+w, t+r, t+w, th+r, ts+w, tsh+w, z+l, z+w, zh+w
 **В hewts**: ✅ (5.7/5.8) как историческое решение; после рефакторинга таблицы
 `prefixRoots`, `suffixLetters`, `suff2Before`, `ambiguousRoot` удалены. Роли
 приходят из `Stack.stRole` (грамматика), границы и `+`/`.` — из
-`Convert.Wylie.Tables.notate`; `Constraint22` остаётся диагностикой
+`Convert.Render.Wylie.Notation.notate`; `Constraint22` остаётся диагностикой
 `PreferredSpelling`, а не источником ролей. Неявная `a` после префикса и
 «префикс против двух суффиксов» (`དགས` → `dgas`) остаются нашими решениями
 (см. §11 и §13 в `REFACTOR-AST.md`).
@@ -694,7 +694,7 @@ cons_str не кончается на `a` → добавить `a` (`ba`, `snga`
 
 **Как решают**: [java/jsewts] `m_tib_caret` + свертка после сборки стека.
 
-**В hewts**: свёртка сделана (5.2); `Test.Tokenizer.Integration` держит пару
+**В hewts**: свёртка сделана (5.2); `Test.Integration` держит пару
 `f v` → `ཕ༹་བ༹་` и обратный канон.
 
 ### 7.9 Orphan-сочетания (subjoined/vowel/final без верха) — ✅ (сделано 18.10.2026, 5.4)
@@ -705,7 +705,7 @@ cons_str не кончается на `a` → добавить `a` (`ba`, `snga`
 symbol to attach to.» + вывод `\u0fxx` (escaped).
 
 **В hewts**: сделано в 5.4: знак остаётся в прогоне отдельной находкой, а
-U→W печатает его `\u0fxx` (см. `Test.Tokenizer.Integration`, «unicode stubs
+U→W печатает его `\u0fxx` (см. `Test.Integration`, «unicode stubs
 render»).
 
 ### 7.10 Не-тибетский текст `[ ... ]`, `pass_through`, `leave_dubious` — 🟡
@@ -734,7 +734,7 @@ render»).
 **В hewts**: пробел между двумя тибетскими кусками печатается `_`, по одному на
 пробел (`bkra_shis`, `bkra__shis`), а пробел перед чужим текстом остаётся
 обычным в скобках (`bkra[ abc]`) — как `handleSpaces` +
-`followedByNonTibetan`. Закреплено `Test.Tokenizer.Integration`.
+`followedByNonTibetan`. Закреплено `Test.Integration`.
 
 ---
 

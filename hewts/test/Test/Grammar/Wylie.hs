@@ -17,13 +17,13 @@ module Test.Grammar.Wylie (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), renderItems)
 import Convert.Grammar.Parser (parseEither)
+import Convert.Grammar.Sentence (Syllable (..), pSentence)
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
     , VowelSlot (..)
     , stackTokens
     )
-import Convert.Sentence (Syllable (..), pSentence)
 import Convert.Token (tokenRaw)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)

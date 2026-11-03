@@ -94,7 +94,7 @@ tests =
         ]
 
 -- | The stacks the grammar built while parsing: the state it leaves behind.
--- This is what 'Convert.Sentence' reads instead of grouping the marks itself.
+-- This is what 'Convert.Grammar.Sentence' reads instead of grouping the marks itself.
 grammarStacks :: Text -> Either Text (Seq Stack)
 grammarStacks input =
     parseEither (runSpell (pStructure38 *> takeStacks)) (fst (tokenizeWylie input))

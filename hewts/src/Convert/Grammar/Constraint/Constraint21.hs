@@ -26,7 +26,7 @@ unless it is a superfix letter gating a root ('placeBase' says so; @rka@ and
 @sgra@ hold a stack, never a prefix). The two prefix warnings of section 4.2
 fire inline in that window, from the grammar's own predicates - the classic
 §4.2 sets as the pair predicate 'prefixAllows' - and the finding is
-spelled into a 'Diagnostic' by 'Convert.Sentence' when the run's span is
+spelled into a 'Diagnostic' by 'Convert.Grammar.Sentence' when the run's span is
 known. The reference machinery they replace (its stack scanner over the raw
 run and its tables) is not carried over: the grammar itself decided the head
 role; the walk reads no tokens after the parse ended.

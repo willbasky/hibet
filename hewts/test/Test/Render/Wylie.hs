@@ -12,7 +12,7 @@
 -- Both lists are empty today: the two drifts the corpora reproduce (grywa and
 -- g....yag) closed with R1 step B, when every root stack gained the implicit
 -- @a@ and the notation started writing it.
-module Test.Wylie.Output (tests) where
+module Test.Render.Wylie (tests) where
 
 import Convert (OutputFormat (..), SpellItem (..), pSentence, renderItems)
 import Convert.Diagnostic (Diagnostics)
@@ -24,15 +24,16 @@ import Convert.Grammar.Syllable
     , VowelSlot (..)
     , finalsTokens
     )
+import Convert.Render.Wylie.Notation (Join (..), notate, solidStacks)
 import Convert.Token
     ( Consonant (..)
     , Token
     , TokenCanonical (..)
     , tokenCanonical
     )
+import Convert.Token.Wylie (wylieOf)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
-import Convert.Wylie.Tables (Join (..), notate, solidStacks)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
 import Data.List (nub, sort, (\\))
 import Data.Maybe (fromMaybe, mapMaybe)

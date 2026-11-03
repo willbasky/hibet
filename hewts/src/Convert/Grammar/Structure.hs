@@ -10,7 +10,7 @@ step 4d), and the marks the rule emits are what the windows read. Three of them
 (8, 9, 21) host the ambiguous-spelling window at their tail ('spellAs'), and the
 generic word carries the spelling state of the word tail.
 Structures recognize a single syllable out of a 'Token' stream; punctuation is
-left unconsumed so it survives and is handled separately by 'Convert.Sentence'.
+left unconsumed so it survives and is handled separately by 'Convert.Grammar.Sentence'.
 Which structure reads a run is decided here too ('pStructure'): the longest
 match wins, and 'candidates' is the tie-break order.
 -}

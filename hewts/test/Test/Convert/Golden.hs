@@ -15,8 +15,9 @@ import Convert.Grammar.Syllable
     , finalsTokens
     )
 import Convert.Token (Token, TokenCanonical (..), tokenCanonical)
+import Convert.Token.Wylie (wylieOf)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
 import Data.Foldable (toList)

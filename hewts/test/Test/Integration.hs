@@ -1,6 +1,6 @@
--- Ожидания: hewts — рендер, raw-roundtrip, escape.
+-- Ожидания: hewts — сквозной прогон: рендер, raw-roundtrip, escape.
 
-module Test.Tokenizer.Integration (tests) where
+module Test.Integration (tests) where
 
 import Convert
     ( OutputFormat (..)
@@ -11,8 +11,9 @@ import Convert
     )
 import Convert.Grammar.Parser (parseEither)
 import Convert.Token
+import Convert.Token.Wylie (wylieOf)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie, wylieOf)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T

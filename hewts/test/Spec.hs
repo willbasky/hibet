@@ -4,7 +4,6 @@ import qualified Test.Api as Api
 import qualified Test.Architecture as Architecture
 import qualified Test.Convert as Convert
 import qualified Test.Convert.Golden as ConvertGolden
-import qualified Test.Convert.Sentence as Sentence
 import qualified Test.Diagnostic as Diagnostic
 import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
 import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
@@ -20,20 +19,21 @@ import qualified Test.Grammar.Constraint.Constraint17 as Constraint17
 import qualified Test.Grammar.Constraint.Constraint18 as Constraint18
 import qualified Test.Grammar.Constraint.Constraint19 as Constraint19
 import qualified Test.Grammar.Constraint.Constraint20 as Constraint20
+import qualified Test.Grammar.Sentence as Sentence
 import qualified Test.Grammar.Stack as Stack
 import qualified Test.Grammar.Structure as Structures
 import qualified Test.Grammar.Syllable as Syllable
 import qualified Test.Grammar.Wylie as Wylie
+import qualified Test.Integration as Integration
 import qualified Test.Parity as Parity
 import qualified Test.Performance as Performance
+import qualified Test.Render.Wylie as WylieOutput
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import qualified Test.Tokenizer.Classification as Classification
 import qualified Test.Tokenizer.Golden as Golden
-import qualified Test.Tokenizer.Integration as Integration
 import qualified Test.Tokenizer.RoundTrip as RoundTrip
 import qualified Test.Tokenizer.Spans as Spans
 import qualified Test.Tokenizer.Tricky as Tricky
-import qualified Test.Wylie.Output as WylieOutput
 
 main :: IO ()
 main = defaultMain tests

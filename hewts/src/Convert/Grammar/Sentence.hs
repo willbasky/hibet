@@ -8,7 +8,7 @@
 --
 -- A run is one stretch of tokens up to (not including) its boundary: the tsheg
 -- or space that closes it is a 'Punct' item of its own (REFACTOR-AST Q4).
-module Convert.Sentence
+module Convert.Grammar.Sentence
     ( SpellItem (..)
     , Syllable (..)
     , pSentence

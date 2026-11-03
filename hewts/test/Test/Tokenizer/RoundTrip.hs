@@ -19,10 +19,9 @@ import Convert
     )
 import Convert.Grammar.Parser (parseEither)
 import Convert.Token
-import Convert.Tokenizer.Unicode (unicodeOf)
-import Convert.Tokenizer.Wylie
-    ( tokenizeWylie
-    , wylieConsonant
+import Convert.Token.Unicode (unicodeOf)
+import Convert.Token.Wylie
+    ( wylieConsonant
     , wylieConsonantAliases
     , wylieFinal
     , wylieHalfNumber
@@ -36,6 +35,8 @@ import Convert.Tokenizer.Wylie
     , wylieSymbol
     , wylieVowel
     )
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
 
 tests :: TestTree
 tests =

@@ -15,7 +15,7 @@
 --
 -- The mnemonics are joined with @+@ inside the lookup table only; that key
 -- never reaches the output.
-module Convert.Wylie.Tables
+module Convert.Render.Wylie.Notation
     ( Join (..)
     , notate
     , solidStacks
@@ -43,7 +43,7 @@ import Convert.Token
     , TokenCanonical (..)
     , tokenCanonical
     )
-import Convert.Tokenizer.Wylie (wylieExpansions, wylieOf)
+import Convert.Token.Wylie (wylieExpansions, wylieOf)
 import Data.Foldable (toList)
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)

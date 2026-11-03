@@ -3,8 +3,8 @@
 module Test.Convert (tests) where
 
 import Convert (SpellItem (..), splitSentences, syllables)
+import Convert.Grammar.Sentence (Syllable (..))
 import Convert.Grammar.Syllable (flatten)
-import Convert.Sentence (Syllable (..))
 import Convert.Token (tokenRaw)
 import Data.Foldable (toList)
 import Data.Text (Text)

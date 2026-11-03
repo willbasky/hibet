@@ -4,11 +4,8 @@ module Test.Tokenizer.Tricky (tests) where
 
 import Convert.Diagnostic (renderDiagnostics)
 import Convert.Token
-import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie
-    ( longTokenList
-    , tokenizeWylie
-    , wylieConsonant
+import Convert.Token.Wylie
+    ( wylieConsonant
     , wylieConsonantAliases
     , wylieExpansions
     , wylieFinal
@@ -18,6 +15,8 @@ import Convert.Tokenizer.Wylie
     , wylieSymbol
     , wylieVowel
     )
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (longTokenList, tokenizeWylie)
 import qualified Data.HashSet as HS
 import Data.Text (Text)
 import qualified Data.Text as T

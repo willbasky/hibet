@@ -45,19 +45,19 @@ cabal run hewts-benchmark
 | `Test.Grammar.Wylie` | **книга** (структуры) + **оракулы EWTS** (совпадение с эталоном) |
 | `Test.Grammar.Stack` | **оракулы EWTS** (метки jsewts) + hewts (обобщённый стек) |
 | `Test.Grammar.Syllable` | **hewts**: AST (REFACTOR-AST шаги 1–6), корпуса — генератор |
-| `Test.Architecture` | **hewts**: слои, постоянные исключения §11.2 и поимённый allowlist импортов печатающего слоя (REFACTOR-AST §9.1 п. 7, долг T2) |
+| `Test.Architecture` | **hewts**: слои (импорты по каталогам), постоянные исключения §11.2 и поимённый allowlist импортов печатающего слоя (REFACTOR-AST §9.1 п. 7, долг T2) |
 | `Test.Tokenizer.Classification` | **спецификация EWTS**: таблицы букв, алиасы, раскрытия |
 | `Test.Tokenizer.Tricky` | **оракулы EWTS**: правила входа (что пропускается, что сообщается); формулировки диагностик — hewts |
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
-| `Test.Wylie.Output` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
+| `Test.Render.Wylie` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
 | `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S6): дверь API, режимы, O6; корпус ewts-rs — сквозной прогон |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
-| `Test.Tokenizer.Integration` | **hewts**: рендер, raw-roundtrip, escape |
+| `Test.Integration` | **hewts**: сквозной прогон (чтение → разбор → печать), raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |
 | `Test.Tokenizer.Golden` | **hewts**: снимки токен-потока |
 | `Test.Convert` | **hewts**: публичный API (`splitSentences`, `syllables`, `pSentence`) |
-| `Test.Convert.Sentence` | **hewts**: уровень документа (тшег, shad, числа) |
+| `Test.Grammar.Sentence` | **hewts**: уровень документа (тшег, shad, числа) |
 | `Test.Convert.Golden` | **hewts**: снимки конверсии — U→W поверх `kang.txt`, W→U поверх векторов паритета, снимок стеков — оракул шага 4 |
 | `Test.Diagnostic` | **hewts**: канал диагностики (коды и формулировки наши, 30.09.2026) |
 
@@ -66,6 +66,12 @@ Automata with Application» (Nyima Tashi) в `Documents/`; **специфика�
 стандарт THL Extended Wylie; **оракулы EWTS** — исходники конверторов в
 `convertors/main/` (jsewts, Lingua, ewts-rs, ewts-converter/java). Каждый модуль
 несёт ту же пометку первой строкой шапки.
+
+**Раскладка по слоям.** Тесты, у которых слой один, лежат в каталоге слоя:
+`Test/Tokenizer/*` — чтение, `Test/Grammar/*` — разбор, `Test/Render/*` —
+печать. Сквозные проверки остаются в корне и слоем не притворяются: `Test.Api`,
+`Test.Integration`, `Test.Convert`, `Test.Convert.Golden`, `Test.Parity`,
+`Test.Performance`, `Test.Architecture`, `Test.Corpus`, `Test.Diagnostic`.
 
 ## Эталонные векторы (`test/vectors/`)
 

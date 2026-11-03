@@ -10,9 +10,9 @@ import Convert.Diagnostic
     , diagnosticList
     )
 import Convert.Grammar.Parser (parseEither, runSpell, takeStacks)
+import Convert.Grammar.Sentence (Syllable (..))
 import Convert.Grammar.Structure (pStructure)
 import qualified Convert.Grammar.Syllable as Ast
-import Convert.Sentence (Syllable (..))
 import Convert.Token
     ( ConSpec (..)
     , Consonant (..)
