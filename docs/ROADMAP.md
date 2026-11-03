@@ -253,7 +253,7 @@ force-join `rdo+e`) — Волны 4–5. Затронуты `Constraint01`, `Co
 | Кангьюр 254 | `jsewts/test/kang.txt` (255 строк файла, первая — BOM, значит 254 содержательных) + `jsewts/test/wkang.txt` (`toWylie` той же выборки) | U→W и round-trip | вывод Wylie по эталонной выгрузке + обратимость на реальном тексте (у эталона — сам на себе) | Волна 5 | импорт wkang — 5.0 (u2w 250/254) |
 | ewts-rs 16 | `ewts-rs/ewts/src/rules_test.rs` | только W→U | 16 правил «вход → выход» | Волны 3–4 | 16/16: после 3.4 разбираются и рендерятся по пометкам; 16-е — escape `\3` внутри слова (дефект 5, вариант 5а: escape вставляется буквально) |
 | java: EWTS-пары | `ConversionTest.java` (6 пар из 36 проверок набора: 5 строгих — здесь, 1 sloppy — строкой ниже) | W→U и U→W | пары | Волна 4 / Волна 5 | отбор и импорт — Волна 1 |
-| java: sloppy | `ConversionTest.java`, `normalizeSloppyWylie` | нормализация ввода | правила «ленивого» ввода + fix_spacing | Волна 6 | отложено; пара `mNyon … padma` вынесена в `test/vectors/java_sloppy.tsv` (Q-5, 17.10.2026) |
+| java: sloppy | `ConversionTest.java`, `normalizeSloppyWylie` | нормализация ввода | правила «ленивого» ввода + fix_spacing | Волна 6 | сделано (срез 3): 43 пары из 45, `Settings.sloppy`; пара `mNyon … padma` читается `Test.Api` из `test/vectors/java_sloppy.tsv` (Q-5, 17.10.2026) |
 | java: разделение режимов | колонка `warns` корпусов (1 = строгий, 2 = обычный) | W→U | разделение предупреждений по **нашим** режимам (эталон не оракул, см. 30.09.2026) | Волна 6 | отложено до режимов (Волна 6) |
 | java: DTS/ALALC/ACIP | `ConversionTest.java`, `textDtsAlalcToEwts`, `textEwtsToDtsAlalc` | другие системы | — | вне приоритета | не делаем |
 | java: lenient | `ConversionTest.java`, `textConvertLenient` | поиск | — | вне приоритета | не делаем |
@@ -2133,9 +2133,11 @@ w2u-канон (все изменения под храповиком w2u); не
 
 **Состояние 03.11.2026.** Срез 1 сделан: `convertWylieToUnicode`,
 `convertUnicodeToWylie`, `checkSpelling`, `Settings`, режимы «только проверка»
-и «без проверок»; срез 2 — `fix_spacing` и его пробельные правила. Остаток —
-`sloppy`-алиасы (§2.1 справочника, ~45 пар) и разделение находок на строгие и
-обычные; последнее — решение, а не код (`SPEC.md` §3).
+и «без проверок»; срез 2 — `fix_spacing` и его пробельные правила; срез 3 —
+`sloppy`-алиасы: `normalizeSloppy` за `Settings.sloppy` (по умолчанию выключен),
+43 пары из 45 (правило `x`/`X` → U+0FBE не переносим, см. §2.1 справочника),
+вектор `java_sloppy.tsv` читает `Test.Api`. Остаток — разделение находок на
+строгие и обычные; это решение, а не код (`SPEC.md` §3).
 
 **Что делаем.**
 - Публичные функции: `convertWylieToUnicode`, `convertUnicodeToWylie`,

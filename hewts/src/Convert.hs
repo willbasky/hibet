@@ -23,7 +23,7 @@ import Convert.Render (OutputFormat (..), renderItems)
 import Convert.Render.Unicode (renderSyllable)
 import Convert.Token (TokenCanonical (TcUnknown), mkSpan, tokenCanonical)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
-import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Convert.Tokenizer.Wylie (normalizeSloppy, tokenizeWylie)
 import Data.Text (Text)
 import qualified Data.Text as T
 
@@ -59,7 +59,9 @@ data InputFormat
 
 -- | What the caller may switch off. 'withChecks' is the difference between the
 -- two modes of the product: with it off the conversion is a fast pass that
--- records nothing.
+-- records nothing. 'sloppy' is the "with corrections" mode: Wylie input is
+-- normalized first ('normalizeSloppy'), the leading and repeated spaces are
+-- already corrected by the tokenizer itself.
 --
 -- There is no strict/normal split in this record yet: 'Severity' is
 -- warning/error, and which of our findings belong to a strict mode is a
@@ -68,20 +70,24 @@ data InputFormat
 data Settings = Settings
     { inputFormat :: InputFormat
     , withChecks :: Bool
+    , sloppy :: Bool
     }
     deriving (Show, Eq)
 
--- | Tibetan script in, checks on.
+-- | Tibetan script in, checks on, input read as written.
 defaultSettings :: Settings
-defaultSettings = Settings{inputFormat = InUnicode, withChecks = True}
+defaultSettings = Settings{inputFormat = InUnicode, withChecks = True, sloppy = False}
 
 -- | The one door both directions use: tokenize the writing the settings name,
 -- parse it, and collect what the tokenizer noticed and the grammar found.
 parseSettings :: Settings -> Text -> Either Text ([SpellItem], Diagnostics)
 parseSettings st input = do
-    let (tokens, noticed) = case inputFormat st of
-            InWylie -> tokenizeWylie input
-            InUnicode -> tokenizeUnicode input
+    let corrected = case inputFormat st of
+            InWylie | sloppy st -> normalizeSloppy input
+            _ -> input
+        (tokens, noticed) = case inputFormat st of
+            InWylie -> tokenizeWylie corrected
+            InUnicode -> tokenizeUnicode corrected
     items <- parseEither pSentence tokens
     pure (items, if withChecks st then noticed <> legality items else mempty)
 

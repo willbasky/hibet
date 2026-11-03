@@ -11,6 +11,7 @@ import qualified Data.ByteString as BS
 import Data.Char (chr, isHexDigit, isSpace)
 import Data.HashSet (HashSet)
 import qualified Data.HashSet as HS
+import Data.List (foldl')
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -50,6 +51,96 @@ longTokenList =
             , map fst wylieExpansions
             , ["b+l", "\r\n"]
             ]
+
+-- | Sloppy Wylie: the way people actually type it. Typographic apostrophes,
+-- capitals in the middle of a word, a lone @b@ or @m@ where @ba@\/@ma@ was
+-- meant, @adm@ for a stacked @d+m@. The corrections are the reference's
+-- @normalizeSloppyWylie@, applied in its order: @H @ loses its space before
+-- the smart lowercase looks at what stands before @H@, and @Sh@ is protected
+-- only after @H@ has been lowered.
+--
+-- One reference pair is dropped: @x@\/@X@ -> U+0FBE. It would turn the EWTS
+-- final @X@ (U+0F37, seen as @~Xa@ in the golden snapshot) into another sign,
+-- and the reference's own JS port (jsewts, @sloppyRepl@) does not do it either.
+normalizeSloppy :: Text -> Text
+normalizeSloppy input =
+    protectSh
+        (lowerFinalM (lowerFinalH (foldl' replaceOne input sloppyReplacements)))
+    where
+        replaceOne text (from, to) = T.replace from to text
+
+-- | The reference's pairs, in its order (later rules rely on earlier ones).
+sloppyReplacements :: [(Text, Text)]
+sloppyReplacements =
+    [ ("ʼ", "'")
+    , ("ʹ", "'")
+    , ("‘", "'")
+    , ("’", "'")
+    , ("ʾ", "'")
+    , ("...", "\x0f0b\x0f0b\x0f0b")
+    , (" (", "_(")
+    , (") ", ")_")
+    , ("/ ", "/_")
+    , (" 0", "_0")
+    , (" 1", "_1")
+    , (" 2", "_2")
+    , (" 3", "_3")
+    , (" 4", "_4")
+    , (" 5", "_5")
+    , (" 6", "_6")
+    , (" 7", "_7")
+    , (" 8", "_8")
+    , (" 9", "_9")
+    , ("_ ", "__")
+    , ("G", "g")
+    , ("K", "k")
+    , ("C", "c")
+    , ("B", "b")
+    , (" b ", " ba ")
+    , ("Ts", "ts")
+    , ("Dz", "dz")
+    , ("Ny", "ny")
+    , ("Ng", "ng")
+    , (" m ", " ma ")
+    , (" m'i ", " ma'i ")
+    , (" b'i ", " ba'i ")
+    , ("P", "p")
+    , ("L", "l")
+    , ("Z", "z")
+    , ("J", "j")
+    , ("（", "(")
+    , ("）", ")")
+    , ("༼", "(")
+    , ("༽", ")")
+    , ("：", ":")
+    , ("H ", "H")
+    , ("adm", "ad+m")
+    ]
+
+-- | A final @H@ lowers unless a vowel stands before it: after a consonant it
+-- is the lazy spelling of @h@. At the start of the input it has no vowel
+-- before it, so it lowers too (the reference's @^@ branch).
+lowerFinalH :: Text -> Text
+lowerFinalH = lowerFinal "aeiouAIU" 'H' 'h'
+
+-- | The same for @M@, with @~@ also counted as a keeper: @~M@ is the
+-- candrabindu, not a lazy @m@.
+lowerFinalM :: Text -> Text
+lowerFinalM = lowerFinal "aeiouAIU~" 'M' 'm'
+
+lowerFinal :: String -> Char -> Char -> Text -> Text
+lowerFinal vowels upper lower = T.pack . go Nothing . T.unpack
+    where
+        go _ [] = []
+        go prev (c : cs)
+            | c == upper && not (afterVowel prev) = lower : go prev cs
+            | otherwise = c : go (Just c) cs
+        afterVowel = maybe False (`elem` vowels)
+
+-- | @S@ lowers, except in @Sh@ (the retroflex @sha@). Splitting on the
+-- protected pair avoids a placeholder that the input could contain itself.
+protectSh :: Text -> Text
+protectSh = T.intercalate "Sh" . map (T.replace "S" "s") . T.splitOn "Sh"
 
 -- | Tokenize Wylie input using longest-match splitting for known multi-char
 -- tokens. One Wylie spelling may produce several tokens (compound forms such

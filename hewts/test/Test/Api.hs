@@ -1,5 +1,5 @@
--- Ожидания: спецификация (`docs/SPEC.md`, S1–S3, S5, S6, S8) и корпуса
--- эталонов (ewts-rs) для сквозного прогона через дверь API.
+-- Ожидания: спецификация (`docs/SPEC.md`, S1–S3, S5–S8) и корпуса
+-- эталонов (ewts-rs, java sloppy) для сквозного прогона через дверь API.
 module Test.Api (tests) where
 
 import Convert
@@ -17,6 +17,7 @@ import Convert.Diagnostic
     , Diagnostics
     , diagnosticList
     )
+import Convert.Tokenizer.Wylie (normalizeSloppy)
 import Test.Corpus (Row (..), readRows)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
@@ -52,11 +53,48 @@ tests =
             fmap (codes . snd) (convertUnicodeToWylie defaultSettings "abc")
                 @?= Right [NoTibetanCharacters]
         , testCase "the reference corpus runs through the door" checkCorpus
+        , testCase "sloppy: the java vector converts (S7)" checkSloppyVector
+        , testCase "sloppy: the reference's own assertion (S7)" $
+            normalizeSloppy "Mi la lHan Mi kaHthog 'uM Ma m "
+                @?= "mi la lhan mi kaHthog 'uM ma ma "
+        , testCase "sloppy: a lone b and m take their vowel (S7)" $
+            fmap fst (convertWylieToUnicode sloppySettings " b m ") @?= Right "བ་མ་"
+        , testCase "sloppy: S lowers, Sh stays (S7)" $
+            normalizeSloppy "S Sh" @?= "s Sh"
+        , testCase "sloppy off: the vector is read as written (S7)" $ do
+            row : _ <- readRows "test/vectors/java_sloppy.tsv"
+            let got = fmap fst (convertWylieToUnicode wylieStrict (rowWylie row))
+            assertBool
+                ("the strict door corrected the input: " <> show got)
+                (got /= Right (rowUnicode row))
         ]
 
 -- | The codes of the findings, in order.
 codes :: Diagnostics -> [DiagnosticCode]
 codes = map diagCode . diagnosticList
+
+-- | Wylie with the input corrections on ("with corrections", S7).
+sloppySettings :: Settings
+sloppySettings = defaultSettings{inputFormat = InWylie, sloppy = True}
+
+-- | Wylie read as written: no corrections.
+wylieStrict :: Settings
+wylieStrict = defaultSettings{inputFormat = InWylie}
+
+-- | The whole sloppy vector: the reference converts these only through its
+-- sloppy path, so the flag has to be on for the door to match.
+checkSloppyVector :: Assertion
+checkSloppyVector = do
+    rows <- readRows "test/vectors/java_sloppy.tsv"
+    let bad =
+            [ (rowLine r, got)
+            | r <- rows
+            , let got = fmap fst (convertWylieToUnicode sloppySettings (rowWylie r))
+            , got /= Right (rowUnicode r)
+            ]
+    assertBool
+        ("the sloppy api disagrees with the vector:\n" <> unlines [show b | b <- bad])
+        (null bad)
 
 -- | The whole ewts-rs corpus (16 rules, no accepted divergences) through the
 -- public W→U entry point: the door has to hand the same text the internals do.

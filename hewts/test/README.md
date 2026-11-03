@@ -51,7 +51,7 @@ cabal run hewts-benchmark
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
 | `Test.Render.Wylie` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
-| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S6): дверь API, режимы, O6; корпус ewts-rs — сквозной прогон |
+| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S8): дверь API, режимы, sloppy, O6; корпуса ewts-rs и java_sloppy — сквозной прогон |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Integration` | **hewts**: сквозной прогон (чтение → разбор → печать), raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |
@@ -160,10 +160,10 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
 - `java_ewts.tsv` — это 5 строк, а не «36 проверок»: в `ConversionTest.java`
   из 36 assertion'ов EWTS-парами являются только 8 (6 уникальных) — все в методе
   `textEwts()`; остальные assertion'ы — DTS/ALALC (вне приоритета), отдельные
-  sloppy-тесты (Волна 6) и lenient (вне приоритета). Одна из шести уникальных пар
-  (`mNyon … padma`) конвертируется одноаргументным `toUnicode`, то есть через
-  sloppy-путь, и вынесена в `java_sloppy.tsv` (шаг 4.4, Q-5); строгих W→U-пар у
-  java, стало быть, пять.
+  sloppy-тесты (→ `Test.Api`, срез 3 Волны 6) и lenient (вне приоритета). Одна из
+  шести уникальных пар (`mNyon … padma`) конвертируется одноаргументным
+  `toUnicode`, то есть через sloppy-путь, и вынесена в `java_sloppy.tsv`
+  (шаг 4.4, Q-5); строгих W→U-пар у java, стало быть, пять.
 
 ### Расхождения на Кангьюре (текущее состояние)
 
