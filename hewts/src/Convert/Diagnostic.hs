@@ -27,6 +27,7 @@ module Convert.Diagnostic
     , repeatedCaret
     , duplicateFinal
     , forcedJoinAfterVowel
+    , fourthSubfix
     , badSuperfixCombination
     , missingVowelAfterPrefix
     , invalidSecondSuffix
@@ -67,6 +68,7 @@ data DiagnosticCode
     | RepeatedCaret
     | DuplicateFinal
     | ForcedJoinAfterVowel
+    | FourthSubfix
     | IllegalSuperfixCombination
     | MissingVowelAfterPrefix
     | InvalidSecondSuffix
@@ -236,6 +238,22 @@ forcedJoinAfterVowel sp word letter =
             <> "\" below a stack that already has its vowel."
         )
 
+-- | A fourth subjoined letter of one stack: the type keeps three (the book
+-- allows two, the Sanskrit transliteration and the forced joins bring three),
+-- so the letter is dropped and prints nowhere. The letter as it was written;
+-- the word is quoted whole, as every stack rule quotes it.
+fourthSubfix :: Span -> Maybe Span -> Text -> Diagnostic
+fourthSubfix sp word letter =
+    Diagnostic
+        FourthSubfix
+        SevWarning
+        sp
+        word
+        ( "The subjoined letter \""
+            <> letter
+            <> "\" would be the fourth in its stack; it is dropped."
+        )
+
 -- | A superfix letter gates a root with subjoined letters that its tables
 -- (4.8, 5.1) do not name (rkwa, lkya, rpa): the rule of the superfix
 -- combination.
@@ -384,6 +402,9 @@ data Finding
       BadSecondSuffix !Text !(Maybe Text)
     | -- | A consonant after a legal second suffix (dagsg).
       ConsonantAfter2ndSuffix !Text
+    | -- | A fourth subjoined letter of one stack: it has no slot and is
+      -- dropped. The letter as it was written.
+      FourthSubfixMark !Text
     | -- | A syllable whose letters read either way, and the spelling the
       -- corpus prefers of it.
       PreferredSpelling !Text
@@ -411,6 +432,7 @@ resolveFinding sp (BadSuperfixCombination sf root subs) = badSuperfixCombination
 resolveFinding sp (NoVowelAfterPrefix pre) = missingVowelAfterPrefix sp (Just sp) pre
 resolveFinding sp (BadSecondSuffix c2 first) = invalidSecondSuffix sp (Just sp) c2 first
 resolveFinding sp (ConsonantAfter2ndSuffix c) = consonantAfterSecondSuffix sp (Just sp) c
+resolveFinding sp (FourthSubfixMark letter) = fourthSubfix sp (Just sp) letter
 resolveFinding sp (PreferredSpelling preferred) = ambiguousSpelling sp (Just sp) preferred
 resolveFinding sp UnplacedDot = orphanDot sp (Just sp)
 resolveFinding sp (FinalWithoutLetter mark) = leadingFinal sp (Just sp) mark

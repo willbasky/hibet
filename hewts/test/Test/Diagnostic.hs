@@ -196,6 +196,15 @@ wave344 =
                 @?= Right
                     [ "line 1: \"\x0f72\x0f40\x0f01\": The sign \"\x0f72\" has no letter to attach to."
                     ]
+        , testCase "a fourth subjoined letter is dropped with a warning (T9b)" $ do
+            -- Both arms that fill the subfix slot: the forced join of Wylie
+            -- and the joined sign the Tibetan rest reads.
+            fmap (length . filter ((== FourthSubfix) . fst)) (recordsOf "ka+k+k+k+k")
+                @?= Right 1
+            fmap
+                (length . filter ((== FourthSubfix) . fst))
+                (recordsOfTibetan "\x0f40\x0f90\x0f90\x0f90\x0f90")
+                @?= Right 1
         , testCase "two finals in a row stay legal" $
             rendered "kaM~M`" @?= Right []
         , testCase "the visarga before the srog med stays legal" $

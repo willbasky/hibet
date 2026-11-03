@@ -35,6 +35,7 @@ module Convert.Grammar.Syllable
     , putFinal
     , closeTop
     , flatten
+    , subfixFull
     ) where
 
 import Control.Applicative ((<|>))
@@ -73,9 +74,10 @@ data Role
 -- | The subjoined letters of a stack, without a hole: no "second one but no
 -- first". The book allows two and 'pSubjoinRun' stops there; a third comes
 -- from the Sanskrit transliteration of the corpora (@གྨྲྸ@) and from the
--- forced joins of the Wylie fallback (@g+m+r+a@). The Unicode @སྒྲྭ@ is not
--- a third subfix: it is a superfix and root plus two subfixes, and today's
--- generic parse loses that superfix (REFACTOR-AST §8 A3).
+-- forced joins of the Wylie fallback (@g+m+r+a@). There is no fourth form: the
+-- placement drops the letter and the grammar records a finding (T9). The
+-- Unicode @སྒྲྭ@ is not a third subfix: it is a superfix and root plus two
+-- subfixes, and today's generic parse loses that superfix (REFACTOR-AST §8 A3).
 data Subfixes
     = NoSubfix
     | OneSubfix Token
@@ -132,8 +134,11 @@ data Syllable = Syllable
 --
 -- @stRoot@ is the stack's base letter whatever the role: a prefix, suffix or
 -- postfix stack keeps its letter there too, and only the role says how the
--- stack relates to the root. A stack with no letter is legal and is the one
--- opened by a vowel ('VowelImplicit' or a written sign with no root).
+-- stack relates to the root. A stack with no letter is legal: it is what a
+-- vowel opens ('VowelImplicit' or a written sign with no root), and what the
+-- slot placers keep when a sign arrives with no stack at all - a state the
+-- grammar never builds (a run's head opens a stack or stays unclaimed), kept
+-- total so a placement bug cannot lose a token.
 data Stack = Stack
     { stRole :: Role
     , stSuperfix :: Maybe Token
@@ -168,8 +173,11 @@ stackTokens Stack{..} =
 -- root follows it, a subjoined root joins the open root, and a subfix, vowel,
 -- implicit vowel or final fills the field of the stack already open.
 --
--- shortcut: a fourth subjoined letter (none in the corpora; the type stops at
--- 'ThreeSubfix') is dropped - add a form when such input surfaces.
+-- Two slots have a limit of their own. A superfix slot holds one letter, so a
+-- superfix over an open stack opens the next stack. The subfix slot is the one
+-- with no room left in its type ('ThreeSubfix' is the last form): a fourth
+-- subjoined letter is dropped, and the placement in 'Convert.Grammar.Parser'
+-- records the loss as a finding.
 putPrefix
     , putSuffix
     , putPostfix
@@ -276,6 +284,15 @@ pushSubfix tok NoSubfix = OneSubfix tok
 pushSubfix tok (OneSubfix a) = TwoSubfix a tok
 pushSubfix tok (TwoSubfix a b) = ThreeSubfix a b tok
 pushSubfix _ three = three
+
+-- | Whether the open stack carries the last number of subjoined letters the
+-- type allows: the next subfix placement drops its token ('pushSubfix').
+subfixFull :: Seq Stack -> Bool
+subfixFull stacks = case Seq.viewr stacks of
+    _ Seq.:> top -> case stSubfixes top of
+        ThreeSubfix{} -> True
+        _ -> False
+    Seq.EmptyR -> False
 
 pushVowel :: Token -> Maybe VowelSlot -> VowelSlot
 pushVowel tok Nothing = VowelWritten tok []

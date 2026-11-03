@@ -155,6 +155,21 @@ tests =
             checkStructureReturn
         , testCase "an invalid item carries the warning of its run (T4)" $
             checkInvalidCarries
+        , testCase "a subfix with no stack opens a rootless stack (T9a)" $
+            case toList (Ast.putSubfix kTok mempty) of
+                [st] -> do
+                    Ast.stRole st @?= Ast.RoleRoot
+                    Ast.stRoot st @?= Nothing
+                    Ast.stSubfixes st @?= Ast.OneSubfix kTok
+                stacks -> assertFailure ("putSubfix on an empty run: " <> show stacks)
+        , testCase "a superfix over an open stack opens the next one (T9c)" $
+            case toList (Ast.putSuperfix rTok (Ast.putRoot kTok mempty)) of
+                [root, superfix] -> do
+                    Ast.stRoot root @?= Just kTok
+                    Ast.stVowel root @?= Just Ast.VowelImplicit
+                    Ast.stSuperfix superfix @?= Just rTok
+                    Ast.stRoot superfix @?= Nothing
+                stacks -> assertFailure ("putSuperfix over an open stack: " <> show stacks)
         , testCase "Finals: one slot takes one mark" $ do
             let mark = case fst (tokenizeUnicode "ཾ") of
                     [m] -> m
@@ -399,6 +414,12 @@ kTok, aTok, mTok :: Token
 kTok = probeTokens !! 0
 aTok = probeTokens !! 1
 mTok = probeTokens !! 2
+
+-- | The superfix letter @r@, the one that opens the stack after it (4.8).
+rTok :: Token
+rTok = case fst (tokenizeWylie "r") of
+    [tok] -> tok
+    _ -> error "expected one r token"
 
 -- | Every token an item holds, in the order the parser read them.
 itemTokens :: SpellItem -> [Token]

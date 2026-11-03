@@ -1,5 +1,6 @@
 module Convert.Grammar.Parser where
 
+import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.State.Strict (StateT, evalStateT, gets, modify)
 import Convert.Diagnostic (Finding (..))
@@ -16,6 +17,7 @@ import Convert.Grammar.Syllable
     , putSuffix
     , putSuperfix
     , putVowel
+    , subfixFull
     )
 import Convert.Token
 import Data.Maybe (fromMaybe)
@@ -110,7 +112,6 @@ markPrefix
     , markPostfix
     , markSuperfix
     , markRoot
-    , markSubfix
     , markVowel
     , markImplicitVowel
     , markFinal ::
@@ -119,11 +120,16 @@ markPrefix = markAt putPrefix
 markSuffix = markAt putSuffix
 markPostfix = markAt putPostfix
 markSuperfix = markAt putSuperfix
-markRoot = markAt putRoot
-markSubfix = markAt putSubfix
+markRoot parser = liftP parser >>= placeRoot
 markVowel = markAt putVowel
 markImplicitVowel = markAt putImplicitVowel
 markFinal = markAt putFinal
+
+-- | The subfix slot is the one with no room in its type past 'ThreeSubfix':
+-- the placement drops a fourth letter, so this arm records the loss instead of
+-- letting it pass silently.
+markSubfix :: Parser Token -> SpellParser TibetanSyllable
+markSubfix parser = liftP parser >>= placeSubfix
 
 -- | The same for a token already read: the structures that build their slot from
 -- a token in hand.
@@ -131,8 +137,6 @@ placePrefix
     , placeSuffix
     , placePostfix
     , placeSuperfix
-    , placeRoot
-    , placeSubfix
     , placeVowel
     , placeFinal ::
         Token -> SpellParser TibetanSyllable
@@ -140,10 +144,28 @@ placePrefix = placeAt putPrefix
 placeSuffix = placeAt putSuffix
 placePostfix = placeAt putPostfix
 placeSuperfix = placeAt putSuperfix
-placeRoot = placeAt putRoot
-placeSubfix = placeAt putSubfix
 placeVowel = placeAt putVowel
 placeFinal = placeAt putFinal
+
+-- | 'putRoot' joins a subjoined sign to the root above it, the same slot
+-- 'putSubfix' fills; 'isSubConsonantToken' tells the Wylie full letter (which
+-- opens a stack of its own) from the Joined sign (which takes the slot).
+placeRoot :: Token -> SpellParser TibetanSyllable
+placeRoot tok = do
+    when (isSubConsonantToken tok) (noteDroppedSubfix tok)
+    placeAt putRoot tok
+
+-- | See 'markSubfix': a full stack has no slot for the letter, and the run
+-- says so when the placement drops it.
+placeSubfix :: Token -> SpellParser TibetanSyllable
+placeSubfix tok = do
+    noteDroppedSubfix tok
+    placeAt putSubfix tok
+
+noteDroppedSubfix :: Token -> SpellParser ()
+noteDroppedSubfix tok = do
+    full <- gets (subfixFull . scanStacks)
+    when full $ noteFinding (FourthSubfixMark (tokenRaw tok))
 
 markAt ::
     (Token -> Seq Stack -> Seq Stack) -> Parser Token -> SpellParser TibetanSyllable
