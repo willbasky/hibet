@@ -44,6 +44,12 @@ tests =
         , testCase "a vowel after a final opens a new syllable (D4)" $
             fmap fst (convertWylieToUnicode defaultSettings "rM-i")
                 @?= Right "རཾཨྀ"
+        , testCase "a-chen policy: Wylie ae is ཨཨེ, e is ཨེ (Q6/Q7)" $ do
+            fmap fst (convertWylieToUnicode defaultSettings "ae") @?= Right "ཨཨེ"
+            fmap fst (convertWylieToUnicode defaultSettings "e") @?= Right "ཨེ"
+        , testCase "a-chen policy: ཨཨེ is ae, ཨེ is e (Q6/Q7)" $ do
+            fmap fst (convertUnicodeToWylie defaultSettings "ཨཨེ") @?= Right "ae"
+            fmap fst (convertUnicodeToWylie defaultSettings "ཨེ") @?= Right "e"
         , testCase "the check returns findings and no text (S3, S5)" $ do
             fmap codes (checkSpelling (defaultSettings{inputFormat = InWylie}) "bk")
                 @?= Right [MissingVowelAfterPrefix]

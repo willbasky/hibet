@@ -939,7 +939,7 @@ mutateRoot = go
 -- sources are not part of the shape.
 --
 -- The caret and the document-level a-chen split (Wylie @ae@ is two syllables,
--- Tibetan ཨེ one) stay outside: the first is a sign both tokenizers carry, the
+-- Tibetan ཨཨེ one) stay outside: the first is a sign both tokenizers carry, the
 -- second is conversion policy, not one syllable's AST.
 data StackShape = StackShape
     { shapeRole :: Role
