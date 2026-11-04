@@ -90,7 +90,6 @@ Or run any other hibet command:
       shell                    Start the translate shell
       om                       Print Om to a terminal
       show                     Show names or meta of dictionaries
-      debug                    Debug hibet
 
 
 `$ hibet show -h`

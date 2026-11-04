@@ -26,9 +26,6 @@ textLoad = do
     let paths = map fromAbsFile files
     mapM (fmap TE.decodeUtf8 . BS.readFile) paths
 
-syllables :: Text
-syllables = decodeUtf8 $(embedFile "stuff/tibetan-syllables")
-
 titles :: Text
 titles = decodeUtf8 $(embedFile "stuff/titles.toml")
 

@@ -10,31 +10,25 @@ import Effects.File (FileSystem (..))
 import qualified Effects.File as EF
 import Env (Env (..), makeEnv)
 import Label (Title (..))
-import Parse (Script (Script), ScriptType (..), WylieTibetMap, splitSyllables)
-import Paths (dictPath1, dictPath2, sylPath, titlePath)
+import Paths (dictPath1, dictPath2, titlePath)
+import Translator (getAnswer)
 import Type (HibetError (..))
 
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
-import qualified Data.HashMap.Strict as HM
-import Data.List (sort, sortOn)
+import Data.List (sortOn)
 import Data.Maybe (mapMaybe)
-import qualified Data.Text.Encoding as TE
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
 main :: IO ()
 main = hspec $ do
     mockMakeEnvSpec
-    syllables
     translate
 
 mockMakeEnvSpec :: Spec
 mockMakeEnvSpec =
     describe "FileIO: " $ do
-        it "Read file syllables" $ do
-            res <- runFileMock (EF.readFileBS sylPath)
-            res `shouldBe` Right syllablesRaw
         it "Read file titles" $ do
             res <- runFileMock (EF.readFileBS titlePath)
             res `shouldBe` Right toml
@@ -44,14 +38,6 @@ mockMakeEnvSpec =
         it "Read file lazy dict 2" $ do
             res <- runFileMock (EF.readFileLazyBS dictPath2)
             res `shouldBe` Right dict2
-
-syllables :: Spec
-syllables =
-    describe "Syllables" $ do
-        it "Split syllables" $ do
-            case splitSyllables $ TE.decodeUtf8 syllablesRaw of
-                Left err -> expectationFailure $ show err
-                Right res -> sort res `shouldBe` sort wylieTibetSyl
 
 translate :: Spec
 translate =
@@ -102,7 +88,7 @@ translate =
                 Left err -> expectationFailure $ show err
                 Right env -> do
                     let reply = mapMaybe (searchTranslation "re ba byed pa") env.dictionaryMeta
-                    sortOn dictNumber  reply
+                    sortOn dictNumber reply
                         `shouldBe` [ Answer
                                         { targets = [Target "to hope, wish, expect, demand, ask"]
                                         , dictNumber = 7
@@ -120,7 +106,7 @@ translate =
                 Left err -> expectationFailure $ show err
                 Right env -> do
                     let reply = mapMaybe (searchTranslation "re ba med pa") env.dictionaryMeta
-                    sortOn dictNumber  reply
+                    sortOn dictNumber reply
                         `shouldBe` [ Answer
                                         { targets = [Target "hopeless; no hope"]
                                         , dictNumber = 5
@@ -142,6 +128,16 @@ translate =
                                         , dictTitle = Title "Hopkins Sanskrit"
                                         }
                                    ]
+        it "Tibetan query reaches the same entries as its Wylie key" $ do
+            res <- runFileMock makeEnv
+            case res of
+                Left err -> expectationFailure $ show err
+                Right env ->
+                    case (getAnswer "re ba med pa" env, getAnswer "རེ་བ་མེད་པ།" env) of
+                        (Right (_, fromWylie), Right (_, fromTibet)) -> do
+                            fromTibet `shouldBe` fromWylie
+                            length fromTibet `shouldBe` 4
+                        answers -> expectationFailure $ show answers
 
 runFileMock ::
     Eff
@@ -161,10 +157,6 @@ runFileMock program =
 
 -- Data for mocking
 
-syllablesRaw :: BS.ByteString
-syllablesRaw =
-    "bla|\224\189\150\224\190\179\nbla'am|\224\189\150\224\190\179\224\189\160\224\189\152\nblab|\224\189\150\224\190\179\224\189\150\nblabs|\224\189\150\224\190\179\224\189\150\224\189\166\nblad|\224\189\150\224\190\179\224\189\145\nblag|\224\189\150\224\190\179\224\189\130\nblags|\224\189\150\224\190\179\224\189\130\224\189\166\nbla'i|\224\189\150\224\190\179\224\189\160\224\189\178\nman|\224\189\152\224\189\147\nmaN|\224\189\152\224\189\142\nmAn|\224\189\152\224\189\177\224\189\147\nmAN|\224\189\152\224\189\177\224\189\142\nmana|\224\189\152\224\189\147\nmAna|\224\189\152\224\189\177\224\189\147\nmANa|\224\189\152\224\189\177\224\189\142\nre|\224\189\162\224\189\186\nme|\224\189\152\224\189\186\n"
-
 toml :: BS.ByteString
 toml =
     "[[titles]]\n    path = \"Hopkins-2015-T|E\"\n    id = 5\n    label = \"Hopkins\"\n    about = \"The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org\"\n    abbreviations = \"Hopkins\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n    year = 2015\n\n[[titles]]\n    path = \"RangjungYeshe-T|E\"\n    id = 7\n    label = \"Rangjung Yeshe\"\n    about = \"Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org\"\n    abbreviations = \"RangjungYeshe\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
@@ -175,46 +167,3 @@ dict1 = "re|each; every; single; hope\nre ba|hope\nre ba med pa|hopeless; no hop
 dict2 :: BSL.ByteString
 dict2 =
     "re ba|1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair\nre ba byed pa|to hope, wish, expect, demand, ask\nre ba chad|give up hope\nme|fire, flame, ember, Anaka, [the 50th year, Male Fire Dragon]\nre|noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]\n"
-
-wylieTibetHM :: WylieTibetMap
-wylieTibetHM =
-    HM.fromList
-        [ (Script "bla", Script "\3926\4019")
-        , (Script "re", Script "\3938\3962")
-        , (Script "mAn", Script "\3928\3953\3923")
-        , (Script "maN", Script "\3928\3918")
-        , (Script "mAN", Script "\3928\3953\3918")
-        , (Script "man", Script "\3928\3923")
-        , (Script "me", Script "\3928\3962")
-        , (Script "blad", Script "\3926\4019\3921")
-        , (Script "blabs", Script "\3926\4019\3926\3942")
-        , (Script "blab", Script "\3926\4019\3926")
-        , (Script "bla'i", Script "\3926\4019\3936\3954")
-        , (Script "bla'am", Script "\3926\4019\3936\3928")
-        , (Script "mana", Script "\3928\3923")
-        , (Script "mAna", Script "\3928\3953\3923")
-        , (Script "mANa", Script "\3928\3953\3918")
-        , (Script "blags", Script "\3926\4019\3906\3942")
-        , (Script "blag", Script "\3926\4019\3906")
-        ]
-
-wylieTibetSyl :: [(Script 'Wylie, Script 'Tibet)]
-wylieTibetSyl =
-    [ (Script "bla", Script "\3926\4019")
-    , (Script "re", Script "\3938\3962")
-    , (Script "mAn", Script "\3928\3953\3923")
-    , (Script "maN", Script "\3928\3918")
-    , (Script "mAN", Script "\3928\3953\3918")
-    , (Script "man", Script "\3928\3923")
-    , (Script "me", Script "\3928\3962")
-    , (Script "blad", Script "\3926\4019\3921")
-    , (Script "blabs", Script "\3926\4019\3926\3942")
-    , (Script "blab", Script "\3926\4019\3926")
-    , (Script "bla'i", Script "\3926\4019\3936\3954")
-    , (Script "bla'am", Script "\3926\4019\3936\3928")
-    , (Script "mana", Script "\3928\3923")
-    , (Script "mAna", Script "\3928\3953\3923")
-    , (Script "mANa", Script "\3928\3953\3918")
-    , (Script "blags", Script "\3926\4019\3906\3942")
-    , (Script "blag", Script "\3926\4019\3906")
-    ]

@@ -3,8 +3,7 @@ module Paths where
 testDir :: FilePath
 testDir = "test/env/data"
 
-sylPath, titlePath, dictDir :: FilePath
-sylPath = testDir <> "/" <> "stuff/tibetan-syllables"
+titlePath, dictDir :: FilePath
 titlePath = testDir <> "/" <> "stuff/titles.toml"
 dictDir = testDir <> "/" <> "dicts"
 

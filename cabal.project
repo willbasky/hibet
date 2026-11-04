@@ -1,6 +1,6 @@
 packages: 
     hewts
-    -- hibet
+    hibet
 
 tests: True
 benchmarks: True

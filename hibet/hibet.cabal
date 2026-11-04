@@ -6,7 +6,7 @@ license-file:       LICENSE
 copyright:          2023 willbasky
 maintainer:         willgame(at)mail(dot)ru
 author:             willbasky
-tested-with:        GHC ==9.6.7
+tested-with:        GHC ==9.6.7 || ==9.10.3
 homepage:           https://github.com/willbasky/Hibet
 bug-reports:        https://github.com/willbasky/Hibet/issues
 synopsis:           translator
@@ -15,12 +15,10 @@ category:           Utility
 build-type:         Simple
 data-files:
   dicts/*.txt
-  stuff/tibetan-syllables
   stuff/titles.toml
 
 extra-source-files:
   test/env/data/dicts/*.txt
-  test/env/data/stuff/tibetan-syllables
   test/env/data/stuff/titles.toml
 
 extra-doc-files:
@@ -42,12 +40,6 @@ library
     Effects.PrettyPrint
     Env
     Label
-    Parse
-    Parse.SyllableLines
-    Parse.TibetanWord
-    Parse.Type
-    Parse.WylieText
-    Parse.WylieWord
     Pretty
     Translator
     Type
@@ -104,10 +96,9 @@ library
     , extra                        >=1.8      && <1.9
     , filepath                     >=1.4.2    && <1.6
     , gitrev                       >=1.3.1    && <1.4
-    , hashable                     >=1.4.7    && <1.6
     , haskeline                    >=0.8.2    && <0.9
+    , hewts                        >=0.0.0.0  && <0.1
     , log-effectful                >=1.0.0    && <1.1
-    , megaparsec                   >=9.6.1    && <9.8
     , neat-interpolation           >=0.5.1    && <0.6
     , optparse-applicative         >=0.18.1   && <0.19
     , pager                        >=0.1.1    && <0.2
@@ -116,7 +107,6 @@ library
     , path-io                      >=1.8.2    && <1.9
     , prettyprinter                >=1.7.1    && <1.8
     , prettyprinter-ansi-terminal  >=1.1.3    && <1.2
-    , radixtree                    >=0.6.0.0  && <0.7
     , resourcet-effectful          >=1.0.1    && <1.1
     , terminal-size                >=0.3.4    && <0.4
     , text                         >=2.0.2    && <2.2
@@ -296,50 +286,6 @@ test-suite hibet-env
     , effectful-core        >=2.4.0.0  && <2.7
     , hibet
     , hspec                 >=2.11.12
-    , text                  >=2.0.2    && <2.2
-    , unordered-containers  >=0.2.20   && <0.3
-
-test-suite hibet-parse
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  hs-source-dirs:     test/parse
-  other-modules:      Paths_hibet
-  autogen-modules:    Paths_hibet
-  default-language:   Haskell2010
-  default-extensions:
-    DataKinds
-    DeriveGeneric
-    DerivingStrategies
-    DuplicateRecordFields
-    FlexibleContexts
-    FlexibleInstances
-    GADTs
-    LambdaCase
-    MultiParamTypeClasses
-    OverloadedStrings
-    PolyKinds
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    TemplateHaskell
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    TypeSynonymInstances
-    UndecidableInstances
-
-  ghc-options:
-    -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
-    -Wincomplete-record-updates -Wredundant-constraints
-    -fhide-source-paths -Wpartial-fields -Wmissing-deriving-strategies
-    -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
-    -rtsopts -with-rtsopts=-N
-
-  build-depends:
-    , base   >=4.11    && <5
-    , hibet
-    , hspec  >=2.11.12
 
 benchmark hibet-benchmark
   type:               exitcode-stdio-1.0
@@ -384,7 +330,7 @@ benchmark hibet-benchmark
 
   build-depends:
     , base        >=4.11     && <5
-    , bytestring  >=0.11.5.3 && <0.12
+    , bytestring  >=0.11.5.3 && <0.13
     , criterion   >=1.6.4.0
     , file-embed  >=0.0.16.0
     , path        >=0.9.5    && <0.10

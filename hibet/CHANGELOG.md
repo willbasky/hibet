@@ -7,6 +7,15 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [Unreleased]
+
+* Conversion now lives in `hewts`: the translator calls its public API, and the
+  legacy `toTibetan`/`toWylie` table and radix trees are gone
+* Remove the legacy input parsers (`Parse.*`), their test suite and
+  `megaparsec`; the input script is detected by the Unicode block
+* Remove the `debug` command, which only printed the removed radix tree
+* Build with GHC 9.10 alongside 9.6
+
 ## [1.4.1] - 2025-04-17
 
 * Remove supporting of `stack` building
