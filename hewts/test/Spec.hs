@@ -7,6 +7,7 @@ import qualified Test.Convert.Golden as ConvertGolden
 import qualified Test.Diagnostic as Diagnostic
 import qualified Test.Fuzz as Fuzz
 import qualified Test.Fuzz.Structure as FuzzStructure
+import qualified Test.Grammar.Book as Book
 import qualified Test.Grammar.Constraint.Constraint01 as Constraint01
 import qualified Test.Grammar.Constraint.Constraint08 as Constraint08
 import qualified Test.Grammar.Constraint.Constraint09 as Constraint09
@@ -65,6 +66,7 @@ tests =
         , Constraint18.tests
         , Constraint19.tests
         , Constraint20.tests
+        , Book.tests
         , Diagnostic.tests
         , Fuzz.tests
         , FuzzStructure.tests

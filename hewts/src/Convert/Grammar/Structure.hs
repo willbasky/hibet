@@ -276,7 +276,7 @@ pStructure20 :: SpellParser TibetanSyllable
 pStructure20 = C.pConstraint10 `seqJoinS` C.pConstraint15
 
 -- Tibetan spelling structure 21
--- On the basis of the Tibetan spelling grammar 4.1, 4.14, 4.15
+-- On the basis of the Tibetan spelling grammar 4.1, 4.15, 4.16
 --
 -- The third structure that hosts a window, and the one that reads the
 -- three-letter forms the prefix-free way: the postfix is the syllable's last
@@ -290,7 +290,7 @@ pStructure21 =
             ]
 
 -- Tibetan spelling structure 22
--- On the basis of the Tibetan spelling grammar 4.8, 4.14, 4.15
+-- On the basis of the Tibetan spelling grammar 4.8, 4.15, 4.16
 pStructure22 :: SpellParser TibetanSyllable
 pStructure22 =
     MP.choice
@@ -307,7 +307,7 @@ pStructure22 =
         ]
 
 -- Tibetan spelling structure 23
--- On the basis of the Tibetan spelling grammar 4.9, 4.14, 4.15
+-- On the basis of the Tibetan spelling grammar 4.9, 4.15, 4.16
 pStructure23 :: SpellParser TibetanSyllable
 pStructure23 =
     MP.choice
@@ -324,7 +324,7 @@ pStructure23 =
         ]
 
 -- Tibetan spelling structure 24
--- On the basis of the Tibetan spelling grammar 4.10, 4.14, 4.15
+-- On the basis of the Tibetan spelling grammar 4.10, 4.15, 4.16
 pStructure24 :: SpellParser TibetanSyllable
 pStructure24 =
     MP.choice

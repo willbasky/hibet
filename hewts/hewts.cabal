@@ -120,6 +120,7 @@ test-suite hewts-test
     Test.Diagnostic
     Test.Fuzz
     Test.Fuzz.Structure
+    Test.Grammar.Book
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
     Test.Grammar.Constraint.Constraint09
