@@ -87,8 +87,8 @@ tests =
             wylRender "v+la" @?= Right "བླ༹"
         , testCase "a+yo renders ཨྱོ" $
             wylRender "a+yo" @?= Right "ཨྱོ"
-        , testCase "a stack cannot start on a subjoined letter (r-i stays Other)" $
-            isLeft (wylParse (pStructure38) "r-i") @?= True
+        , testCase "a stack cannot start on a subjoined letter (-dh stays Other)" $
+            isLeft (wylParse (pStructure38) "-dh") @?= True
         , testCase "a stack cannot start on a plus" $
             isLeft (wylParse (pStructure38) "+a") @?= True
         ]

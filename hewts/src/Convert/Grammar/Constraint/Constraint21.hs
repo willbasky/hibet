@@ -86,6 +86,7 @@ import Convert.Grammar.Syllable
     , Subfixes (NoSubfix)
     , TibetanSyllable
     , VowelSlot (..)
+    , finalsTokens
     )
 import Convert.Token
     ( Consonant (..)
@@ -466,10 +467,30 @@ clearLead = modify $ \s -> s{scanLeading = Nothing}
 resetWordTail :: SpellParser ()
 resetWordTail = modify $ \s -> s{scanTail = TailOpen Nothing Nothing}
 
+-- | Whether the word's last stack already took a final mark. A final closes
+-- the stack: in Wylie a vowel letter behind it opens a fresh syllable instead
+-- of joining the closed stack (@rM-i@ -> རཾ + ཨྀ, as the references read it;
+-- REFACTOR-AST §13.1.1). Only the Wylie arm splits: a Tibetan vowel sign is a
+-- sign of the stack it stands in, and the references reorder it to the
+-- canonical place (@བཾུ@ -> @buM@), so the Unicode arm keeps the sign in the
+-- stack. The sign decides, as everywhere in this parser ('tokenSource').
+stackBrokenByFinal :: SpellParser Bool
+stackBrokenByFinal = gets (maybe False brokenByFinal . lastStack . scanStacks)
+
+-- | The pure form of 'stackBrokenByFinal'. The tail of the stack and the word
+-- continuation both ask here, so the two windows cannot drift.
+brokenByFinal :: Stack -> Bool
+brokenByFinal st = stackIsWylie st && not (null (finalsTokens (stFinals st)))
+
+-- | Whether the stack was written in Wylie: its root carries the Wylie source.
+stackIsWylie :: Stack -> Bool
+stackIsWylie st = maybe False ((== TsWylie) . tokenSource) (stRoot st)
+
 -- | Whether the word's last open stack already carries its vowel. A written
 -- sign closes the slot, the bare implicit @a@ closes it, and a Wylie a-chen
 -- base is the vowel itself - unless a forced join has subjoined a letter below
 -- it (@a+yo@ -> ཨྱོ), which turns the base into a root still waiting for one.
+-- A final mark closes the slot in Wylie too ('stackBrokenByFinal').
 -- A long @a@ token that the bare short vowel of its own mnemonic follows
 -- (@I@ -> @A@ + @i@, the second token written by nothing, see
 -- 'GP.pLongVowelHalf') leaves the slot open: the completion joins the same
@@ -488,7 +509,8 @@ stackVowelTaken = do
                             (MP.option False (MP.lookAhead (True <$ GP.pLongVowelHalf)))
                     pure (not half)
                 | otherwise -> pure True
-            Nothing -> pure (isAChenRoot st)
+            Nothing ->
+                pure (isAChenRoot st || brokenByFinal st)
     where
         isAChenRoot st = case stRoot st of
             Just tok -> GP.isImplicitAWylie tok && stSubfixes st == NoSubfix
@@ -536,10 +558,14 @@ pConsumeTail vowelSeen baseIsA =
         pTailVowel
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- markVowel GP.pVowelAny
-                resetWordTail
-                rest <- pConsumeTail True baseIsA
-                pure (marks <> rest)
+                broken <- stackBrokenByFinal
+                if broken
+                    then MP.empty
+                    else do
+                        marks <- markVowel GP.pVowelAny
+                        resetWordTail
+                        rest <- pConsumeTail True baseIsA
+                        pure (marks <> rest)
 
         -- The bare Wylie @a@: the letter that stands for the implicit vowel.
         -- It fits only before the stack's first vowel, never after one and
@@ -551,10 +577,14 @@ pConsumeTail vowelSeen baseIsA =
         pImplicitABranch
             | vowelSeen || baseIsA = MP.empty
             | otherwise = MP.try $ do
-                marks <- markImplicitVowel GP.pImplicitAWylie
-                resetWordTail
-                rest <- pConsumeTail True baseIsA
-                pure (marks <> rest)
+                broken <- stackBrokenByFinal
+                if broken
+                    then MP.empty
+                    else do
+                        marks <- markImplicitVowel GP.pImplicitAWylie
+                        resetWordTail
+                        rest <- pConsumeTail True baseIsA
+                        pure (marks <> rest)
 
         -- One final mark, then the rest of the tail: a final places no vowel,
         -- so the vowel state the tail reached is the one it keeps.

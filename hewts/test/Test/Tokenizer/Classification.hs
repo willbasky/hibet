@@ -198,10 +198,10 @@ wylieExpansionCases =
     , ("long E", seqWylie "E" [TcVowel VA, TcVowel Ve])
     , ("long O", seqWylie "O" [TcVowel VA, TcVowel Vo])
     , ("long -I", seqWylie "-I" [TcVowel VA, TcVowel V_i])
-    , ("vocalic r-i", seqWylie "r-i" [TcSubConsonant SCr, TcVowel V_i])
-    , ("vocalic r-I", seqWylie "r-I" [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
-    , ("vocalic l-i", seqWylie "l-i" [TcSubConsonant SCl, TcVowel V_i])
-    , ("vocalic l-I", seqWylie "l-I" [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
+    , ("vocalic r-i", seqWylie "r-i" [TcConsonant Cr, TcVowel V_i])
+    , ("vocalic r-I", seqWylie "r-I" [TcConsonant Cr, TcVowel VA, TcVowel V_i])
+    , ("vocalic l-i", seqWylie "l-i" [TcConsonant Cl, TcVowel V_i])
+    , ("vocalic l-I", seqWylie "l-I" [TcConsonant Cl, TcVowel VA, TcVowel V_i])
     ]
 
 wylieTableCases :: [(String, Assertion)]

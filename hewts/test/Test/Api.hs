@@ -32,6 +32,18 @@ tests =
         , testCase "script in, Wylie out (S2)" $ do
             fmap fst (convertUnicodeToWylie defaultSettings "བཀྲ་ཤིས")
                 @?= Right "bkra shis"
+        , testCase "vocalic r-i reads the root, not a subjoined ra (D4)" $
+            fmap fst (convertWylieToUnicode defaultSettings "r-i")
+                @?= Right "རྀ"
+        , testCase "vocalic r-I keeps the long sign (D4)" $
+            fmap fst (convertWylieToUnicode defaultSettings "r-I")
+                @?= Right "རཱྀ"
+        , testCase "vocalic kr-i stays subjoined (D4)" $
+            fmap fst (convertWylieToUnicode defaultSettings "kr-i")
+                @?= Right "ཀྲྀ"
+        , testCase "a vowel after a final opens a new syllable (D4)" $
+            fmap fst (convertWylieToUnicode defaultSettings "rM-i")
+                @?= Right "རཾཨྀ"
         , testCase "the check returns findings and no text (S3, S5)" $ do
             fmap codes (checkSpelling (defaultSettings{inputFormat = InWylie}) "bk")
                 @?= Right [MissingVowelAfterPrefix]

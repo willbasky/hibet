@@ -208,10 +208,14 @@ wylieRaisedSubjoined =
 -- | Wylie spellings that expand to several canonical tokens.
 --
 -- These are the compound forms of the canonical domain: aspirated consonants
--- ("gh" = g + subjoined-h), long vowels ("I" = A+i, "E" = A+e, ...),
--- vocalic r/l ("r-i" = subjoined-r + reverse-i) and the EWTS letters
--- f/v ("f" = ph + caret, "v" = b + caret). No precomposed canonical
--- exists for them, so a single spelling produces a token sequence.
+-- ("gh" = g + subjoined-h), long vowels ("I" = A+i, "E" = A+e, ...) and the
+-- EWTS letters f/v ("f" = ph + caret, "v" = b + caret). No precomposed
+-- canonical exists for them, so a single spelling produces a token sequence.
+--
+-- The vocalic r/l ("r-i", "l-I") are deliberately not here: whether the letter
+-- is the root or a subfix depends on the stack it opens, so they are read as a
+-- plain r/l letter and the vowel, and the grammar decides the role (r-i ->
+-- རྀ, kr-i -> ཀྲྀ; REFACTOR-AST §13.1.1).
 wylieExpansions :: [(Text, [TokenCanonical])]
 wylieExpansions =
     [ ("gh", [TcConsonant Cg, TcSubConsonant SCh])
@@ -234,10 +238,6 @@ wylieExpansions =
     , ("E", [TcVowel VA, TcVowel Ve])
     , ("O", [TcVowel VA, TcVowel Vo])
     , ("-I", [TcVowel VA, TcVowel V_i])
-    , ("r-i", [TcSubConsonant SCr, TcVowel V_i])
-    , ("r-I", [TcSubConsonant SCr, TcVowel VA, TcVowel V_i])
-    , ("l-i", [TcSubConsonant SCl, TcVowel V_i])
-    , ("l-I", [TcSubConsonant SCl, TcVowel VA, TcVowel V_i])
     ]
 
 inverseWylieConsonant :: Text -> Maybe Consonant
