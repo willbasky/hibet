@@ -7,18 +7,24 @@
 -- integrated shrinking: падение сокращается до минимальной формы, seed
 -- печатается и перезапускается через @--falsify-replay@).
 --
--- Проверяем три инварианта, каждый — факт кода, а не эталон:
+-- Проверяем четыре инварианта, каждый — факт кода, а не эталон:
 --
 -- 1. разбор тотален и не теряет букв: каждый токен входа попадает в какую-то
 --    статью разбора;
 -- 2. W→W после первого прохода — неподвижная точка (канон стабилен);
--- 3. конверсия W→U→W→U после первого прохода ничего не меняет.
+-- 3. конверсия W→U→W→U после первого прохода ничего не меняет;
+-- 4. конверсия U→W→U→W после первого прохода ничего не меняет.
 --
--- Домен — буквы и финалы. Две вещи из него исключены намеренно: escape-запись
--- (@\u0Fxx@) и голая буква @a@ — та самая, что пишет неявную гласную и в
--- Unicode становится а-ченом; через петлю она не устойчива (см. Волну 5 и
--- «Волна 5.1» в @ROADMAP.md@), и её поведение закреплено в
--- @Test.Tokenizer.RoundTrip@ отдельно.
+-- Домен — буквы и финалы. Две вещи из Wylie-домена исключены намеренно:
+-- escape-запись (@\u0Fxx@) и голая буква @a@ — та самая, что пишет неявную
+-- гласную и в Unicode становится а-ченом; через петлю она не устойчива (см.
+-- Волну 5 и «Волна 5.1» в @ROADMAP.md@), и её поведение закреплено в
+-- @Test.Tokenizer.RoundTrip@ отдельно. Unicode-домен — те же формы, но
+-- глифами: стек, гласная, финал; первая буква стека всегда полная, потому что
+-- подписной без буквы — отдельный разобранный случай (волна 5.4). Стеки
+-- берутся только те, что Wylie-нотация пишет слитно ('solidStacks'): запись
+-- через @+@ разбор читает как отдельное слово, и общей неподвижной точки там
+-- нет (открытый вопрос волны).
 module Test.Fuzz.Structure (tests) where
 
 import Convert
@@ -32,12 +38,23 @@ import Convert
     )
 import Convert.Grammar.Parser (parseEither)
 import qualified Convert.Grammar.Syllable as Ast
-import Convert.Token (Token, tokenRaw)
+import Convert.Render.Wylie.Notation (solidStacks)
+import Convert.Token
+    ( Consonant
+    , FinalMark
+    , Token
+    , TokenCanonical (..)
+    , Vowel
+    , toSubjoined
+    , tokenRaw
+    )
+import Convert.Token.Unicode (unicodeOf)
 import Convert.Token.Wylie (wylieConsonant, wylieFinal, wylieVowel)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import Data.Foldable (toList)
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as T
 import Test.Falsify (Property, assert, gen)
@@ -55,6 +72,7 @@ tests =
         [ testProperty "every token of the input is kept" propTokens
         , testProperty "W->W is canonical after one pass" propWylieCanonical
         , testProperty "W->U->W->U is a fixed point after one pass" propConversion
+        , testProperty "U->W->U->W is a fixed point after one pass" propUnicodeConversion
         ]
 
 -- | A document of random syllables: the shape of real text, the content random.
@@ -83,14 +101,78 @@ finalLetter = Gen.elem finals
 -- shortcut: escape spellings and the bare letter @a@ stay out, so the input
 -- is always plain letters; revisit if a property needs them.
 consonants, vowels, finals :: NonEmpty Text
-consonants = NE.fromList $ filter plain [wylieConsonant c | c <- [minBound .. maxBound]]
-vowels = NE.fromList $ filter plain [wylieVowel v | v <- [minBound .. maxBound]]
-finals = NE.fromList $ filter plain [wylieFinal f | f <- [minBound .. maxBound]]
+consonants = NE.fromList (map wylieConsonant wylieDomainConsonants)
+vowels = NE.fromList (map wylieVowel wylieDomainVowels)
+finals = NE.fromList (map wylieFinal wylieDomainFinals)
+
+-- | The canonical alphabet both properties share. The bare @a@ and the
+-- escape-spelled bundled letters stay out, so what the Wylie side writes is
+-- always a plain spelling and what the Unicode side writes is always a glyph
+-- Wylie names with a letter.
+wylieDomainConsonants :: [Consonant]
+wylieDomainConsonants = [c | c <- [minBound .. maxBound], plain (wylieConsonant c)]
+
+wylieDomainVowels :: [Vowel]
+wylieDomainVowels = [v | v <- [minBound .. maxBound], plain (wylieVowel v)]
+
+wylieDomainFinals :: [FinalMark]
+wylieDomainFinals = [f | f <- [minBound .. maxBound], plain (wylieFinal f)]
 
 plain :: Text -> Bool
 plain s =
     s /= "a"
         && not (T.any (`elem` ("\\?^~`&|0=#L:" :: String)) s)
+
+-- | The same document shape written in glyphs.
+unicodeDocument :: Gen Text
+unicodeDocument = T.intercalate " " <$> Gen.list (Range.inclusive (1, 6)) unicodeSyllable
+
+-- | A syllable as the script writes it: a stack, an optional vowel sign and
+-- an optional final. The stack's first letter is always full: a subjoined
+-- letter with no letter to attach to is the escape case of wave 5.4.
+unicodeSyllable :: Gen Text
+unicodeSyllable = do
+    stack <- Gen.elem unicodeStacks
+    vowel <- T.concat <$> Gen.list (Range.inclusive (0, 1)) (Gen.elem unicodeVowels)
+    final <- T.concat <$> Gen.list (Range.inclusive (0, 1)) (Gen.elem unicodeFinals)
+    pure (stack <> vowel <> final)
+
+-- | The stacks the Unicode side writes: a full letter and up to two subjoined
+-- ones, restricted to the combinations the Wylie notation writes solid
+-- ('solidStacks', built from the book's tables). A combination outside them is
+-- spelled with a @+@ that the parser reads as a separate word, so the two
+-- scripts have no fixed point to test there until the roles are reconciled
+-- (the open question of the wave).
+unicodeStacks :: NonEmpty Text
+unicodeStacks = NE.fromList (map glyphRun (filter solidRun letterRuns))
+    where
+        letters = wylieDomainConsonants
+        letterRuns =
+            [[c] | c <- letters]
+                <> [[c, s] | c <- letters, s <- letters]
+                <> [[c, s, t] | c <- letters, s <- letters, t <- letters]
+
+        solidRun [_] = True
+        solidRun run =
+            Set.member (T.intercalate "+" (map wylieConsonant run)) solidStacks
+
+        glyphRun (c : cs) =
+            maybe "" id (unicodeOf (TcConsonant c))
+                <> T.concat
+                    [ maybe "" id (unicodeOf (TcSubConsonant s))
+                    | c' <- cs
+                    , Just s <- [toSubjoined c']
+                    ]
+        glyphRun [] = ""
+
+-- | The rest of the alphabet in glyphs, taken from the table printing uses so
+-- that a glyph cannot drift from its canonical.
+unicodeVowels, unicodeFinals :: NonEmpty Text
+unicodeVowels = glyphs (map TcVowel wylieDomainVowels)
+unicodeFinals = glyphs (map TcFinal wylieDomainFinals)
+
+glyphs :: [TokenCanonical] -> NonEmpty Text
+glyphs canonicals = NE.fromList [g | c <- canonicals, Just g <- [unicodeOf c]]
 
 propTokens :: Property ()
 propTokens = documentProperty $ \input ->
@@ -130,6 +212,23 @@ pass input = do
     u2 <- stepW w1
     pure (u1, u2)
 
+propUnicodeConversion :: Property ()
+propUnicodeConversion = documentPropertyWith unicodeDocument $ \input ->
+    case passU input of
+        Left err -> ["the conversion failed: " <> T.unpack err]
+        Right (w1, w2)
+            | w1 == w2 -> []
+            | otherwise ->
+                ["the Wylie script is not stable: " <> show w1 <> " -> " <> show w2]
+
+-- | The U→W→U→W leg: the format opposite the input is the one held steady.
+passU :: Text -> Either Text (Text, Text)
+passU input = do
+    w1 <- stepU input
+    u1 <- stepW w1
+    w2 <- stepU u1
+    pure (w1, w2)
+
 stepW :: Text -> Either Text Text
 stepW = fmap fst . convertWylieToUnicode defaultSettings
 
@@ -139,8 +238,11 @@ stepU = fmap fst . convertUnicodeToWylie defaultSettings
 -- | A property over generated documents: the predicate names the input, so the
 -- shrunk counterexample is printed with the document it describes.
 documentProperty :: (Text -> [String]) -> Property ()
-documentProperty check = do
-    input <- gen document
+documentProperty = documentPropertyWith document
+
+documentPropertyWith :: Gen Text -> (Text -> [String]) -> Property ()
+documentPropertyWith documentGen check = do
+    input <- gen documentGen
     assert $
         P.lam
             ( \value ->
