@@ -27,13 +27,20 @@ import Convert.Grammar.Structure
 import Convert.Grammar.Syllable
     ( Role (..)
     , Stack (..)
+    , Subfixes (..)
     , TibetanSyllable
+    , VowelSlot (..)
+    , finalsTokens
     )
 import Convert.Token
     ( Consonant (..)
+    , FinalMark
+    , Token
     , TokenCanonical (..)
     , Vowel (..)
+    , fromSubjoined
     , toSubjoined
+    , tokenCanonical
     , tokenRaw
     )
 import Convert.Token.Unicode (unicodeOf)
@@ -52,7 +59,7 @@ import qualified Test.Falsify.Predicate as P
 import qualified Test.Falsify.Range as Range
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Falsify (testProperty)
-import Test.Tasty.HUnit (assertFailure, testCase, (@?=))
+import Test.Tasty.HUnit (Assertion, assertFailure, testCase, (@?=))
 import qualified Text.Megaparsec as MP
 
 -- | One book structure: its number, the rules it composes, a witness and the
@@ -183,6 +190,11 @@ tests =
         , testProperty
             "a Unicode word is read iff the roles are a legal composition"
             propBookUnicode
+        , testProperty
+            "a Wylie and a Unicode reading share one normalized AST"
+            propCrossScript
+        , testCase "the a-chen carrier normalizes across the scripts" $
+            crossScriptPair "i" "ཨི"
         ]
 
 -- | The parser of a structure by its book number. The list is the one place
@@ -918,6 +930,164 @@ mutateRoot = go
             | tagSlot t == SRoot = PCons t{tagLetter = CR} : ps
             | otherwise = PCons t : go ps
         go (p : ps) = p : go ps
+
+-- * The cross-script AST shape
+
+-- | A stack with the script-specific facts removed: subjoined signs are full
+-- letters, the a-chen carrier is not a letter, and the stack grouping of a
+-- subjoined second root is normalized by 'mergeRoots'. Tokens, spans and token
+-- sources are not part of the shape.
+--
+-- The caret and the document-level a-chen split (Wylie @ae@ is two syllables,
+-- Tibetan ཨེ one) stay outside: the first is a sign both tokenizers carry, the
+-- second is conversion policy, not one syllable's AST.
+data StackShape = StackShape
+    { shapeRole :: Role
+    , shapeLetters :: [Consonant]
+    , shapeVowel :: VowelShape
+    , shapeFinals :: [FinalMark]
+    }
+    deriving (Eq, Show)
+
+data VowelShape = NoVowel | ImplicitVowel | WrittenVowel [Vowel]
+    deriving (Eq, Show)
+
+shape :: [Stack] -> [StackShape]
+shape = mergeRoots . map stackShape
+
+stackShape :: Stack -> StackShape
+stackShape st =
+    StackShape
+        { shapeRole = stRole st
+        , shapeLetters =
+            [ c
+            | tok <-
+                maybe [] pure (stSuperfix st)
+                    <> maybe [] pure (stRoot st)
+                    <> subfixTokens (stSubfixes st)
+            , Just c <- [consonantOf (tokenCanonical tok)]
+            , not (dropCarrier st tok)
+            ]
+        , shapeVowel = vowelOf (stVowel st)
+        , shapeFinals =
+            [ f
+            | tok <- finalsTokens (stFinals st)
+            , TcFinal f <- [tokenCanonical tok]
+            ]
+        }
+
+consonantOf :: TokenCanonical -> Maybe Consonant
+consonantOf (TcConsonant c) = Just c
+consonantOf (TcSubConsonant sc) = Just (fromSubjoined sc)
+consonantOf _ = Nothing
+
+subfixTokens :: Subfixes -> [Token]
+subfixTokens NoSubfix = []
+subfixTokens (OneSubfix a) = [a]
+subfixTokens (TwoSubfix a b) = [a, b]
+subfixTokens (ThreeSubfix a b c) = [a, b, c]
+
+-- | The a-chen that only carries a written vowel is the vowel's carrier, not a
+-- letter of its own (Wylie @i@ and Tibetan ཨི are the same shape).
+dropCarrier :: Stack -> Token -> Bool
+dropCarrier st tok =
+    tokenCanonical tok == TcConsonant Ca
+        && stSuperfix st == Nothing
+        && stSubfixes st == NoSubfix
+        && writtenVowel (stVowel st)
+
+vowelOf :: Maybe VowelSlot -> VowelShape
+vowelOf Nothing = NoVowel
+vowelOf (Just VowelImplicit) = ImplicitVowel
+vowelOf (Just (VowelWritten tok rest)) =
+    WrittenVowel [v | t <- tok : rest, TcVowel v <- [tokenCanonical t]]
+
+writtenVowel :: Maybe VowelSlot -> Bool
+writtenVowel (Just (VowelWritten _ _)) = True
+writtenVowel _ = False
+
+-- | A second root written below the first is one stack in the glyphs and two
+-- in Wylie: 4.18's @h+ph@ and 4.20's a-chung @+ ng/m@. Only those pairs merge;
+-- any other second root is a root of its own in both scripts.
+mergeRoots :: [StackShape] -> [StackShape]
+mergeRoots (a : b : rest)
+    | subjoinedRoots a b
+    , null (shapeFinals a)
+    , null (shapeFinals b) =
+        mergeRoots
+            ( a
+                { shapeLetters = shapeLetters a <> shapeLetters b
+                , shapeVowel = mergeVowel (shapeVowel a) (shapeVowel b)
+                , shapeFinals = shapeFinals b
+                }
+                : rest
+            )
+mergeRoots (a : rest) = a : mergeRoots rest
+mergeRoots [] = []
+
+subjoinedRoots :: StackShape -> StackShape -> Bool
+subjoinedRoots a b = case (shapeLetters a, shapeLetters b) of
+    ([Ch], [Cph]) -> True
+    ([C'], [Cng]) -> True
+    ([C'], [Cm]) -> True
+    _ -> False
+
+mergeVowel :: VowelShape -> VowelShape -> VowelShape
+mergeVowel ImplicitVowel v = v
+mergeVowel v _ = v
+
+stacksW :: SpellParser TibetanSyllable -> Text -> Either Text [Stack]
+stacksW p input =
+    fmap (toList . snd) $
+        parseEither
+            (runSpell ((,) <$> p <*> takeStacks <* liftP MP.eof))
+            (fst (tokenizeWylie input))
+
+stacksU :: SpellParser TibetanSyllable -> Text -> Either Text [Stack]
+stacksU p input =
+    fmap (toList . snd) $
+        parseEither
+            (runSpell ((,) <$> p <*> takeStacks <* liftP MP.eof))
+            (fst (tokenizeUnicode input))
+
+genLegalCase :: Gen (Int, [Piece])
+genLegalCase = do
+    g <- pick (map snd roleGenerators)
+    (n, pieces, _) <- g
+    pure (n, pieces)
+
+propCrossScript :: Property ()
+propCrossScript = do
+    c <- gen genLegalCase
+    assert $
+        P.lam
+            ( \value ->
+                case checkCrossScript value of
+                    [] -> P.pass
+                    reasons -> P.fail (unlines reasons)
+            )
+            P..$ ("case", c)
+
+crossScriptPair :: Text -> Text -> Assertion
+crossScriptPair wylie unicode =
+    case (stacksW pStructure wylie, stacksU pStructure unicode) of
+        (Right ws, Right us) -> shape ws @?= shape us
+        (Left err, _) -> assertFailure ("Wylie parse failed: " <> T.unpack err)
+        (_, Left err) -> assertFailure ("Unicode parse failed: " <> T.unpack err)
+
+checkCrossScript :: (Int, [Piece]) -> [String]
+checkCrossScript (n, pieces) =
+    case (stacksW parser (renderPieces pieces), stacksU parser (renderUnicode pieces)) of
+        (Left err, _) -> ["Wylie parse failed: " <> T.unpack err]
+        (_, Left err) -> ["Unicode parse failed: " <> T.unpack err]
+        (Right ws, Right us) ->
+            let sw = shape ws
+                su = shape us
+             in [ "shapes differ: " <> show sw <> " /= " <> show su
+                | sw /= su
+                ]
+    where
+        parser = parserFor n
 
 propBook :: Property ()
 propBook = propertyOf checkWylieCase
