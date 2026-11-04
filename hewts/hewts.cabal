@@ -119,6 +119,7 @@ test-suite hewts-test
     Test.Corpus
     Test.Diagnostic
     Test.Fuzz
+    Test.Fuzz.Structure
     Test.Grammar.Constraint.Constraint01
     Test.Grammar.Constraint.Constraint08
     Test.Grammar.Constraint.Constraint09
@@ -152,10 +153,12 @@ test-suite hewts-test
     bytestring,
     containers,
     directory,
+    falsify,
     filepath,
     hewts,
     megaparsec,
     tasty,
+    tasty-falsify,
     tasty-golden,
     tasty-hunit,
     text,
