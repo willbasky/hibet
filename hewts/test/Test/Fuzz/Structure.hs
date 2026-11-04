@@ -62,6 +62,7 @@ import Test.Falsify.Generator (Gen)
 import qualified Test.Falsify.Generator as Gen
 import qualified Test.Falsify.Predicate as P
 import qualified Test.Falsify.Range as Range
+import Test.Grammar.Book (bookSyllable)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Falsify (testProperty)
 
@@ -73,6 +74,9 @@ tests =
         , testProperty "W->W is canonical after one pass" propWylieCanonical
         , testProperty "W->U->W->U is a fixed point after one pass" propConversion
         , testProperty "U->W->U->W is a fixed point after one pass" propUnicodeConversion
+        , testProperty
+            "book documents keep the W->U->W->U loop"
+            propBookDocument
         ]
 
 -- | A document of random syllables: the shape of real text, the content random.
@@ -175,15 +179,43 @@ glyphs :: [TokenCanonical] -> NonEmpty Text
 glyphs canonicals = NE.fromList [g | c <- canonicals, Just g <- [unicodeOf c]]
 
 propTokens :: Property ()
-propTokens = documentProperty $ \input ->
+propTokens = documentProperty tokenCheck
+
+propWylieCanonical :: Property ()
+propWylieCanonical = documentProperty wylieCanonicalCheck
+
+propConversion :: Property ()
+propConversion = documentProperty conversionCheck
+
+propUnicodeConversion :: Property ()
+propUnicodeConversion = documentPropertyWith unicodeDocument unicodeConversionCheck
+
+-- | The same invariants over documents built by the book's role generator, so
+-- all 37 structures reach the random run (the letter-run generator above only
+-- hits 1, 8, 17, 28 and 38).
+-- | The token check stays out: the book generator spells a bare root's
+-- implicit a as Wylie @a@, which the grammar reads as 'VowelImplicit' and not
+-- as a token; that fact is covered by 'Test.Tokenizer.RoundTrip'. The W→W
+-- canon check stays out too: the book generator exposes a separate defect at
+-- the suffix→postfix boundary (@gcard@ -> @gcar.d@ -> @gcarad@), recorded
+-- for its own slice.
+propBookDocument :: Property ()
+propBookDocument = documentPropertyWith bookDocument $ \input ->
+    conversionCheck input
+
+bookDocument :: Gen Text
+bookDocument = T.intercalate " " <$> Gen.list (Range.inclusive (1, 6)) bookSyllable
+
+tokenCheck :: Text -> [String]
+tokenCheck input =
     case parseW input of
         Left err -> ["the parse failed: " <> T.unpack err]
         Right items ->
             let dropped = droppedTokens (fst (tokenizeWylie input)) (concatMap itemTokens items)
              in ["dropped " <> show (map tokenRaw dropped) | not (null dropped)]
 
-propWylieCanonical :: Property ()
-propWylieCanonical = documentProperty $ \input ->
+wylieCanonicalCheck :: Text -> [String]
+wylieCanonicalCheck input =
     case parseW input of
         Left err -> ["the parse failed: " <> T.unpack err]
         Right items ->
@@ -196,8 +228,8 @@ propWylieCanonical = documentProperty $ \input ->
                             | s1 /= s2
                             ]
 
-propConversion :: Property ()
-propConversion = documentProperty $ \input ->
+conversionCheck :: Text -> [String]
+conversionCheck input =
     case pass input of
         Left err -> ["the conversion failed: " <> T.unpack err]
         Right (u1, u2)
@@ -212,8 +244,8 @@ pass input = do
     u2 <- stepW w1
     pure (u1, u2)
 
-propUnicodeConversion :: Property ()
-propUnicodeConversion = documentPropertyWith unicodeDocument $ \input ->
+unicodeConversionCheck :: Text -> [String]
+unicodeConversionCheck input =
     case passU input of
         Left err -> ["the conversion failed: " <> T.unpack err]
         Right (w1, w2)

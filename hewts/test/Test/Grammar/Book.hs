@@ -14,7 +14,7 @@
 -- formal G_i do not encode it (4.7 has Vowel = {i,u,e,o}); the oracle reads the
 -- book as 4.1-4.21 plus that implicit a. So a bare root carries a, and the 30
 -- "prefix + root" forms without a written vowel are legal, not divergences.
-module Test.Grammar.Book (tests) where
+module Test.Grammar.Book (tests, bookSyllable) where
 
 import Convert.Grammar.Parser
     ( SpellParser
@@ -29,7 +29,14 @@ import Convert.Grammar.Syllable
     , Stack (..)
     , TibetanSyllable
     )
-import Convert.Token (Consonant (..), Vowel (..), tokenRaw)
+import Convert.Token
+    ( Consonant (..)
+    , TokenCanonical (..)
+    , Vowel (..)
+    , toSubjoined
+    , tokenRaw
+    )
+import Convert.Token.Unicode (unicodeOf)
 import Convert.Token.Wylie (wylieConsonant, wylieVowel)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
@@ -170,7 +177,12 @@ tests =
             sort bookSuperfixes @?= sort (map fst book8)
             sort bookSubfixes @?= sort (map fst book9)
             sort bookPostfixes @?= sort (map fst book16)
-        , testProperty "a word is read iff the roles are a legal composition" propBook
+        , testProperty
+            "a Wylie word is read iff the roles are a legal composition"
+            propBook
+        , testProperty
+            "a Unicode word is read iff the roles are a legal composition"
+            propBookUnicode
         ]
 
 -- | The parser of a structure by its book number. The list is the one place
@@ -443,9 +455,16 @@ book17 =
 data SlotName = SPrefix | SSuperfix | SRoot | SSubfix | SSuffix | SPostfix
     deriving (Eq, Show)
 
+-- | How the letter is written in the glyphs: full, or subjoined below the
+-- stack it belongs to. Wylie writes every letter full, so the form only
+-- matters to 'renderUnicode'.
+data Form = Full | Joined
+    deriving (Eq, Show)
+
 data Tagged = Tagged
     { tagSlot :: SlotName
     , tagLetter :: Consonant
+    , tagForm :: Form
     }
     deriving (Show)
 
@@ -458,22 +477,26 @@ data Piece = PCons Tagged | PVowel Vowel | PImplicitA | PDot
 pick :: [a] -> Gen a
 pick = Gen.elem . NE.fromList
 
-consonantPiece :: SlotName -> [Consonant] -> Gen Piece
-consonantPiece slot allowed = do
+consonantPiece :: SlotName -> Form -> [Consonant] -> Gen Piece
+consonantPiece slot form allowed = do
     c <- pick allowed
-    pure (PCons (Tagged slot c))
+    pure (PCons (Tagged slot c form))
 
 prefix, superfix, subfix, postfix :: Consonant -> Gen Piece
-prefix c = consonantPiece SPrefix [c]
-superfix c = consonantPiece SSuperfix [c]
-subfix c = consonantPiece SSubfix [c]
-postfix c = consonantPiece SPostfix [c]
+prefix c = consonantPiece SPrefix Full [c]
+superfix c = consonantPiece SSuperfix Full [c]
+subfix c = consonantPiece SSubfix Joined [c]
+postfix c = consonantPiece SPostfix Full [c]
 
 root :: [Consonant] -> Gen Piece
-root = consonantPiece SRoot
+root = consonantPiece SRoot Full
+
+-- | A root that is written below a superfix (or below the h of 4.18).
+rootJoined :: [Consonant] -> Gen Piece
+rootJoined = consonantPiece SRoot Joined
 
 suffix :: [Consonant] -> Gen Piece
-suffix = consonantPiece SSuffix
+suffix = consonantPiece SSuffix Full
 
 optionalVowel :: Gen [Piece]
 optionalVowel = Gen.list (Range.inclusive (0, 1)) (PVowel <$> pick bookVowels)
@@ -492,6 +515,32 @@ renderPieces = T.concat . map one
         one (PVowel v) = wylieVowel v
         one PImplicitA = "a"
         one PDot = "."
+
+-- | The same pieces in Tibetan glyphs. The implicit a is not written (the
+-- parser adds 'VowelImplicit'), the Wylie dot has no glyph, and a joined
+-- letter is its subjoined sign.
+renderUnicode :: [Piece] -> Text
+renderUnicode = T.concat . map one
+    where
+        one (PCons t) = case tagForm t of
+            Full -> glyph (TcConsonant (tagLetter t))
+            Joined -> joined (tagLetter t)
+        one (PVowel v) = glyph (TcVowel v)
+        one PImplicitA = ""
+        one PDot = ""
+        glyph c = maybe "" id (unicodeOf c)
+        joined c = maybe "" (glyph . TcSubConsonant) (toSubjoined c)
+
+-- | The Unicode reading of the same roles. The differences are the script's
+-- stack grouping: h+ph is one stack in the glyphs, and the a-chung trailer
+-- ng/m stays inside the a-chung's stack.
+unicodeRoles :: Int -> [Role] -> [Role]
+unicodeRoles n wylieRoles = case n of
+    26 -> [RoleRoot]
+    27 -> [RoleRoot, RoleSuffix]
+    37 -> [RoleRoot, RoleSuffix]
+    _ | n >= 28 && n <= 31 -> [RoleRoot, RoleRoot]
+    _ -> wylieRoles
 
 -- | The base of a structure: its pieces and whether a vowel sign was written.
 -- A base with no written vowel takes an implicit a when the word is finished.
@@ -513,7 +562,7 @@ base1 = do
 base2 = do
     (sf, roots) <- pick book8
     s <- superfix sf
-    r <- root roots
+    r <- rootJoined roots
     v <- optionalVowel
     pure ([s, r] ++ v, not (null v))
 base3 = do
@@ -525,7 +574,7 @@ base3 = do
 base4 = do
     (sf, r0, sb) <- pick book10
     s <- superfix sf
-    r <- root [r0]
+    r <- rootJoined [r0]
     b <- subfix sb
     v <- optionalVowel
     pure ([s, r, b] ++ v, not (null v))
@@ -533,7 +582,7 @@ base5 = do
     (p, sf, roots) <- pick book11
     pr <- prefix p
     s <- superfix sf
-    r <- root roots
+    r <- rootJoined roots
     v <- optionalVowel
     pure ([pr, s, r] ++ v, not (null v))
 base6 = do
@@ -547,7 +596,7 @@ base7 = do
     (p, sf, sb, roots) <- pick book13
     pr <- prefix p
     s <- superfix sf
-    r <- root roots
+    r <- rootJoined roots
     b <- subfix sb
     v <- optionalVowel
     pure ([pr, s, r, b] ++ v, not (null v))
@@ -571,7 +620,7 @@ base25 = do
     pure ([r, b1, b2] ++ v, not (null v))
 base26 = do
     h <- root [Ch]
-    ph <- root [Cph]
+    ph <- rootJoined [Cph]
     v <- optionalVowel
     pure ([h, ph] ++ v, not (null v))
 
@@ -592,8 +641,8 @@ aChungRoot = do
     (trailer, extra) <-
         pick
             ( [(PVowel v, 1) | v <- bookVowels]
-                ++ [ (PCons (Tagged SRoot Cng), 2)
-                   , (PCons (Tagged SRoot Cm), 2)
+                ++ [ (PCons (Tagged SRoot Cng Joined), 2)
+                   , (PCons (Tagged SRoot Cm Joined), 2)
                    ]
             )
     pure ([a, trailer], extra)
@@ -779,7 +828,7 @@ base1Required = do
 base2Required = do
     (sf, roots) <- pick book8
     s <- superfix sf
-    r <- root roots
+    r <- rootJoined roots
     v <- requiredVowel
     pure ([s, r] ++ v)
 base3Required = do
@@ -791,7 +840,7 @@ base3Required = do
 base4Required = do
     (sf, r0, sb) <- pick book10
     s <- superfix sf
-    r <- root [r0]
+    r <- rootJoined [r0]
     b <- subfix sb
     v <- requiredVowel
     pure ([s, r, b] ++ v)
@@ -828,7 +877,7 @@ gen37 = do
 base26Required :: Gen [Piece]
 base26Required = do
     h <- root [Ch]
-    ph <- root [Cph]
+    ph <- rootJoined [Cph]
     v <- requiredVowel
     pure ([h, ph] ++ v)
 
@@ -844,13 +893,22 @@ aChungSuffixAfter n roles base = do
 
 -- | A legal case, or the same case with the root taken outside its own slot's
 -- set. The mutation is the "book says no" half of the property.
-genCase :: Gen (Int, Text, [Role], Bool)
+-- | A random legal book syllable in Wylie. The structural fuzz uses it so its
+-- documents reach all 37 structures, not just the few the letter-run generator
+-- happens to hit.
+bookSyllable :: Gen Text
+bookSyllable = do
+    g <- pick (map snd roleGenerators)
+    (_, pieces, _) <- g
+    pure (renderPieces pieces)
+
+genCase :: Gen (Int, [Piece], [Role], Bool)
 genCase = do
     g <- pick (map snd roleGenerators)
     (n, pieces, roles) <- g
     legal <- pick [True, False]
     let pieces' = if legal then pieces else mutateRoot pieces
-    pure (n, renderPieces pieces', roles, legal)
+    pure (n, pieces', roles, legal)
 
 mutateRoot :: [Piece] -> [Piece]
 mutateRoot = go
@@ -862,38 +920,71 @@ mutateRoot = go
         go (p : ps) = p : go ps
 
 propBook :: Property ()
-propBook = do
+propBook = propertyOf checkWylieCase
+
+propBookUnicode :: Property ()
+propBookUnicode = propertyOf checkUnicodeCase
+
+propertyOf :: ((Int, [Piece], [Role], Bool) -> [String]) -> Property ()
+propertyOf check = do
     c <- gen genCase
     assert $
         P.lam
             ( \value ->
-                case checkCase value of
+                case check value of
                     [] -> P.pass
                     reasons -> P.fail (unlines reasons)
             )
             P..$ ("case", c)
 
-checkCase :: (Int, Text, [Role], Bool) -> [String]
-checkCase (n, word, roles, legal) =
-    case parsedW (parserFor n) word of
+checkWylieCase :: (Int, [Piece], [Role], Bool) -> [String]
+checkWylieCase (n, pieces, roles, legal) =
+    let word = renderPieces pieces
+     in checkParsed
+            "Wylie"
+            n
+            (T.filter (/= '.') word)
+            roles
+            legal
+            (parsedW (parserFor n) word)
+
+checkUnicodeCase :: (Int, [Piece], [Role], Bool) -> [String]
+checkUnicodeCase (n, pieces, roles, legal) =
+    let word = renderUnicode pieces
+     in checkParsed
+            "Unicode"
+            n
+            word
+            (unicodeRoles n roles)
+            legal
+            (parsed (parserFor n) word)
+
+checkParsed ::
+    Text
+    -> Int
+    -> Text
+    -> [Role]
+    -> Bool
+    -> Either Text ([Text], [Role])
+    -> [String]
+checkParsed script n expected roles legal result =
+    case result of
         Left err
             | legal -> [bad "did not read a legal word" (T.unpack err)]
             | otherwise -> []
         Right (raws, got)
             | not legal -> [bad "read a word the book rejects" ""]
-            | T.concat raws /= wordWithoutDots ->
+            | T.concat raws /= expected ->
                 [bad "did not read the word whole" (show (T.concat raws))]
             | got /= roles -> [bad "roles" (show got <> " /= " <> show roles)]
             | otherwise -> []
     where
-        -- The prefix separating dot is Wylie syntax the grammar consumes
-        -- without an AST mark, so it is not part of the read letters.
-        wordWithoutDots = T.filter (/= '.') word
         bad what extra =
             unwords
-                [ "structure"
+                [ T.unpack script
+                , "structure"
                 , show n
                 , what
-                , show word
+                , show expected
                 , extra
                 ]
