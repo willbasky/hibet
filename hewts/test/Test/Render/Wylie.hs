@@ -98,6 +98,10 @@ outsideTheBook =
             s <- lone "grla"
             notation s @?= "garla"
             (showContent <$> syllables (parseWylie (notation s))) @?= [showContent s]
+        , testCase "suffix + postfix takes no dot (D5)" $ do
+            s <- lone "gcard"
+            notation s @?= "gcard"
+            (showContent <$> syllables (parseWylie (notation s))) @?= [showContent s]
         ]
     where
         lone input = case syllables (parseWylie input) of

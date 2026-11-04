@@ -30,7 +30,8 @@ import Convert.Grammar.Superfix
     , superfixCombos
     )
 import Convert.Grammar.Syllable
-    ( Stack (..)
+    ( Role (..)
+    , Stack (..)
     , Subfixes (..)
     , Syllable (..)
     , VowelSlot (..)
@@ -79,6 +80,9 @@ stackPieces prev st = case pieces st of
 boundaryJoin :: Maybe Stack -> Stack -> Join
 boundaryJoin Nothing _ = JSolid
 boundaryJoin (Just prev) st
+    -- D5: a suffix does not gate the next letter. The postfix is a slot of its
+    -- own, and a dot there has no reader (gcard -> gcar.d -> gcarad).
+    | stRole prev == RoleSuffix = JSolid
     | not (null (vowelPieces prev)) = JSolid
     | null (letterTexts prev) || null (letterTexts st) = JSolid
     | aChenStart st = JDot

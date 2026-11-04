@@ -75,7 +75,7 @@ tests =
         , testProperty "W->U->W->U is a fixed point after one pass" propConversion
         , testProperty "U->W->U->W is a fixed point after one pass" propUnicodeConversion
         , testProperty
-            "book documents keep the W->U->W->U loop"
+            "book documents keep the canon and the W->U->W->U loop"
             propBookDocument
         ]
 
@@ -195,13 +195,10 @@ propUnicodeConversion = documentPropertyWith unicodeDocument unicodeConversionCh
 -- hits 1, 8, 17, 28 and 38).
 -- | The token check stays out: the book generator spells a bare root's
 -- implicit a as Wylie @a@, which the grammar reads as 'VowelImplicit' and not
--- as a token; that fact is covered by 'Test.Tokenizer.RoundTrip'. The W→W
--- canon check stays out too: the book generator exposes a separate defect at
--- the suffix→postfix boundary (@gcard@ -> @gcar.d@ -> @gcarad@), recorded
--- for its own slice.
+-- as a token; that fact is covered by 'Test.Tokenizer.RoundTrip'.
 propBookDocument :: Property ()
 propBookDocument = documentPropertyWith bookDocument $ \input ->
-    conversionCheck input
+    wylieCanonicalCheck input <> conversionCheck input
 
 bookDocument :: Gen Text
 bookDocument = T.intercalate " " <$> Gen.list (Range.inclusive (1, 6)) bookSyllable

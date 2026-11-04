@@ -204,7 +204,7 @@ printingModules =
                 )
             ,
                 ( "Convert.Grammar.Syllable"
-                , ["Stack", "Subfixes", "Syllable", "VowelSlot", "finalsTokens"]
+                , ["Role", "Stack", "Subfixes", "Syllable", "VowelSlot", "finalsTokens"]
                 )
             ,
                 ( "Convert.Token"
