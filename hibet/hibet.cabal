@@ -148,9 +148,8 @@ executable hibet
     -fwrite-ide-info -hiedir=.hie -Wunused-packages -Wall -threaded
     -rtsopts -Wincomplete-uni-patterns -Wincomplete-record-updates
     -Wcompat -Widentities -Wredundant-constraints -fhide-source-paths
-    -Wmissing-export-lists -Wpartial-fields -with-rtsopts=-N16
-    -with-rtsopts=-qn8 -with-rtsopts=-A64m -with-rtsopts=-AL128m
-    -with-rtsopts=-I0 -with-rtsopts=-T
+    -Wmissing-export-lists -Wpartial-fields
+    "-with-rtsopts=-N -A4m -AL128m -qn8 -I0 -T"
 
   build-depends:
     , base   >=4.11 && <5

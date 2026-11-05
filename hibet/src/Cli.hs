@@ -2,13 +2,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Cli
-    ( runCommand
+    ( Command (Shell)
+    , runCommand
     , parser
     ) where
 
 import Effects.Console
 import Effects.PrettyPrint
-import Env (Env (..), modifyEnv, readEnv)
+import Env (Env (..), readEnv)
 import Label (LabelFull (..), Labels (..), Title (unTitle))
 import Paths_hibet (version)
 import Pretty
@@ -16,7 +17,6 @@ import Translator (translator)
 
 -- import Type (HibetError (..))
 
-import Dictionary (selectDict)
 import Utility (showT)
 
 import Control.Applicative (many, optional, (<|>))
@@ -85,25 +85,10 @@ runCommand ::
     Command -> Eff es ()
 runCommand com = do
     case com of
-        Shell selectedDicts -> do
-            updateEnv selectedDicts
-            translator
+        -- App.prepareEnv already filtered the dictionaries by these ids
+        Shell _ -> translator
         Om -> putColorDoc magenta NewLine om
         ShowOption opt -> runShow opt
-
-updateEnv ::
-    ( Reader (MVar Env) :> es
-    , Concurrent :> es
-    ) =>
-    [Int]
-    -> Eff es ()
-updateEnv selectedDicts = do
-    modifyEnv $ \env ->
-        pure $
-            env
-                { dictionaryMeta =
-                    selectDict selectedDicts env.dictionaryMeta
-                }
 
 runShow ::
     ( Reader (MVar Env) :> es

@@ -3,6 +3,7 @@
 
 module Env
     ( makeEnv
+    , makeEnvFor
     , Env (..)
     , readEnv
     , putEnvMVar
@@ -13,14 +14,17 @@ where
 import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
 import Effects.File (FileSystem)
 import qualified Effects.File as File
-import Label (Labels (..), getLabels)
+import Label (LabelFull (..), Labels (..), getLabels)
 import Type (HibetError (..))
 
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
+import Data.List (find)
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import GHC.Generics (Generic)
 import Path (Abs, File, Path, fromAbsFile)
+import System.FilePath.Posix (takeBaseName)
 
 import Effectful (Eff, type (:>))
 import Effectful.Concurrent (Concurrent)
@@ -41,14 +45,28 @@ makeEnv ::
     , Error HibetError :> es
     ) =>
     Eff es Env
-makeEnv = do
+makeEnv = makeEnvFor []
+
+-- | Read only the dictionaries with the given ids; @[]@ means all of them.
+makeEnvFor ::
+    ( FileSystem :> es
+    , Error HibetError :> es
+    ) =>
+    [Int]
+    -> Eff es Env
+makeEnvFor selected = do
     labels@(Labels ls) <-
         getLabels <$> (File.readFileBS =<< File.getPath "stuff/titles.toml")
 
     dir <- File.getPath "dicts/"
     absDir <- File.parseAbsDir dir
     (_, files) <- File.listDirectory absDir
-    filesAndTexts <- getFilesTexts files
+    let wanted file =
+            null selected
+                || case find (\lf -> lf.path == T.pack (takeBaseName (fromAbsFile file))) ls of
+                    Just lf -> lf.lfId `elem` selected
+                    Nothing -> False
+    filesAndTexts <- getFilesTexts (filter wanted files)
 
     let dictsMeta =
             parMap

@@ -5,8 +5,8 @@ module App
        ( app
        ) where
 
-import Cli (parser, runCommand)
-import Env (Env, makeEnv)
+import Cli (Command (Shell), parser, runCommand)
+import Env (Env, makeEnvFor)
 import Type (HibetError (..))
 import qualified Data.Text.IO as TIO
 import Data.Function ((&))
@@ -70,19 +70,21 @@ interpretHibet program logger =
 
 hibet :: Eff HibetEffects ()
 hibet = do
+  com <- execParser parser
+  let selected = case com of
+        Shell ids -> ids
+        _ -> []
   mv <- newEmptyMVar
-  withAsync (prepareEnv mv) $ \_ ->
-    runReader mv $ do
-      com <- execParser parser
-      runCommand com
+  withAsync (prepareEnv selected mv) $ \_ ->
+    runReader mv (runCommand com)
 
 prepareEnv ::
   ( FileSystem :> es
   , Error HibetError :> es
   , Concurrent :> es
-  ) => MVar Env -> Eff es ()
-prepareEnv mv = do
-  !env <- makeEnv
+  ) => [Int] -> MVar Env -> Eff es ()
+prepareEnv selected mv = do
+  !env <- makeEnvFor selected
   putMVar mv env
 
 handleHibetError ::
