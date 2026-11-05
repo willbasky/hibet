@@ -4600,7 +4600,6 @@
 'grul skyel|travel guide, transport vehicles
 'grul sna|1) travel guide; 2) harm that may befall new travellers
 'grul skyel gnam gru|passenger plane
-'grul skyel snum 'khor bus|
 'grul skyod byed|travel, tour, journey
 'grul skyod pa|traveler
 'grul bzhud skabs|during the trip, while traveling
@@ -17704,10 +17703,8 @@ bskyod yas|55 digit number [of those up to 60 described in abhidharma]. 55 digit
 bskyod pa yang ba|person who likes travelling
 bskyod med pa|1) not shaking/ trembling; 2) a number
 bskyod byed ma|Sancarini
-bskyod 'god byed|
 bskyog pa|[future: skyog pa]
 bskyogs pa|[past: skyog pa]
-bskyon|
 bskyon pa|[past: f skyon pa]
 bskyor ba|[past: f {skyor ba} 1) recite, repeat, rehearse; 2) support, hold/ prop [up]; 3) paste; 4) help
 bskyor bskyod|move from place to place, mobile, circuit
@@ -21097,8 +21094,6 @@ bzhengs bzhugs gnyis|standing or sitting
 bzher|wet; wet, moist
 bzhes|1) items food and drink clothing etc. to be enjoyed, joined as [h]; 2) put on, wear, dress [clothes]; 3) accept, take, receive [precepts, [h] of len]; 4) reaching the age of; 5) eat; 6) [h] particle [bzhes 'bras]. 1) items food and drink clothing etc. to be enjoyed, joined as; 2) put on, wear, dress [clothes]; 3) accept, take, receive; 4) reaching the age of; 5) eat [h]; 6) [h] particle
 bzhes 'bras|rice [h]
-bzhes byad|
-bzhes chas|
 bzhes kham|peach [h]
 bzhes khrung|chang to be drunk
 bzhes khug|tobacco pouch [h]
@@ -22211,7 +22206,6 @@ chad grangs|deficit shortage, negative #
 chad gsab|make up a deficiency/ shortage
 chad gso|chad pa'i kha skong
 chad gsor|when person/ animal is exhausted by fatigue, another does the work instead
-chad ka|
 chad khongs|ma ldangs pa or chad pa'i gras,...Thob skal chad khongs la su su yod,...Sgo khral chad khongs kyi tshong zog .Thob skal ma ldangs pa rnams chad khongs su tho bkag pa
 chad las|law, legal affairs, prescribing a punishment for an offender
 chad lhag|shortage and surplus [adjusting rough calculation procedures for actual/ accurate star positions: in year count when for 1 planet nyin both earlier and later occur, gza' 'og gi chu tshod how many that date count is lacking &, nyin earlier and when later's gza' leap over gza' 'og gi chu tshod how few ba'i date count extra must be adjusted for]. shortage/ deficit and surplus
@@ -38717,7 +38711,6 @@ gnod pa'i lhag ma gnyis|among the {dge 'dun lhag ma bcu gsum}, groundless slande
 gnod pa'i nus pa|harmful/ negative function/ force
 gnod bzhi rtsa gtor|annihilate the four pests
 gnod sbyen lag na phreng thogs|the sprites called those who hold rosaries
-gnod sbyin chang|
 gnod sbyin ma|sun
 gnod sbyin mo|yak.si, female mountain spirits
 gnod sbyin phyogs|N
@@ -42295,7 +42288,6 @@ gsol stsal|giving, bestowing
 gsol thab|kitchen [h]
 gsol tshigs|food [h]
 gsol zhal|cup; cup/ bowl [h]
-gsol zhib|
 gsol zho|curds [h]
 gsol gzims mchod gsum|* gsol dpon, gzims dpon and mchod dpon
 gsol kha ba|1) chos skyong gi mgon po ba; 2) bla ma'i gsol dpon
@@ -46694,7 +46686,6 @@ ji nus|as much as possible, to the utmost. whatever/ as much as 1 can
 ji phyir|for what purpose, why
 ji rnyed|all there is, all possible
 ji rob|[arch] why, for what reason?
-ji sgra|
 ji skad|what, whatever; 1) as was said/ written ['Go khrid pas ji skad bsgo ba'i tshig bzhin byed pa,...Da lta skabs babs kyi tshig don rnams le'u snga ma nas ji skad bstan pa ltar go ba len dgos,...Sngar gyi lo rgyus ji skad thos pa ltar yi ger 'bri ba,..; 2) Lung khungs ji 'dra zhig nas drangs pa'i tshig don gsham gsal ltar,...Bod kyi brda sprod pa'i bstan bcos sum cu pa las ji skad du, yi ge ' li k' li gnyis, ' li gsal byed ai sogs bzhi, k' li sum cu tham pa'o, zhes gsungs so lta bu,...Ai.. what, whatever
 ji snyed|all that exists, as many as there may be, whatever/ as much as there is/ is suitable, [quite] a lot, as suitable, all kinds, a suitable #
 ji srid|as long as; until, for as long as, however long
@@ -55983,7 +55974,6 @@ ldang ma lding|1) long ma longs; 2) rising upward drifting, soaring. (bird sweep
 ldang ma ldang lta|see whether something is enough/ suffices or not
 ldang ba yang ba|at the time of arising get up
 ldang ka ska|lion sha ra bha, 8 legged lion
-ldangs|
 ldangs pa|[past: ldang ba]
 ldar ba|be weary/ tired, faint, languid, wet, damp, idiot, unclear mind
 ldar ldur|very hot
@@ -66580,7 +66570,6 @@ mkhris sel gyi ro gsum|chn
 mkhris sel spyod lam gnyis|chn
 mkhu ba|(A) go ldog pa
 mkhu ldog|grief, sadness, rage, wrath, fury
-mkhun|
 mkhun pa|khun pa
 mkhur 'dzum|gad mo dgod skabs kyi mkhur tshos kyi rnam 'gyur zhig
 mkhur ba|cheeks; 1) cheeks; 2) 'gram khug)
@@ -77571,7 +77560,6 @@ phran bu tsam|only few, a little
 phran tsam gyis yang thub|Even this lowly 1 can do it
 phran bu'i nad|not included in major diseases thor bu'i nad kyi nang tshan te, gre bar gra ma zug pa sogs nad chung ngu
 phran bu'i nad bcu|(chn
-phrang|
 phrang btsan|place in Tibet
 phrang tshegs 'grel pa|{phrang tshegs 'grel pa [slob dpon tshul khrims bskyangs kyis mdzad pa'i 'dul ba lung phran tsegs kyi 'grel pa}
 phras spras pa|{phra rgyan bkod pa}; 1) subtle, thin, fine, narrow, shallow; 2) inlaid jewelry, ornament, jewel
@@ -77674,7 +77662,6 @@ phris|'brid pa! [past: 'phri],, lessen, diminish, reduce, subtract
 phris pa|[past: 'brid pa] lessen, diminish, reduce, subtract
 phro bo|child's frock/ chemise
 phro 'du phrin las kyi gzer|the nail of activity which is the emanation and absorption of light rays
-phrob|
 phrog|[past: {dphrog pa} f {'phrog}]
 phrogs|[past: ! {'phrog pa}] seized, ravished, plundered, stole, took by force, diminished, reduced, subtracted
 phrogs pa|[past: {'phrog pa}] seized, ravished, plundered, stole, took by force, diminished, reduced, subtracted
@@ -78470,7 +78457,6 @@ phyag mdzod sde chung|2nd treasurer, under secretary
 phyag rdor rtag ngu|{phyag rdor rtag ngu} med. herb [{sngo sman rtag ngu rigs gsum gyi nang tsan me tog sngo nag 'char ba zhig}
 phyags|boots [h] [past: 'phyag] swept, cleaned [up], polished
 phyags dar|dirt, dust, refuse [rags]
-phyags lham|
 phyags ma|duster ['jag ma'i phyags ma,//ku sha'i phyags ma,//spen phyags
 phyags phebs|come, go, arrive
 phyags sgro|feather duster
@@ -93191,7 +93177,6 @@ sbrang rtsi myong|honey taster, bee
 sbrang rtsi skyong|honey guarder, bee
 sbrang rtsi byed pa|honey producer, bee
 sbrang nor bu|kind of sbrang bu
-sbrang bu'i skyugs pa|
 sbre|stone-fox; nocturnal predator = dbre [back yellow, belly white, stone-fox
 sbre ba|[arch] 'gre log byed pa
 sbre dri|urine smell
@@ -97252,7 +97237,6 @@ shes pa 'jur la drangs|focus your attention
 shes pa tshad ma|TSE
 shes pa blo tha snyad par|cognition, conventional
 shes pa rtag pa|eternal awareness
-shes pa yongs rdzogs bya|
 shes bzod kyi ye shes skad cig ma bcu drug|the 16 moments of the wisdom of cognition and acceptance
 shes bzod skad cig ma bcu drug|the 16 moments of the wisdom of cognition and acceptance TSE
 shes 'khos gnyis ldan|qualities exist and cause also exists
@@ -100504,7 +100488,6 @@ skyed cha'i bu lon|high interest loan
 skyed bya 'bras bu|the result which is produced
 skyed mos tshal|grove; pleasure grove, park, garden
 skyed pa'i yum|mother who gave birth to
-skyed bzhes gnang|
 skyed thon rgyu|progress
 skyed 'phel byed|reproduce, copy
 skyeg|misfortune; [arch] misfortune, obstacles
@@ -101166,7 +101149,6 @@ sla bcos byed pa|be perfunctory rough, careless, slipshod superficial, muddle 1'
 sla chos su mi gtong ba|w/o allowing it to become sloppy
 sla sdud pa|withdrawal, {slar sdud pa}
 sla bar 'gyur|become easy
-slab|
 slab pa sbyin pa|1 who has been given a training [as a penance for a severe offense], 1 given [a penance] according to the rules, penitent
 slabs gsum la ba dkar po|white stone throne in the Deva loka [where Buddha taught the devas]
 slad|henceforth; 1) for the sake/ purpose of, because of, in order to; 2) later, afterward, henceforth, again, bslad, lhad
@@ -103555,13 +103537,10 @@ snor ba|(tha dad pa bsnor ba, bsnor ba, snor,, * confound, get wrong, mingle, st
 snor ma|1) meadow of good grass; 2) autumn harvest straw; 3) hay
 snos|sno ba!
 snrel zhi|[arch] 1) stages confused, confusedly, pell mell; 2) sloping, oblique; 3) a meditative absorption similar to {thod brgal ba}; 4) mediocrity
-snron|
 snron gyis nya ba|full moon day [15th] of the 5th month
 snron zla ba|snron month
-snrubs|
 snub|destroy, extinguish, abolish, annihilate, sink [ships]
 snub pa|(tha dad pa bsnubs pa, bsnub pa, snubs,, * cause to perish, suppress, abolish, abrogate, annul, destroy, annihilate, sink [ship], extinguish
-snubs|
 snud|snud pa!
 snud pa|(tha dad pa bsnud pa, bsnud pa, snud,, expel
 snum|1) oil [of sesame etc.; 2) petroleum, gasoline; 3) [quite] glossy, shiny
@@ -105017,7 +104996,6 @@ spo bo|1) grandfather; 2) old man [resp], father in law; 3) spo bo rdzong; 4) sp
 spo lags|1) grandfather; 2) old man
 spo ldan|vinaya expression, lhag ltung byung ba'i gang zag gis doing penance spyad zin &, mgu ba ma spyad pa la spo ldan zhes bya'o. {spo lo 'gran sdur byed pa}, play a ball game
 spo lo|ball; ball, polo
-spo mtho|
 spo pa|spo yul inhabitant
 spo pho|spo bo
 spo rmo|spo bo rmo bo
@@ -111228,7 +111206,6 @@ thum ti|parcel, package, bundle
 thum po rgyag pa|wrap a parcel
 thum gsum pa|sug smel herb
 thum ril gyis song|[arch] inseparably mixed
-thums|
 thun|1) dose of medicine to be taken at given intervals; 2) materials for mantra practice mustard seed etc.; 1) practice, a session [of practice]; 2) whip; 3) charmed substances; 4) shift, night watch (/ [tse]. 1) measure/ session of time [Nyin thun.Mtsan thun. .Snga thun.Phyi thun]; 2) amount dose of medicine [Sman thun rer ril bu gsum re yin]; 2) white mustard seed etc charmed w mantra 1) practice [session]; 2) whip 3) a shift, a night watch [tserig] session, practice. 1) dose of medicine to be taken at given intervals [Sman thun rer ril bu gsum re yin]; 2) materials for mantra paractice mustard seed etc. ; 1) practice, a session [of practice] [Nyin thun. Mtshan thun. Nam gyi thun gsum pa. Snga thun. Phyi thun]; 2) whip; 3) charmed substances; 4) shift, night watch (/ [tse]
 thun 'bru|ears left after the grain is harvested [lo tog brngas zin pa'i shul gyi snye ma]
 thun bar|between the individual sessions of day and night
@@ -115834,7 +115811,6 @@ yid zab|carefulness, prudence
 yid zhi|tranquil mind
 yid zug|fall in love w, lose 1's heart to
 yid 'byung ba|1) depressed, anxious, dispirited, disquieted, sadness, melancholy; 2) repulsion, revulsion; 3) moved, touched; 4) Kamadeva
-yid bsad pa|
 yid 'gyur gyi myong ba|mental/ meditation experience
 yid 'gyur stobs che ba zhig byung|mind was powerfully transformed
 yid la 'bab|delightful to the mind, pleasing, like, be pleased
@@ -117487,7 +117463,6 @@ za pha|owner of a house
 za ra|later part of the afternoon. later part of the afternooon
 za rgyan|(met) sho and sbag [plaything]
 za rkang|sngar dpon khungs kyi ngo tshab mi sna la khral ltar sprod pa'i gla lto
-za rkon|
 za rkong|za rkong skin disease [R]. za rkong skin disease [ba spu byi zhing gya' za byed pa dang, sha mdog sngon por 'gyur zhing gzhan la 'go bar 'gyur ba'i pags nad cig
 za rlom|cheating others of their share of food
 za rngam|hunger
@@ -119290,7 +119265,6 @@ zhib 'jug rtsad gcod|examine in detail and decide
 zhib gzigs chog mchan|investigation/ scrutinizing and approval/ sanction [h]
 zhib gzigs chog mchan byed|investigate/ scrutinize and approve/ sanction [h]
 zhib gzigs mdzad pa'i 'char gzhi|thoroughly investigated plan/ source [h]
-zhib gzigs gnang ba snang tshul|
 zhib mol byed|conduct negotiations/ discussions/ talks
 zhib gsed shan 'byed|analyze
 zhib btags byed|grind into flour

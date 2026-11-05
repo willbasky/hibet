@@ -40,6 +40,11 @@ while IFS=$'\t' read -r up local; do
         exit 1
     fi
     [[ -s $tmp/raw.$i ]] || { echo "FAIL: empty $up" >&2; exit 1; }
+    # Keep two upstream regressions fixed locally (see the report).
+    case $local in
+        'Sera-Textbook-Def-T|T') sed -i 's/{yrongs grub/{yongs grub/' "$tmp/raw.$i" ;;
+        'JimValby-T|E') sed -i 's/^sne btags|[[:space:]]*$/sne btags|tag/' "$tmp/raw.$i" ;;
+    esac
     python3 - "$tmp/raw.$i" "$tmp/$i" <<'PY'
 import sys, unicodedata
 src, dst = sys.argv[1], sys.argv[2]
@@ -48,8 +53,10 @@ with open(src, encoding="utf-8") as inp, open(dst, "w", encoding="utf-8", newlin
         if line.startswith("#") or "|" not in line:
             continue
         line = line.rstrip()
-        if line:
-            out.write(unicodedata.normalize("NFC", line) + "\n")
+        _, _, definition = line.partition("|")
+        if not definition:
+            continue
+        out.write(unicodedata.normalize("NFC", line) + "\n")
 PY
     printf '%s\t%s\n' "$tmp/$i" "$local" >> "$tmp/list"
 done <<'MAP'

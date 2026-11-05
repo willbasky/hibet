@@ -54834,7 +54834,7 @@ snar ma skyes|balarama, planet mercury
 sne|corner tip, extremity, end of a thread or string, hem of a piece of cloth
 sne 'dzom|fragrant plant burnt as incense
 sne 'khor|warp, get twisted
-sne btags|
+sne btags|tag
 sne gdong|name of a place in southern Tibet
 sne len|reception; reception, attention to guests, hospitality, reception given to guests, hospitality
 sne ma|extremity, SA sne
