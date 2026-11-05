@@ -9,9 +9,9 @@
 #   BASE_URL=file:///path scripts/update-dicts.sh   offline testing
 #
 # The upstream files are one entry per line: "tibetan|definition". The
-# importer of the upstream project skips comment lines, blank lines and lines
-# without a separator; we do the same, trim trailing whitespace and normalize
-# the text to NFC.
+# importer of the upstream project skips comment lines, blank lines, lines
+# without a separator and entries with an empty headword or definition; we do
+# the same, trim trailing whitespace and normalize the text to NFC.
 set -euo pipefail
 export LC_ALL=C.UTF-8
 
@@ -53,8 +53,8 @@ with open(src, encoding="utf-8") as inp, open(dst, "w", encoding="utf-8", newlin
         if line.startswith("#") or "|" not in line:
             continue
         line = line.rstrip()
-        _, _, definition = line.partition("|")
-        if not definition:
+        headword, _, definition = line.partition("|")
+        if not headword.strip() or not definition:
             continue
         out.write(unicodedata.normalize("NFC", line) + "\n")
 PY

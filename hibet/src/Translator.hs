@@ -76,6 +76,7 @@ loopDialog inputState = forever $ do
     mQuery <- getInput inputState "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
+        Just "" -> pure ()
         Just ":q" -> do
             putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
             exitSuccess

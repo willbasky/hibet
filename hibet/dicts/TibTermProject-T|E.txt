@@ -1303,7 +1303,6 @@ gong gsal|(adm,lit) above mentioned {de ga'i nang sngon nas brjod zin pa'i/}
 gong 'khod|(adm,lit) above mentioned {de ga'i nang sngon nas brjod zin pa'i/}
 gong du 'degs pa|(adm) uplift {skye bo gang zhig gi 'tsho ba'i gnas stangs dang /bsam blo'i chu tshad/bzang po'i spyod tshul/shes pa'i nus stobs sogs gong 'phel du gtong rgyur phan grogs byed pa/}
 gong phogs|(econ) graduated wage {gnad don nam/rgyu mtshan zhig la brten nas rang nyid gang du yod pa'i las ka'i gnas rim de las mtha ba'i gnas rim gang ma'i phogs 'bab/}
-|(econ) graduated wage {gnad don nam/rgyu mtshan zhig la brten nas rang nyid gang du yod pa'i las ka'i gnas rim de las mtha ba'i gnas rim gang ma'i phogs 'bab/}
 gong ba sngon po'i las ka|(adm) blue collar job {bza grwa'i nang las khungs kyi las ka ma yin pa'i ngal rtsal gyi las rigs/}
 gong bu gcig gyur|(adm) integrated {so so yan gar gnas pa ma yin par gang bu gzhan gyi nang du zhugs pa'am/yang na gang bu du ma dang lhan du 'dus pa las grub pa'i tshogs pa/}
 mnyam bsdus|(adm) integrated {so so yan gar gnas pa ma yin par gang bu gzhan gyi nang du zhugs pa'am/yang na gang bu du ma dang lhan du 'dus pa las grub pa'i tshogs pa/}
