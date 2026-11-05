@@ -11,7 +11,7 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
 ## Features
 
-1. Hibet uses about 40 dictionaries to translate Tibetan words to English or Tibetan.
+1. Hibet uses about 60 dictionaries to translate Tibetan words to English or Tibetan.
 2. If translations have Tibetan texts it printed as wylie.
 
 ## Installation

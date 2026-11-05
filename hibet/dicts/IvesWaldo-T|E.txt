@@ -2448,7 +2448,7 @@
 'dod gsol gnang|1) ask for [what 1 wants]; 2) petition; 3) request (/ [h]
 'dod gsol zhu|1) ask for [what 1 wants]; 2) petition; 3) request (/ [h]
 'dogs|[past: btags thogs!] 1) distort; 2) tie, fasten, attach; 3) put on/ wear [ornaments]; 4) name, impute
-'dogs 'phul|1) smad 'dogs kyang yod la sngon 'jug kyang yod pa'i ming gzhi,...a'gyu bkra...2 'dogs yig dang 'phul yig ..???
+'dogs 'phul|1) smad 'dogs kyang yod la sngon 'jug kyang yod pa'i ming gzhi,...'gyu bkra...2 'dogs yig dang 'phul yig ..???
 'dogs byang|gzhan la 'dogs rgyu'i shing byang
 'dogs gzhi|'ching sa'i gzhi'am, dpyang sa'i yule
 'dogs khyi|mastiff; dog tied w a rope, watch dog [usu Tibetan mastiff]
@@ -3146,7 +3146,7 @@
 'dza thang|currency exchange rate/ value
 'dza thang brtsi|compute the currency exchange rate/ value
 'dza' ba|go to waste/ be done in vain
-'dzab|magic sentence; magic sentence [SK dz'ap'a'i corruption]
+'dzab|magic sentence; magic sentence [SK dz'a pa'i corruption]
 'dzab bzlas|recite mantras
 'dzab pa|1) strive/ endeavor/ be diligent; 2) be studious
 'dzab kyi dgongs pa bzhi|[CHN]
@@ -4600,7 +4600,7 @@
 'grul skyel|travel guide, transport vehicles
 'grul sna|1) travel guide; 2) harm that may befall new travellers
 'grul skyel gnam gru|passenger plane
-'grul skyel snum 'khor|bus
+'grul skyel snum 'khor bus|
 'grul skyod byed|travel, tour, journey
 'grul skyod pa|traveler
 'grul bzhud skabs|during the trip, while traveling
@@ -5197,7 +5197,7 @@
 'jig rten dbang|lord of the world
 'jig rten du|in the world
 'jig rten gnyis|[CHN]
-'jig rten gsum|three worlds [gods, humans, and nagas (khams gsum, the "three realms," refers to k\-amadh\-atu, r\-upadh\-atu, and \- ar\-upyadh\-atu: the desire realm, form realm, and formless realm. it is also known as srid pa'i gsum, the "three realms of existence " sa gsum, the "three levels," refers to where the \d \-akin\- is live: above the earth, on the earth, and below the earth). sa bla lha'i 'jig rten, sa steng mi'i 'jig rten, sa 'og klu'i 'jig rten bcas gsum mo
+'jig rten gsum|three worlds [gods, humans, and nagas (khams gsum, the "three realms," refers to kAmadhAtu, rUpadhAtu, and - arUpyadhAtu: the desire realm, form realm, and formless realm. it is also known as srid pa'i gsum, the "three realms of existence " sa gsum, the "three levels," refers to where the DAkinIs live: above the earth, on the earth, and below the earth). sa bla lha'i 'jig rten, sa steng mi'i 'jig rten, sa 'og klu'i 'jig rten bcas gsum mo
 'jig rten gtogs|included in the world
 'jig rten gzhan|other worlds, subsequent lives
 'jig rten khams|world; world [realm]
@@ -5531,14 +5531,14 @@
 'jigs byed chos 'byung|{'jigs byed chos 'byung} [in 12th wood horse year composed by 'jam dbyangs bzhad pa'i rdo rje, some also by jo nang t' ra na tha etc]
 'jigs byed bzhad pa|terrifying laughter,; terrifying laughter, [charnel ground in india.]
 'jigs byed bi ti|1 of the {'jigs byed dgu}
-'jigs byed ye shes bE ra|1 of the {'jigs byed dgu}
+'jigs byed ye shes bai ra|1 of the {'jigs byed dgu}
 'jigs byed dpa' bo gcig pa|Yamantaka ekavira/ solitary Yamantaka
 'jigs byed ga na pa ti|1 of the {'jigs byed dgu}
-'jigs byed kA la bhE ra|1 of the {'jigs byed dgu}
+'jigs byed kA la bhai ra|1 of the {'jigs byed dgu}
 'jigs byed kyi rdzogs rim rnal 'byor bzhi|The four sampannakrama yogas of Yamantaka
 'jigs byed kyi bdag po|1 of the {'jigs byed dgu}
-'jigs byed bhE shan ta|1 of the {'jigs byed dgu}
-'jigs byed bhE ra ba|1 of the {'jigs byed dgu}
+'jigs byed bhai shan ta|1 of the {'jigs byed dgu}
+'jigs byed bhai ra ba|1 of the {'jigs byed dgu}
 'jigs byed ku be ra|1 of the {'jigs byed dgu}
 'jigs byed bra mi ta|1 of the {'jigs byed dgu}
 'jigs byed bha ra ba|1 of the 'jigs byed dgu
@@ -8209,7 +8209,7 @@
 'phrod lam|lam 'gro'am mthun pa, mi la la sa mtho sar sdod pa las sa dma' sar bsdad na 'phrod lam che ba yong,
 'phrod pa|1) [have] be[en] delivered, transmit; 2) receipt, quittance sprad nas [having given] 'byor ba dang, meet come to hand or be obtained, taxes and debts sprod [be busy, give and give] however much it is done 'phrod rgyu med, 'phrin bskur send latter? nas 'phrod pa, skad cha'i go brda ma 'phrod pa; 3) suitable according, proper, beneficial, agreeing w; 4) [arch] collect, gather; 5) a deity of CH divination
 'phrod po|suitable, right, balanced, timely, good for, agreeable, good for you
-'phrod sbyor|juncture of meeting [planets' and motion stars' [four] elements' khams where they meet ['phrod] the [juncture ] [sbyor ba. 1) two earths meeting is the juncture of siddhi. 2) two waters meeting is the juncture of amrita. 3) two fires meeting is the juncture of ['phel] increase. two winds meeting is the juncture of abundance/perfection sbyor. Earth and water meeting is the juncture of youth [lang tso] sbyor. Fire and wind meeting is the juncture of strength [stobs ldan]. Earth and wind meeting is the juncture of not meeting [mi 'phrod]. Water and wind meeting is the juncture of not harmonizing [mi mthun]. Earth and fire meting is the juncture of consuming. Fie and water meeting is the juncture of death. Of thse, three are good, three are gso thub [remediable/workable], three are bad, and 1 is very bad, making 10 altogether.]. astr juncture [planets and motion stars] [4] elements khams where they meet [a'phrod] the [juncture ] *, food activities etc. good for the body, hygiene, health [care]
+'phrod sbyor|juncture of meeting [planets' and motion stars' [four] elements' khams where they meet ['phrod] the [juncture ] [sbyor ba. 1) two earths meeting is the juncture of siddhi. 2) two waters meeting is the juncture of amrita. 3) two fires meeting is the juncture of ['phel] increase. two winds meeting is the juncture of abundance/perfection sbyor. Earth and water meeting is the juncture of youth [lang tso] sbyor. Fire and wind meeting is the juncture of strength [stobs ldan]. Earth and wind meeting is the juncture of not meeting [mi 'phrod]. Water and wind meeting is the juncture of not harmonizing [mi mthun]. Earth and fire meting is the juncture of consuming. Fie and water meeting is the juncture of death. Of thse, three are good, three are gso thub [remediable/workable], three are bad, and 1 is very bad, making 10 altogether.]. astr juncture [planets and motion stars] [4] elements khams where they meet ['phrod] the [juncture ] *, food activities etc. good for the body, hygiene, health [care]
 'phrod sten|hygiene, health, sanitation
 'phrod pa'i rang bzhin|adaptability, suitability
 'phrod pa nyer brgyad|the 28 encounters [list is short by 1 my numbers [one kun dga', two dus kyi dbyig, three dul ba, four ???? skye dgu, five gzhon, six bya rog 7 rgyal mtsan, 8 dpal be'u, 9 rdo rje, 10 tho ba, 11 gdud, 12 grogs, 13 yid, 14 'dod bya, 15 mgal me, 16 rtsa bton, 17 'chi bdag mda', 18 grub pa, 19 mdung, 20 bdud rtsi, 21 gtun shing, 22 glang po, 23 stag myos, 24 zad, 25 gyo, 26 brtan, 27 'phel ba rnams so. the seven planets, meeting and asssociating with one of the the 28 motion stars la bstun nas what is established/presented bzhag pa yin te, de yang the sun and tha skar assoociation is called kun dga' the others rigs 'gre sbyar. the 28 encounters * the 7 planets meeting 1 of the 28 motion stars and what is established]
@@ -9477,7 +9477,7 @@ a ma'i bu|substitute, replacement [person]
 a log rgyag|turn over, roll over, [horse etc.] upset
 a stong rgyag|yawn
 a stong rgyag pa|yawn
-a ti sha|= Atisha [means perfcted. In east india, born as son of the king of Sahor in the water horse year, named dpal mar me mdzad ye shes, in Maghadha made master of the gtzug lag gnas chen 'ga'i assembly, invited by lha bla ma ye shes 'od and byang chub 'od he came to Tibet. the stages of practice of the path brought together/embodying from all the sutras and tantras mdo sngags thams cad bsdus nas lam nyams su len pa'i rim par dril ba the lamp of the path to enlightenment byang chub lam gyi sgron ma was the chief text he prodced of more than 20 by which he promulgated the later spreading of the teaching and established the Kadampa tradition and composed an 8 limb medical text\\Remaining i mnga' ris three eyears, and in U and Tsang for nine, at 73 in the wood horse year he died. Spreading the Buddha's teachings and the sciences in Tibet by his great kindness [h] called jo bo rje by TTs]
+a ti sha|= Atisha [means perfcted. In east india, born as son of the king of Sahor in the water horse year, named dpal mar me mdzad ye shes, in Maghadha made master of the gtzug lag gnas chen 'ga'i assembly, invited by lha bla ma ye shes 'od and byang chub 'od he came to Tibet. the stages of practice of the path brought together/embodying from all the sutras and tantras mdo sngags thams cad bsdus nas lam nyams su len pa'i rim par dril ba the lamp of the path to enlightenment byang chub lam gyi sgron ma was the chief text he prodced of more than 20 by which he promulgated the later spreading of the teaching and established the Kadampa tradition and composed an 8 limb medical text Remaining i mnga' ris three eyears, and in U and Tsang for nine, at 73 in the wood horse year he died. Spreading the Buddha's teachings and the sciences in Tibet by his great kindness [h] called jo bo rje by TTs]
 a ti rdzogs pa chen po|ati, the great perfection
 a ti yo ga|primordial yoga; ati yoga [primordial yoga. in the Nyingma tradition and texts, rdzogs chen, the great perfection ati yoga refers to spros bral rang byung gi ye shes intrinsic simplicity = wisdom. Without rgya chad, limitaton and restriction and phyogs lhung bias and partiality it completey perfects the meaning of all the yanas and so is the summit or peak of them all. All the dharmas of the phemonal world of samsara and nirvana arise as the play of rang byung ye shes self-arising wisdom [rang byung also means one's own intrinsic, natural, spontaneously occuring.] There is nothing other than that. That fundamental ground [gzhi gnas, also = shamatha meditation by which that is realized] one's own wisdom by practice of the path [nyams len literally accepting the experience] primordial purity cutting through solidity ka dag khregs chod and spontaneous presence of perfection lhun grub thod rgal gyi one reaches the goal of the four appearances snang bzhi which brings the fruition of gzhi thog tu grol liberation into the ground. the permanent domain of the youthful vase body, gzhon nu bum sku'i gtan srid.]
 a ti yo ga'i bsgom|meditation of ti yoga
@@ -9601,27 +9601,27 @@ a phreng ka phreng|garlands of vowels and consonants
 a phreng ka phreng gi sngags kyi rim pa|mantric succession of the vowels and consonants
 a lo ke|SK loka, lamp
 a lo kyog lo|an unwanted development
-a' 'bu|I, myself [milarepa]
-a' ri 'u ri|huried, careless [{nam pa bzhi}??]
-a' li bzhi|the four Tibetan vowels [i u e o]
-a'am|1) or; 2) [?] [vowel finals]
-a'ang|1) &; 2) also; 3) but four though [after vowel finals]
-a'o ma|milk [syn: nu skyes dang, nu zho, bzhos pa]
-a'o tshabs|{a'o tshabs} female illness [w khrag tshabs, menses a watery milky color 'dzag cing, chu so na zhing skyug producing the thought]
-a'o zom|[a kind of large zo ba [measuring vessel, bucket], a milk vessel, milking bucket
-a'u|1) diminutive [rte'u, be'u, rde'u]; 2) * this; 3) kiss
-a'u lag|compulsory service [eg post service people and/ or horses]
-a'u lag skul spyod|compulsory service [eg post people and/ or horses]
-a'ur 'ur|roar, clamor [water, wind, fire]
-a'ur ba|roar [horses or cattle shying, crowd, market place, wind. geyser]
-a'ur bskyod|sounds of motion [animal stampede, work, bustle]
-a'ur chom|roar [earthquake]
-a'ur zhogs|startling talk/ noise [brings on shying]
-a'ur dir dir|crowd sound [many people speaking]
-a'ur 'ur sil sil|[sound of many kinds of melodious music]
-a'ur 'ur chem chem|rush and roar [great fire, many drums. folk dance + drums]
-a'ur chil le|clatter [army passing]
-a'ur rdo chu mig dgu sgril|sling w many thin vari-colored threads and ris mig dgu [toy and cattle herding implement]
+'a 'bu|I, myself [milarepa]
+'a ri 'u ri|huried, careless [{nam pa bzhi}??]
+'a li bzhi|the four Tibetan vowels [i u e o]
+'aam|1) or; 2) [?] [vowel finals]
+'ang|1) &; 2) also; 3) but four though [after vowel finals]
+'o ma|milk [syn: nu skyes dang, nu zho, bzhos pa]
+'o tshabs|{'o tshabs} female illness [w khrag tshabs, menses a watery milky color 'dzag cing, chu so na zhing skyug producing the thought]
+'o zom|[a kind of large zo ba [measuring vessel, bucket], a milk vessel, milking bucket
+'u|1) diminutive [rte'u, be'u, rde'u]; 2) * this; 3) kiss
+'u lag|compulsory service [eg post service people and/ or horses]
+'u lag skul spyod|compulsory service [eg post people and/ or horses]
+'ur 'ur|roar, clamor [water, wind, fire]
+'ur ba|roar [horses or cattle shying, crowd, market place, wind. geyser]
+'ur bskyod|sounds of motion [animal stampede, work, bustle]
+'ur chom|roar [earthquake]
+'ur zhogs|startling talk/ noise [brings on shying]
+'ur dir dir|crowd sound [many people speaking]
+'ur 'ur sil sil|[sound of many kinds of melodious music]
+'ur 'ur chem chem|rush and roar [great fire, many drums. folk dance + drums]
+'ur chil le|clatter [army passing]
+'ur rdo chu mig dgu sgril|sling w many thin vari-colored threads and ris mig dgu [toy and cattle herding implement]
 ab|numb from cold
 ab cor|pilgrim ? gnas skor ba
 ab pa|1) take by deceit; 2) 'khob pa, [become rough?] from cold
@@ -9779,15 +9779,15 @@ ar dza ka|cotton
 as ma gar bha|emerald
 at the'i ri bo|Altai mts
 bA la|meat [tantric symbolism: tshogs form]
-bE dur|lapis lazuli
-bE ro|the translator Vairochana
-bE du rya|lapis lazuli
-bE ro'i snying tig|nyingtig of Vairochana
-bE ro tsa na|Vairochana
-bE dur ya|lapis lazuli
-bE dur sngon po|blue lapis
-bE dur dkar po|white lapis
-bE dur ya rang bzhin gyis sngo ba|naturally blue lapis
+bai dur|lapis lazuli
+bai ro|the translator Vairochana
+bai du rya|lapis lazuli
+bai ro'i snying tig|nyingtig of Vairochana
+bai ro tsa na|Vairochana
+bai dur ya|lapis lazuli
+bai dur sngon po|blue lapis
+bai dur dkar po|white lapis
+bai dur ya rang bzhin gyis sngo ba|naturally blue lapis
 ba|1) 15th consonant; 2) noun making particle; 3) prefix/suffix letter; 4) common second part of a word ['chi ba, rgyal ba]; 5) male personifying/agent particle [shing bzo ba, lha sa ba] (6) cow [R] (7) intermediate state). 1) 15th consonant; 2) noun making particle; 3) prefix/ suffix letter; 4) common 2nd part of a word [R]; 5) male personifying/ agent particle [R] (6) cow [R] (7) intermediate state (8) past tense [ng ' r l]. / (6) cow [= 'jo ma dang, drus ma, nu rgyas ma, ba mo, 'bab byed lus ldan, zho srung byed, bzhon ma, 'o 'phel, 'o ma 'ching, yongs 'jo ma. 1) 15th consonant; 2) noun making particle; 3) prefix/ suffix letter; 4) common 2nd part of a word; 5) male personifying/ agent particle; 6) cow; 7) intermediate state; 8) past tense
 ba 'jo|milk a cow
 ba 'o|cow's milk
@@ -11597,7 +11597,7 @@ bde mchog gi rdzogs rim lnga|the five sampannakramas of Chakrasamvara; 1) the st
 bde mchog gi rdzogs rim rim pa lnga|the five sampannakramas of Chakrasamvara
 bde mchog lhan skyes|co-emergent/ yab yum Chakrasamvara
 bde gshegs 'phags pa'i zhing|field of the noble sugatas
-bde gshegs sman bla bE dur ya'i 'od gyi rgyal|the sugata Supreme Healer Vaidurya Light Victorious One [chief of the medicine buddhas sangs rgyas sman gyi bla one of the {bde gshegs mched brgyad kyi nang gses shig}. the sugata Supreme Healer Vaidurya Light Victorious 1
+bde gshegs sman bla bai dur ya'i 'od gyi rgyal|the sugata Supreme Healer Vaidurya Light Victorious One [chief of the medicine buddhas sangs rgyas sman gyi bla one of the {bde gshegs mched brgyad kyi nang gses shig}. the sugata Supreme Healer Vaidurya Light Victorious 1
 bde gshegs dngos po nyid|the very "substance" of the sugatas
 bde gshegs snying po|Buddha-nature; sugatagarbha [Buddha-nature, sugata-essence nucleus of the sugata fundamental continuity gzhi rgyud primordially existing within the continuums of all sentient beings, empty in essence, ngo bo; luminous by nature, rang bzhin; and embodying bdag nyid can [or just mean having the nature all pervading compassion.]
 bde gshegs snying po'i chos drug|the five dharmas of sugatagarbha [??]
@@ -13408,7 +13408,7 @@ bla re bres pa|decorated w canopies
 bla'i grwa|upper cover, roof
 bla'i gwa|[arch] ministers's assembly place
 bla'i mchod gnas|1) main object offered; 2) officiating monks at court [resident monk={bla mchod} court chaplain]
-blad pa|chew [a'cha' ba,[make prepare, construct, establish??]
+blad pa|chew ['cha' ba,[make prepare, construct, establish??]
 blag|1) incline 1's ear, listen to; 2) cover
 blag pa|(tha dad pa blags pa, blag pa, blogs,, 1) incline 1's ear and listen, pay attention; 2) shed [tears] [gtong ba dang 'dor ba]
 blag pa med pa|sitting in exposed places
@@ -17294,7 +17294,7 @@ bsigs pa|fanned [past: {bsig pa} fan
 bsil|cool
 bsil 'dzin|water god, Varuna
 bsil 'gugs|bringing cool weather, 7th month sgang gi dus tshigs
-bsil ba|1) (Tha dad pa,; 1) wash [h]; 2) cut [hair]; 3) get rid of, take off [clothes] [a'bud pa, dbu zhva bsil ba, zhabs phyags bsil ba]; 4) [will] cut up, divide[d] split [past: f gsil ba] (5; 3) cool [med.: cooling power/ quality, freeze, feel cold [h] [comp bsil bu]. 1) (Tha dad pa,; 1) wash [h]; 2) cut [hair]; 3) get rid of, take off [clothes]; 4) [will] cut up, divide[d] split [past: f gsil ba]; 5) cool [med.: cooling power/ quality, freeze, feel cold [h] [comp bsil bu]
+bsil ba|1) (Tha dad pa,; 1) wash [h]; 2) cut [hair]; 3) get rid of, take off [clothes] ['bud pa, dbu zhva bsil ba, zhabs phyags bsil ba]; 4) [will] cut up, divide[d] split [past: f gsil ba] (5; 3) cool [med.: cooling power/ quality, freeze, feel cold [h] [comp bsil bu]. 1) (Tha dad pa,; 1) wash [h]; 2) cut [hair]; 3) get rid of, take off [clothes]; 4) [will] cut up, divide[d] split [past: f gsil ba]; 5) cool [med.: cooling power/ quality, freeze, feel cold [h] [comp bsil bu]
 bsil bser|[arch] cold wind
 bsil bsir|cool and light/ gentle
 bsil bu|cool, cold
@@ -17704,10 +17704,10 @@ bskyod yas|55 digit number [of those up to 60 described in abhidharma]. 55 digit
 bskyod pa yang ba|person who likes travelling
 bskyod med pa|1) not shaking/ trembling; 2) a number
 bskyod byed ma|Sancarini
-bskyod 'god byed|go
+bskyod 'god byed|
 bskyog pa|[future: skyog pa]
 bskyogs pa|[past: skyog pa]
-bskyon|skyon
+bskyon|
 bskyon pa|[past: f skyon pa]
 bskyor ba|[past: f {skyor ba} 1) recite, repeat, rehearse; 2) support, hold/ prop [up]; 3) paste; 4) help
 bskyor bskyod|move from place to place, mobile, circuit
@@ -18092,7 +18092,7 @@ bsod nyams|fall away from/ destroy/ damage 1's good fortune
 bsod pa|1) [especially] good, excellent; 2) be pleased with, take a delight in, like
 bsod shes|acceptance of the cognition of dharma
 bsod snyams|alms
-bsod snyoms|alms; 1) beg for alms, mendicant; 2) alms, gifts [a'dod chags zhe sdang bral bar bsod snyoms spyod cing rgyu]
+bsod snyoms|alms; 1) beg for alms, mendicant; 2) alms, gifts ['dod chags zhe sdang bral bar bsod snyoms spyod cing rgyu]
 bsod zad|full of misfortune unfortunate [1s], exhausted merit
 bsod zas|alms food
 bsod par brtsi|considered especially good
@@ -18469,7 +18469,7 @@ bstar sgrig|line up, place in order/ rows/ a series
 bstar chags su|regularly, routinely
 bstar chags su byed|do regularly/ routinely
 bstar rkang snyoms par byed pa|make even and regular
-bstas|1) probably active form of ({a'thas bsti gnas} solid hub, firm dwelling place??; 2) misspelling of {brtas pa} exhausted, grown up, full blown, delighted
+bstas|1) probably active form of ({'thas bsti gnas} solid hub, firm dwelling place??; 2) misspelling of {brtas pa} exhausted, grown up, full blown, delighted
 bsten|cultivation, honoring, attend, rely upon [serve, follow, study with, take, get, associate with/ on, enjoy, resort to, adhere to, keep, follow [arch] teacher maintain/ live in (solitude, etc]
 bsten bkur|attend and revere
 bsten pa|/ 1) [past: f sten pa]; 2) at the navel a nadi lus 'phel rgyas su 'gro ba'i; 3) serve, attend, follow, depend on; 4) confidence
@@ -21040,7 +21040,7 @@ bzhad mo shor|burst out laughing
 bzhad kha ma|flower kha 'bus la khad pa [1st opening]
 bzhad bro ba|funny, farcial, ridiculous
 bzhad 'phya rgyu|ludicrous, ridiculous
-bzhag|[past: {'jog}, 1) round/ circular pattern w beginning and end joned [sgor mo lta bur 'khyil ba'i ri mo}, rgyu ma bzhag sgor mo, zlos gar ba tsho bzhag sgor mo ltar ru bsgrigs pa]; 2) brla khug; 3) [newly] established [linking verb expressing idea that what is duscussed is not generally known and just discovered by the writer [a'di tsho chag srid thad kyi dbye ba sha stag red bzhag: these are only differentiated on political grounds] large intestine put in place, arrange [past: 'jog pa] let go, gather, rest, establish, categorize, place, posit, postulate, add to. [past: 'jog],, 1) round/ circular pattern w beginning and end joined; 2) brla khug; 3) [newly] established * large intestine put, in place, arrange [past: 'jog pa] let go, gather, rest, establish, categorize, place, posit, postulate, add to
+bzhag|[past: {'jog}, 1) round/ circular pattern w beginning and end joned [sgor mo lta bur 'khyil ba'i ri mo}, rgyu ma bzhag sgor mo, zlos gar ba tsho bzhag sgor mo ltar ru bsgrigs pa]; 2) brla khug; 3) [newly] established [linking verb expressing idea that what is duscussed is not generally known and just discovered by the writer ['di tsho chag srid thad kyi dbye ba sha stag red bzhag: these are only differentiated on political grounds] large intestine put in place, arrange [past: 'jog pa] let go, gather, rest, establish, categorize, place, posit, postulate, add to. [past: 'jog],, 1) round/ circular pattern w beginning and end joined; 2) brla khug; 3) [newly] established * large intestine put, in place, arrange [past: 'jog pa] let go, gather, rest, establish, categorize, place, posit, postulate, add to
 bzhag 'og|armpit
 bzhag bra|mi nyag shar stod bzhag bra dkar po snow mt
 bzhag dngul|bank deposit, savings
@@ -21097,8 +21097,8 @@ bzhengs bzhugs gnyis|standing or sitting
 bzher|wet; wet, moist
 bzhes|1) items food and drink clothing etc. to be enjoyed, joined as [h]; 2) put on, wear, dress [clothes]; 3) accept, take, receive [precepts, [h] of len]; 4) reaching the age of; 5) eat; 6) [h] particle [bzhes 'bras]. 1) items food and drink clothing etc. to be enjoyed, joined as; 2) put on, wear, dress [clothes]; 3) accept, take, receive; 4) reaching the age of; 5) eat [h]; 6) [h] particle
 bzhes 'bras|rice [h]
-bzhes byad|[h]
-bzhes chas|[h]
+bzhes byad|
+bzhes chas|
 bzhes kham|peach [h]
 bzhes khrung|chang to be drunk
 bzhes khug|tobacco pouch [h]
@@ -22211,7 +22211,7 @@ chad grangs|deficit shortage, negative #
 chad gsab|make up a deficiency/ shortage
 chad gso|chad pa'i kha skong
 chad gsor|when person/ animal is exhausted by fatigue, another does the work instead
-chad ka|chad
+chad ka|
 chad khongs|ma ldangs pa or chad pa'i gras,...Thob skal chad khongs la su su yod,...Sgo khral chad khongs kyi tshong zog .Thob skal ma ldangs pa rnams chad khongs su tho bkag pa
 chad las|law, legal affairs, prescribing a punishment for an offender
 chad lhag|shortage and surplus [adjusting rough calculation procedures for actual/ accurate star positions: in year count when for 1 planet nyin both earlier and later occur, gza' 'og gi chu tshod how many that date count is lacking &, nyin earlier and when later's gza' leap over gza' 'og gi chu tshod how few ba'i date count extra must be adjusted for]. shortage/ deficit and surplus
@@ -23222,7 +23222,7 @@ cho 'phrul gsum ldan|having the three types of miraculous ability {sku rdzu 'phr
 cho 'phrul rnam pa gsum|three types of miraculous ability {sku rdzu 'phrul gyi cho 'phrul}, body miraculous manifestations {gsung nges su bstan pa'i cho 'phrul}, speech miraculous display of the doctrine {thugs kun brjod pa'i cho 'phrul}, = mind miraculous communication]
 cho 'phrul zla ba|1st month of miracles [in which in 511 BC the Buddha having displayed various miracles tamed heretics]
 cho 'phrul mchod pa|[puja of miracles [puja commemorating the Buddha's miracles established by Tsongkhapa in the 7th earth ox year 1st month of miracles in Lhasa's gtsug lag khang puja of smon lam chen mo]
-cho 'phrul mchod rten|miraculous stupa [one of the {mchod rten cha brgyad}, the Buddha in mnyan yod dze t'a'i grove miracle showing time bzhengs pa'i square stupa w four stories in each direction glo 'bur dang bcas pa'am zlum po bang rim bzhi w lotus leaves]
+cho 'phrul mchod rten|miraculous stupa [one of the {mchod rten cha brgyad}, the Buddha in mnyan yod dze ta'i grove miracle showing time bzhengs pa'i square stupa w four stories in each direction glo 'bur dang bcas pa'am zlum po bang rim bzhi w lotus leaves]
 cho kyi dbyings|dharmadhatu, expanse of reality
 cho go bzang shes ldan pa|have excellent knowledge of ritual
 chob chob|eating/ pouring sound
@@ -29180,7 +29180,7 @@ dgra bcom pa gsod pa|arhaticide
 dgra bcom pa bsad pa|killing an arhat [one of the {mthams med pa lnga} = five boundless Offenses]
 dgra bcom pa la zhugs gnas gnyis|entering and becoming established as an arhat
 dgra bcom pa la 'jug pa|enter into the state of an arhat
-dgra bcom pa nyi ma gung pa|the arhat ni\yi ma gung pa
+dgra bcom pa nyi ma gung pa|the arhat ni/yi ma gung pa
 dgra bcom gtsug phud can|King Lang Darma, bstan pa nyams rjes monks sham thabs gong ba can gyon, sgra gzhan bzhar, gtsug phud bzhag dbyar zla gsum dgon par dbyar gnas bcas, ston dgun dpyid gsum khyim thab dang grong pa'i mchod gnas byed pa'i grva gzugs rnams kyi bla dvags kyi ming]
 dgra bcom 'phags pa'i mnyam gzhag|the meditation of an arhat noble one
 dgra bcom zhugs pa|approacher to foe destroyer [one of the zhugs gnas brgyad, 1 of the dge 'dun nyi shu, from the 1st dhyana up to the peak of samsara abandoning all kleshas sbyor ba can]
@@ -29988,7 +29988,7 @@ dkyus 'bras|ordinary/ inferior rice
 dkyus 'gre|abbreviated, condensed
 dkyus btags|ordinary/common white scarf
 dkyus bur|common/inferior molasses
-dkyus dkar|common\inferior china
+dkyus dkar|common/inferior china
 dkyus gcig|gzhung gcig pa'am star gcig pa
 dkyus ja|ordinary/ everyday/ inferior tea
 dkyus ltar|according to the general liturgy
@@ -38717,7 +38717,7 @@ gnod pa'i lhag ma gnyis|among the {dge 'dun lhag ma bcu gsum}, groundless slande
 gnod pa'i nus pa|harmful/ negative function/ force
 gnod bzhi rtsa gtor|annihilate the four pests
 gnod sbyen lag na phreng thogs|the sprites called those who hold rosaries
-gnod sbyin|chang
+gnod sbyin chang|
 gnod sbyin ma|sun
 gnod sbyin mo|yak.si, female mountain spirits
 gnod sbyin phyogs|N
@@ -41066,7 +41066,7 @@ gsab 'debs|make-up planting
 gsab 'dems|run-off election
 gsab 'dzugs|make-up planting
 gsab bcos|remedy
-gsab cha|kha gsab byed dngos rigs,//a'tsho ba'i gsab cha,//gun gsab
+gsab cha|kha gsab byed dngos rigs,//'tsho ba'i gsab cha,//gun gsab
 gsab dngul|compensation, indemnity
 gsab khrid|make-up class
 gsab pa|[future: gsob pa] [past: bsabs, future: bsab] make up for, supplement, repay, return
@@ -42121,7 +42121,7 @@ gshor|rough; 1) [Tha dad pa],, bshor ba, bshor ba, gshor!,, hunt wild animals/ f
 gshor ba|1) [Tha dad pa],, bshor ba, bshor ba, gshor!,, hunt wild animals/ fish; 2) bshar ba, bshar ba, gshor,, measure, weigh, count, go 1 after another single file; 2) rough, not soft
 gshor bre|bre vol. measure [of grain etc]
 gshor kha rgyag pa|'bru srang etc measure
-gshos|1) [arch] [a'khrig pa], [have sex, be depraved, cohabit; 2) cohere, stick to; 3) [past: gsho],, threw [dirt, liquid, bailed
+gshos|1) [arch] ['khrig pa], [have sex, be depraved, cohabit; 2) cohere, stick to; 3) [past: gsho],, threw [dirt, liquid, bailed
 gshu 'dom|fathom
 gshung|1) [past: gzhings],, * reproach, blame; 2) (Tha dad pa bshungs pa, bshung ba, shungs,, secretly deprecate * 2.(A in person tell the faults of 1self and others
 gshung ba|1) [past: gzhung],, * reproach, blame; 2) (Tha dad pa bshungs pa, bshung ba, shungs,, secretly deprecate * 2.(A in person tell the faults of 1self and others
@@ -42295,7 +42295,7 @@ gsol stsal|giving, bestowing
 gsol thab|kitchen [h]
 gsol tshigs|food [h]
 gsol zhal|cup; cup/ bowl [h]
-gsol zhib|[h]
+gsol zhib|
 gsol zho|curds [h]
 gsol gzims mchod gsum|* gsol dpon, gzims dpon and mchod dpon
 gsol kha ba|1) chos skyong gi mgon po ba; 2) bla ma'i gsol dpon
@@ -45826,7 +45826,7 @@ ha yin 'di yin|pointless reason [with neg.]
 ha me long la 'debs pa|exhale moist breath w Ha fogging a mirror briefly
 ha ma go|not understand/ know
 ha rub sba rub|cooperative effort
-ha du dkar po|White Hadu [Notes: ha du, perhaps, is a placename in this context it refers to a teacher in nepal and teaching of varahi cycle) {ha mu dkar po} - Blue Annals tr g roerich, motilal banarsidass: delhi, 1976, pp 393-396) his real name is bsod nams 'byung gnas bzang po, and he studied the v\-ar\- ah\-i cycle with stong nyid ting 'dzin]. White Hadu [Notes: ha du, perhaps, is a place name in this context it refers to a teacher in nepal and teaching of varahi cycle) {ha mu dkar po} - Blue Annals tr g roerich, motilal banarsidass: delhi, 1976, pp 393-396) his real name is bsod nams 'byung gnas bzang po, and he studied the v\-ar\- ah\-i cycle with stong nyid ting 'dzin]
+ha du dkar po|White Hadu [Notes: ha du, perhaps, is a placename in this context it refers to a teacher in nepal and teaching of varahi cycle) {ha mu dkar po} - Blue Annals tr g roerich, motilal banarsidass: delhi, 1976, pp 393-396) his real name is bsod nams 'byung gnas bzang po, and he studied the vArAhI cycle with stong nyid ting 'dzin]. White Hadu [Notes: ha du, perhaps, is a place name in this context it refers to a teacher in nepal and teaching of varahi cycle) {ha mu dkar po} - Blue Annals tr g roerich, motilal banarsidass: delhi, 1976, pp 393-396) his real name is bsod nams 'byung gnas bzang po, and he studied the vArAhI cycle with stong nyid ting 'dzin]
 ha ming can|the deity dbang phyug chen po
 ha lo dkar po'i me tog|rgya lcam w white flower, sweet hot, body heat neutral, good for mkhal tshad, mngal tshad, khu ba 'dzag pa etc
 ha sang nge ba rgya yan|a state of realization, like space, w/o hope or fear
@@ -46694,7 +46694,7 @@ ji nus|as much as possible, to the utmost. whatever/ as much as 1 can
 ji phyir|for what purpose, why
 ji rnyed|all there is, all possible
 ji rob|[arch] why, for what reason?
-ji sgra|ji
+ji sgra|
 ji skad|what, whatever; 1) as was said/ written ['Go khrid pas ji skad bsgo ba'i tshig bzhin byed pa,...Da lta skabs babs kyi tshig don rnams le'u snga ma nas ji skad bstan pa ltar go ba len dgos,...Sngar gyi lo rgyus ji skad thos pa ltar yi ger 'bri ba,..; 2) Lung khungs ji 'dra zhig nas drangs pa'i tshig don gsham gsal ltar,...Bod kyi brda sprod pa'i bstan bcos sum cu pa las ji skad du, yi ge ' li k' li gnyis, ' li gsal byed ai sogs bzhi, k' li sum cu tham pa'o, zhes gsungs so lta bu,...Ai.. what, whatever
 ji snyed|all that exists, as many as there may be, whatever/ as much as there is/ is suitable, [quite] a lot, as suitable, all kinds, a suitable #
 ji srid|as long as; until, for as long as, however long
@@ -46848,7 +46848,7 @@ jo nang dol po pa shes rab rgyal mtshan|[1292 - 1361]; {jo nang dol po pa shes r
 jo rngog 'brom gsum|Atisha jo bo rje, rngog legs pa'i shes rab, and 'brom rgyal ba'i 'byung gnas
 jo mom gangs|lady of glaciers
 jo mo nang|{jo mo nang} [valley of the jonangpa seat, in gzhis rtse'i khul gyi lha rtse rdzong]. {jo mo nang}
-jo mo rdo rje kun grags ma|lady dorje kundrak [notes: (see glossary to \_the rain of wisdom\_]. lady {dorje kundrak}
+jo mo rdo rje kun grags ma|lady dorje kundrak [notes: (see glossary to "the rain of wisdom"]. lady {dorje kundrak}
 jo mo glo sdum|med. herb {jo mo glo sdum} [the leaves sweet, the fruit hot, body heat neutral, glo nad and rus tshad sel]. med. herb {jo mo glo sdum}
 jo mo gangs dkar|Mt. Everest [jo mo tshe ring ma'i gnas ri, jo mo glang ma]
 jo mo gangs can ri|Mt Everest [jo mo tshe ring ma'i gnas gangs rgyal mo mthon mthing, jo mo glang ma]
@@ -47450,7 +47450,7 @@ kar ma dus gsum mkhyen pa|1st Karmapa {dus gsum mkhyen pa}. Tusum Khyenpa the 1s
 kar ma pa'i rgyud pa|members of the line of the Karmapa lineage
 kar ma rabs brgyad|1st 8 karmapas [dusum khyenpa, karma pakshi, rangjung dorje, rolpey dorje, deshin shekpa, thongwa donden, chodrak gyamtsho, mikyo dorje]
 kar ma phrin las pa|Karma Tinlepa
-kar ma kam tshang|Karma Kagyu school [when Rangjung Dorje went to E Tibet and was meditating tamarisk shrubs on the mountain took the shape of a kam ? the initial of Karmapa; see Born in Tibet p 89 literally "the family of kam "]. karma kamtshang/kagyu {ka rma bka' brgyud} the karmapa school (while rangjung dorje went to east Tibet while and was meditating the tamarisk shrubs on the mountain took the shape of a kam - the initial of karmapa see \_born in tibet\_ p 89 literally "the family of ka\m"]. Karma Kamtshang/Kagyu
+kar ma kam tshang|Karma Kagyu school [when Rangjung Dorje went to E Tibet and was meditating tamarisk shrubs on the mountain took the shape of a kam ? the initial of Karmapa; see Born in Tibet p 89 literally "the family of kam "]. karma kamtshang/kagyu {ka rma bka' brgyud} the karmapa school (while rangjung dorje went to east Tibet while and was meditating the tamarisk shrubs on the mountain took the shape of a kam - the initial of karmapa see "born in tibet" p 89 literally "the family of kaM"]. Karma Kamtshang/Kagyu
 kar ma bha dra|Indian pandit who worked in Tibet
 kar ma bka' brgyud|Karma Kagyu. Karma kagyu [the karmapa teaching lineage originates from the first karmapa {dus gsum mkhyen pa} a disciple of gampopa]
 kar ma btsan skyong|{kar ma btsan skyong} last of sde ba gtsang pa, rulers of u and tsang overethrown by mongol gu shi khan
@@ -53655,7 +53655,7 @@ kwa ye|hello, exclamation OH! hear! [generally to subordinate]
 kwa phra ring|pumpkin gourd
 kwa'i|exclamation, calling, oh!
 kwa'u|melon, gourd, cucumber
-kyE rdo rje|Hevajra {kye rdo rje}
+kye rdo rje|Hevajra
 kya re kyo re|feeble, weak, infirm; feeble, weak, infirm, unable to go/do by oneself
 kya rom pa|auspiciousness
 kyad gsod byed|look down on, treat w contempt/ disrepect belittle/ scorn
@@ -53910,7 +53910,7 @@ la rdzas rdo phung|rock cairn below/ at summit of a high pass
 la stod byang|N Loto
 la stod lho|S Loto
 la stod tsho bzhir|in the four parts of Loto
-la med la|{la med pass}
+la med la|{la med} pass
 la li ta|Lalita
 la la na|[Skt] rkyang ma nadi
 la la phud|med. herb {la la phud}
@@ -53962,7 +53962,7 @@ lab rtse la|lab rtse pass
 lab gleng mi yong ba zhig byed dgos|[we] must do something so that there is not a controversy
 lad 'gros|imitate the way someone walks
 lad bzo|reproduction, copy
-lad mo|imitation; [a'dra bcos sam rjes zlos byed pa,//gzhan la zur za ba'i lad mo ma byed,//spre'us mi'i lad mo byed pa] imitation, providing, repitition, copying. imitation imitation, providing, repetition, copying
+lad mo|imitation; ['dra bcos sam rjes zlos byed pa,//gzhan la zur za ba'i lad mo ma byed,//spre'us mi'i lad mo byed pa] imitation, providing, repitition, copying. imitation imitation, providing, repetition, copying
 lad pa|(tha mi dad pa weak, faint, exhausted, blunt, dull, damaged, weak, feeble
 lad po|wandering or spyod pa nyams pa'i mi,//mi lad po rnams la slob gso gtong ba, loafer, idler
 lad sod|imitation
@@ -55983,7 +55983,7 @@ ldang ma lding|1) long ma longs; 2) rising upward drifting, soaring. (bird sweep
 ldang ma ldang lta|see whether something is enough/ suffices or not
 ldang ba yang ba|at the time of arising get up
 ldang ka ska|lion sha ra bha, 8 legged lion
-ldangs|ldang
+ldangs|
 ldangs pa|[past: ldang ba]
 ldar ba|be weary/ tired, faint, languid, wet, damp, idiot, unclear mind
 ldar ldur|very hot
@@ -56729,7 +56729,7 @@ lha mo bdud gsol ma|Tusolma
 lha mo ba'i chas|goddess play costume
 lha mo sgyu 'phrul ma|Mayadevi
 lha mo ro langs ma|the goddess ro langs ma
-lha mo E ka dza ti|the goddess Ekajati
+lha mo e ka dza ti|the goddess Ekajati
 lha mo gos dkar mo|the goddess Pandaravasini
 lha mo bla mtsho|{lha mo bla} Lake
 lha mo khro gnyer can|1) wrathful Tara; 2) wrathful goddess
@@ -58368,7 +58368,7 @@ log lam|perverted; 1) wrong/ mistaken path/ road; 2) bad/ perverted/ false path 
 log lta|[holding] wrong/ perverted/ false views, disbelief, disbelieving, wrong faith
 log nas|elsewhere (looked for turn away from, stop, have ended, return, come, go back
 log pa|(Tha mi dad pa,, 1) re[turn]; 2) collapse, fall/ tumble down; 3) mistake, error; 4) wrong, false, incorrect, perverted, heretical; 5) opposite, reverse; 6) go back [on], turn away from, stop; 7) heterodox
-log po|(A; 1) 'dam pa po, chooser? appointer?; 2) ldab [a'phar] [increase, extra additional???],//ldab grangs log por btang ba,//mi grangs log por 'phar ba ??? [double, times, recited???
+log po|(A; 1) 'dam pa po, chooser? appointer?; 2) ldab ['phar] [increase, extra additional???],//ldab grangs log por btang ba,//mi grangs log por 'phar ba ??? [double, times, recited???
 log rgyag|plow a field after harvest
 log rlung|adverse wind
 log rtog|* misunderstanding *, misconception, perversion, perverted views/ thoughts/ conception, wrong ideas/ understanding/ thinking, fallacy, misapprehension, misinterpretation
@@ -59471,7 +59471,7 @@ lung shur|ravine
 lung ster|give reading transmission
 lung ston|predicting, prophesy
 lung stong|desolate/ solitary valley/ area
-lung thag|strap/ rope used as a handle [a'dzin lung khug pa can nam khug pa med]; 2) length of a valley/ region. strap/ rope used as a handle/ to hang something up; 2) length of a valley/ region
+lung thag|strap/ rope used as a handle ['dzin lung khug pa can nam khug pa med]; 2) length of a valley/ region. strap/ rope used as a handle/ to hang something up; 2) length of a valley/ region
 lung thang|1) [klung la chags pa'i] plain, plateau; 2) med tree {lung tong mig}; 3) fruit pit made into malas; 4) bubbly
 lung tong|{lung tong mig} med. tree
 lung tshan|region, province, locality
@@ -59600,7 +59600,7 @@ lung sil bu|lung phran tshegs. short quotations, bits of scripture
 lung bar ma|lung bar ma [one of the mdo sde lung sde bzhi]
 lung a nu yo ga|Anu yoga [vehicle of scriptures]. Anu yoga * vehicle of scriptures
 lung a nu yo ga'i theg pa|the anu yoga vehicle of scriptures, the vehicle of 'lung' Anuyoga
-lung gzhung bla ma zhu ba|{lung gzhung bla ma zhu ba} [a'dul ba lung sde bzhi'i ya gyal zhig ste, volume bam po 53, tr by lo tsh' ba klu'i rgyal mtshan]
+lung gzhung bla ma zhu ba|{lung gzhung bla ma zhu ba} ['dul ba lung sde bzhi'i ya gyal zhig ste, volume bam po 53, tr by lo tsh' ba klu'i rgyal mtshan]
 lung sdebs tshul lnga|CHN
 lung pa gang|yul gang ba ste example of very many / mgo rnyog lung pa gang bzos pa// ming ngan lung pa gang lus pa, rdzun lung pa gang bshad de mi la mgo skor ba
 lung pa stong pa|empty valley, province
@@ -60491,7 +60491,7 @@ ma tu mya ngam gyi yul|{ma tu mya ngam gyi yul} desert near Jhalandhara D
 ma byang rgyag|play mah jong
 ma rdzogs pa|incomplete, imperfect
 ma rig gnyis|the two kinds of ignorance
-ma rig gsum|three fold loss of awareness, three kinds of ignorance [one {rgyu bdag nyid gcig pa'i rig pa} = the sole potential self nature loss of awareness, the primary cause inherent in mind as such two {lan cig skyes pa'i ma rig pa} = coemmergent loss of awareness three {kun tu btags pa'i ma rig pa} = self arising appearance, grasping at other is the loss of awareness through motivated identity). 3-fold loss of awareness, three kinds of ignorance
+ma rig gsum|three fold loss of awareness, three kinds of ignorance [one {rgyu bdag nyid gcig pa'i ma rig pa} = the sole potential self nature loss of awareness, the primary cause inherent in mind as such two {lhan cig skyes pa'i ma rig pa} = coemergent loss of awareness three {kun tu btags pa'i ma rig pa} = self arising appearance, grasping at other is the loss of awareness through motivated identity). 3-fold loss of awareness, three kinds of ignorance
 ma rig pa|1) not see/ apprehend; 2) ignorance: 1) rtsa nyon drug gi nang gses, rig pa shes rab kyi mi mthun phyogs rten khams gsum la yod pa'i las 'bras dang bden pa sogs kyi tshul ji lta ba mi shes par kun nyon skyed par byed pa'o,//ming gi rnam grangs la nga yir 'dzin dang, ngar 'dzin, dngos 'dzin, bdag 'dzin, mi shes bcas so, 2) not see,//mtshan mo mig gis gzugs ma rig pa,//ma rig rig mdog //3) (met) 1. samsara, Hor zla bcu gnyis pa {de kho na nyid la rmongs pa dang bden bzhi'i don la rmongs pa gnyis su yod pa las 'dir phyir ma'i don} means we are here because of delusion in regard to suchness and the four truths, Ignorance (one of the six root disturbances, one of the 12 links (gd-mk) one of the {chu bo bzhi} four currents}, misknowledge, ignoring the intelligence, nascence, not understanding the differnce between virtue and non-virtue (tserig]. 1) not see/ apprehend/ know; 2) ignorance)/*
 ma rig gzung 'dzin|ignorant subject and object/ grasping and fixation
 ma rig sgo lnga'i sbubs|the ignorant nature/ covering of the five gates
@@ -61269,7 +61269,7 @@ mar gyi nying khu|refined melted butter/ ghee
 mar gyi zang thal|the lower directness
 mar khe si|Marx
 mar khe si'i ring lugs|Marxism
-mar khe si le nyin ring lugs|Marxism-Leninism [a'dzam gling yongs kyi 'byor med gral rim dang ngal rtsol mi dmangs tshos gsar brje'i 'thab rtsod byed pa'i rigs pa'i gzhung lugs tshan rig dang mthun pa zhig yin zhing, thog mar mar khe si dang aen ke si rnam gnyis kyis gsar bskrun gnang ba dang, phyis su le nyin gyis yar rgyas dang phun sum je tshogs su btang ba zhig red mar khe si dang aen ke si rnam gnyis kyis bskrun pa gnang ba'i 'byor med gral rim gyi bsam pa'i ma lag cig yin zhing, de'i rtsa ba'i grub cha ni mar khe si'i ring lugs kyi mtshan nyid rig pa dang, chab srid dpal 'byor rig pa, tshan rig spyi tshogs ring lugs gsum gong bu gcig gyur zhig yin, 'byor med gral rim gyi srid dbang sger 'dzin skor gyi rigs pa'i gzhung lugs de mar khe si'i ring lugs kyi snying po red]
+mar khe si le nyin ring lugs|Marxism-Leninism ['dzam gling yongs kyi 'byor med gral rim dang ngal rtsol mi dmangs tshos gsar brje'i 'thab rtsod byed pa'i rigs pa'i gzhung lugs tshan rig dang mthun pa zhig yin zhing, thog mar mar khe si dang aen ke si rnam gnyis kyis gsar bskrun gnang ba dang, phyis su le nyin gyis yar rgyas dang phun sum je tshogs su btang ba zhig red mar khe si dang aen ke si rnam gnyis kyis bskrun pa gnang ba'i 'byor med gral rim gyi bsam pa'i ma lag cig yin zhing, de'i rtsa ba'i grub cha ni mar khe si'i ring lugs kyi mtshan nyid rig pa dang, chab srid dpal 'byor rig pa, tshan rig spyi tshogs ring lugs gsum gong bu gcig gyur zhig yin, 'byor med gral rim gyi srid dbang sger 'dzin skor gyi rigs pa'i gzhung lugs de mar khe si'i ring lugs kyi snying po red]
 mar khe si ring lugs|Marxism
 mar kha lgro dong byad pa|{phyi la nyag}
 mar skrog ga|1) butter that has come out of the churn that very day; 2) butter packed in skin in two lb. balls D)
@@ -61466,7 +61466,7 @@ mchims phu|chimphu [meditation center near samye sa cha zhig deng skabs lho kha'
 mchims phu'i grub chen nyer lnga|25 great accomplished masters of chimpu; {rje bdang nyer lnga}, history, ch 4, pp the exact enumeration of the fifty-five wise men of yangdzong, the 108 accomplished masters of yerpa and chuwori, the 30 mantra adepts of sheldrak and the 25 d kin s are unknown gdmk). 25 great accomplished masters of Chimpu
 mchims blo bzang grags pa|Lobsang Drakpa of Chim
 mchin|liver
-mchin 'bras|{mchin 'bras} disease [a'bras nad mchin par babs pa'i nad de nad rtags su dbugs 'gag cing, mchin steng gser la skom dad che ba sogs 'byung ba zhig]
+mchin 'bras|{mchin 'bras} disease ['bras nad mchin par babs pa'i nad de nad rtags su dbugs 'gag cing, mchin steng gser la skom dad che ba sogs 'byung ba zhig]
 mchin chu|gastric juice
 mchin dri|1) mchin pa'i dri ma [div: dkar nag khra]; 2) diaphragm [between upper/ lower trunk sha yol ba bkram pa lta bu]; 3) midriff. 1) mchin pa'i dri ma/ stains; 2) diaphragm; 3) midriff
 mchin gsang|9th vertebra mchin pa dang 'brel ba'i moxibustion point [me btsa' bzhag na mchin skran dang mchin par bad rlung zhugs pa la phan. 9th vertebra moxibustion point connected w the liver
@@ -62446,7 +62446,7 @@ mdze rgod 'brum|leprosy type disease w many lesions
 mdzer ba|wart, growth excrescence, know in wood
 mdzer bu|small wood knot/ wart, excrescence
 mdzer dum|piece of wood
-mdzer pa|excrescence ; 1) knot in wood [a'bur zhig]; 2) wart on the skin [gzer bu gdab pa dang 'dra ba'i pags nad cig ste]. excrescence ; 1) knot in wood 'bur zhig; 2) wart on the skin gzer bu gdab pa dang 'dra ba'i pags nad cig ste [de la nang gses su dbye na, ra mdzer lug mdzer gnyis dang, rkang mthil sogs su 'byung ba'i mdzer nag bcas rigs gsum mchis so. excrescence ; 1) knot in wood; 2) wart on the skin
+mdzer pa|excrescence ; 1) knot in wood ['bur zhig]; 2) wart on the skin [gzer bu gdab pa dang 'dra ba'i pags nad cig ste]. excrescence ; 1) knot in wood 'bur zhig; 2) wart on the skin gzer bu gdab pa dang 'dra ba'i pags nad cig ste [de la nang gses su dbye na, ra mdzer lug mdzer gnyis dang, rkang mthil sogs su 'byung ba'i mdzer nag bcas rigs gsum mchis so. excrescence ; 1) knot in wood; 2) wart on the skin
 mdzer phran|small wood knot/ wart, excrescence
 mdzes|[comp mdzes po]. powerful, elegant, beautiful, adorn, handsome, lovely, gracious, pretty, attractive, becoming, gorgeous, resplendent, exquisite adorn elegance, beauty
 mdzes 'chos|make beautiful, create beauty, dressed up
@@ -64723,7 +64723,7 @@ mi smos par byas|not having said [an elided word of a phrase]
 mi shes pa|ignorant; not knowing, ignorant [-ce], human knowledge
 mi shes par|not knowing how to
 mi shes pa gnas brgyad|chn
-mi shes pa kun shes par byed pa'i dbang po|the faculty of making understood all that has not been understood; {dbang po gsum} {dbang po nyer gnyis}}
+mi shes pa kun shes par byed pa'i dbang po|the faculty of making understood all that has not been understood; {dbang po gsum} {dbang po nyer gnyis}
 mi shes bzhin du mos pa byung|the arising of respect/ devotion while one is ignorant
 mi shes dbang gis|due to ignorance
 mi shes dgu shes|know various actions
@@ -65026,7 +65026,7 @@ mi rgan pa|old person
 mi la 'tshe|rakshasa
 mi la zhon|rnam thos sras, Vaishravana
 mi la thos pa dga'|Mila Th"paga
-mi la ras pa|Milarepa [tserig). thos pa dga' ste, rab byung dang po'i lcags 'brug lor la stod gung thang skya rnga rtsa ru 'khrungs, sngar mthu bslabs nas dgra mang po bsad, slad nas sdig pa la 'gyod de chos byas pas sangs rgyas pa zhig ste, khong gis mar pa lo tsh'a'i snyan grags thos nas lho brag tu byon, bla mas sras mkhar dgu thog brtsigs pa sogs chos phyir dka' chen lo drug zla brgyad tsam spyod du bcug mthar dbang dang gdams ngag rdzogs par gnang, dgung lo zhe lnga pa shing byi lor stod phyogs skyid grong dang gnya' nang khul du phebs te lo dgu'i ring la na bza' ras rkyang dang zas zva tshod tsam la brten pa sogs dka' spyad dang snying rus drag pos bsgoms pas sku tshe de nyid la mchog gi dngos grub brnyes, de nas sa phyogs gzhan du 'byon bzhud mdzad nas snod du rung ba rnams la gsang sngags kyi gdams pa gnang, nyams mgur mang du brtsams, ras chung pa dang, dvags po lha rje sogs slob ma mang du bskrun, sgrub brgyud kyi bstan pa'i srol btsugs, rab byung gnyis pa'i chu yos lo la 'das,// mi la ras pa'i rnam thar, rnal 'byor gyi dbang phyug rje btsun mi la ras pa'i rnam par thar pa dang thams cad mkhyen pa'i lam ston mgur
+mi la ras pa|Milarepa [tserig). thos pa dga' ste, rab byung dang po'i lcags 'brug lor la stod gung thang skya rnga rtsa ru 'khrungs, sngar mthu bslabs nas dgra mang po bsad, slad nas sdig pa la 'gyod de chos byas pas sangs rgyas pa zhig ste, khong gis mar pa lo tsha'i snyan grags thos nas lho brag tu byon, bla mas sras mkhar dgu thog brtsigs pa sogs chos phyir dka' chen lo drug zla brgyad tsam spyod du bcug mthar dbang dang gdams ngag rdzogs par gnang, dgung lo zhe lnga pa shing byi lor stod phyogs skyid grong dang gnya' nang khul du phebs te lo dgu'i ring la na bza' ras rkyang dang zas zva tshod tsam la brten pa sogs dka' spyad dang snying rus drag pos bsgoms pas sku tshe de nyid la mchog gi dngos grub brnyes, de nas sa phyogs gzhan du 'byon bzhud mdzad nas snod du rung ba rnams la gsang sngags kyi gdams pa gnang, nyams mgur mang du brtsams, ras chung pa dang, dvags po lha rje sogs slob ma mang du bskrun, sgrub brgyud kyi bstan pa'i srol btsugs, rab byung gnyis pa'i chu yos lo la 'das,// mi la ras pa'i rnam thar, rnal 'byor gyi dbang phyug rje btsun mi la ras pa'i rnam par thar pa dang thams cad mkhyen pa'i lam ston mgur
 mi la ras pa'i rnam thar|the Biography of Milarepa
 mi la ras pa thos pa dga'|Milarepa Thopaga
 mi ma'i gnyen gyur|be the antidote for tears
@@ -65271,7 +65271,7 @@ mid pa gnyis pa|cows, goats, sheep etc
 mid pa 'gag pa|choke [on something]
 mid gi lams|the eye elements
 mid pa'i za ba|eat [w/o chewing], devour
-mig|eye; 1) hole; 2) eye, eye, sight, vision, visual [lta byed dang - 'dren byed dam, snang ba'i dbang po [/sha'i mig rnon po,//blo mig //zur mig //kha bas mig 'phyid pa,//mig gyas gyon 'phrig pa,//lta ba mig gis mi bzod pa,/a'grems ston khang nang la slebs dus mig gis lta tshod 'di tshod med pa,//syn: khyab byed dang, mthong byed, snang byed, spyan, tsaksha, gzigs byed, gsal byed, lha'i sgron ma]. 1) hole; 2) eye, sight, vision, visual
+mig|eye; 1) hole; 2) eye, eye, sight, vision, visual [lta byed dang - 'dren byed dam, snang ba'i dbang po [/sha'i mig rnon po,//blo mig //zur mig //kha bas mig 'phyid pa,//mig gyas gyon 'phrig pa,//lta ba mig gis mi bzod pa,/'grems ston khang nang la slebs dus mig gis lta tshod 'di tshod med pa,//syn: khyab byed dang, mthong byed, snang byed, spyan, tsaksha, gzigs byed, gsal byed, lha'i sgron ma]. 1) hole; 2) eye, sight, vision, visual
 mig 'ben|target; form that is the object of the eye, target, sighting instrument
 mig 'bras|eyeball
 mig 'brum|trachoma lha thor in the eyes, kind of eye disease, cutaneous eruption of the eyes D
@@ -65711,7 +65711,7 @@ ming don|name and meaning/designation [tha snyad dus kyi ming dang, brda dus kyi
 ming g.yar|kha gyar ba'am, take another name, use as a pretext
 ming gdag|give a name
 ming gnas|status, reputation, position
-ming gnyis|the two kinds of names [a'dod rgyal gyi ming dang, rjes grub kyi ming ngo, de la dngos ming dang, btags ming yang zer
+ming gnyis|the two kinds of names ['dod rgyal gyi ming dang, rjes grub kyi ming ngo, de la dngos ming dang, btags ming yang zer
 ming go|republic
 ming grags|well known
 ming grogs|1) person w the = name as another; 2) ming gi cha shas; 3))
@@ -65946,7 +65946,7 @@ mje rlig|penis and scrotum
 mje shubs|condom, penis sheath
 mjed|suffering, pain; suffering, pain, fear
 mjed pa|the world/ universe
-mjing|[a'jings] center and bottom, depths
+mjing|['jings] center and bottom, depths
 mjing kong|ltag khung gi kong kong, curved bones below nape of neck ??? there aren't any. collar bones?
 mjing pa|meadow, [back of] neck
 mjing sbrel|yoke together
@@ -66116,7 +66116,7 @@ mkha' 'gro gtad rgya|entrusting the teachings to the kin s - entrustment to kin 
 mkha' 'gro gtad rgya brgyud pa|the kin -entrusted lineage
 mkha' 'gro gtad rgya yi brgyud pa|the kin -entrusted lineage
 mkha' 'gro gtad rgya'i brgyud pa|lineage of the kin s' seal of entrustment GD
-mkha' 'gro gtad rgya'i rgya mdud|work on medicine by {'phyongs rgyas ngag dbang dpal bzang}; work on medicine by {'phyongs rgyas ngag dbang dpal bzang} [sde srid sangs rgyas rgya mtsho'i dngos slob 'phyongs rgyas ngag dbang dpal bzang gis mdzad pa'i man ngag rgyud kyi lhan thabs kyi gsang sman rnams lhug par bkrol ba'i lde mig lta bu'i le tshan zhig. {mkha' 'gro gtad rgya'i rgya mdud} [work on medicine by {a'phyongs rgyas ngag dbang dpal bzang}
+mkha' 'gro gtad rgya'i rgya mdud|work on medicine by {'phyongs rgyas ngag dbang dpal bzang}; work on medicine by {'phyongs rgyas ngag dbang dpal bzang} [sde srid sangs rgyas rgya mtsho'i dngos slob 'phyongs rgyas ngag dbang dpal bzang gis mdzad pa'i man ngag rgyud kyi lhan thabs kyi gsang sman rnams lhug par bkrol ba'i lde mig lta bu'i le tshan zhig. {mkha' 'gro gtad rgya'i rgya mdud} [work on medicine by {'phyongs rgyas ngag dbang dpal bzang}
 mkha' 'gro rigs bzhi|the four kinds of kin s chn
 mkha' 'gro la phug|med herb [chu ma rtsi'i rigs shig ste - ro skyur la bska, zhu rjes drod, nus pas chu 'gags 'bigs, skyug pa gcod, chu ser dang dmu chu sbyong,
 mkha' 'gro sangs ba ye shes|{mkha' 'gro sangs ba ye shes} [a lady deified as goddess of divine learning, said in a former life to have been wife of king Ratna d sa. a deified lady{mkha' 'gro sangs ba ye shes} - a deified lady. {mkha' 'gro sangs ba ye shes} [RR]
@@ -66249,7 +66249,7 @@ mkhal ma'i gsang|kidney moxibusion point [rgyab kyi sgal tshigs bcu bzhi pa mkha
 mkhal ma'i rtsa kun 'dar ma|the kidney n i avadh ti {mkhal ma'i rtsa nag sgal tshigs bcu bzhi pa'i thad nas g.yas g.yon du tshon gang re dang phun gang re gzhal ba'i gnas su yod pa'i mkhal rtsa}
 mkhal ma'i rlung tshabs|{mkhal ma'i rlung tshabs} kidney disease [{tshabs nad mkhal mar byer ba zhig ste, nad rtags su rked tshigs kha 'khor nas na zhing lhag par du grang na sdug tu 'gro ba zhig mo nad rlung tshabs rigs drug gi nang tshan}
 mkhal sngon la|{mkhal sngon} pass [in {aa mdo rdzong}]
-mkhal ma zho sha|{mkhal ma zho sha} med. tree [{a'bras bu mkhal dbyibs dang 'dra ba, ro mngar la tsha ba, zhu rjes cung bsil, nus pas mkhal gcong dang, mkhal tshad sel}
+mkhal ma zho sha|{mkhal ma zho sha} med. tree [{'bras bu mkhal dbyibs dang 'dra ba, ro mngar la tsha ba, zhu rjes cung bsil, nus pas mkhal gcong dang, mkhal tshad sel}
 mkhan|- part or agentive suffix attached to nouns and verbs the doer, agent, performer of an act, (vb + --) the 1 who does the verbal action, proficiency, skill, skillful, {mkhan po} knower. agent suffix w nouns and verbs the doer, agent, performer of an act, (vb + --) the 1 who does the verbal action, proficiency, skill, skillful, {mkhan po} knower
 mkhan brgyud|TSE preceptor lineage (for monk's vows), succession of khenpos/ scholars/ abbots (at a monastery)
 mkhan bu|abbot-successor in a lineage of preceptors) pupil, [mkhan po's] student
@@ -66288,7 +66288,7 @@ mkhan po sngo|{mkhan po sngo shrub} from which incense is made
 mkhan po ka rma rat na dbang phyug|Khenpo Karma Ratna Wangchuk
 mkhan po la rnam pa bzhi|the four kinds of khenpos [one mkhan po chos kyis sdud la zang zing gis ma yin pa'i yod conveys dharma not wealth two zang zing gys sdud la chos kyis ma yin pa'anf yod three chos kyis sdud cing zaing zing gyis sdud pa yang yod four chos kyis kyang mi sdud zing zang zing gyis kyang ma sdud]. the four kinds of khenpos [[IW]
 mkhan po mdzad pa|act as the preceptor
-mkhan po dang slob dpon|master and disciple, scholar and master, abbot and master, {mkhan po bod dhi sat tva} Shantarakshita and {slob dpon pad ma 'byung gnas} the master padmasambhava [a'dul ba ltar na, gzhi tshul khrims rnam par dag pa dang ldan pa, 'dul ba'i sde snod nas bshad pa'i cho ga la mkhas pa, nad pa sogs mgon med pa'i sems can la snying rje khyad par can ldan pa ste khyad chos gsum ldan gyi bla ma dge ba'i bshes gnyen no,
+mkhan po dang slob dpon|master and disciple, scholar and master, abbot and master, {mkhan po bod dhi sat tva} Shantarakshita and {slob dpon pad ma 'byung gnas} the master padmasambhava ['dul ba ltar na, gzhi tshul khrims rnam par dag pa dang ldan pa, 'dul ba'i sde snod nas bshad pa'i cho ga la mkhas pa, nad pa sogs mgon med pa'i sems can la snying rje khyad par can ldan pa ste khyad chos gsum ldan gyi bla ma dge ba'i bshes gnyen no,
 mkhan po bo dhi sa tva|khenpo bodhisattva Shantarakshita [bod rgyal khri srong lde btsan gyi dus su bod du phebs pa'i rgya gar gyi mkhan po zhi ba 'tsho
 mkhan po bo dhi sa twa|khenpo/ abbot/ preceptor bodhisattva, Shantarakshita
 mkhan po bo dhi sa twa zhi ba 'tsho|Bodhisattva Shantarakshita
@@ -66580,7 +66580,7 @@ mkhris sel gyi ro gsum|chn
 mkhris sel spyod lam gnyis|chn
 mkhu ba|(A) go ldog pa
 mkhu ldog|grief, sadness, rage, wrath, fury
-mkhun|'khun
+mkhun|
 mkhun pa|khun pa
 mkhur 'dzum|gad mo dgod skabs kyi mkhur tshos kyi rnam 'gyur zhig
 mkhur ba|cheeks; 1) cheeks; 2) 'gram khug)
@@ -68158,7 +68158,7 @@ mtha' 'khob kyi bskal pa|kalpa of barbarian
 mtha' 'khob kyi kla klo|barbarians
 mtha' 'khob bod kyi yul|country of barbarians
 mtha' gsal mthil mthong|come to light, become publicly known/ revealed
-mtha' bsdoms gan rgya|final agreement/ contract [a'gyur ldog mi 'byung ba'i phyir thag gcod kyi bris dan]
+mtha' bsdoms gan rgya|final agreement/ contract ['gyur ldog mi 'byung ba'i phyir thag gcod kyi bris dan]
 mtha' bsdoms gan rgya 'dzugs rgyur phan tshun gnyis phyogs nas mos mthun byung|both sides agreed to sign a final contract
 mtha' bsdoms kyi gros chod|final resolution
 mtha' las 'das|beyond limitations/ extremes
@@ -68305,7 +68305,7 @@ mthar gyis|gradually, in stages, by /taking turns
 mthar gyur|corpse
 mthar lam|1) mthar lam district; 2) path of finality)/GD
 mthar lhung|fall into decay, degenerate, deteriorate
-mthar lta|extreme-grasping view, eternalistic or nihilistic view of a transitory collection as a self [a'jig lta'i yul gyi bdag la dmigs nas rtag pa ther zug pa'am phyi mar nying mtshams sbyor ba med pa'i chad par lta ba'i rnam pa can, byed las dbu ma'i lam gyi nges par 'byung ba la bar du gcod pa'i shes rab nyon mongs can
+mthar lta|extreme-grasping view, eternalistic or nihilistic view of a transitory collection as a self ['jig lta'i yul gyi bdag la dmigs nas rtag pa ther zug pa'am phyi mar nying mtshams sbyor ba med pa'i chad par lta ba'i rnam pa can, byed las dbu ma'i lam gyi nges par 'byung ba la bar du gcod pa'i shes rab nyon mongs can
 mthar nan|insisting
 mthar phur|drive out, expel, evict, banish, pursue
 mthar phyin|conclusion GD goal, final, ultimate, accomplish, perfect, perfectly attain, master, complete, carry to the end perfected, fulfilled, attained perfect, accomplished, gone to the end, carried to the end, perfected, fulfilled,{mthar zin pa} thorough, complete[ly], exhaustive TSE
@@ -68336,7 +68336,7 @@ mthar skrod byed|drive out, expel, evict, banish, pursue
 mthar skrod gtong|drive out, expel, evict, banish, pursue
 mthar skrod dmag gru|destroyer [ship]
 mthar skrod gtong byed gnam gru|fighter/ pursuit plane
-mthar gnas bzhi|SK consonants [YA RA LA WA] ..Wa...Pa...La...Ta ?
+mthar gnas bzhi|SK consonants [YA RA LA WA]
 mthar gnas gyi snyoms 'jug dgu|the 9 successive equilibriums
 mthar gnas snyoms 'jug dgu|the 9 successive equilibriums, {snyoms 'jug dgu}
 mthar son pa|reach the other side/ end/ goal
@@ -68669,8 +68669,8 @@ mthong bas spang bya bzhi|the four riddances through insight
 mthong bas grol ba|the mere sight of whom beings liberation
 mthong la ma mthong ba|indistinct, unclear, ambiguous
 mthong spang rdzas 'dzin rtog pa dgu|TSE
-mthong spang brgya dang bcu gnyis|the 112 things to be abandoned by the path of seeing [a'dod pa'i mthong spang bden pa bzhi po re re'i spang bya phra rgyas bcu re bcu re brtsis pas bzhi bcu dang, khams gong ma gnyis su khong khro med pas so drug pa tshan pa gnyis bcas khams gsum gyi mthong spang bsdoms pas brgya dang bcu gnyis yod par mngon pa kun btus las gsungs,
-mthong spang brgyad cu rtsa brgyad|the 88 things to be abandoned by seeing [a'dod khams kyi mthong spang so gnyis dang, gzugs khams kyi mthong spang nyer brgyad, gzugs med khams kyi mthong spang nyer brgyad bcas khams gsum na khyon bsdoms pas mthong bas spang bar bya ba'i phra rgyas gya brgyad yod par mngon pa mdzod las gsungs
+mthong spang brgya dang bcu gnyis|the 112 things to be abandoned by the path of seeing ['dod pa'i mthong spang bden pa bzhi po re re'i spang bya phra rgyas bcu re bcu re brtsis pas bzhi bcu dang, khams gong ma gnyis su khong khro med pas so drug pa tshan pa gnyis bcas khams gsum gyi mthong spang bsdoms pas brgya dang bcu gnyis yod par mngon pa kun btus las gsungs,
+mthong spang brgyad cu rtsa brgyad|the 88 things to be abandoned by seeing ['dod khams kyi mthong spang so gnyis dang, gzugs khams kyi mthong spang nyer brgyad, gzugs med khams kyi mthong spang nyer brgyad bcas khams gsum na khyon bsdoms pas mthong bas spang bar bya ba'i phra rgyas gya brgyad yod par mngon pa mdzod las gsungs
 mthong spang btags 'dzin rtog pa dgu|TSE
 mthong spang spangs pa|thing abandoned on the path of seeing
 mthong spang 'jug pa gzung rtog dgu|TSE
@@ -68877,7 +68877,7 @@ mthun pa|agree, harmonize agreeable, friendly, in harmony, favorable, suitable, 
 mthun par|favorable, according, harmonious
 mthun phyogs|similar class; 1) of the same situaton/ class/ status; 2) friends whose minds are in accord/ harmony; 3) pro [a ri mthun phyogs rgyal khyab: pro American countries] similar class, harmonious factor [R]. 1) of the same situaton/ class/ status; 2) friends whose minds are in accord/ harmony; 3) pro, similar class, harmonious factor [EG sound is impermanent because it is produced: the mthun phyogs = produced, impermanent sound the mi mthun phyogs = produced permanent sound (TS]. 1) of the same situation/ class/ status; 2) friends whose minds are in accord/ harmony; 3) pro similar class similar class, harmonious factor
 mthun po|friendly, compatible, harmonious; friendly, compatible, harmonious, one, alike, similar
-mthun rkyen|favorable conditions for the fruition arising [a'bras bu 'byung ba dang rjes su mthun pa'i rkyen nam rgyu, EG, favorable conditions for the growing of a barley sprout are water and manure, food and clothing are favorable for living]. favorable/ amicable condition, harmonious occasion, provisions, necessities, prosperity, requisites, necessary things [to--], resources, means, materials, goods TSE
+mthun rkyen|favorable conditions for the fruition arising ['bras bu 'byung ba dang rjes su mthun pa'i rkyen nam rgyu, EG, favorable conditions for the growing of a barley sprout are water and manure, food and clothing are favorable for living]. favorable/ amicable condition, harmonious occasion, provisions, necessities, prosperity, requisites, necessary things [to--], resources, means, materials, goods TSE
 mthun sbrel|friendship, friendly, cordial relations, good will
 mthun sbyor|friendship; regulation, balance, adjustment. phan tshun mthun pa'i las la sbyor ba,...Bzo zhing gnyis bar la mthun sbyor gyi las ka yag po byed pa,...Bya spyod nor ba la mthun sbyor ma byed,...= nye bar sbyor ba dang, mthun phyogs, mtshams sbyor, mdza' byed pa bcas so friendship
 mthun sdeb|bsam blo mthun zhing mnyam du 'grogs pa
@@ -69710,7 +69710,7 @@ mtshur phu|Tshurpu monestery [in tolung district of central Tibet seat of the ka
 mtshur ser|color base yellow earth
 mtshur sngo|color base blue earth
 mtshur phu dgon pa|Tsurpu monestery [in tolung district of central tibet, seat of the karmapas (tserig) rab byung gsum pa'i sa bya lo la karma pa dus gsum mkhyen pas btab pa'i karma bka' brgyud kyi dgon chen zhig ste, lha sa grong khyer gyi nub byang gi phyogs su yod. Tshurpu Monastery
-mtshur ston dbang nge|{mtshur ston dbang nge} [mar pa lo ts'a'i slob ma grags can zhig. {mtshur ston dbang nge} -
+mtshur ston dbang nge|{mtshur ston dbang nge} [mar pa lo tsa'i slob ma grags can zhig. {mtshur ston dbang nge} -
 mu|1) border, end, extreme, boundary, limit, edge; 2) [uncompleted] remainder and zhor ma'am, ngang; 3) kind, category [rgyal kha 'thob mu nas 'bad brtson lhur len byed dgos, , las don byed mu la slob sbyong yang byed pa. 1) border, end, extreme, boundary, limit, edge; 2) [uncompleted] remainder and zhor ma'am, ngang; 3) kind, category * mu'u
 mu 'brel|continually, w/o interruption/ break, steadily *, continue
 mu 'byams|infinite, endless, boundless, limitless
@@ -72381,7 +72381,7 @@ ngar ngar byed|be excited/ fired-up, stimulated
 ngar ngar po|hoarse, husky, wheezing; 1) nature shin tu ngar po; 2) hoarse, husky, wheezing
 ngar ngar 'khun sgra|dbugs brtsegs stangs kyi sgra
 ngar ngar rgod rgod|mi ngar ma dang rgod po
-ngar ngar phad phad|ngar chen po lngas pa'i rnam pa
+ngar ngar phad phad|ngar chen po langs pa'i rnam pa
 ngar nyams pa|fired-up, stimulated, excited
 ngar dang bcas pa'i rig pa yis|with forceful insight roars
 ngar ldud pa|1) metal tempered; 2) ngar slong ba'am skul lcag gtong ba [people]
@@ -73178,7 +73178,7 @@ nor 'khrul|error, mistake; error, mistake, being wrong
 nor ba|(tha mi dad pa 1) confused, mistaken, wrong; 2) err, make a mistake, commit a fault; 3) error. mistake
 nor bcos|correction [of MS]
 nor bdag|wealthy man; 1) owner of wealth, wealthy man; 2) yaksha; 3) god of wealth Vaishravana; 4) money changer/ lender; 5) capitalist
-nor bdun|[a'phags pa'i nor bdun] the [7] aryan riches. * the [7] aryan riches. 7 jewels/riches
+nor bdun|['phags pa'i nor bdun] the [7] aryan riches. * the [7] aryan riches. 7 jewels/riches
 nor bsres|thrift, economy
 nor bu|jewel; 1) jewel, precious stones/thing, mani; 2) tip of the penis)/ [necklace, {phyag rgya drug}, [secretly] - sm {rdo rje}. 1) jewel, precious stone/ thing, mani; 2) tip of the penis; 3) magic weapon/ talisman
 nor bzang|Manibhadra, prosperous wealth
@@ -74240,7 +74240,7 @@ nye ti|pear
 nye tshad|nearness, distance
 nye tshal|artificial grove, garden
 nye tshan|relative, kinsman
-nye tshig|1) particle showing nearness EG "a'di"; 2) word of affection; 3) secondary word limiting idea in the principal 1 D
+nye tshig|1) particle showing nearness EG "'di"; 2) word of affection; 3) secondary word limiting idea in the principal 1 D
 nye zho|damage, mishap, bad fortune, accident, partiality, lack, shortage
 nye zungs|[arch] sex
 nye tshe ba|provincial; 1) provincial D; 2) partial, ephemeral [= Nyi tshe
@@ -75706,7 +75706,7 @@ pa ma ltar gas pa chen po|Great Splitting like a Lotus [Hell]
 pa ma dkar po|white lotus, pundarika; {pa ma dkar po} [a great drukpa kagyu master and author]
 pa ma skyil krung|lotus posture
 pa ma 'od kyi pho brang|the Palace of Lotus Light, (abode of Guru Rinpoche on the summit of zangs mdog dpal ri
-pa ma brtsegs pa|the pure land of {a'od dpag med}, {bde ba can}
+pa ma brtsegs pa|the pure land of {'od dpag med}, {bde ba can}
 pa ma ra ga|ruby
 pa ma khrag 'thung|Padma Heruka, "lotus blood drinker"
 pa ma ka ra|Padmakara, Guru Rinpoche
@@ -75822,7 +75822,7 @@ pad ma 'dab bzhi|four petalled lotus
 pad ma bka' thang|in the 5th shing bya lo la ao rgyan gling pas bsam yas dang shel brag nas gter du bton pa'i gu ru pad ma 'byung gnas kyi skyes rabs rnam par thar pa'o
 pad ma dkar po|1) white lotus, pundarika; 2) {pad ma dkar po} med. herb [{ro kha la bska, zhu rjes snyoms, nus pas snying tshad sel}]; 3) {pad ma dkar po} [great drukpa kakyu master and author. 1) white lotus, pundarika; 2) {pad ma dkar po} med. herb; 3) {pad ma dkar po}
 pad ma drwa ba|Lotus Net buddha field
-pad ma ye mdzes|{pad ma ye mdzes Bön teacher
+pad ma ye mdzes|{pad ma ye mdzes} Bön teacher
 pad ma bde chen gling pa|{pad ma bde chen gling pa} [great terton and reincarnation of Lotsava vairochana
 pad ma 'od 'bar|{pad ma 'od 'bar [sngar rgyal po zhig gis rang gi mnga' 'og tshong dpon 'byor pa che ba ming la nor bu bzang po zhes par rang gi dbang thang shor dogs kyis rgya mtso'i nang du nor bu len par btang ste bsad pa'i rjes su tshong dpon gyi bu pad ma 'od 'bar skyes pa de yang gsod thabs thengs mang byas kyang gsod ma thub pa'i mthar, pad ma 'od 'bar gyis rgyal po la mgo skor btang nas srin po'i yul du khrid bsad kyis dgra sha blangs te rgyal po'i go sa bzung ba'i sgrung 'di dang mthun par bsgrigs pa'i bod kyi zlos gar lha mo ba'i 'khrab gzhung zhig}
 pad ma 'od kyi pho brang|the Palace of Lotus Light [abode of guru rinpoche on the summit of {zangs mdog dpal ri})
@@ -76399,7 +76399,7 @@ pha'i longs spyod la phan pa|enjoying inheritance/ fathers property
 pha'i rgyu dngos|father's wealth, patrimony
 pha'u|pag
 phaN grub|pandits and siddhas, accomplished scholar
-phab|1) brought down, [past: {a'bebs pa} phabs; 2) yeast; 3) dry barm, lees, med. chang lees
+phab|1) brought down, [past: {'bebs pa} phabs; 2) yeast; 3) dry barm, lees, med. chang lees
 phab bsgyur|tr, transcribe, change, convert
 phab cha|discount
 phab pa|[past: 'bebs pa] consecrate, decoding to fall down, bring down
@@ -76412,7 +76412,7 @@ phab be phob be|cloths etc. phyi bong che ba'i tshul
 phab cha gcod|discount
 phab bsgyur byed|tr, transcribe, change, convert
 phab bsgyur zhu|tr, transcribe, change, convert
-phabs|yeast; 1) dry barm, lees, yeast [zho chang sogs bsnyal ba ldang byed kyi phabs/ ru ma ste: zho rtsi chang rtsi sogs]; 2) med. chang rtsi [nus pas chu rgyus 'grams pa dang, byis pa'i lte 'khor gyi nad, mngal nad, rta bong gi grang nad bcas la phan. 1) brought down, [past: {a'bebs pa} phabs; 2) yeast; 3) dry barm, lees, med. chang lees. 1) dry barm, lees, yeast; 2) med. chang lees
+phabs|yeast; 1) dry barm, lees, yeast [zho chang sogs bsnyal ba ldang byed kyi phabs/ ru ma ste: zho rtsi chang rtsi sogs]; 2) med. chang rtsi [nus pas chu rgyus 'grams pa dang, byis pa'i lte 'khor gyi nad, mngal nad, rta bong gi grang nad bcas la phan. 1) brought down, [past: {'bebs pa} phabs; 2) yeast; 3) dry barm, lees, med. chang lees. 1) dry barm, lees, yeast; 2) med. chang lees
 phabs bsgyur|tr, transcribe, change, convert
 phabs pa|transcription of terma scripts
 phabs rdzas|cheese chang lees etc.
@@ -77571,7 +77571,7 @@ phran bu tsam|only few, a little
 phran tsam gyis yang thub|Even this lowly 1 can do it
 phran bu'i nad|not included in major diseases thor bu'i nad kyi nang tshan te, gre bar gra ma zug pa sogs nad chung ngu
 phran bu'i nad bcu|(chn
-phrang|'phrang
+phrang|
 phrang btsan|place in Tibet
 phrang tshegs 'grel pa|{phrang tshegs 'grel pa [slob dpon tshul khrims bskyangs kyis mdzad pa'i 'dul ba lung phran tsegs kyi 'grel pa}
 phras spras pa|{phra rgyan bkod pa}; 1) subtle, thin, fine, narrow, shallow; 2) inlaid jewelry, ornament, jewel
@@ -77674,7 +77674,7 @@ phris|'brid pa! [past: 'phri],, lessen, diminish, reduce, subtract
 phris pa|[past: 'brid pa] lessen, diminish, reduce, subtract
 phro bo|child's frock/ chemise
 phro 'du phrin las kyi gzer|the nail of activity which is the emanation and absorption of light rays
-phrob|'phrob
+phrob|
 phrog|[past: {dphrog pa} f {'phrog}]
 phrogs|[past: ! {'phrog pa}] seized, ravished, plundered, stole, took by force, diminished, reduced, subtracted
 phrogs pa|[past: {'phrog pa}] seized, ravished, plundered, stole, took by force, diminished, reduced, subtracted
@@ -77882,7 +77882,7 @@ phug thag chod pa'i rgyal kha|decisive victory
 phug thag ma chod na the tshom yod|if 1 does not reflect on/ settle the real meaning 1 will be in doubt
 phug rdugs pa|phug la thug nas 'gro sa med pa
 phug pa lhun grub rgya mtsho|{phug pa lhun grub rgya mtsho}
-phug pa lhun grub rgya mtso|{phug pa lhun grub rgya mtso [bod kyi rtsis rig la mkhas pa zhig rab byung brgyad pa'i me yos lor rtsis gzhung pad dkar zhal lung mdzad0
+phug pa lhun grub rgya mtso|{phug pa lhun grub rgya mtso} [{bod kyi rtsis rig la mkhas pa zhig rab byung brgyad pa'i me yos lor rtsis gzhung pad dkar zhal lung mdzad}]
 phug shub she le|hoopoe; hoopoe bird
 phug rang 'dod tu bcug|secretly cherish selfishness
 phug ron gsang|don snod sogs med pa'i lus kyi stong cha phug ron thar tsam gyi gsang zhig ste, ske stong tsa ra khung nas nu ma'i steng thig gcig &, nu ma nas sgrog rus phyi zur bar thig gcig sgrog rus nas ske stong bar thig gcig bcas sbrel ba'i bar gyi gru gsum stong cha
@@ -77943,7 +77943,7 @@ phul ba|1) [past: 'bul ba] offered; 2) add to, mix w
 phul byung|1) exquisite; 2) eminent, especially fine/ noble, excellent, best, highest, outstanding; 3) Atisha; 4) perfected gift, donation {phyag rten} (/ (H
 phul gang|handful
 phul phyin|supreme, eminent, perfect, best/ perfected, victorious to perfect, make eminent
-phul thag|{a'tshams pa}
+phul thag|{'tshams pa}
 phul yig|bskur yig
 phul grangs khal bsgril|barley, rice etc. bre phul mang po khal du bsgril tshul
 phul rtogs pa phyin thugs la 'khrungs pa|gave birth to supreme realization
@@ -78004,7 +78004,7 @@ phung gzhi|destruction; trouble, arch-enemy, [cause of] disaster/ destruction
 phung kha|basis of transgression, become non-existent
 phung khams|physical body, skandhas and dhatus, aggregates and elements
 phung khrol|destruction, that which devastates
-phung krol|{a'thabs krol}. 1) ruin, destroy; 2) useless D; 3) battle, quarrel; 4) cause of harm/ evils/ faults
+phung krol|{'thabs krol}. 1) ruin, destroy; 2) useless D; 3) battle, quarrel; 4) cause of harm/ evils/ faults
 phung mi|who ruins others
 phung pa|spoiled, blown-out, destroyed, lost, destruction, disturbance, disorder
 phung po|1) particle [R]; 2) collection, accumulation; 3) pile, heap, mound, hill, bundle; 4) lump, mass [R]; 5) corpse [R] (6) (rashi) accumulation, heap [R] (7) five (met) [R] (6) physical body (7) [recurrent] calamity, destruction, ruin, defeat, devastation, danger[ous], disaster[ous] (8) skandhas [parts to an individual, [mental and physical] aggregates, component, heaps, [psyco-physical] [constituents] (9) herd, flock). 1) particle, thngs or in time collection, pile, heap, accumulation gong bu [//sa'i phung po,//rdo phung,//shing phung,//'bru rigs phung por spung ba,//bka' drin gyi phung po bgrang bar mi nus pa,//tser ma'i phung po'i steng]; 2) corpse [//shi ba'i phung po mer sreg]; 3) (rashi) accumulation, heap, [rigs mthun gyi chos du ma spungs pa'am, de nyid kyi khyad par thams cad 'dus pas na phung po zhes bya'o]; 4) five (met) [as there are five skandhas] aggregates, the heaps (parts to an individual), mental and physical aggregates, component - corpse, heap, skandha, psyco-physical constituents, mass, accumulation, mental and physical aggregates, physical body, psychophysical, recurrent calamity. 1) particle; 2) collection, accumulation; 3) pile, heap, mound, hill, bundle; 4) lump, mass, form, body, structure; 5) corpse; 6) (rashi accumulation, heap; 7) five; 6) physical body; 7) [recurrent] calamity, destruction, ruin, defeat, devastation, danger[ous], disaster[ous]; 8) skandhas; 9) herd, flock
@@ -78071,7 +78071,7 @@ phung rgan phung|corruption, deterioration, harm
 phung rgan rgan|the agent behind it, not obvious, old, clever, shy
 phung rgan bstan bshig|arch-enemy/ evildoer destroyer of the teachings
 phung lnga'i rab dbye|{phung lnga'i rab dbye} [important vinaya text
-phur|[past: !a'phur ba] felt, rubb[ed], massage, scratched, flew, soared, wrapped, enveloped, muffled
+phur|[past: !'phur ba] felt, rubb[ed], massage, scratched, flew, soared, wrapped, enveloped, muffled
 phur 'dzugs|1) stab w/ plant a phurba/ stake; 2) way of planting a field
 phur 'gyur|tent pegs
 phur ba|1) [past: 'phur ba]; 2) kilaya, dagger; 3) Vajrakilaya/ {rdo rje phur ba}; 4) relief work, emboss[ment]; 5) piercing[ly]; 6) rub, scratch; 7) mnye ba; 8) a disease [mgob] J; 9) strung, tied, connected
@@ -78470,7 +78470,7 @@ phyag mdzod sde chung|2nd treasurer, under secretary
 phyag rdor rtag ngu|{phyag rdor rtag ngu} med. herb [{sngo sman rtag ngu rigs gsum gyi nang tsan me tog sngo nag 'char ba zhig}
 phyags|boots [h] [past: 'phyag] swept, cleaned [up], polished
 phyags dar|dirt, dust, refuse [rags]
-phyags lham|lham
+phyags lham|
 phyags ma|duster ['jag ma'i phyags ma,//ku sha'i phyags ma,//spen phyags
 phyags phebs|come, go, arrive
 phyags sgro|feather duster
@@ -78561,7 +78561,7 @@ phyar ba'i stabs su gyon 'og rdo rje 'dzin|the lower left hand raises a vajra kh
 phyar po che|1) re lde/ phyar ba chen po piece of felt, cover; 2) large nomad tent
 phyar g.yeng can|distracted [person], [1] given up to worldly ends, fickle, vacillating
 phyar g.yeng mi byed par brtson 'grus byed pa|making undistracted effort
-phye|[past: f ! {a'byed pa} 1) opened, uncovered/ separate, divide, distinguish, differentiate, spread; 2) tsampa, flour, powder, [of parched barley] meal; 3) discern, give rise to, take sides, {ma myod} not, differentiate, distinguish; 4) dust powder
+phye|[past: f ! {'byed pa} 1) opened, uncovered/ separate, divide, distinguish, differentiate, spread; 2) tsampa, flour, powder, [of parched barley] meal; 3) discern, give rise to, take sides, {ma myod} not, differentiate, distinguish; 4) dust powder
 phye 'bo|two wooden 'bo connected together in 1 phye mar &, in the other gro [lo gsar sogs rten 'brel skabs bsgrig. two wooden 'bo connected together in 1 flour and butter &, in the other wheat
 phye 'gams|1) rtsam pa etc. 'gams zin pa; 2) 'gam rgyu'i rtsam pa
 phye 'thag|mill [to grind rtsam pa/ flour etc.]
@@ -79229,7 +79229,7 @@ phyin chad de ltar ma byed|hereafter don't do that
 phyin gyis brlabs pa'i bka' gsum|(chn
 phyin pa songs ba phebs pa|proceeded, went, gone
 phyin rtseg pa med|there was no outside wall
-phying|{a'phyings}. ?? felt
+phying|{'phyings}. ?? felt
 phying 'gag|chuba w/o sleeves/ blanket made from layers of wool pressed together
 phying bu|matted; matted, felt
 phying dmar|red felt [rug]
@@ -79252,7 +79252,7 @@ phying 'dud pa|make felt
 phyings pa can|wearing bad-colored clothes
 phyir|in order to; again, back [to], because of, to[wards the back] behind out[side], forth, by through, afterwards, subsequently, out[side], in order to,
 phyir 'brang|follow, pursue, run after, imitate
-phyir 'brangs|see {a'brangs}
+phyir 'brangs|see {'brangs}
 phyir 'bud|expulsion; expulsion, driving out, banishment, deportation
 phyir 'bul|return [something], give back [h]
 phyir 'bur|confound
@@ -79787,7 +79787,7 @@ phyugs shugs gro rnga 'phrul 'khor|animal power wheat harvester
 phyugs 'chag sgor ba|g.yul las gtong skabs ston 'bras tshar ma'i steng du phyugs ded de 'chag pa,//bod du ston thog g.yul khar bskams nas phyugs 'chag sgor ba'i lugs srol yod
 phyugs kyi ru ma|few cattle from which more are bred
 phyugs kyi glo nad|cattle lung disease/ plague
-phyugs byugs pa'i rdzas gsum|1) {dpral bar thal chen gyi tshom bu}; 2) {sprin mtshams dang mkhur tshos su rak ta'i thig pe}; 3) {a'ol kol la zhag gi zo ris dong sprug sgom rim}
+phyugs byugs pa'i rdzas gsum|1) {dpral bar thal chen gyi tshom bu}; 2) {sprin mtshams dang mkhur tshos su rak ta'i thig pe}; 3) {'ol kol la zhag gi zo ris dong sprug sgom rim}
 phyugs phyung ma nyams pa|gzhon nu ma grong pa'i chos kyis ma gos pa
 phyugs 'then 'khor lo|animal drawn cart
 phyugs nad 'gags|{phyugs nad 'gags} cattle disease [{nor lug gi kha sna nas chu 'bab pa dang, ske skrangs shing dbugs 'gags te nyin gcig gnyis tsam nas 'chi ba'i phyugs kyi 'gos nad cig}
@@ -80733,7 +80733,7 @@ rang byon|naturally/ self-appeared, [just] suddenly and spontaneously appeared, 
 rang byung|1) naturally occuring w/o work; 2) dhrmadhatu, chos kyi dbyings; 3) (met) Bhrama [rang byung khams las 'das pa natural, self existing, self-emergence, self-born, self-occurred, miraculously appeared syn {rang sangs rgyas} - self-born - self-existing, spontaneously present, self-existent/existing, self-arisen, self-born, spontaneously appeared, natural syn rang sangs rgyas]. 1) natural[ly occurring w/o work]; 2) dhrmadhatu, chos kyi dbyings; 3) Bhrama; 4) the natural world, nature
 rang bzhag|letting it take its natural shape, left to itself, absorption in 1's own being
 rang bzhed|our tradition
-rang bzhin|nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], [like {ngo bo} but sometimes re sugatagarbha, {ngo bo} = the emptiness part and {rang bzhin} = luminosity/ clarity part; natural expression attribute of the buddha-body of perfect rapture, ati: the buddha-body of reality, the natural expression - essential [original] nature, state of own being, there has been born, actuality, frame of reference- by nature, naturally, be of the nature of fundamental/ inherent/ultimate nature, essence, own-being, character, quality, identity, self-nature, see {ngo bo rang bzhin thugs rje} two intrinsic reality, actuality essence, = voidness, three self-existence, four frame of reference, natural expression [of mind] five natural[ly], = {rang bzhin gyis} six manifesting 7 character, consist of 8 essence, its completely pure essence is unborn its completely pure nature is the vowels and consonants, notes "the vowels and consonants" means communication type, manifesting, nature, 1 state of own being, there has been born, actuality, frame of reference, by nature, naturally, of the nature of, essence, own-being, character, quality, identity, self-nature {bdag}, intrinsic reality, actuality essence, [= voidness] self-existence, six manifesting 7 character; 8) manifesting,; 1) ngang tshul; 2) unfabricated and arising w/o effort; 3) 1 * chos thams cad kyi rang bzhin bdag med par gcig yin pas grangs gcig mtshon] [= yang dag grub, [rang gi] ngo bo, rang gzugs, = {nang tshul}, {gshis}, {chos nyid} and {gnas lugs}, {bdag},ngang tsul, gshis ka]. nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], * cannot -- as it is [a'ching yig 'di rang bzhin 'jog thabs med: we can't leave this treaty as it is, natural, ordinary [kho rang bzhin ma red: he isn't ordinary]. nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], * cannot -- as it is *, natural, ordinary
+rang bzhin|nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], [like {ngo bo} but sometimes re sugatagarbha, {ngo bo} = the emptiness part and {rang bzhin} = luminosity/ clarity part; natural expression attribute of the buddha-body of perfect rapture, ati: the buddha-body of reality, the natural expression - essential [original] nature, state of own being, there has been born, actuality, frame of reference- by nature, naturally, be of the nature of fundamental/ inherent/ultimate nature, essence, own-being, character, quality, identity, self-nature, see {ngo bo rang bzhin thugs rje} two intrinsic reality, actuality essence, = voidness, three self-existence, four frame of reference, natural expression [of mind] five natural[ly], = {rang bzhin gyis} six manifesting 7 character, consist of 8 essence, its completely pure essence is unborn its completely pure nature is the vowels and consonants, notes "the vowels and consonants" means communication type, manifesting, nature, 1 state of own being, there has been born, actuality, frame of reference, by nature, naturally, of the nature of, essence, own-being, character, quality, identity, self-nature {bdag}, intrinsic reality, actuality essence, [= voidness] self-existence, six manifesting 7 character; 8) manifesting,; 1) ngang tshul; 2) unfabricated and arising w/o effort; 3) 1 * chos thams cad kyi rang bzhin bdag med par gcig yin pas grangs gcig mtshon] [= yang dag grub, [rang gi] ngo bo, rang gzugs, = {nang tshul}, {gshis}, {chos nyid} and {gnas lugs}, {bdag},ngang tsul, gshis ka]. nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], * cannot -- as it is ['ching yig 'di rang bzhin 'jog thabs med: we can't leave this treaty as it is, natural, ordinary [kho rang bzhin ma red: he isn't ordinary]. nature, -self, own, intrinsic, natural, spontaneous, independent existence, natural forms [in grammar], * cannot -- as it is *, natural, ordinary
 rang bzhung|root texts
 rang bzo|individual/personal creation/ fabrication, khungs med rang 'dod kyi bya ba
 rang cag|we; we, us
@@ -81092,13 +81092,13 @@ rang bzhin babs kyis grub|naturally existing
 rang bzhin babs kyis ye nas gnas pa|spontaneously present since the beginning
 rang bzhin dang bcos ma|natural and artificial
 rang bzhin dang 'gal ba'i rgyu dmigs pa'i thal 'gyur|consequence of a cause contradictory w the nature [lhan cig mi gnas 'gal gyi 'gal ba'i rang bzhin dmigs pa'i thal 'gyur gsum gyi nang gses, 'gal ba'i rgyu rtags su bkod pa'i thal 'gyur gang zhig bzlog na 'bras bu dang 'gal ba'i rang bzhin dmigs pa'i rang rgyud 'phen pa ste, dper na, me tsad ma'i stobs kyis nges pa'i shar gzhir chos can, me tsad ma'i stobs kyis nges pa ma yin par thal, grang reg gi dngos rgyu yod pa'i phyir, zhes pa'i thal 'gyur gyis, de chos can grang reg gi dngos rgyu med de, me tsad ma'i stobs kyis nges pa'i phyir, zhes bzlog pa gzhan rigs 'phen pa'i thal 'gyur ro]
-rang bzhin dang 'gal ba'i khyab bya dmigs pa|concept of an incompatible pervaded [a'gal ba'i khyab bya dmigs pa bzhi'i nang gses, refutation by presenting an incompatible khyab bya as reason, /EG, a dharmin pervaded by fire, is not cold, because it is a thing pervaded by fire, which establishes that it is not cold [but hot]. concept of an incompatible pervaded *]
+rang bzhin dang 'gal ba'i khyab bya dmigs pa|concept of an incompatible pervaded ['gal ba'i khyab bya dmigs pa bzhi'i nang gses, refutation by presenting an incompatible khyab bya as reason, /EG, a dharmin pervaded by fire, is not cold, because it is a thing pervaded by fire, which establishes that it is not cold [but hot]. concept of an incompatible pervaded *]
 rang bzhin dang 'gal ba'i khyab bya dmigs pa'i thal 'gyur|consequence drawn from the concept of an incompatible pervaded [lhan cig mi gnas 'ga yi 'gal ba'i rang bzhin dmigs pa'i thal 'gyur gsum gyi nang gses, consequence presenting a contradictory pervaded as reason 'gal ba'i khyab bya rtags su bkod pa'i thal 'gyur gang zhig; one draws the consequence that if it is reversed its nature is contradictory w the pervader [bzlog na khyab byed dang 'gal ba'i rang bzhin dmigs pa'i rang rgyud 'phen pa], EG, the dharmin a thing me tshad ma'i stobs kyi nges pa, is not me tsad ma'i stobs kyi nges pa, because it has the tactile qualities of a pillar; but because it is me tsad ma'i stobs kyis nges pa, in consequence, that dharmin, will be w/o the tactile qualities of a pillar; that is a refuting consequence in terms of the opponent's reasoning]
 rang bzhin dang 'gal ba'i rang bzhin|nature contradictory w the nature
 rang bzhin dang 'gal ba'i rang bzhin dmigs pa|conception of the nature contradictory w the nature
 rang bzhin dang 'gal ba'i rang bzhin dmigs pa'i thal 'gyur|consequence of a conception contradictory w the nature [rang rigs 'phen pa'i thal 'gyur bzhi'i nang gses, having presented a contradictory nature as reason, if the consequence that is drawn is reversed it contradicts one's own thesis, EG it follows that the dharmin a thing me tsad ma'i stobs kyis nges pa, is not a thing me tsad ma'i stobs kyis nges pa because it is cold, by that consequence that dharmin, is not cold, because me tsad ma'i stobs kyis nges pa, so in consequence reversing one's own thesis]
 rang bzhin dang 'gal ba'i 'bras bu dmigs pa|concept of a refuting frution [that having been presented as reason the nature to be refuted is refuted EG a thing emitting a lot of smoke, is not cold, because it is a thing emitting a lot of smoke, the fruition of smoke, fire, establishes the non-existence of cold, 'gal ba'i 'bras bu dmigs pa bzhi'i nang gses]. a refuting frution having been presented as reason the nature to be refuted is refuted EG a thing emitting a lot of smoke, is not cold, because it is a thing emitting a lot of smoke, the fruition of smoke, fire, establishes the non- existence of cold, 'gal ba'i 'bras bu dmigs pa bzhi'i nang gses]. concept of an incompatible/ refuting fruition
-rang bzhin dang 'gal ba'i 'bras bu dmigs pa'i thal 'gyur|consequence of a fruition contradictory with the nature [lhan cig mi gnas 'gal gyi 'gal ba'i rang bzhin dmigs pa'i thal 'gyur gsum gyi nang gses, a consequence w contradictory fruition having been presented as sign/ reason if it is reversed [a'gal 'bras rtags su bkod pa'i thal 'gyur gang zhig bzlog na flings the consequence of contradiction w the cause rgyu dang 'gal ba'i rang bzhin dmigs pa'i rang rgyud 'phen pa ste, EG me tshad ma'i stobs kyis nges pa'i shar gzhir chos can, me tsad ma'i stobs kyis nges pa ma yin par thal, grang 'bras spu long byed yod pa'i phyir, by that consequence, that dharmin is established as grang 'bras spu long byed med de, becuase it is me tsad ma'i stobs kyis nges pa, thus 1 brings out a refuting conswquence in terms of the reasoning of the opponent]
+rang bzhin dang 'gal ba'i 'bras bu dmigs pa'i thal 'gyur|consequence of a fruition contradictory with the nature [lhan cig mi gnas 'gal gyi 'gal ba'i rang bzhin dmigs pa'i thal 'gyur gsum gyi nang gses, a consequence w contradictory fruition having been presented as sign/ reason if it is reversed ['gal 'bras rtags su bkod pa'i thal 'gyur gang zhig bzlog na flings the consequence of contradiction w the cause rgyu dang 'gal ba'i rang bzhin dmigs pa'i rang rgyud 'phen pa ste, EG me tshad ma'i stobs kyis nges pa'i shar gzhir chos can, me tsad ma'i stobs kyis nges pa ma yin par thal, grang 'bras spu long byed yod pa'i phyir, by that consequence, that dharmin is established as grang 'bras spu long byed med de, becuase it is me tsad ma'i stobs kyis nges pa, thus 1 brings out a refuting conswquence in terms of the reasoning of the opponent]
 rang bzhin dang bral ba'i snang ba|experience devoid of a self-nature
 rang bzhin dang rgyas pa'i rigs|the naturally blossoming gotra
 rang bzhin dang bcas pa'i snang ba|experience w self-nature
@@ -86345,7 +86345,7 @@ rim nyams rim stongs|in order skyo ru song ba and khyim gzhis stongs pa
 rim len dngul bun|bu lon gyar bsdu byed stangs shig
 rim bzhin bsgom|meditate in order [on a series like the dhyanas]
 rim bzhin skye ba nyer len gyi rgyu|causes for perpetuating successive arising
-rim byung tshad tho|record [a'dzam gling --: world record]. record [a'dam gling --: world record]
+rim byung tshad tho|record ['dzam gling --: world record]. record ['dam gling --: world record]
 rim gyis 'gyur|change gradually, evolve
 rim gyis pa|1) like stairs go grandually from lower to higher, Gradual type/ realization/ path; 2) Kagyu mahamudra gradual meditation method [as preliminaries one mist have the ordinary path, abhisheka, the developing and perfecting stages, then in meditation examining the arising enduring and cessation of one's own mind, and the time one sees it does not exist at all that is the mind transmission]. 1) like stairs go gradually from lower to higher, Gradual type/ realization/ path; 2) Kagyu mahamudra gradual meditation method
 rim gyis pa'i grol lam gsum|mahayoga: the ground characterized as knowledge or discriminating awareness is the view, {rgyu shes pa'i mtshan nyid lta ba}; conditions characterized as entrance are meditation {rkyen 'jug pa'i mtshan nyid ting nge 'dzin}; the fruition brought about by the path is being a rigdzin/ awareness holder {lam gyur gyi 'bras bu rig 'dzin} GD
@@ -90422,7 +90422,7 @@ rtog bral gyi ye shes|non-conceptual wakefulness
 rtog pa don mthun|thoughts corresponding to reality [rang yul yod pa can gyi rtog bcas kyi shes pa ste, dper na bum 'dzin rtog pa dang, sgra mi rtag par rtog pa lta bu don dang mthun pa'o]
 rtog pa don mi mthun|objectless thoughts, thoughts not corresponding to reality [EG, thoughts grasping sound as impermanent and a rabbit as having horns]
 rtog pa 'khrul shes|confused conceptual knowledge
-rtog pa log shes|conceptual wrong knowledge [log shes kyi nang gses, rang gi 'dzin stangs kyi yul la 'khrul ba'i zhen rig \eg the thought grasping sound as impermanent &, grasping an individual ego, or a rabbit as having horns &, what does not exist as existing]
+rtog pa log shes|conceptual wrong knowledge [log shes kyi nang gses, rang gi 'dzin stangs kyi yul la 'khrul ba'i zhen rig e.g. the thought grasping sound as impermanent &, grasping an individual ego, or a rabbit as having horns &, what does not exist as existing]
 rtog pa bcad shes|conceptual subsequent cognition
 rtog pa rtsad bcad pa|tracing the root of thinking
 rtog pa rtsad gcad pa|resolving the thinker [refers to the examination of "who is wandering in samsara?" the act of investigating who the 'doer']. "resolving the thinker" [refers to the examination of "who is wandering in samsara?" the act of investigating who the 'doer' is, the 1 who transmigrates in samsara]
@@ -90692,7 +90692,7 @@ rtsa tsem glon tsem|nyis srub bam nyis tsem ste, sbyor tsem dang gnon tsem gnyis
 rtsa ba'i rlung|basic winds; root pranas ['byung lnga'i rang bzhin can gyi rlung,.... basic winds]
 rtsa ba'i sde bzhi|the four main schools [of {nyan thos kyi theg pa}, {thams cad yod smra}, {gnas brtan pa}, {phal chen pa}, {man bkur ba}
 rtsa ba'i sde pa bzhi|four basic schools [mah sanghikas, sthaviras, sammiti^yas, and mu^lasarw stiv dins- thams cad yod par smra ba/ dge 'dun phal chen pa/ gnas brtan pa/ mang pod bkur ba bzhi-. nyan thos kyi rtsa ba'i sde pa ste, 'od srungs nas brgyud pa phal chen sde pa dang, sgra gcan 'dzin nas brgyud pa gzhi thams cad yod par smra ba'i sde pa, ka ty' ya na nas brgyud pa gnas brtan pa'i sde pa, nye bar 'khor nas brgyud pa mang bkur ba'i sde pa bcas bzhi]
-rtsa ba'i she rab|Mulamadhyamakarikas [by Nagarjuna]
+rtsa ba'i shes rab|Mulamadhyamakarikas [by Nagarjuna]
 rtsa ba'i ro drug|the six root/ basic tastes [mngar ba dang, skyur ba dang, kha ba dang, bska ba dang, tsa ba dang, lan tsva ste drug]
 rtsa ba'i rlung lnga|the five basic winds/ root pranas [mi'i lus la rgyu ba'i 'byung ba lnga'i rang bzhin can gyi rlung ste, srog 'dzin gyi rlung dang, thur sel gyi rlung, gyen rgyu'i rlung, mnyam gnas kyi rlung, khyab byed kyi rlung bcas so,...., {srog 'dzin}, {me mnyam}, {khyab byed}, {gyen rgyu}, {thur sel}, syn {phyi'i rlung lnga}{phyi'i rlung lnga} the five outer winds [Tserig]
 rtsa ba'i kha dog|primary colors; primary colors [dkar po dang dmar po sogs rtsa bar gyur pa'i mdog go]
@@ -90974,7 +90974,7 @@ rtsed zla|playmate
 rtsed mo'i ra ba|playground
 rtsed mo'i sna kha|sports
 rtsed mo'i 'gran bsdur|sports competition
-rtsed thang dgon pa|{rtsed thang dgon pa} Monastery [founded in the 6th lcags yos year by t'a'i si tu byang chub rgyal mtshan]
+rtsed thang dgon pa|{rtsed thang dgon pa} Monastery [founded in the 6th lcags yos year by ta'i si tu byang chub rgyal mtshan]
 rtsed rgyan che rigs|high stakes gambling
 rtsed rgyan che rigs pa|high roller, high-stakes gambler
 rtsed mo rtse|play, have fun, play games/ joke, tease
@@ -93191,7 +93191,7 @@ sbrang rtsi myong|honey taster, bee
 sbrang rtsi skyong|honey guarder, bee
 sbrang rtsi byed pa|honey producer, bee
 sbrang nor bu|kind of sbrang bu
-sbrang bu'i skyugs pa|sbrang
+sbrang bu'i skyugs pa|
 sbre|stone-fox; nocturnal predator = dbre [back yellow, belly white, stone-fox
 sbre ba|[arch] 'gre log byed pa
 sbre dri|urine smell
@@ -94250,7 +94250,7 @@ sdur|[past: bsdur],, compare, check, verify sdur ba!
 sdur ba|compare; [tha dad pa bsdur ba, bsdur ba, sdur],, compete, compare
 sdur len|amber, part, portion
 sdus|sdud pa!
-se|1) se clan; 2) a bird; 3) clay vessel making s kar ??? zhig; 4) after a word ending in SA \= repetition = de'i don gyi ngo bo gzugs su bkod pa. become gray
+se|1) se clan; 2) a bird; 3) clay vessel making s kar ??? zhig; 4) after a word ending in SA = repetition = de'i don gyi ngo bo gzugs su bkod pa. become gray
 se 'bras|1) se tree fruit; 2) monasteries se ra and 'bras spungs
 se 'brog|anger, malice
 se 'bru|pomegranate; pomegranate tree med. pomegranate, berries
@@ -97038,7 +97038,7 @@ she mong|power 1) stobs rtsal; 2) dbang thang]
 she mthun|1) friend, companion; 2) [h] = sku zhabs; 3) shugs mthun pa
 she mun|[arch] 1) darkness; 2) prison
 she na|[if someone asks] why, what does it mean to say ... *, as said/ written
-she rab|prajna
+shes rab|prajna
 she ru|she la blangs pa'i phyugs zog gnyer nas sdod mkhan dud tshang
 she rul|putrid, fetid
 she sbyor|[arch] having sex
@@ -97252,7 +97252,7 @@ shes pa 'jur la drangs|focus your attention
 shes pa tshad ma|TSE
 shes pa blo tha snyad par|cognition, conventional
 shes pa rtag pa|eternal awareness
-shes pa yongs rdzogs bya|bya
+shes pa yongs rdzogs bya|
 shes bzod kyi ye shes skad cig ma bcu drug|the 16 moments of the wisdom of cognition and acceptance
 shes bzod skad cig ma bcu drug|the 16 moments of the wisdom of cognition and acceptance TSE
 shes 'khos gnyis ldan|qualities exist and cause also exists
@@ -100504,7 +100504,7 @@ skyed cha'i bu lon|high interest loan
 skyed bya 'bras bu|the result which is produced
 skyed mos tshal|grove; pleasure grove, park, garden
 skyed pa'i yum|mother who gave birth to
-skyed bzhes gnang|bzhes
+skyed bzhes gnang|
 skyed thon rgyu|progress
 skyed 'phel byed|reproduce, copy
 skyeg|misfortune; [arch] misfortune, obstacles
@@ -101166,7 +101166,7 @@ sla bcos byed pa|be perfunctory rough, careless, slipshod superficial, muddle 1'
 sla chos su mi gtong ba|w/o allowing it to become sloppy
 sla sdud pa|withdrawal, {slar sdud pa}
 sla bar 'gyur|become easy
-slab|lab
+slab|
 slab pa sbyin pa|1 who has been given a training [as a penance for a severe offense], 1 given [a penance] according to the rules, penitent
 slabs gsum la ba dkar po|white stone throne in the Deva loka [where Buddha taught the devas]
 slad|henceforth; 1) for the sake/ purpose of, because of, in order to; 2) later, afterward, henceforth, again, bslad, lhad
@@ -103555,13 +103555,13 @@ snor ba|(tha dad pa bsnor ba, bsnor ba, snor,, * confound, get wrong, mingle, st
 snor ma|1) meadow of good grass; 2) autumn harvest straw; 3) hay
 snos|sno ba!
 snrel zhi|[arch] 1) stages confused, confusedly, pell mell; 2) sloping, oblique; 3) a meditative absorption similar to {thod brgal ba}; 4) mediocrity
-snron|snron
+snron|
 snron gyis nya ba|full moon day [15th] of the 5th month
 snron zla ba|snron month
-snubs|snrubs
+snrubs|
 snub|destroy, extinguish, abolish, annihilate, sink [ships]
 snub pa|(tha dad pa bsnubs pa, bsnub pa, snubs,, * cause to perish, suppress, abolish, abrogate, annul, destroy, annihilate, sink [ship], extinguish
-snubs|snubs
+snubs|
 snud|snud pa!
 snud pa|(tha dad pa bsnud pa, bsnud pa, snud,, expel
 snum|1) oil [of sesame etc.; 2) petroleum, gasoline; 3) [quite] glossy, shiny
@@ -105017,7 +105017,7 @@ spo bo|1) grandfather; 2) old man [resp], father in law; 3) spo bo rdzong; 4) sp
 spo lags|1) grandfather; 2) old man
 spo ldan|vinaya expression, lhag ltung byung ba'i gang zag gis doing penance spyad zin &, mgu ba ma spyad pa la spo ldan zhes bya'o. {spo lo 'gran sdur byed pa}, play a ball game
 spo lo|ball; ball, polo
-spo mtho|mt
+spo mtho|
 spo pa|spo yul inhabitant
 spo pho|spo bo
 spo rmo|spo bo rmo bo
@@ -108117,7 +108117,7 @@ sum cha|thirds
 sum cu|30
 sum ga|shoulder bag
 sum gal|bag; shoulder bag
-sum gnyis|1) 2/3; 2) two and three. 2\3
+sum gnyis|1) 2/3; 2) two and three. 2/3
 sum khri|30,000
 sum ldan|having three parts
 sum log|three times
@@ -108176,7 +108176,7 @@ sum ldan dus|time of having three parts
 sum skor ma|front channel
 sum rtsen 'dun sa|city/ [meeting place] of the gods
 sum brgya pa|{sum brgya pa}
-sum cha gnyis|2\3
+sum cha gnyis|2/3
 sums|{sum pa}!
 sun|[past: bsun],, be irritated/ annoyed get sick +/or tired of
 sun 'byin|remorse, refutation, disparaging * refutation, repudiation, criticism, condemnation, exposure of faults
@@ -111228,7 +111228,7 @@ thum ti|parcel, package, bundle
 thum po rgyag pa|wrap a parcel
 thum gsum pa|sug smel herb
 thum ril gyis song|[arch] inseparably mixed
-thums|thum
+thums|
 thun|1) dose of medicine to be taken at given intervals; 2) materials for mantra practice mustard seed etc.; 1) practice, a session [of practice]; 2) whip; 3) charmed substances; 4) shift, night watch (/ [tse]. 1) measure/ session of time [Nyin thun.Mtsan thun. .Snga thun.Phyi thun]; 2) amount dose of medicine [Sman thun rer ril bu gsum re yin]; 2) white mustard seed etc charmed w mantra 1) practice [session]; 2) whip 3) a shift, a night watch [tserig] session, practice. 1) dose of medicine to be taken at given intervals [Sman thun rer ril bu gsum re yin]; 2) materials for mantra paractice mustard seed etc. ; 1) practice, a session [of practice] [Nyin thun. Mtshan thun. Nam gyi thun gsum pa. Snga thun. Phyi thun]; 2) whip; 3) charmed substances; 4) shift, night watch (/ [tse]
 thun 'bru|ears left after the grain is harvested [lo tog brngas zin pa'i shul gyi snye ma]
 thun bar|between the individual sessions of day and night
@@ -111677,10 +111677,10 @@ tsa re ba|rgyun na re ba,//chu tsa re bar babs pa,//khrag tsa re bar thon pa
 tsa ra ka|[Skt] medical examination/ diagnosis
 tsa ra khung|tip of the breast bone and sgrog rus kyi sne gnyis connecting mtshams kyi khog gam gnas shig
 tsa ra gcod pa|cut the root
-tsab|intensity [, 'khor ba'i 'khrul tsab la bsam na skyo shas skye when I think of the intensity of sa\m s\ara's confusion, sadness arises. Notes: tsabs very great, very much; it's an intensive, usually joined w che]
+tsab|intensity [, 'khor ba'i 'khrul tsab la bsam na skyo shas skye when I think of the intensity of saMsAra's confusion, sadness arises. Notes: tsabs very great, very much; it's an intensive, usually joined w che]
 tsab ling|rushed, hurried, busy
 tsab ral|torn, tattered, wrecked
-tsab sa|intensity ['khor ba'i 'khrul tsab la bsam na skyo shas skye when I think of the intensity of sa\m s\ara's confusion, sadness arises. Notes: tsabs very great, very much; it's an intensive, usually joined w che]
+tsab sa|intensity ['khor ba'i 'khrul tsab la bsam na skyo shas skye when I think of the intensity of saMsAra's confusion, sadness arises. Notes: tsabs very great, very much; it's an intensive, usually joined w che]
 tsab tsab|bzod glags med pa'am, in a rush/ hurry, very speedy and busy
 tsab tsob|busy/ speedy/ frenzied/ frenetic/ rushed
 tsab tsub|crude, restless, nervous; crude, restless, nervous, hurried, rushed, speedy
@@ -111697,7 +111697,7 @@ tsab tsub ma byed|don't rush
 tsab tsob las ka byas na nor 'khrul 'byung|if you rush [your] work [you']ll make mistakes
 tsab tsab brel ba langs nas byed kyin 'dug|after [they] got busy [they] were in a rush
 tsabs ru tsva|{tsabs ru tsva} salt [med.]. {tsabs ru tsva}, a kind of salt [med.] [ro lan tsa la skyur, nus pas pho ba'i drod nyams pa dang, zas mi 'ju ba, khog pa sbos brgyangs byed pa sogs la phan]
-tsad ma|genuine, [lha mo tsad ma genuine dev\i]
+tsad ma|genuine, [lha mo tsad ma genuine devI]
 tsad mar gyur|convinced [mi mi min kun kyang tsad mar gyur all men and spirits are convinced]
 tsad du shes|become the model [mkhas pa'i tsad du shes I've become the model of learnedness]
 tsag bshags|sha khog sogs dkyil nas bshags pa
@@ -113446,7 +113446,7 @@ tshogs mchod|feast offering; feast offering ganachakra, funeral/ anniversary puj
 tshogs mchog|supreme assembly
 tshogs mgron|feast guest [deities], guest [speaker] at a meeting. feastguest [deities]
 tshogs mi|member; 1) person who goes to a meeting/ assembly/ feast etc.; 2) member of individual groups. 1) tshogs 'dur 'gro mkhan; 2) tshogs khag so so'i sgrigs khongs su yod pa'i mi
-tshogs pa|1) (tha mi dad pa 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect [a'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa]; 2) group, gathering, [hold a] meeting/ collect[ion] ['thus mi tshogs pa,//sku tshab tshogs pa]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition [ldan min 'du byed kyi nang gses shig, the 10 nonconcurrent formations] {phon}, {phon pa}; 4) body. 1) (tha mi dad pa 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect; 2) group, gathering, [hold a] meeting/ collect[ion]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition; 4) body. 1) (tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect [a'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa]; 2) group, gathering, [hold a] meeting/ collect[ion] ['thus mi tshogs pa,//sku tshab tshogs pa]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition [ldan min 'du byed kyi nang gses shig, the 10 nonconcurrent formations] {phon}, {phon pa}; 4) body. 1) (tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect; 2) group, gathering, [hold a] meeting/ collect[ion]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition; 4) body. 1)(tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) 'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa (21) Sde pa dang 'dus pa,//'thus mi tshogs pa,//sku tshab tshogs pa; 2) phung po; 3) rgyu dang 'bras bu'i rkyen 'dus pa'i gnas skabs, ldan min 'du byed kyi nang gses shig //4) (mngon) lus / 1) combination [of cause and condition.] 2) collection/ to hold [a meeting, etc.] Gathering, as 1 of the ten nonconcurrent formations, collocation of causal factors. sm. {phon}, {phon pa}. 1)(tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) 'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa; 2) Sde pa dang 'dus pa,//'thus mi tshogs pa,//sku tshab tshogs pa; 2) phung po; 3) rgyu dang 'bras bu'i rkyen 'dus pa'i gnas skabs, ldan min 'du byed kyi nang gses shig //4) (mngon) lus / 1) combination [of cause and condition.] 2) collection/ to hold [a meeting, etc.] Gathering, as 1 of the ten nonconcurrent formations, collocation of causal factors. sm. {phon}, {phon pa}
+tshogs pa|1) (tha mi dad pa 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect ['dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa]; 2) group, gathering, [hold a] meeting/ collect[ion] ['thus mi tshogs pa,//sku tshab tshogs pa]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition [ldan min 'du byed kyi nang gses shig, the 10 nonconcurrent formations] {phon}, {phon pa}; 4) body. 1) (tha mi dad pa 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect; 2) group, gathering, [hold a] meeting/ collect[ion]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition; 4) body. 1) (tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect ['dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa]; 2) group, gathering, [hold a] meeting/ collect[ion] ['thus mi tshogs pa,//sku tshab tshogs pa]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition [ldan min 'du byed kyi nang gses shig, the 10 nonconcurrent formations] {phon}, {phon pa}; 4) body. 1) (tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) gather, collect; 2) group, gathering, [hold a] meeting/ collect[ion]; 2) heap, combination; 3) [situation/ collocation of] gathering the conditions of cause and fruition; 4) body. 1)(tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) 'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa (21) Sde pa dang 'dus pa,//'thus mi tshogs pa,//sku tshab tshogs pa; 2) phung po; 3) rgyu dang 'bras bu'i rkyen 'dus pa'i gnas skabs, ldan min 'du byed kyi nang gses shig //4) (mngon) lus / 1) combination [of cause and condition.] 2) collection/ to hold [a meeting, etc.] Gathering, as 1 of the ten nonconcurrent formations, collocation of causal factors. sm. {phon}, {phon pa}. 1)(tha mi dad pa) 1) zin pa,//rdza khog rdol nas chu mi tshogs pa,//kha ma tshogs par gsang gtam phyir shor ba; 2) 'dzoms pa,//phun sum tshogs pa,//mthun rkyen tshogs pa,//mi mang po tshogs pa; 2) Sde pa dang 'dus pa,//'thus mi tshogs pa,//sku tshab tshogs pa; 2) phung po; 3) rgyu dang 'bras bu'i rkyen 'dus pa'i gnas skabs, ldan min 'du byed kyi nang gses shig //4) (mngon) lus / 1) combination [of cause and condition.] 2) collection/ to hold [a meeting, etc.] Gathering, as 1 of the ten nonconcurrent formations, collocation of causal factors. sm. {phon}, {phon pa}
 tshogs phor|1) particular kind of bowl to be carried by monks to the assembly site; 2) [arch] rdzogs pa'i brda rnying ste meaning full or completed. 1) grva pas tshogs 'tshog sar 'khyer rgyu'i phor pa'i bye brag cig; 2) (A) rdzogs pa'i brda rnying ste gang ba'am, mthar phyin pa'i don
 tshogs phud|1st part of the feast, food/ offerings
 tshogs ra|assembly hall, meeting place
@@ -113512,7 +113512,7 @@ tshogs kyi srad bu|nya rgya
 tshogs kyi mchog dge 'dun|x
 tshogs kyi tshogs sgrub pa|group feast practice
 tshogs kyi bdag po|lion
-tshogs kyi 'khor lo|feast/ banquet, ganachakra, tantric feast ", feast offering ganachakra. 'dod yon lnga dang, bye brag bza' bca' btung ba'i rdzas rnams zag med ye shes kyi bdud rtsir byin gyis brlabs te rtsa ba gsum gyi lha la mchod pa dang, rang lus gdan gsum tshang ba'i dkyil 'khor la mchod pa'i sgo nas tshogs khyad par can gsog pa'i cho ga zhig. ganachakra, feast/ banquet [a'dod yon lnga dang, bye brag bza' bca' btung ba'i rdzas rnams zag med ye shes kyi bdud rtsir byin gyis brlabs te rtsa ba gsum gyi lha la mchod pa dang, rang lus gdan gsum tshang ba'i dkyil 'khor la mchod pa'i sgo nas tshogs khyad par can gsog pa'i cho ga zhig]
+tshogs kyi 'khor lo|feast/ banquet, ganachakra, tantric feast ", feast offering ganachakra. 'dod yon lnga dang, bye brag bza' bca' btung ba'i rdzas rnams zag med ye shes kyi bdud rtsir byin gyis brlabs te rtsa ba gsum gyi lha la mchod pa dang, rang lus gdan gsum tshang ba'i dkyil 'khor la mchod pa'i sgo nas tshogs khyad par can gsog pa'i cho ga zhig. ganachakra, feast/ banquet ['dod yon lnga dang, bye brag bza' bca' btung ba'i rdzas rnams zag med ye shes kyi bdud rtsir byin gyis brlabs te rtsa ba gsum gyi lha la mchod pa dang, rang lus gdan gsum tshang ba'i dkyil 'khor la mchod pa'i sgo nas tshogs khyad par can gsog pa'i cho ga zhig]
 tshogs kyi 'khor lo'i cho ga|ganachakra ritual, {tshogs kyi 'khor lo'i cho ga}. {tshogs kyi 'khor lo'i cho ga}. {tshogs kyi 'khor lo'i cho ga} [of the {chos bcu bzhi}. fourteen treatises on the Guhyasamaja commentaries by {sangsrgyas ye shes}. ganachakra ritual]. ganachakra ritual, {tshogs kyi 'khor lo'i cho ga} [one of the {chos bcu bzhi}. fourteen treatises on the Guhyasamaja commentaries by {sangs rgyas ye shes}
 tshogs chung khag bgos kyis gros bsdur byas pa|they discussed [it] by dividing into small groups
 tshogs can gyi rgyal po|king w great following
@@ -113987,11 +113987,11 @@ tshugs 'bab sa|camping place/ ground, way station, caravansary
 tshugs 'bab sar zhag sdod byas pa|spend the night at a camping place/ ground, way station, caravansary
 tshugs ma shor ba|not losing stability
 tshugs thabs med|w/o means of resistance
-tshul|mode; nature; 1) principle, manner, way, fashion, method, mode, aspect, species, kinds; 2) way of acting, conduct, behavior, form, capacity, custom, tradition, habit, system, approach, rule, established way, conventional style/ behavior; 3) noon; 4) viewpoint mode as, method, form, (in the capacity, how, symbolizing [-- tshul gyi zhabs 'gro: dance symbolizing -- ; 'gro tshul bshad: explain how to go, pretending to be]. 1) principle, manner, way, fashion, method. mode, aspect, species, kinds; 2) way of acting, conduct, behavior. form, capacity, custom, tradition, habit, system, approach, rule, established way, conventional style/ behavior; 3) noon; 4) viewpoint [1) thabs,//'tsho ba skyel tshul,//las ka byed tshul; 2) lugs sam stangs,//'gro tshul,//skad cha bshad tshul,//gnas tshul; 3) rigs pa,//tshul dang tshul min 'byed mkhas pa,//tshul bzhin byed pa; 4) khul,//mi shes shes tshul ma byed]. as, method, way, form, (in the) capacity [lha mo'i tshul snang sgyu ma'i phyag rgya che the mahamudr\a of illusion is perceived as dev\is. E g, gyog pa tshul as his servant, tshul bzhi four methods. chos nyid don rtogs 'chi ba'i tshul spangs ma you have realized ultimate dharmat\a and abandoned death. Notes: tshul was not actually translated in the above passage. way tshul shing stick of the way . Notes: the reference for the above citation is to the "counting sticks" received by participants in the summer retreat the term dates back to the time of sh\akyamuni buddha, when these sticks would be distributed to those followers of the buddha's way who intended to participate in the midday meal that was on occasion offered by a patron to the buddha and his disciples]
+tshul|mode; nature; 1) principle, manner, way, fashion, method, mode, aspect, species, kinds; 2) way of acting, conduct, behavior, form, capacity, custom, tradition, habit, system, approach, rule, established way, conventional style/ behavior; 3) noon; 4) viewpoint mode as, method, form, (in the capacity, how, symbolizing [-- tshul gyi zhabs 'gro: dance symbolizing -- ; 'gro tshul bshad: explain how to go, pretending to be]. 1) principle, manner, way, fashion, method. mode, aspect, species, kinds; 2) way of acting, conduct, behavior. form, capacity, custom, tradition, habit, system, approach, rule, established way, conventional style/ behavior; 3) noon; 4) viewpoint [1) thabs,//'tsho ba skyel tshul,//las ka byed tshul; 2) lugs sam stangs,//'gro tshul,//skad cha bshad tshul,//gnas tshul; 3) rigs pa,//tshul dang tshul min 'byed mkhas pa,//tshul bzhin byed pa; 4) khul,//mi shes shes tshul ma byed]. as, method, way, form, (in the) capacity [lha mo'i tshul snang sgyu ma'i phyag rgya che the mahamudrA of illusion is perceived as devIs. E g, gyog pa tshul as his servant, tshul bzhi four methods. chos nyid don rtogs 'chi ba'i tshul spangs ma you have realized ultimate dharmatA and abandoned death. Notes: tshul was not actually translated in the above passage. way tshul shing stick of the way . Notes: the reference for the above citation is to the "counting sticks" received by participants in the summer retreat the term dates back to the time of shAkyamuni buddha, when these sticks would be distributed to those followers of the buddha's way who intended to participate in the midday meal that was on occasion offered by a patron to the buddha and his disciples]
 tshul 'chal|immorality, deranged discipline [def. {tshul khrims kyi rgya las 'gongs pa}.. [tse]
 tshul 'chos|* 1) hypocrisy, hypocritical, pretentious, charlatan, pretender [to virtue/ discipline/ knowledge]; 2) change, alter (/ TSE. [phyi tshul gyi spyod lam 'dra chags po bzo ba; 2) [dge slong gi log 'tsho lnga'i nang gses shig ste, for the sake of getting something pretend to have virtues and to live in accord w dharma, {bcas bcos} hypocrisy, hypocritical, pretentious. charlatan, change, alter, [tse] pretender [to virtue/ discipline]
 tshul 'di|about/ as for this
-tshul 'dzin|appears in the form, manifest; appears in the form, manifest [dge slong tshul 'dzin he ru ka heruka who appears in the form of a bhik\s hu., ras pa'i tshul 'dzin manifest as a repa]
+tshul 'dzin|appears in the form, manifest; appears in the form, manifest [dge slong tshul 'dzin he ru ka heruka who appears in the form of a bhikShu., ras pa'i tshul 'dzin manifest as a repa]
 tshul bcos|1) hypocrisy, hypocritical, pretentious, charlatan, pretender [to virtue/ discipline]; 2) change, alter
 tshul bstan|pretend; pretend, seemed to
 tshul byad|spyod tshul dan cha byad
@@ -114212,7 +114212,7 @@ tsog pur sdod mi thub pa|unable to sit still
 tsogs gsog|the merit accumulated [yon bdag bzang po'i tsogs gsog the merit accumulated by this good benefactor] collected an offering [thams cad kyis tsogs gsog byas na 'thad if everyone collected an offering, that would be proper] provisions, accumulating merit
 tsogs gtor|feast torma offerings [gtor ma that one enjoys at a feast; TTs tend to refer to it as tsogs, not as gtor ma, = offerings to the higher and lower beings]
 tsogs rnams|all [mun pa'i tsogs rnams all the darkness]
-tsogs sgrub|group practice [might be a mahayoga practice that included gathering up 1,000 vajra brothers and sisters create an enormous mandala/ feast w 24 hour mantra recitation. group feast practice [might be mahayoga practice that included gathering up to 1,000 vajra brothers and sisters in an enormous ma\n.\d.ala and feast w 24 hour mantra recitation]
+tsogs sgrub|group practice [might be a mahayoga practice that included gathering up 1,000 vajra brothers and sisters create an enormous mandala/ feast w 24 hour mantra recitation. group feast practice [might be mahayoga practice that included gathering up to 1,000 vajra brothers and sisters in an enormous maNDAla and feast w 24 hour mantra recitation]
 tsogs skong|feast offering [skong literally means "fulfill. feast offering {skong}. literally means "fulfill"]
 tsom bu|[piles of] grain, heap, assembly
 tsom pa|initiate [-ing], commence [-ing], undertake, start[ing]
@@ -114260,7 +114260,7 @@ tsung li gzhon pa|vice/ deputy [premier, prime minister, chancellor]
 tsung hru'u ci|secretary general
 tsur|inward
 tsur 'dus|gathered back
-tswa 'dra|tsandra [Notes: tsva ri holy place of chakrasa\m vara; so this means a place like ('dra) tsva ri]
+tswa 'dra|tsandra [Notes: tsva ri holy place of chakrasaM vara; so this means a place like ('dra) tsva ri]
 tu|dative locative particle. dative/ locative particle [after final g, d, and b [see {la}. and {du}.]. la don gyi phrad cig ...La. dative locative particle [after final GA DA BA like la, du]
 tu brtags|examine minutely/ in detail
 tu pag|gun, musket, fire-lock, fowling piece
@@ -115834,7 +115834,7 @@ yid zab|carefulness, prudence
 yid zhi|tranquil mind
 yid zug|fall in love w, lose 1's heart to
 yid 'byung ba|1) depressed, anxious, dispirited, disquieted, sadness, melancholy; 2) repulsion, revulsion; 3) moved, touched; 4) Kamadeva
-yid bsad pa|sad
+yid bsad pa|
 yid 'gyur gyi myong ba|mental/ meditation experience
 yid 'gyur stobs che ba zhig byung|mind was powerfully transformed
 yid la 'bab|delightful to the mind, pleasing, like, be pleased
@@ -117195,7 +117195,7 @@ yul can dbang po lnga|the five sense perceiving faculties [yul lnga 'dzin par by
 yul can gyi 'od gsal|subjective clear light; subjective clear light, perceiver of luminosity
 yul can gyi lta ba|subjective view
 yul pa dang byes pa|local people and travellers/ visitors
-yul mtha' 'khob|border country; 1) region where the four fold retinue {a'khor bzhi} is incomplete; 2) country where good customs or dharma have not spread, border country
+yul mtha' 'khob|border country; 1) region where the four fold retinue {'khor bzhi} is incomplete; 2) country where good customs or dharma have not spread, border country
 yul sdud pa|among the rnam dbye lnga pa//from Lhasa to be cin
 yul 'khor 'dzin|king {yul 'khor 'dzin}
 yul 'khor bzang|good horizons
@@ -117487,7 +117487,7 @@ za pha|owner of a house
 za ra|later part of the afternoon. later part of the afternooon
 za rgyan|(met) sho and sbag [plaything]
 za rkang|sngar dpon khungs kyi ngo tshab mi sna la khral ltar sprod pa'i gla lto
-za rkon|rkon
+za rkon|
 za rkong|za rkong skin disease [R]. za rkong skin disease [ba spu byi zhing gya' za byed pa dang, sha mdog sngon por 'gyur zhing gzhan la 'go bar 'gyur ba'i pags nad cig
 za rlom|cheating others of their share of food
 za rngam|hunger
@@ -117552,7 +117552,6 @@ za rgyag spyod gsum|not according w custom and making a living out of whatever o
 za phyi a ya|med. za phyi a ya [R]
 za nam zin lde|king {za nam zin lde} [son of ai sho legs dang rmu lcam smad legs, 16th king of T, 1 of rgyal po lde brgyad. king {za nam zin lde} [R]
 za ri zi ri|unreliable, undependable; 1) unclear; 2) useless distraction; 3) buzzing; 4) unreliable, undependable)
-za zi bna bun|vague and vacillating, dissapear, vanish, dissolve
 za zi ban bun|vague and vacillating, disappear, vanish, dissolve
 za ra tshags|water course's wa kha
 za rgyu gyon rgyu|food and clothing, necessities of life
@@ -119291,7 +119290,7 @@ zhib 'jug rtsad gcod|examine in detail and decide
 zhib gzigs chog mchan|investigation/ scrutinizing and approval/ sanction [h]
 zhib gzigs chog mchan byed|investigate/ scrutinize and approve/ sanction [h]
 zhib gzigs mdzad pa'i 'char gzhi|thoroughly investigated plan/ source [h]
-zhib gzigs gnang ba snang tshul|[h]
+zhib gzigs gnang ba snang tshul|
 zhib mol byed|conduct negotiations/ discussions/ talks
 zhib gsed shan 'byed|analyze
 zhib btags byed|grind into flour
@@ -119311,7 +119310,7 @@ zhib bsher gtong|check, examine, inspect
 zhib bsher 'khrun gcod|decide by examining closely
 zhib bsher byed pa|check, examine, inspect
 zhib bsher byed pa'i 'grul pa|searched/ inspected travelers
-zhib bsher rtsis len|having examined a situation/ problem meticulously mathematically calculate the answer * inspect and take charge of. dngos po zhib tu bsher nas rtsis len pa,//'dzugs skrun zin mtshams zhib bsher rtsis len byed pa. having examined a situation/ problem meticulously mathematically calculate the answer [a'dzugs skrun zin mtshams zhib bsher rtsis len byed pa]
+zhib bsher rtsis len|having examined a situation/ problem meticulously mathematically calculate the answer * inspect and take charge of. dngos po zhib tu bsher nas rtsis len pa,//'dzugs skrun zin mtshams zhib bsher rtsis len byed pa. having examined a situation/ problem meticulously mathematically calculate the answer ['dzugs skrun zin mtshams zhib bsher rtsis len byed pa]
 zhib bsher byas pas gyod gzhir 'khrun gcod byed pa|by close examination decide ---
 zhib bsher las khungs|investigator's prosecutor's office
 zhib bsher gtong ba|count/ examine each 1 meticulously
@@ -119707,7 +119706,7 @@ zhol mo|among a herd of dris the best milker, dri. 'bri khyu'i nang gi the best 
 zhol pa|dweller in monastery/ mts/ zhol district of Lhasa. dweller in monastery or in the mts
 zhol pho|bird &, [bull] yak [w long hair uncut]. bya dang, long hair uncut 'i bull yak
 zhol po|yak; 1) dri &, mdzo mo's bull yak; 2) lha yak tse thar yak bull)
-zhol zhol|lower part/ hem, bottom [gyon pa zhol zhol sar drud pa,//a'brong brjid cing rngams pa rtsid pa zhol zhol can]. 'jol 'jol,//gyon pa zhol zhol sar drud pa,//'brong brjid cing rngams pa rtsid pa zhol zhol can
+zhol zhol|lower part/ hem, bottom [gyon pa zhol zhol sar drud pa,//'brong brjid cing rngams pa rtsid pa zhol zhol can]. 'jol 'jol,//gyon pa zhol zhol sar drud pa,//'brong brjid cing rngams pa rtsid pa zhol zhol can
 zhol phogs khang|Tibetan govt military and state office workers' salary grain giving etc office. sngar bod sa gnas srid gzhung dmag phogs grain sprod rgyu dang las khungs khag gi las byed pa'i phogs 'bru sprod rgyu sogs kyi las khungs shig
 zhol ra dkar|angora goat
 zhol ba rim gyis|smoothly

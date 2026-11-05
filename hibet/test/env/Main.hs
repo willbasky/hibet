@@ -43,7 +43,7 @@ translate :: Spec
 translate =
     describe "Translate Wylie request" $ do
         it "Search mir" $ do
-            res <- runFileMock makeEnv
+            res <- runFileMock (withTestDicts <$> makeEnv)
             case res of
                 Left err -> expectationFailure $ show err
                 Right env -> do
@@ -63,14 +63,14 @@ translate =
                                    , Answer
                                         { targets =
                                             [ Target
-                                                "mi ru zhes pa'i ru yig bsdus pa ste/ srin po mir brdzus zhes pa lta bu/ (mir chags) ma'i mngal gyi byis pa/"
+                                                "{mi ru zhes pa'i ru yig bsdus pa ste/ srin po mir brdzus zhes pa lta bu/ (mir chags) ma'i mngal gyi byis pa/}"
                                             ]
                                         , dictNumber = 37
                                         , dictTitle = Title "dag-yig gsar-bsgrigs"
                                         }
                                    ]
         it "Search ri ma" $ do
-            res <- runFileMock makeEnv
+            res <- runFileMock (withTestDicts <$> makeEnv)
             case res of
                 Left err -> expectationFailure $ show err
                 Right env -> do
@@ -83,7 +83,7 @@ translate =
                                         }
                                    ]
         it "Search re ba byed pa" $ do
-            res <- runFileMock makeEnv
+            res <- runFileMock (withTestDicts <$> makeEnv)
             case res of
                 Left err -> expectationFailure $ show err
                 Right env -> do
@@ -101,7 +101,7 @@ translate =
                                         }
                                    ]
         it "Search re ba med pa" $ do
-            res <- runFileMock makeEnv
+            res <- runFileMock (withTestDicts <$> makeEnv)
             case res of
                 Left err -> expectationFailure $ show err
                 Right env -> do
@@ -123,13 +123,13 @@ translate =
                                         , dictTitle = Title "Ives Waldo"
                                         }
                                    , Answer
-                                        { targets = [Target "{MSA}nirapekṣa; {MSA}niṣpratikāṅkṣa"]
+                                        { targets = [Target "[MSA]nirapekṣa; [MSA]niṣpratikāṅkṣa"]
                                         , dictNumber = 41
                                         , dictTitle = Title "Hopkins Sanskrit"
                                         }
                                    ]
         it "Tibetan query reaches the same entries as its Wylie key" $ do
-            res <- runFileMock makeEnv
+            res <- runFileMock (withTestDicts <$> makeEnv)
             case res of
                 Left err -> expectationFailure $ show err
                 Right env ->
@@ -154,6 +154,14 @@ runFileMock program =
         & runErrorNoCallStack @HibetError
         -- & runLog "hibet" logger defaultLogLevel
         & runEff
+
+-- The expectations below are written for these dictionaries. New dictionaries
+-- must not change the result of the search tests.
+testDicts :: [Int]
+testDicts = [5, 7, 15, 16, 37, 41]
+
+withTestDicts :: Env -> Env
+withTestDicts env = env{dictionaryMeta = selectDict testDicts env.dictionaryMeta}
 
 -- Data for mocking
 

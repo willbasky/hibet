@@ -400,13 +400,13 @@
     target = ["Tibetan"]
 
 [[titles]]
-    path = "tshig-mdzod-chen-mo-Tib"
+    path = "tshig-mdzod-chen-mo-T|T"
     id = 35
-    label = "bod-rgya tshig-mdzod chen-mo"
-    about = "Bod rgya tshig mdzod chen mo|1985, Mi dmangs dpe skrun khang, Beijing."
-    public = false
+    label = "bod rgya tshig mdzod chen mo"
+    about = "Bod rgya tshig mdzod chen mo / 藏汉大辞典|Author: Zhang Yisun|Beijing: Mi dmangs dpe skrun khang, 1985"
+    public = true
     listCredits = true
-    available = false
+    available = true
     source = "Tibetan"
     target = ["Tibetan"]
 
@@ -499,6 +499,264 @@
     available = true
     source = "Tibetan"
     target = ["Sanskrit"]
+
+[[titles]]
+    path = "84000Dict-T|E"
+    id = 44
+    label = "84000 Glossary"
+    about = "84000 Glossary|English terms from the Glossary of the 84000 translation project. http://www.84000.co/"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "84000Definitions-T|E"
+    id = 45
+    label = "84000 Glossary-Definitions"
+    about = "English definitions from the Glossary of the 84000 translation project. http://www.84000.co/"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "84000Synonyms-T|T"
+    id = 46
+    label = "84000 Tibetan Synonyms"
+    about = "Synonymous Tibetan terms from the Glossary of the 84000 translation project. http://www.84000.co/"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "84000Skt-T|S"
+    id = 47
+    label = "84000 Glossary, Sanskrit"
+    about = "Sanskrit terms from the Glossary of the 84000 translation project. http://www.84000.co/"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["Sanskrit"]
+
+[[titles]]
+    path = "Misc-T|E"
+    id = 48
+    label = "Miscellaneous definitions"
+    about = "Mixed definitions from various sources"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "TibTermProject-T|E"
+    id = 49
+    label = "Tibetan Terminology Project: Glossary of Standardised Terms"
+    about = "Tibetan Terminology Project: Glossary of Standardised Terms| Department of Education, Central Tibetan Administation, India, 2013| Chief editor: Acharya Karma Monlam | Assistant editors: Ogyen Tenzin, Yeshi Tenzin, Tsering Dhondup |Database consultant: Pema Zomkyi | Software consultants: ven. Lobsang Monlam, Gedun Dhonyoe | online version: https://tibterminology.net/"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "LokeshChandraSkt-T|S"
+    id = 50
+    label = "Lokesh Chandra"
+    about = "Tibetan-Sanskrit Dictionary|Lokesh Chandra|International Academy of Indian Culture and Aditya Prakashan (1992)|A scanned version is available at archive.org: https://archive.org/details/dictionarytibetansanskritdictionarylokeshchandra_78_F"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Sanskrit"]
+
+[[titles]]
+    path = "NegiSkt-T|S"
+    id = 51
+    label = "Negi"
+    about = "Tibetan-Sanskrit Dictionary|bod skad dang legs sbyar gyi tshig mdzod chen mo|J.S. Negi|Dictionary Unit, Central Institute of Higher Tibetan Studies, Sarnath"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Sanskrit"]
+
+[[titles]]
+    path = "LaineAbbreviations-T|T"
+    id = 52
+    label = "Tibetan Abbreviations"
+    about = "Tibetan abbreviations|Compiled, formatted and kindly shared by Bruno Lainé (Version: September 2021)|http://www.rkts.org/"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "ITLR-T|ES"
+    id = 53
+    label = "Indo-Tibetan Lexical Resource (ITLR)"
+    about = "The Indo-Tibetan Lexical Resource (https://www.itlr.net) is a collaborative lexical project built around Sanskrit Headwords. It involves a number of scholars from around the world and cooperates with several institutions.|Many thanks go to Dr. Orna Almogi for allowing the ITLR resources to be included in this application, to Prof. Kiyonori Nagasaki for implementing a data export and making the ITLR data available, and to all contributors of the ITLR project."
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English", "Sanskrit"]
+
+[[titles]]
+    path = "Bialek-T|E"
+    id = 54
+    label = "Bialek"
+    about = "Glossary entries from Joanna Bialek: A Textbook in Classical Tibetan|Routledge (2022)|ISBN: 9781032123561|Book available at https://www.routledge.com/A-Textbook-in-Classical-Tibetan/Bialek/p/book/9781032123561"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "bod_rgya_nang_don_rig_pai_tshig_mdzod-T|T"
+    id = 55
+    label = "Bod rgya nang don rig pa’i tshig mdzod"
+    about = "Bod rgya nang don rig pa’i tshig mdzod (Tibetan–Chinese Dictionary of Buddhist Terminology)|Chengdu: Sichuan minzu chubanshe 四川民族出版社 / si khron mi rigs dpe skrun khang (Sichuan Ethnic Publishing House), 1993 (2 volumes)."
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "brda_dkrol_gser_gyi_me_long-T|T"
+    id = 56
+    label = "Brda dkrol gser gyi me long"
+    about = "Brda dkrol gser gyi me long (Golden Mirror for the Elucidation of Words)|Authors: btsan lha ngag dbang tshul khrims|Beijing: Minzu chubanshe 民族出版社 / mi rigs dpe skrun khang (Ethnic Publishing House), 1997. 1,063 pages. ISBN 7105022337.||Scan available at archive.org: https://archive.org/details/bdrc-W28966"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "chos_rnam_kun_btus-T|T"
+    id = 57
+    label = "Chos rnam kun btus"
+    about = "Chos rnam kun btus: gangs can rig brgya'i chos kyi rnam grangs mthong tshad kun las btus pa ngo mtshar 'phrul gyi lde mig chen po (A Wondrous Great Magical Key: A Comprehensive Compilation of Enumerations of Dharma Terms from the Snow Land’s Hundreds of Fields of Knowledge)|Author: nor brang o rgyan|Beijing: Zhongguo Zangxue chubanshe 中国藏学出版社 / krung go’i bod rig pa dpe skrun khang (China Tibetology Publishing House), 2008, 3 volumes.|Scan available at BDRC: https://library.bdrc.io/show/bdr:MW1KG2733"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "li_shii_gur_khang-T|T"
+    id = 58
+    label = "Li shi'i gur khang"
+    about = "Brda gsar rnying gi rnam gzhag li shi'i gur khang (Presentation of Old and New Terminology: House of Cloves)|Author: skyogs ston rin chen bkra shis (born ca. 1400)||Scan available at archive.org: https://archive.org/details/bdrc-W3CN1669"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "sgom_sde_tshig_mdzod_chen_mo-T|T"
+    id = 59
+    label = "sGom sde tshig mdzod chen mo"
+    about = "sGom sde tshig mdzod chen mo|Author: sGom sde lha rams pa dge bshes thub bstan bsam grub|Sera Jey Monastery, Bylakuppe, Karnataka, India (2005-2016, 4 volumes)||Scan available at archive.org:|- Volume 1: https://archive.org/details/20240428_20240428_0750|- Volume 2: https://archive.org/details/20240428_20240428_0753|- Volume 3: https://archive.org/details/20240428_20240428_0755|- Volume 4: https://archive.org/details/20240428_20240428_0758||- All volumes: https://archive.org/details/bdrc-W2KG209991/bdrc-W2KG209991-1/"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "sgra_bye_brag_tu_rtogs_byed_chen_mo-T|ES"
+    id = 60
+    label = "sgra bye brag tu rtogs byed chen mo skad bzhi shan sbyar ma (Mahāvyutpatti with added English)"
+    about = "Tibetan-Sanskrit-English-Chinese Dictionary of Buddhism: An Edition and Translation of the Mahāvyutpatti|Author: bu chung tshe ring|Lhasa: Xizang renmin chubanshe 西藏人民出版社 / bod ljongs mi dmangs dpe skrun khang (Tibetan People's Publishing House), 2015. ISBN 9787223046312.|Scan available at archive.org: https://archive.org/details/bdrc-W3CN6915/"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English", "Sanskrit"]
+
+[[titles]]
+    path = "sngas_rgyas_chos_gzhung_tshig_mdzod-T|T"
+    id = 61
+    label = "Bod rgya sangs rgyas chos gzhung gi tshig mdzod"
+    about = "Zang Han fo xue ci dian 藏汉佛学词典 = bod rgya sangs rgyas chos gzhung gi tshig mdzod.|(Chinese-Tibetan dictionary of Buddhist Terms).|Author:  Wang Yinuan and ’jam dpal phun tshogs.|Xining: Qinghai min zu chu ban she 民族出版社 / mtsho sngon mi rigs dpe skrun khang (Qinghai Ethnic Publishing House), 1986 (reprint: 1988). 534 pages.|Scan available at archive.org: https://archive.org/details/bdrc-W22164"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "gangs_can_mkhas_grub_rim_byon_ming_mdzod-T|T"
+    id = 62
+    label = "Gangs can mkhas grub rim byon ming mdzod"
+    about = "Gangs can mkhas grub rim byon ming mdzod (Dictionary of the Generations of Scholars and Accomplished Ones of the Glacier Land)|Lanzhou: Gansu minzu chubanshe 甘肃民族出版社 / kan su'u mi rigs dpe skrun khang (Gansu Ethnic Publishing House), 1992, ISBN 7542102001, 1933 pages"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "bod_yig_tshig_gter_rgya_mtsho-T|T"
+    id = 63
+    label = "Bod yig tshig gter rgya mtsho"
+    about = "Bod yig tshig gter rgya mtsho (Ocean of Treasure of Tibetan Letters)|Author: thub bstan phun tshogs|Chengdu: Sichuan minzu chubanshe 四川民族出版社 / si khron mi rigs dpe skrun khang (Sichuan Ethnic Publishing House), 2012, ISBN 7540949422, 3 volumes (4013 pages)"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["Tibetan"]
+
+[[titles]]
+    path = "hotl1-T|E"
+    id = 64
+    label = "Heart of Tibetan Language 1"
+    about = "Vocabulary from the supplementary Anki learning cards for: The Heart of Tibetan Language|by Franziska Oertle|Dharma Publishing (dharmapublishing.com)|Volume 1: ISBN: 978-0-89800-233-1|Volume 2: ISBN: 978-0-89800-308-6|Volume 3: ISBN: 978-0-89800-382-6"
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "hotl2-T|E"
+    id = 65
+    label = "Heart of Tibetan Language 2"
+    about = "Vocabulary from the supplementary Anki learning cards for: The Heart of Tibetan Language|by Franziska Oertle|Dharma Publishing (dharmapublishing.com)|Volume 1: ISBN: 978-0-89800-233-1|Volume 2: ISBN: 978-0-89800-308-6|Volume 3: ISBN: 978-0-89800-382-6"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "hotl3-T|E"
+    id = 66
+    label = "Heart of Tibetan Language 3"
+    about = "Vocabulary from the supplementary Anki learning cards for: The Heart of Tibetan Language|by Franziska Oertle|Dharma Publishing (dharmapublishing.com)|Volume 1: ISBN: 978-0-89800-233-1|Volume 2: ISBN: 978-0-89800-308-6|Volume 3: ISBN: 978-0-89800-382-6"
+    public = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
+
+[[titles]]
+    path = "tibetanlanguage-school-T|E"
+    id = 67
+    label = "Tibetan Language School: Supplementary Vocabulary"
+    about = "Vocabulary from the Tibetan Language School website|https://tibetanlanguage.school/resources/vocabulary-supplement/|by Nick Prior|This vocabulary contains additional colloquial terms that are not available from other sources in this dictionary application. Many thanks to Nick Prior for compiling of this vocabulary and making it available."
+    public = true
+    listCredits = true
+    available = true
+    source = "Tibetan"
+    target = ["English"]
 
 
 

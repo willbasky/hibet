@@ -6,7 +6,7 @@ a bi sha ya|Syn {dbab pa}. Syn {bstim}
 a bo tse|good, tolerable, middling
 a bo|uncle
 'ab pa|to bark
-a' 'bu|I, myself (Milarepa uses about himself)
+'a 'bu|I, myself (Milarepa uses about himself)
 a cag lags|elder sister, women
 a cag|sister-in-law {jo jo'i skye dman}, [older, elder] sister, wife of a cousin
 'a cag|us, we
@@ -16,7 +16,7 @@ a ce lha mo|Ache Lhamo
 a che|an elder sister, wife, mistress, madam
 a che lha mo|actor, actress
 a chung gnam rdzong|Achung Namdzong, in Domey
-a' chung|small 'a'
+'a chung|small 'a'
 a chu zer ba|[the hell called] Crying Cold, the third cold hell, 'Brr' Hell
 a chu zer ba|the Hell of Whimpering, one of {grang dmyal brgyad} eight cold hells
 'a ci|vow! oh! oh my!
@@ -154,7 +154,6 @@ a rig|1) Arik, on the south-west banks of the Machu River, in Domey. 2) Arik, on
 a rig dge bshes 'jam dpal dge legs rgyal mtshan|or rgyal mtshan 'od zer, 1726-1803 - Arik Geshe, a preeminent master from Domey, who gave monastic ordination to Shabkar
 A rig dge shes bya bral nga dbang bsod rnam|Arik Geshe Chadral Ngawang Sönam; founded Ganden Chökhor Ling Monastery (dga' ldan chos 'khor gling.)
 a rigs can|'A' family [clan name]
-a' ri 'u ri|hurried, careless
 'a ri 'u ri|hurried, careless
 'a ri 'ur ri|scatter-brain, careless
 ar ka|marble, plaster-floor
@@ -1827,14 +1826,14 @@ bed|advantage, profit, gain, high price, interest; advantage, dearness
 bed bcad|usefulness/ advantage
 bed spyod byed pa|to exploit, be exploited; use, employ, apply, utilize
 bed spyod|to use, employ, utilize, apply
-bE dur| - lapis, lapis lazuli
-bE DUr ser po|a history of dga' ldan (dge lugs pa sect); by {sde srid sangs rgyas rgya mtsho} (1653-1705)
-bE dU rya|azure stone, lapis lazuli
-bE dUr ya|azure stone, lapis lazuli, lapis, lapis lazuli
-bE dur ya|lapis
-bE dur ya|lapis, lapis lazuli
-bE dur ya|lapis lazuli. The Sanskrit vaidurya means 'utterly bright.'
-bE DU rya ser po|bE DUr ser po - a history of dga' ldan (dge lugs pa sect); by {sde srid sangs rgyas rgya mtsho} (1653-1705)
+bai dur| - lapis, lapis lazuli
+bai DUr ser po|a history of dga' ldan (dge lugs pa sect); by {sde srid sangs rgyas rgya mtsho} (1653-1705)
+bai dU rya|azure stone, lapis lazuli
+bai dUr ya|azure stone, lapis lazuli, lapis, lapis lazuli
+bai dur ya|lapis
+bai dur ya|lapis, lapis lazuli
+bai dur ya|lapis lazuli. The Sanskrit vaidurya means 'utterly bright.'
+bai DU rya ser po|bai DUr ser po - a history of dga' ldan (dge lugs pa sect); by {sde srid sangs rgyas rgya mtsho} (1653-1705)
 beg tse|a deity
 be kar|Pekar
 'bel ba'i gtam|elaborate / rich speech
@@ -1877,14 +1876,14 @@ ber nag|black cloak
 ber nag can|a deity
 ber nag can|Bernakchen, the central Mahakala of the Karma Kagyü
 ber nag can|{mgon po ber nag can} Mahakala
-bE ro|Abbr. of {lo tsa ba bE ro tsa na}
-bE ro'i 'dra 'bag chen mo|{'dra 'bag chen mo} the biography of Vairochana, the locchava of {pa gor} in 39 chapters
-bE ro'i snying tig|[Dzogchen teachings of] Nyingtig of Vairochana
+bai ro|Abbr. of {lo tsa ba bai ro tsa na}
+bai ro'i 'dra 'bag chen mo|{'dra 'bag chen mo} the biography of Vairochana, the locchava of {pa gor} in 39 chapters
+bai ro'i snying tig|[Dzogchen teachings of] Nyingtig of Vairochana
 be ro lo tsa ba|Vairochana the translator
-bE ro tsa na'i rnam thar 'dra 'bag chen mo|rje btsun thams cad mkhyen pa bE ro tsa na'i rnam thar 'dra 'bag chen mo - an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
-bE ro tsa na ra kshi ta|Vairochana the Translator
-bE ro tsa na rak shi ta|Vairochana the Translator
-bE ro tsa na|Vairochana. The great Tibetan translator at the time of King Trisong Deutsen. Recognized by Padmakara as a reincarnation of an Indian pandita, he was among the first seven monks and sent to India to study with Shri Singha. He is also one of the three main masters to bring the Dzogchen teachings to Tibet, the two others being Padmakara and Vimalamitra
+bai ro tsa na'i rnam thar 'dra 'bag chen mo|rje btsun thams cad mkhyen pa bai ro tsa na'i rnam thar 'dra 'bag chen mo - an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
+bai ro tsa na ra kshi ta|Vairochana the Translator
+bai ro tsa na rak shi ta|Vairochana the Translator
+bai ro tsa na|Vairochana. The great Tibetan translator at the time of King Trisong Deutsen. Recognized by Padmakara as a reincarnation of an Indian pandita, he was among the first seven monks and sent to India to study with Shri Singha. He is also one of the three main masters to bring the Dzogchen teachings to Tibet, the two others being Padmakara and Vimalamitra
 ber rgyug|baton
 be rtse 'dod yon rdzong|Betsey Doyen Dzong, in Latö?
 ber|tunic
@@ -17623,7 +17622,7 @@ dpal khrag 'thung rtsa ba'i rgyud|Glorious Heruka Root Tantra
 dpal kun tu bzang po'i go 'phang|the state of the glorious Samantabhadra
 dpal kun tu bzang po'i smon lam zhes bya ba|the Glorious Aspiration of Samantabhadra; the {kun bzang smon lam} revealed by Rigdzin Gödem
 dpal kye'i rdo rje|Shri Hevajra
-dpal kyE rdo rje'i phyi nang gi bskyed rim gyi rnam par bshad pa dge legs nor bu'i phreng ba gsang sngags mdzes rgyan|a detailed explanation of the utpattikrama or visualization of the hevajra tantra; by {'jam mgon a myes zhabs ngag dbang kun dga' bsod nams} -(1597-ca. 1662)
+dpal kye rdo rje'i phyi nang gi bskyed rim gyi rnam par bshad pa dge legs nor bu'i phreng ba gsang sngags mdzes rgyan|a detailed explanation of the utpattikrama or visualization of the hevajra tantra; by {'jam mgon a myes zhabs ngag dbang kun dga' bsod nams} -(1597-ca. 1662)
 dpal kye rdo rje zhes bya ba'i rgyud kyi rgyal po|Shri Hevajra King of Tantras
 dpal kyi rdo rje|glorious vajra
 dpal lan rtsa ba'i bla ma|your glorious root teacher
@@ -17958,7 +17957,7 @@ dra|1) often used for {'dra}. 2) net, network, grate, lattice
 dra ba dra phyed ltar bres pa|spread out like a lattice
 dra ba|ft. of {'dra ba}; grate, lattice, net, net-work, web
 'dra 'bag chen mo|Great Replica; The detailed life story of the great translator Vairochana and the transmission of the Dzogchen teachings through the buddhas and vidyadharas
-'dra 'bag chen mo|rje btsun thams cad mkhyen pa bE ro tsa na'i rnam thar 'dra 'bag chen mo - an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
+'dra 'bag chen mo|rje btsun thams cad mkhyen pa bai ro tsa na'i rnam thar 'dra 'bag chen mo - an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
 'dra 'bag chen mo|the biography of Vairochana, the locchava of {pa gor} in 39 chapters
 'dra 'bag|mask, likeness. image, model, resemblance, representation; mask
 'dra bag|mask. Syn {'dra 'bag}
@@ -20176,7 +20175,7 @@ gang zhe na|What are they?
 gang zhig|1) the one, those, that, whoever, the one who, which, certain, specific, given; whatever; who(so)ever. 2) "how will...?" [interrogative]
 gang zhig gis ni|how...? why...? [mss]
 gang zhing zag pa|{gang zag}, subject to transmigration
-gan jag thang ta|child name of {ba gor bE ro tsa na}
+gan jag thang ta|child name of {ba gor bai ro tsa na}
 gaN ji ra|ganjira pinnacle ornament
 gan ji ra|top ornament
 'gan 'khur ba|to be responsible for
@@ -25736,7 +25735,7 @@ g.ya'|rust; rust
 g.yas brkyang g.yon bskum|Alidha
 g.yas bskor|clockwise
 g.yas bskum g.yon brkyang|Pratyalidha. 'Counter-alidha' posture - sitting or standing with the right leg bent more sharply than the left
-g.ya' sel|treatise on astrological time-calculation {rtsi} by {sde srid sangs rgyas rgya mtsho}; also {bED'urya dkar po'i g.ya' sel}
+g.ya' sel|treatise on astrological time-calculation {rtsi} by {sde srid sangs rgyas rgya mtsho}; also {bai D'urya dkar po'i g.ya' sel}
 g.yas gral|right sitting row
 g.yas 'khyil|curl to the right
 g.yas 'khyil|rotating clockwise. Syn {dung} / {dung chos}
@@ -27914,8 +27913,8 @@ ji 'dra|Syn {ji ltar} how
 'jigs byed|1) Bhairava; 2) terrifying one/ destroyer, Lord of Death, rakshasa; 3) great deity]; 3) terrifying laughter charnel ground; 4) Yamantaka {rdo rje 'jigs byed}
 'jigs byed|1) Bhairava [Hindu god Vajra Yogini tramples on]. 2) destroyer, 3) terrifying, {'jigs byed bzhad pa} terrifying Laughter [n. of Charnel Ground], 4) [Yamantaka] {rdo rje 'jigs byed}
 'jigs byed|Bhairava
-'jigs byed bhE ra ba|one of the {'jigs byed dgu}
-'jigs byed bhE shan ta|one of the {'jigs byed dgu}
+'jigs byed bhai ra ba|one of the {'jigs byed dgu}
+'jigs byed bhai shan ta|one of the {'jigs byed dgu}
 'jigs byed bi ti|one of the {'jigs byed dgu}
 'jigs byed bra mi ta|one of the {'jigs byed dgu}
 'jigs byed bzhad pa|Terrifying Laughter [n. of Charnel Ground]
@@ -27925,12 +27924,12 @@ ji 'dra|Syn {ji ltar} how
 'jigs byed dgu|[TRS 129-4]; 1) {'jigs byed kyi bdag po}. 2) {'jigs byed bra mi ta} 3) {'jigs byed bhE ra ba} 4) {'jigs byed ku be ra} 5) {'jigs byed ye shes bee ra} 6) {'jigs byed bhE shan ta} 7) {'jigs byed bi ti} 8) {'jigs byed kA la bhE ra} 9) {'jigs byed ga na pa ti}
 'jigs byed dpa' bo gcig pa|single form of Yamantaka
 'jigs byed ga na pa ti|one of the {'jigs byed dgu}
-'jigs byed kA la bhE ra|one of the {'jigs byed dgu}
+'jigs byed kA la bhai ra|one of the {'jigs byed dgu}
 'jigs byed ku be ra|one of the {'jigs byed dgu}
 'jigs byed kyi bdag po|one of the {'jigs byed dgu}
 'jigs byed kyi rdzogs rim rnal 'byor bzhi|fourfold yoga completion stage of Yamantaka
 'jigs byed pha ra ba|?? one of the {'jigs byed dgu}
-'jigs byed ye shes bE ra|one of the {'jigs byed dgu}
+'jigs byed ye shes bai ra|one of the {'jigs byed dgu}
 'jigs chen|great devastation
 'jigs dngangs|Syn {'jigs snang}
 'jigs gnas|frightening place / object
@@ -28834,7 +28833,7 @@ ke ke'i sgra can|poet. peacock
 ke ke ru|cat's eye (a precious stone)
 ke ko|cavity between the Adam's apple and the breastbone
 ke la pa tra|gills
-kE la sha|Syn {ke la sha}
+kai la sha|Syn {ke la sha}
 ke la sha|the mount Kailash. Mt. Kailash. See {gangs ti se}. See {ri bo gangs can}
 kel mag|Kalmuk (the Turkish name of the Oirats or Western Mongols)
 keng rus can|[Karankin] the Skeleton-filled Charnel Ground. One of the eight charnel grounds, {dur khrod brgyad}. one of eight charnel grounds
@@ -33976,7 +33975,7 @@ kyar kyar|flat. Syn {kyar po}
 kyar kyor|still, feeble, weak
 kya sir rlung|chilling wind
 kye|1) O! [calling someone higher than oneself.]. 2) oh! hi! listen! pay heed! hey! etc. calling 3) sign of the vocative case, oh! hello!; sign of the vocative case
-kyE|ah! O ... !
+kye|ah! O ... !
 kye|Alas!
 kyed|Syn {'greng bu} used sometimes for {'greng bu} (the vowel "e")
 kye ho|exclamation of surprise. exclamation of amazement or surprise, hello! hi! well! behold; ah! O!
@@ -33999,10 +33998,9 @@ kye rdo rje|Hevajra; also called {kye'i rdo rje, dgyes pa rdo rje, rol pa'i rdo 
 kye rdo rje'i 'grel ba|commentary on Hevajra
 kye rdo rje'i rgyud|Hevajra Tantra; the king of the prajna mother tantras, has an extensive, medium and condensed versions. The extensive is the Seven Hundred Thousand ('bum phrag bdun pa). The medium is the Five Hundred Thousand ('bum phrag lnga pa). The condensed is called the Two Segments (brtags pa gnyis pa)
 kye rdo rje|n. of a tantric deity
-kyE rdo rje|Syn {kye rdo rje}
-kye rdo rje|Syn {kye rdo rje}; Hevajra. Syn {dgyes pa rdo rje}. a yidam of Anuttara yoga tantra
+kye rdo rje|Hevajra. Syn {dgyes pa rdo rje}. a yidam of Anuttara yoga tantra
 kye rdo rje zhes bya ba rgyud kyi rgyal po|The condensed version of Hevajra Tantra call the Two Segments. {brtag pa gnyis pa}
-kyE rdor lhan skyes|1) Hevajra and Coemergent One [consort]. 2) a yidam of Anuttara yoga tantra
+kye rdor lhan skyes|1) Hevajra and Coemergent One [consort]. 2) a yidam of Anuttara yoga tantra
 kye rdor sgrub thabs yan lag drug|six-branched sadhana of Hevajra
 kye rdor|Syn {kye rdo rje}; abbr. of {kye rdo rje}. Hevajra
 kye re lang ba sdod pa|to stand erect
@@ -35499,7 +35497,7 @@ lhag pas brtse dgos|love him all the more!
 lhag pa shes rab kyi bslab pa|the supreme training of discrimination, training in superior wisdom / intelligence / knowledge
 lhag pa ting nge 'dzin gyi bslab pa|the training in superior samadhi / excellent concentration, def. {zhi gnas} and {lhag mthong}
 lhag pa tshul khrims kyi bslab pa|[of Mahayana] - sdom pa'i tshul khrims sogs rnams pa gsum ste theg pa dman pa las sems bskyed sogs kyis khyad par du gyur pas lhag pa zhes pa'i sgra sbyar ba; the training in excellent discipline / superior morality
-lhag pa tshul khrims sems dang she rab kyi bslab pa|the three trainings of higher discipline, concentration and knowledge; ethics, meditation, and wisdom
+lhag pa tshul khrims sems dang she rabs kyi bslab pa|the three trainings of higher discipline, concentration and knowledge; ethics, meditation, and wisdom
 lhag phud|gtsang lhag - phud gtor - phud lhag - yar lhag - pure residual
 lhag phud|phud lhag - primary residual
 lhag po|CM: 1) i) 'phro ma, left over, remainder (if 'phro ma = 'phro). Å  'tsho chas kyi lhag po, left over provisions. ii) snon ma, addition. Å  nyung ngu'i steng du lhag po bsnan pa. iii) bskyar bzlos kyi yi ge ste/ sam sKri ta'i sbyor klog skabs yi ge'i gzugs 'gyur nas bskyar bzlos su byung ba'i yi ge, "a repetitive (or duplicative) letter; when reading Sanskrit, a letter that occurs as a repetition of/thru the form of the letter."??? 2) khyad par ba, special. Å  yon tan lhag po, special qualities. Å  stobs shugs lhag po. [mss]
@@ -36211,9 +36209,9 @@ lob|imp. of {lab pa}
 lob pa|to learn
 lo brgya|one hundred years
 lobs pa|{lobs pa, lobs pa, lobs pa} intr. v
-lo chen bE ro tsa na rgyal mo tsha ba'i rong du skyugs pa'i tshe|During the period of his exile in Gyalmo Tsawarong, the great translator Vairotsana
-lo chen bE ro TsA na|the great translator Vairochana
-lo chen bE ro tsa na|the great translator Vairotsana
+lo chen bai ro tsa na rgyal mo tsha ba'i rong du skyugs pa'i tshe|During the period of his exile in Gyalmo Tsawarong, the great translator Vairotsana
+lo chen bai ro TsA na|the great translator Vairochana
+lo chen bai ro tsa na|the great translator Vairotsana
 lo chen byang chub rtse mo|Khenchen Changtse: 1303-1380
 lo chen dang cha pa|great translators and partisans
 lo chen|great translator
@@ -36483,7 +36481,7 @@ lo tsA ba thon mi sam bho Ta|the translator Tönmi Sambhota
 lo tsa ba|Tibetan scholar-translator
 lo tsA ba|translator
 lo tsa ba|Translators, Tibetan
-lo tsa ba vE ro tsa na|Lotsawa Vairochana
+lo tsa ba vai ro tsa na|Lotsawa Vairochana
 lo tsA brgya dang rtsa brgyad|one hundred and eight translators [at the time of king Trisong Detsen]
 lo tsA bslabs|learned the art of translation
 lo TsA chen po|the great translator
@@ -37708,7 +37706,7 @@ ma rig gnyid skrog|Awakening from the Sleep of Ignorance
 ma rig gnyid skrog|Awakening from the Sleep of Ignorance, stirring from the sleep of ignorance,[ waking-up practice]
 ma rig gnyid skrog|Stirring from the sleep of ignorance
 ma rig gnyid skrog tho rangs|[the fist practice at dawn]
-ma rig gsum|Syn {ma rig rnam gsum}; threefold loss of awareness. 1) {rgyu bdag nyid gcig pa'i rig pa} the sole potential self-nature loss of awareness, the primary cause inherent in mind as such. 2) {lhan cig skyes pa'i ma rig pa} coemergent loss of awareness. 3) {kun tu btags pa'i ma rig pa} self arising appearance, grasping at other is the loss of awareness through motivated identity. Syn {ma rig rnam gsum}
+ma rig gsum|Syn {ma rig rnam gsum}; threefold loss of awareness. 1) {rgyu bdag nyid gcig pa'i ma rig pa} the sole potential self-nature loss of awareness, the primary cause inherent in mind as such. 2) {lhan cig skyes pa'i ma rig pa} coemergent loss of awareness. 3) {kun tu btags pa'i ma rig pa} self arising appearance, grasping at other is the loss of awareness through motivated identity. Syn {ma rig rnam gsum}
 ma rig gsum tshig|the three terms for ignorance, {ma rig pa}, {lung ma bstan}, {tha mal btang snyoms}
 ma rig 'khrul pa'i blo rtog|ignorance and confused thinking
 ma rig ling thog|the cataract of our ignorance
@@ -38498,7 +38496,7 @@ mdo yi sde snod|Sutra Pitaka
 mdud pa bzhi|the four knots
 mdud pa|{mdud pa, mdud pa, mdud pa, mdud} intr. v.; 1) knot. 2) bond
 mdud|Syn {mdud pa}
-mdun bdar|CM: dpung sde''i sngon du 'gro ba'i dmag mi.. Soldiers who go in from of the [main] unit. E.g., mdun bdar dpung khag. an advance party/patrol [of soldiers]. [mss]
+mdun bdar|CM: dpung sde'i sngon du 'gro ba'i dmag mi.. Soldiers who go in from of the [main] unit. E.g., mdun bdar dpung khag. an advance party/patrol [of soldiers]. [mss]
 mdun bskyed|front visualization
 mdun bsu|anticipating
 mdun bsu|anticipating, reception welcome, to invite; to invite; welcome, invite
@@ -38847,7 +38845,7 @@ me shing|firewood
 me shing thus|gather wood
 me shor|to catch fire
 me skyes kyi rtogs brjod|the story of Jyotiska's Realization
-mE so re|Mysore - a city in Karnataka state in South India [mss]
+mai so re|Mysore - a city in Karnataka state in South India [mss]
 mes po|ancestor, patriarch, progenitor, ascendant; forefathers; forefather, grandfather
 mes po'i zhal lung|a detailed commentary on the four Tibetan medical tantras (rgyud bzhi); by {zur mkhar blo gros rgyal po (legs bshad 'tshol)}
 mes po|patriarch
@@ -38903,8 +38901,8 @@ me tog skyed tshal|the flower-garden
 me tog 'thor|tossed flowers {nam mkha' nas lha mo rnams kyis me tog 'thor} goddesses tossed flowers from the sky
 me tog tsam pa ka|campaka flowers
 me tog u|pal - lotus blossoms
-mE tri pa|Maitripa. A great Indian master and one of the teachers of Marpa the Translator. 1012-1097
-mE tri|Skt. loving kindness, see {byams pa}
+mai tri pa|Maitripa. A great Indian master and one of the teachers of Marpa the Translator. 1012-1097
+mai tri|Skt. loving kindness, see {byams pa}
 me tsa|geomantic center / site. focal points of power on the surface of the earth, (and especially on the body of the supine ogress which represents the Tibetan landscape)
 me tshogs|mass of fire; flames, fires
 me tshogs spu gri'i so yang brgal nas ni 'chi mthar thug gi bar du dam chos btsal|even if you have to face blazing infernos or razor-sharp blades search for the Dharma until you die
@@ -39699,7 +39697,7 @@ mi mngon dbyings|unmanifest realm, invisible space; invisible realm
 mi mngon|do not bulge out, unmanifest
 mi mngon pa|unseen, inevident/ not evident; invisible, inevident, unmanifest
 mi mnyam|1) matchless. 2) unmixed, neutral. 3) absence of a state of sameness, incomparability
-mi mnyam pa dang mnyam pa'i phung po lnga|five peerless aggregates. 1) {tshul khrims kyi phung po} aggregate of moral practice. 2) {ding nge 'dzin gyi phung po} aggregate of one-pointed contemplation. 3) {shes ra kyi phun po} aggregate of wisdom. 4) {rnam par grol pa'i phun po} aggregate of liberation. 5) {rnam par grol pa'i ye shes mthong pa'i phung po} aggregate of seeing the wisdom of liberation
+mi mnyam pa dang mnyam pa'i phung po lnga|five peerless aggregates. 1) {tshul khrims kyi phung po} aggregate of moral practice. 2) {ding nge 'dzin gyi phung po} aggregate of one-pointed contemplation. 3) {shes rab kyi phun po} aggregate of wisdom. 4) {rnam par grol pa'i phun po} aggregate of liberation. 5) {rnam par grol pa'i ye shes mthong pa'i phung po} aggregate of seeing the wisdom of liberation
 mi mnyam pa yang mnyam par 'gyur|will accomplish what is unparalleled
 mi mo|a woman; woman, girl, maiden
 mi mthong|not perceiving
@@ -41091,9 +41089,7 @@ mngon shes drug ldan|endowed with the six types of superknowledge
 mngon shes drug|six super-knowledges, six supernormal cognitive powers; six super-knowledges, six supernatural perceptions; six clairvoyant powers; In case of enlightened bodhisattvas, Def. by Jamgön Kongtrül: {gzhan dag gi skye ba shes pa, 'chi 'pho dang skye ba mngon par shes pa, skyes pa de dag gis smra ba'i ngag tshig shes pa lha'i rna ba'i mngon shes, de dag gi sems shes pa sems kyi rnam grangs shes pa'i mngon shes, sngon dge ba dang mi dge ba bskyed par shes pa sngon gyi gnas mngon par shes pa, gang na gdul bya yod pa de'i gnas su 'gro bar shes pa rdzu 'phrul gyi yul mngon par shes pa, ji ltar sems can rnams skye ba las 'byung bar 'gyur ba'i 'byung ba shes pa zag pa zad pa'i mngon par shes pa ste, 'jig rten gyi khams thams cad du don drug po de dag rab tu dbye ba dang bcas pa la shes pa mngon sum du gyur pa thogs pa med pa gang yin pa de ni byang chub sems dpa' rnams kyi mthu mngon par shes pas bsdus par bshad do}
 mngon shes drug|six superknowledges. The capacities for performing miracles, divine sight, divine hearing, recollection of former lives, cognition of the minds of others, and the cognition of the exhaustion of defilements
 mngon shes kyis brtags pas shes pa|understood through clairvoyance
-mngon shes lnga|five superknowledges
-mngon shes lnga|five superknowledges [1 {lha'i mig} - {lha'i rna ba} - {gzhan gyi sems shes pa} -) {'chi 'pho dang skye ba dran pa} -) {rdzu 'phrul gyi mngon par shes pa} chn [R] rdzu 'phrul gyi mngon shes dang, lha'i mig gi mngon shes, lha'i rna ba'i mngon shes, sngon gnas rjes dran gyi mngon shes, gzhan sems shes pa'i mngon shes bcas lnga
-mngon shes lnga|five superknowledges [1 {lha'i mig} - {lha'i rna ba} - {gzhan gyi sems shes pa} -}-) {'chi 'pho dang skye ba dran pa} -}-) {rdzu 'phrul gyi mngon par shes pa} chn [R] rdzu 'phrul gyi mngon shes dang, lha'i mig gi mngon shes, lha'i rna ba'i mngon shes, sngon gnas rjes dran gyi mngon shes, gzhan sems shes pa'i mngon shes bcas lnga
+mngon shes lnga|five superknowledges [1 {lha'i mig} - {lha'i rna ba} - {gzhan gyi sems shes pa} -) {'chi 'pho dang skye ba dran pa} -) {rdzu 'phrul gyi mngon par shes pa} chn [R] \n\n {rdzu 'phrul gyi mngon shes dang, lha'i mig gi mngon shes, lha'i rna ba'i mngon shes, sngon gnas rjes dran gyi mngon shes, gzhan sems shes pa'i mngon shes bcas lnga}
 mngon shes lnga|Five superknowledges. The capacities for performing miracles, divine sight, divine hearing, recollection of former lives, and cognition of the minds of others
 mngon shes mnga' ba|to be endowed with the superknowledges, possess foreknowledge
 mngon shes|Superknowledges. Divine sight, divine hearing, recollection of former lives, cognition of the minds of others, capacity for performing miracles, and, in the case of accomplished practitioners, the 'cognition of the exhaustion of defilements.'
@@ -43292,11 +43288,11 @@ na zug|pain, hurt; sickness
 ne le|mouse-hawk
 nem nem|a nodding, waving, or rocking motion
 ne ne mo|aunt
-nE ran dza na|Nairanjana River [flowing by Bodhgaya in present day Bihar)
-nE ran|dza na - Nairanjana, [the river flowing by Bodhgaya in present day Bihar]
-nE ran dza na|Nairanjana, [the river flowing by Bodhgaya in present day Bihar]
+nai ran dza na|Nairanjana River [flowing by Bodhgaya in present day Bihar)
+nai ran|dza na - Nairanjana, [the river flowing by Bodhgaya in present day Bihar]
+nai ran dza na|Nairanjana, [the river flowing by Bodhgaya in present day Bihar]
 ner ba|to sink, to fall gradually
-nE rnya dza na'i chu klung|Nairanjana River
+nai rnya dza na'i chu klung|Nairanjana River
 ne thang|meadow, grass-plot, green-sward
 ne tse|parrot
 ne'u gseng|lawn, beautiful grassy green as an offering to the nagas
@@ -46043,14 +46039,14 @@ pad zla'i steng|upon a lotus and moon, on lotus and moon disks
 pad zla|lotus and moon
 pa'e tshal|Chinese cabbage
 pag|brick
-pa gor bE ro tsa na ra kShi ta|Vairochana the Translator
-pa gor bE ro tsa na|Vairochana of Pagor. One of Padmasambhava's 25 disciples
+pa gor bai ro tsa na ra kShi ta|Vairochana the Translator
+pa gor bai ro tsa na|Vairochana of Pagor. One of Padmasambhava's 25 disciples
 pa gor|family name of Vairotsana; also spelled {spa gor} and {ba gor}
 pags pa|skin, leather; skin, hide, foreskin
 pags pa srab cing mdog gser 'dra ba|with delicate and golden skin. one of the {skyes bu chen po'i mtshan sum bcu rtsa gnyis} the thirty marks of a great being
 pags rigs|leather, skin
 pags tshag|fur lined coat
-pa ksha|see {}
+pa ksha|see ""
 pa kShi|title of Chinese dignitary
 pa kshu|river
 pa lags|father, dad (h)
@@ -51495,7 +51491,7 @@ rgyal tho|kings' list-pole
 rgyal to ra mi|Gyalto Rami. Minister of King Trisong Deutsen; also spelled Gyatong Rakyim (rgya stong ra khyim)
 rgyal tshab|1) king's regent [r]; 2) regent of a victorious one/ lama [R]
 rgyal tshab|1) regent, representative, ambassador, representation. 2) crown prince. {sangs rgyas thams cad kyi rgyal tshab} regent / representation of all the buddhas
-rgyal tshab bE ro rje|Regent Vairotsana
+rgyal tshab bai ro rje|Regent Vairotsana
 rgyal tshab byed pa|become their representative
 rgyal tshab chen po|Great Regent
 rgyal tshab dam par dbang bskur|empowered him as the foremost representative [of the Buddhas]
@@ -53267,7 +53263,7 @@ rje 'bangs grogs gsum|Lord, Subject, and Friend; King, subjects and the companio
 rje 'bangs|king / lord and subjects / people; 25 main disciples (of G.R); disciples
 rje 'bangs|lord and subjects. King Trisong Deutsen and twenty-four others who were Padmasambhava's principal pupils
 rje 'bangs nyer lnga|King and twenty-five subjects. King Trisong Deutsen and 24 or 25 close disciples of Guru Rinpoche. Lord, his Subjects, and the 25 disciples; the 25 [renowned Tibetan] students; king and subjects, the twenty-five (intimate students of Padmasambhava); King and twenty-five subjects, the twenty-five Disciples
-rje 'bangs nyer lnga|the King and the twenty-five Disciples; 25 disciples of Padmasambhava. As listed in the Ma-ong Lungten from Lama Gongdü, page 7: rje mnga' bdag nyid, glang dpal gyi seng ge, pa gor bE ro tsa na, rgyal mo g.yu sgra snying po, gnubs nam mkha'i snying po, gnyag dz-nya na ku ma ra, ngan lam rgyal ba mchog dbyangs, sna nam rdo rje bdud 'joms, sba ye shes dbyangs, sog po lha dpal gyi ye shes, zhang sna nam ye shes sde, mkhar chen dpal gyi dbang phyug, lde(n) ma rtse mangs, mchan bu ka ba dpal brtsegs, shu bu dpal gyi seng ge, 'dre rgyal ba blo gros, lo khye'u chung ba, dran pa nam mkha', 'o dran dpal gyi dbang phyug, rma rin chen mchog, gnubs sangs rgyas ye shes, lha lung dpal gyi rdo rje dbang phyug, lang gro dkon mchog 'byung gnas, la sum rgyal ba byang chub, mkhar chen bza' mtsho rgyal
+rje 'bangs nyer lnga|the King and the twenty-five Disciples; 25 disciples of Padmasambhava. As listed in the Ma-ong Lungten from Lama Gongdü, page 7: rje mnga' bdag nyid, glang dpal gyi seng ge, pa gor bai ro tsa na, rgyal mo g.yu sgra snying po, gnubs nam mkha'i snying po, gnyag dz-nya na ku ma ra, ngan lam rgyal ba mchog dbyangs, sna nam rdo rje bdud 'joms, sba ye shes dbyangs, sog po lha dpal gyi ye shes, zhang sna nam ye shes sde, mkhar chen dpal gyi dbang phyug, lde(n) ma rtse mangs, mchan bu ka ba dpal brtsegs, shu bu dpal gyi seng ge, 'dre rgyal ba blo gros, lo khye'u chung ba, dran pa nam mkha', 'o dran dpal gyi dbang phyug, rma rin chen mchog, gnubs sangs rgyas ye shes, lha lung dpal gyi rdo rje dbang phyug, lang gro dkon mchog 'byung gnas, la sum rgyal ba byang chub, mkhar chen bza' mtsho rgyal
 rje 'bangs nyer lnga|Twenty-five Main Disciples of Padmasambhava- in various lists these include Vairotsana; Mandarava; ye shes mtsho rgyal; rgyal ba mchog dbyangs; nam mkha'i snying po; dpal gyi seng ge; ye shes dbyangs; ye shes sde; dpal gyi rdo rje; khri srong lde'u btsan; mkhar chen dpal gyi dbang phyug; g.yu sgra snying po; dpal gyi seng ge; rma rin chen mchog; sangs rgyas ye shes; rdo rje bdud 'joms; rgyal ba blo gros; ldan ma rtse mang; ska ba dpal brtsegs; 'o bran dbang phyug; jnanakumaravajra; sog po lha dpal gzhon nu; lang gro dkon mchog 'byung gnas; rgyal ba byang chub; dran pa nam mkha' dbang phyug; khye'u chung mkha' lding; cog ru klu'i rgyal mtshan; ting nge 'dzin bzang po
 rje 'bangs nyi shu lnga|{rje 'bangs nyer lnga}
 rje 'bangs|{rje 'bangs nyer lnga} the twenty-five disciples
@@ -53314,7 +53310,7 @@ rje btsun skal ldan rgya mtsho|1607-77 - Kalden Gyatso, Jetsün, an influential 
 rje btsun sku mtshams pa|Jetsün Kutsampa, one of Chingkar Donyö Dorje's Dzogchen teachers
 rje btsun sku zhabs|nuns [from high ranking families]
 rje btsun ta ra na tha kun dga' snying po|1575-1635 - Taranatha Kunga Nyingpo (1575-1635), the most eminent master of the Jonang tradition.
-rje btsun thams cad mkhyen pa bE ro tsa na'i rnam thar 'dra 'bag chen mo|an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
+rje btsun thams cad mkhyen pa bai ro tsa na'i rnam thar 'dra 'bag chen mo|an account of the life of the 8th century rdzogs chen master found in both bka' ma and gter ma transmissions
 rje btsun thams cad mkhyen pa|the Sublime Omniscient One; Taranatha
 rje btsun|the precious master
 rje btsun yid bzhin 'khor lo|Tara in the form of bhatt'arika cint'amanicakra
@@ -53420,7 +53416,7 @@ rjes gzhig|subsequent destruction
 rjes gzung|CM: thugs rjes bskyang pa, to care for/ protect/ cherish/ nuture compassionately. Å  dge rgan gyis slob phrug rjes bzung thog yon tan mthar phyin bslabs pa, "Caring compassionately for his student, the teacher showed him/her the final virtuous qualities." / "Due to the teacher's compassionate nuturance, the student trained and perfected the ultimate virtuous qualities." [mss]
 rjes gzung|rjes su gzung ba - accepted
 rjes 'jug|1) follower [of the lineage of.], adherents, following, disciple, successor; 2) A term of grammar. Suffix. See {rjes 'jug bcu}. affix
-rjes 'jug bcu|[grammatical]. The ten suffices. The ten letters {ga/ nga/ da/ na/ ba/ ma/ a'/ ra/ la/ sa/} which can be placed after the "name-base"
+rjes 'jug bcu|[grammatical]. The ten suffices. The ten letters {ga/ nga/ da/ na/ ba/ ma/ 'a/ ra/ la/ sa/} which can be placed after the "name-base"
 rjes 'jug slob ma|followers and disciples
 rjes 'jug yid ches bskyed pa|to inspire the confidence of disciples
 rjes khyab|forward pervasion. [anvayavyapti] [positive] pervasion
@@ -54580,7 +54576,7 @@ rnam par bzhengs|assume the form of
 rnam par|. . . completely . . . ; in detail/ distinctly
 rnam par dag pa|1) authentic, unmistaken, correct, right, perfect; pure, 2) perfect / total purity, 3) purified, completely purified, completely pure, perfectly / very pure, perfect purity, purification; complete purity; 4) totally refined away. Syn {rnam dag}
 rnam par dag pa'i lha|the completely pure deity [R]
-rnam par dag pa'i phung po lnga|the five [aspects of] embodiment of complete purity: {tshul khrims kyi, ting nge 'dzin gyi, she rab kyi, rnam par grol ba'i, dang rnam par grol ba'i ye shes mthong ba'i phung po}
+rnam par dag pa'i phung po lnga|the five [aspects of] embodiment of complete purity: {tshul khrims kyi, ting nge 'dzin gyi, shes rab kyi, rnam par grol ba'i, dang rnam par grol ba'i ye shes mthong ba'i phung po}
 rnam par dag pa nyid|complete purity
 rnam par dbye ba|detailed analysis; division into components or parts; divisibility
 rnam par dbye ba|distinction, examine, investigate, case-ending, inflection, case, analysis
@@ -54689,8 +54685,8 @@ rnam par smin pa'i sems bskyed|arousing fully matured bodhichitta
 rnam par smin pa'i sems bskyed|the aspiration of full ripening [on the {dag pa sa gsum}
 rnam par snang byed|light maker
 rnam par snang mdzad|1) Vairochana {rnam snang}; Vairochana/ Distinct Manifestation; fully manifested, buddha Vairochana, chief of one of the five buddha families, the Tathagata family, the radiating one, 2) Vairochana [Vairotsana] the translator
-rnam par snang mdzad bE ro tsa na|Nampar Nangdzey Vairochana
-rnam par snang mdzad bE ro tsa na|Nampar Nangdzey Vairochana. The great translator and disciple of both Shri Singha and Guru Rinpoche
+rnam par snang mdzad bai ro tsa na|Nampar Nangdzey Vairochana
+rnam par snang mdzad bai ro tsa na|Nampar Nangdzey Vairochana. The great translator and disciple of both Shri Singha and Guru Rinpoche
 rnam par snang mdzad chen po mngon par rdzogs par byang chub pa rnam par sprul pa byin gyis rlob pa shin tu rgyas pa mdo sde'i dbang po'i rgyal po zhes bya ba'i chos kyi rnam grangs|Maha-vairocana-bhisam.bodhivikurvita-dhis.t.ha-navaipulyasu-treindrara-ja na-ma dharmaparya-ya; That Expression of the Holy Dharma entitled "The King of All Kings among the Collection of Sutras, a Work of Immense Blessings, as the Great Being named 'Appearances' Emanates the Act of Reaching Perfect and Total Enlightenment"
 rnam par snang mdzad chen po mngon par rdzogs par byang chub rnam par sprul pa byin gyis rlob pa shin tu rgyas pa mdo sde'i dbang po'i rgyal po|The Tantra of the Enlightenment of Mahavairochana; Mahavairocanabhisambodhi-vikurvitadhisthana-vaipulya-sutranta-raja, (T 494)
 rnam par snang mdzad chen po mngon par rdzogs par byang chub rnam par sprul pa byin gyis rlobs pa shin tu rgyas pa mdo sde'i dbang po'i rgyal po|Skt. MahaVairochanabhisambodhi-vikurvitadhisthana-vaipulya-sutranta-raja, T. 494
@@ -55860,7 +55856,7 @@ rtsa ba'i sde pa bzhi|{thams cad yod par smra ba / dge 'dun phal chen pa / gnas 
 rtsa ba'i sdug bsngal gsum|three main types of suffering
 rtsa ba'i sgrub pa|root sadhana
 rtsa ba'i sgrub thabs|Mula sadhana, primary / principal / root practice
-rtsa ba'i she rab|{rtsa ba shes rab}
+rtsa ba'i shes rab|{rtsa ba shes rab}
 rtsa ba'i smin byed|root empowerment
 rtsa ba'i thugs sgrub gsal byed thugs nor|main sadhana of {bla ma dgongs 'dus}, by {sangs rgyas gling pa}
 rtsa ba'i ting nge 'dzin|the root samadhi
@@ -57851,7 +57847,7 @@ sdug bsngal bden pa'i rnam pa bzhi|the four aspects of the truth of suffering: {
 sdug bsngal bden pas bsdus|are subsumed under the truth of suffering
 sdug bsngal bden pa|the truth of suffering; Def. by Jamgön Kongtrül: {ngo bo ni/ skye ba snga ma'i las nyon gyis bskyed pa'i nyer len gyi phung po'i rgyun rnams so}
 sdug bsngal brgyad|eight kinds of suffering {skye ba dang, rga ba dang, na ba dang, 'chi ba dang, sdug pa dang bral ba, mi 'dod pa thog tu bab pa dang, 'dod pa btsal kyang ma rnyed pa} to take birth, to grow old, to fall sick, to die, to be separated from the cherished, to encounter the undesirable, to fail to obtain the desirable though striving for it.
-sdug bsngal brgyad|the eight sufferings, {skye rga na 'chi}, {sdug pa dang bral ba}, {mi 'dod pa thog tu bab pa}, {'dod pa btsal kyang ni rnyed pa}, {zag bcas kyi phung po lnga}
+sdug bsngal brgyad|the eight sufferings, {skye rga na 'chi}, {sdug pa dang bral ba}, {mi 'dod pa thog tu bab pa}, {'dod pa btsal kyang mi rnyed pa}, {zag bcas kyi phung po lnga}
 sdug bsngal bsgral phyir|in order to free from suffering
 sdug bsngal 'byung gnas|the source of suffering
 sdug bsngal bzod glags ma mchis|is an unbearable misery anguish
@@ -59823,7 +59819,7 @@ she do kar ting nas|Shedo Kertingne. One of {ma sang dpun dgu} Nine Masang Broth
 shel brag|Guru Rinpoche's Crystal Cave
 shel brag|Sheldrak, in Lokha
 shel bum|crystal vase
-shel dang bE dur ya|crystal and lapis
+shel dang bai dur ya|crystal and lapis
 shel del chos kyi pho brang|Sheldel Chökyi Podrang, one of the Eight Places of the Accomplished Ones of Rekong
 shel dgon|Shelgon, in Domey
 shel dkar bka' 'gyur bla ma|1856-1932. alias: ngag dbang blo bzang bstan 'dzin tshul khrims rgyal mtshan
@@ -62800,8 +62796,8 @@ sman dpyad|medical treatment; medical cure, treatment, medical treatment. ~{brte
 sman gcig ma|one of {sman mo bzhi}
 sman gling|county in 21th cent Tibet.
 smang lung|Manglung, river in Tsang
-sman gyi bla bE dur ya'i 'od kyi rgyal po|Supreme Healer King of Lapis Light, Syn {sangs rgyas sman bla}
-sman gyi bla bE dur ya'i 'od kyi rgyal po|Supreme Healer King of Lapis Light, [- Syn {sangs rgyas sman bla}
+sman gyi bla bai dur ya'i 'od kyi rgyal po|Supreme Healer King of Lapis Light, Syn {sangs rgyas sman bla}
+sman gyi bla bai dur ya'i 'od kyi rgyal po|Supreme Healer King of Lapis Light, [- Syn {sangs rgyas sman bla}
 sman gyi bla|supreme healer
 sman gyi bla|supreme healer, the Buddha of Medicine. Syn {sangs rgyas sman bla}
 sman gyi ro drug|[TRS 68-6]
@@ -63835,7 +63831,7 @@ sngon gyi smon lam yod pas|because of prayers that were made in the past
 sngon gyi srid pa|past life; see also {sngon dus kyi srid pa}
 sngon gzhan du|Long ago,
 sngon|in the distant past,
-sngon 'jug lnga|A term of grammar. The five prefixes. Five letters which can be joined before the "Name-base". There are five prefixes {ga/ da/ ba/ ma/ a'/}
+sngon 'jug lnga|A term of grammar. The five prefixes. Five letters which can be joined before the "Name-base". There are five prefixes {ga/ da/ ba/ ma/ 'a/}
 sngon 'jug|prefix; A term of grammar. Prefix. See {snon 'jug lnga}
 sngon khrid|guidance manual for the preliminaries; sngon 'gro khrid rim - sngon 'gro'i khrid yig
 sngon khrid|introduction to the fundamentals
@@ -64083,7 +64079,7 @@ snyem byed kyi bdud|the demon of pride, [according to Chod practice, one of {bdu
 snyem ma|Atopa
 snyem ma rdo rje|Vajratopa. Syn {rdo rje snyems ma}
 snye mo|county in 21th cent Tibet.
-snye mo gan jag ba gor|father of Vairotsana {ba gor bE ro tsa na}
+snye mo gan jag ba gor|father of Vairotsana {ba gor bai ro tsa na}
 snye mo|Nyemo, in Tsang
 snyem pa|{snyem pa, bsnyems pa, bsnyem pa} intr. v.; to be proud or arrogant, to boast
 snyems byed bdud|demon of pride
@@ -64671,8 +64667,8 @@ spabs|ear-wax
 spa|cane
 spad|father and children
 spag|dough, staple food of parched grain flour
-spa gor gan jag rdo rje rgyal po|father of Vairotsana {ba gor bE ro tsa na}
-spa gor he 'dod|uncle (step-father) of Vairotsana {ba gor bE ro tsa na}
+spa gor gan jag rdo rje rgyal po|father of Vairotsana {ba gor bai ro tsa na}
+spa gor he 'dod|uncle (step-father) of Vairotsana {ba gor bai ro tsa na}
 spag pa|to smack, to; ft. of {spog pa}
 spag phyi rgyab|cleaning by rubbing with dough
 spa gro|Paro. in Bhutan
@@ -66468,7 +66464,7 @@ tar ka sde lnga|the five main kinds of non-Buddhist philosophical views. Syn {rt
 tar tar po|a shape of the embryo during the early stages of gestation; the sequence being: nur nur po, mer mer po, tar tar po, gor gor po, mkhrang gyur
 ta tha' ga ta grub par snang ba la sogs pa las kyi rigs mtha' yas pa|the Tanthagata Siddhyaloka and the countless Tathagatas of the Action Family
 ta thA ga ta rin po che'i zhabs la sogs pa rat na'i rigs rnams|the Tathagata Ratnapada and the Tathagatas of the ratna family
-ta tha' ga ta shri bE ro tsa na la sogs pa de bzhin rigs kyi rgyal ba mang po|the Tathagata Shri Vairochana and many other Conquerors of the Tathgata Family
+ta tha' ga ta shri bai ro tsa na la sogs pa de bzhin rigs kyi rgyal ba mang po|the Tathagata Shri Vairochana and many other Conquerors of the Tathgata Family
 ta tha' ga ta thams cad|all the Tathagatas
 ta zig|Persia
 te|[after na ra la sa and da drag can particle showing more to come] so that, thus [genundive after NA RA LA SA
@@ -70228,7 +70224,7 @@ ut pal se po|a yellow derived from the petals of an alpine flower
 ut pal ser po|a yellow derived from the petals of an alpine flower
 ut pal sngo ldan|the blue lotus
 ut pal sngon po|the blue lotus
-vE dur zhun ma|refined lapis lazuli parchment
+vai dur zhun ma|refined lapis lazuli parchment
 vi dyot ta ma 'bum sde|Hundred Thousand Sections of Unexcelled Knowledge. One of the Eighteen Mahayoga Tantras
 wa|fox
 wa le|lucid, clear
@@ -73709,7 +73705,7 @@ chags med ri chos|a famous retreat manual popular in both the rnying ma and bka'
 mchog gling rin po che|Chokling Rinpoche, there are two incarnation lineages. Kela (or Tsikey) Chokling and Neten Chokling, named after the two main monasteries of Chokgyur Lingpa. The second Kela Chokling was named Konchok Tenpey Gyaltsen. After his passing a Tulku was born who died at the early age of thirteen. This Tulku had two incarnations. One is the second son of Tulku Orgyen Rinpoche, Mingyur Dewey Dorje, who came to Nepal with his father. The other Tulku stays in Derge/Eastern Tibet. The second Neten ChoklingŽs name was Ngedon Drubpe Dorje. He was followed by Chokling Pema Gyurme who passed away in India. The present Neten Chokling is named Gyurme Dorje and was born in Bhutan.
 ting nge 'dzin gsum|three samadhis. According to Ven. Tenga Rinpoche they are known as the {chos sku de bzhin nyid kyi ting nge 'dzin}, the dharmakaya samadhi of suchness, {longs sku kun tu snang ba'i ting nge 'dzin} the sambhogakaya all illuminating samadhi and {sprul sku rgyu'i ting nge 'dzin} the nirmanakaya samadhi of the seed syllable
 thob pa gsum|Three Attainments, 1) {rlung sems rang dbang thob}. 2) {skye ba la rang dbang thob} / {'pho ba chen po'i sku} 3) {'jug pa la rang dbang thob} [Great Perfection: the third of Four Consolidations {mtha' rten bzhi}, 1) appearances arise as buddhafields by the attainment of power over external appearances {phyi snang ba la dbang thob pas rkyen snang zhing khams su 'char}. 2) matter is purified into inner radiance by the attainment of power over the internal illusory body {nang sgyu lus la dbang thob pas gdos bcas 'od gsal du dag} and 3) consciousness endowed with the five inexpiable sins is entrusted to awareness by the attainment of power over the secret vital energy and mind {gsang ba rlung sems la dbang thob pas mtshams med lnga dang ldan pa'i rnam par shes pa yang rig pa gtang bas 'drongs pa'o} [gd]
-rnam 'phrul bcu gnyis|twelve manifestations (of Padmasambhava|as appearing in the bla ma'i thugs sgrub bar chad kun sel revealed by gter chen mchog gyur gling pa) They are: rig 'dzin rgyal ba'i gdung 'dzin, rig 'dzin smra ba'i seng ge, rig 'dzin skyes mchog tshul bzang, rig 'dzin bdud kyi gshed chen, rig 'dzin 'dzam gling rgyan mchog, rig 'dzin padma 'byung gnas, rig 'dzin kyad par 'phags pa, rig 'dzin rdzu 'phrul mthu chen, rig 'dzin rdo rje drag rtsal, rig 'dzin skal ldan 'dren mdzad, rig 'dzin raksha thod phreng, rig 'dzin bde chen rgyal po
+rnam 'phrul bcu gnyis|twelve manifestations (of Padmasambhava, as appearing in the bla ma'i thugs sgrub bar chad kun sel revealed by gter chen mchog gyur gling pa) They are: rig 'dzin rgyal ba'i gdung 'dzin, rig 'dzin smra ba'i seng ge, rig 'dzin skyes mchog tshul bzang, rig 'dzin bdud kyi gshed chen, rig 'dzin 'dzam gling rgyan mchog, rig 'dzin padma 'byung gnas, rig 'dzin kyad par 'phags pa, rig 'dzin rdzu 'phrul mthu chen, rig 'dzin rdo rje drag rtsal, rig 'dzin skal ldan 'dren mdzad, rig 'dzin raksha thod phreng, rig 'dzin bde chen rgyal po
 dpal ldan lha mo dud gsol ma|a form of Shridevi, very popular in the 'brug pa bka' brgyud school
 dpal ldan lha mo rang byung rgyal mo|a form of Shridevi, consort of ber nag can, very popular in the kam tshang or karma bka' brgyud school
 phur pa bcu gnyis|full title: {phur pa bcu gnyis kyi rgyud ces bya ba theg pa chen po'i mdo}, "The Mahayana Sutra called the Twelve Kilaya Tantra". A Mahayoga scripture on Vajrakila
