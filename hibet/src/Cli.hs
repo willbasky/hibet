@@ -49,7 +49,6 @@ import Options.Applicative.Help.Chunk (stringChunk)
 import Prelude hiding (lookup)
 
 import Effectful (Eff, IOE, type (:>))
-import Effectful.Resource (Resource)
 
 -- import Effectful.Log ( Log )
 
@@ -77,8 +76,6 @@ runCommand ::
     ( IOE :> es
     , Reader (MVar Env) :> es
     , Concurrent :> es
-    , -- , Log :> es
-      Resource :> es
     , PrettyPrint :> es
     , Console :> es
     ) =>

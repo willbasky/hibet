@@ -19,7 +19,6 @@ import Env (Env (..), readEnv)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 
-import Control.Monad (forever)
 import Control.Parallel.Strategies (parList, rseq, using)
 import Data.Either.Extra (mapLeft)
 import Data.List (foldl')
@@ -33,8 +32,8 @@ import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified System.Console.Haskeline.IO as Haskeline
 
-import Effectful (Eff, IOE, type (:>))
-import Effectful.Resource (Resource, allocate, release)
+import Control.Exception (bracketOnError)
+import Effectful (Eff, IOE, withSeqEffToIO, type (:>))
 
 -- import Effectful.Log ( logInfo_, Log )
 
@@ -46,16 +45,15 @@ translator ::
     ( IOE :> es
     , PrettyPrint :> es
     , -- , Log :> es
-      Resource :> es
-    , Console :> es
+      Console :> es
     , Reader (MVar Env) :> es
     , Concurrent :> es
     ) =>
     Eff es ()
-translator = bracketOnError
+translator = withSeqEffToIO $ \run -> bracketOnError
     (Haskeline.initializeInput Haskeline.defaultSettings)
     Haskeline.cancelInput -- This will only be called if an exception such as a SigINT is received.
-    $ \inputState -> do
+    $ \inputState -> run $ do
         putColorDoc
             blue
             NewLine
@@ -72,7 +70,9 @@ loopDialog ::
     ) =>
     InputState
     -> Eff es ()
-loopDialog inputState = forever $ do
+-- Not 'forever': at EOF 'getInput' keeps returning 'Nothing', so 'forever'
+-- would spin on the closed input. Returning lets 'translator' call 'closeInput'.
+loopDialog inputState = do
     mQuery <- getInput inputState "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
@@ -93,6 +93,9 @@ loopDialog inputState = forever $ do
                     if null answer
                         then putColorDoc red NewLine "Nothing found"
                         else pprint $ mkOutput query answer
+    case mQuery of
+        Nothing -> pure ()
+        Just _ -> loopDialog inputState
 
 getAnswer :: Text -> Env -> Either HibetError (Text, [Answer])
 getAnswer query env = do
@@ -149,14 +152,3 @@ mkOutput query answers =
     withHeaderSpaces yellow query
         $ viewTranslations
         $ sortOutput answers
-
-bracketOnError ::
-    (IOE :> es, Resource :> es) =>
-    IO a
-    -> (a -> IO ())
-    -> (a -> Eff es ())
-    -> Eff es ()
-bracketOnError alloc free inside = do
-    (releaseKey, resource) <- allocate alloc free
-    inside resource
-    release releaseKey
