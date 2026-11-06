@@ -1,16 +1,21 @@
 cabal-version: 3.0
 name: hewts
-version: 0.0.0.0
-synopsis: See README for more info
+version: 0.1.0.0
+synopsis: Tibetan EWTS (Wylie) and Unicode converter with spelling checks
 description:
-  See README for more info.
-  See README.md for more details.
+  Convert Tibetan text between EWTS (Extended Wylie) and Unicode, check
+  spelling, tokenize sentences and render the parsed token stream. The grammar
+  follows the 37 syllable structures of the formal model, and the converter
+  reports diagnostics instead of silently rewriting input.
 
 license: BSD-3-Clause
 license-file: LICENSE
-author: Vladislav
-maintainer: Vladislav <email@email.com>
-copyright: 2026 Vladislav
+author: willbasky
+maintainer: willgame(at)mail(dot)ru
+copyright: 2026 willbasky
+category: Text
+homepage: https://github.com/willbasky/hibet
+bug-reports: https://github.com/willbasky/hibet/issues
 build-type: Simple
 extra-doc-files:
   CHANGELOG.md
@@ -23,6 +28,10 @@ extra-doc-files:
   test/vectors/wkang.txt
 
 tested-with: ghc ==9.8.4 || ==9.10.3
+
+source-repository head
+  type: git
+  location: https://github.com/willbasky/hibet.git
 
 common exec-options
   ghc-options:
@@ -95,13 +104,13 @@ library
     Convert.Grammar.Constraint.Constraint22
 
   build-depends:
-    bytestring,
-    bytestring-trie,
-    containers,
-    megaparsec,
-    text,
-    transformers,
-    unordered-containers,
+    bytestring >=0.11 && <0.13,
+    bytestring-trie >=0.2.7 && <0.3,
+    containers >=0.6.7 && <0.8,
+    megaparsec >=9.6 && <10,
+    text >=2.0.2 && <2.2,
+    transformers >=0.5 && <0.7,
+    unordered-containers >=0.2.20 && <0.3,
 
 test-suite hewts-test
   import: common-options

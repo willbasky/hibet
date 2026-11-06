@@ -7,22 +7,38 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
-## [Unreleased]
+## [2.0.0] - 2026-11-07
+
+### Changed
 
 * Conversion now lives in `hewts`: the translator calls its public API, and the
-  legacy `toTibetan`/`toWylie` table and radix trees are gone
-* Remove the legacy input parsers (`Parse.*`), their test suite and
-  `megaparsec`; the input script is detected by the Unicode block
-* Remove the `debug` command, which only printed the removed radix tree
-* Build with GHC 9.10 alongside 9.6
-* Search dictionaries with `HMS.lookup` instead of scanning every key, and drop
-  `parList` from `getAnswer`: 61 lookups cost less than the sparks
-* Cover the Unicode input path with a query matrix: punctuation, spacing, line
-  breaks, mixed and bracketed foreign text, a lookalike danda and digits reach
-  the same entries as their Wylie key; a malformed syllable does not pass for
-  the clean phrase. The regression suspected in T5 is ruled out for ordinary
-  input; keys written in non-canonical Wylie (e.g. `bha` vs `b+ha`) still need
-  their own normalization.
+  legacy `toTibetan`/`toWylie` table and radix trees are gone.
+* The input script is detected by the Unicode block instead of the legacy
+  parsers. Unicode input is covered by a query matrix: punctuation, spacing,
+  line breaks, mixed and bracketed foreign text, a lookalike danda and digits
+  reach the same entries as their Wylie key; a malformed syllable does not pass
+  for the clean phrase.
+* Dictionary lookup uses `HMS.lookup` instead of scanning every key. `parList`
+  was dropped from `getAnswer`: 61 lookups cost less than the sparks.
+* Dictionaries updated from upstream and 25 added (59 files in total).
+* Build with GHC 9.8 and 9.10.
+
+### Removed
+
+* The legacy input parsers (`Parse.*`), their test suite and `megaparsec`.
+* The `debug` command, which only printed the removed radix tree.
+
+### Fixed
+
+* The shell exits on EOF instead of spinning, and the Haskeline session is
+  cleaned up.
+* Empty input re-prompts; entries with an empty headword are dropped.
+* Upstream dictionary regressions.
+
+### Known limitations
+
+* Keys written in non-canonical Wylie (`bha` vs `b+ha`, `gnad` vs `gand`) are
+  still not found by a Unicode query; tracked as T10.
 
 ## [1.4.1] - 2025-04-17
 
