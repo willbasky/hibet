@@ -22,7 +22,7 @@ extra-doc-files:
   test/vectors/kang.txt
   test/vectors/wkang.txt
 
-tested-with: ghc ==9.10.3
+tested-with: ghc ==9.6.7 || ==9.10.3
 
 common exec-options
   ghc-options:
@@ -98,10 +98,7 @@ library
     bytestring,
     bytestring-trie,
     containers,
-    extra,
-    massiv,
     megaparsec,
-    pretty-simple,
     text,
     transformers,
     unordered-containers,
@@ -163,7 +160,6 @@ test-suite hewts-test
     tasty-golden,
     tasty-hunit,
     text,
-    transformers,
     unordered-containers,
 
   ghc-options:

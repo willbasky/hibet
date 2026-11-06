@@ -231,8 +231,7 @@ mkSequenceTokens source sp raw = \case
         end = offsetEnd sp
 
 -- >>> import qualified Data.Text.Lazy as TL
--- >>> import Text.Pretty.Simple
--- >>> prettyPrint v = error (TL.unpack $ pShowNoColor v) :: IO String
+-- >>> prettyPrint v = error (TL.unpack $ show v) :: IO String
 -- >>> prettyPrint $ fromUnicodeEscape "\\x0f74\\x0f7c"
 -- "ོུ"
 
