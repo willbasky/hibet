@@ -19,7 +19,6 @@ import Env (Env (..), readEnv)
 import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 
-import Control.Parallel.Strategies (parList, rseq, using)
 import Data.Either.Extra (mapLeft)
 import Data.List (foldl')
 import Data.Maybe (mapMaybe)
@@ -104,8 +103,7 @@ getAnswer query env = do
     -- 2. Prepare wylie and tibetan scripts
     (queryWylie, queryTibet) <- boilQuery script query
     -- 3. Translate
-    let dscValues =
-            mapMaybe (searchTranslation queryWylie) env.dictionaryMeta `using` parList rseq
+    let dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta
     -- 5. Return
     pure (queryTibet, dscValues)
 

@@ -57,7 +57,8 @@ Error HibetError, Log, IOE
    - `Wylie` → `hewts.convertWylieToUnicode defaultSettings`; ключ — `T.words`.
    - `Tibet` → `hewts.splitSentences` + `hewts.renderItems OutWylie` по
      `SyllableItem`; ключ — `T.words`.
-3. `searchTranslation` по каждому словарю, `parList rseq`.
+3. `searchTranslation` — `HMS.lookup` по каждому словарю, последовательно:
+   61 lookup дешевле sparks на 61 задачу (замер T9).
 4. `sortOutput` по `dictNumber`.
 
 Ключ словаря — Wylie. Пунктуация и пробелы запроса в ключ не попадают.

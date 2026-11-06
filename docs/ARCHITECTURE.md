@@ -28,7 +28,7 @@ hibet (exe)
               → boilQuery
                   Wylie → hewts.convertWylieToUnicode
                   Tibet → hewts.splitSentences + hewts.renderItems OutWylie
-              → Dictionary.searchTranslation по всем словарям (parallel)
+              → Dictionary.searchTranslation (HMS.lookup) по всем словарям
               → Dictionary.sortOutput по номеру словаря
           → Pretty.mkOutput
       → Effects.PrettyPrint.pprint

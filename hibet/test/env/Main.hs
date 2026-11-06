@@ -17,6 +17,7 @@ import Type (HibetError (..))
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
+import qualified Data.HashMap.Strict as HMS
 import Data.List (sortOn)
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
@@ -25,7 +26,31 @@ import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 main :: IO ()
 main = hspec $ do
     mockMakeEnvSpec
+    dictionarySearchSpec
     translate
+
+dictionarySearchSpec :: Spec
+dictionarySearchSpec =
+    describe "Dictionary search" $ do
+        it "finds a key" $
+            search "re ba" "re ba|hope\n"
+                `shouldBe` Just (Answer [Target "hope"] 1 (Title "test"))
+        it "returns Nothing for an absent key" $
+            search "me" "re ba|hope\n" `shouldBe` Nothing
+        it "keeps every meaning of a duplicated key" $
+            fmap
+                (sortOn unTarget . targets)
+                (search "re ba" "re ba|hope\nre ba|expectation\n")
+                `shouldBe` Just [Target "expectation", Target "hope"]
+        it "drops an exact duplicate line" $
+            fmap targets (search "re ba" "re ba|hope\nre ba|hope\n")
+                `shouldBe` Just [Target "hope"]
+        it "treats an empty target list as no answer" $
+            searchTranslation "re ba" (meta (HMS.fromList [("re ba", [])]))
+                `shouldBe` Nothing
+    where
+        search query raw = searchTranslation query (meta (makeDictionary raw))
+        meta dictionary = DictionaryMeta dictionary (Title "test") 1
 
 mockMakeEnvSpec :: Spec
 mockMakeEnvSpec =

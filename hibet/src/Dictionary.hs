@@ -82,11 +82,9 @@ toDictionaryMeta labels filepath dict = DictionaryMeta dict title number
 -- Search query in dictionary.
 searchTranslation :: Text -> DictionaryMeta -> Maybe Answer
 searchTranslation query dm =
-    if null ts then Nothing else Just $ Answer ts dm.number dm.title
-    where
-        ts = HMS.foldlWithKey' search [] dm.dictionary
-        search :: [Target] -> Text -> [Target] -> [Target]
-        search acc q v = if q == query then v <> acc else acc
+    case HMS.lookup query dm.dictionary of
+        Just ts | not (null ts) -> Just $ Answer ts dm.number dm.title
+        _ -> Nothing
 
 sortOutput :: [Answer] -> [Answer]
 sortOutput = sortBy (\a1 a2 -> compare a1.dictNumber a2.dictNumber)
