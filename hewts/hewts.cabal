@@ -22,7 +22,7 @@ extra-doc-files:
   test/vectors/kang.txt
   test/vectors/wkang.txt
 
-tested-with: ghc ==9.6.7 || ==9.10.3
+tested-with: ghc ==9.8.4 || ==9.10.3
 
 common exec-options
   ghc-options:

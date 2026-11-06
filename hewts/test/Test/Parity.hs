@@ -40,6 +40,7 @@ import Convert.Token (Token)
 import Convert.Tokenizer.Unicode (tokenizeUnicode)
 import Convert.Tokenizer.Wylie (tokenizeWylie)
 import qualified Data.ByteString as BS
+import Data.List (foldl')
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T

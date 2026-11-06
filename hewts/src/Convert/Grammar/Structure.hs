@@ -71,6 +71,7 @@ import Convert.Grammar.Parser
 import qualified Convert.Grammar.Parser as GP
 import Convert.Grammar.Syllable (TibetanSyllable)
 import Convert.Token (Token)
+import Data.List (foldl')
 import Data.Maybe (fromMaybe)
 import qualified Text.Megaparsec as MP
 
