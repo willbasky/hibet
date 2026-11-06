@@ -1,0 +1,298 @@
+# Ratchet baseline for Test.Parity: corpus <TAB> check <TAB> total <TAB> passing.
+#
+# `passing` is how many checks of that kind passed when this file was written.
+# The test fails when the current number is LOWER, so the number is a floor:
+# the later waves raise it to the counts they reach instead of touching the
+# corpora, because a gain nobody records is a gain the next wave gives back.
+# `total` must always equal the real number of checks, which pins the corpus
+# files against silent truncation.
+#
+# Check kinds:
+#   w2u / u2w      - the converted text against the reference
+#   roundtrip      - our W->U->W->U must land where the reference lands
+#
+# Parity covers conversion only (30.09.2026): the warning kinds (w2u-warnings,
+# u2w-warnings) left the ratchet with the strategy change. The diagnostics
+# channel, its codes and its wording are our own - tested in Test.Diagnostic -
+# so nothing about warnings is compared against the reference anymore.
+#
+# Wave 2 brought w2u from 24 to 28 (jsewts) and 25 to 29 (Lingua): the
+# bracketed foreign text, the escapes and the dropped line breaks now match.
+# Almost every remaining conversion gap is a syllable-level one, i.e. the
+# orthography territory of wave 3, plus "No Tibetan characters found!" from
+# wave 4.
+#
+# Wave 3.3 (the generic stack renderer) brought w2u from 28 to 185 (jsewts),
+# 29 to 188 (Lingua), 0 to 14 (ewts-rs) and 1 to 4 (java): syllables the book
+# did not spell now render with the references' marks - subjoined letters,
+# vowels, carets - so the word-shape checks of w2u mostly pass. The u2w leg
+# is untouched by that wave (it does not run the generic stack). The roundtrip
+# gains (37->175 / 38->177) are the same shapes proving stable through
+# W->U->W->U. Remaining w2u gaps are reference quirks (repeated tshegs,
+# vowel-only escapes, "blaxbla" splitting).
+#
+# Wave 3.4 (per-spelling grammar arms): w2u now parses under the Wylie arms
+# instead of the Tibetan arms + generic stack. Every reference corpus holds
+# its numbers unchanged, and ewts-rs gains one check (14->15). The kangyur
+# round-trip loses 12 lines (251->239): the u2w leg still emits "blind"
+# Wylie - no dots (g.yul -> "gyul"), no implicit @a@ (མུན་གནག -> "mun gng"),
+# no "sa'i" (སའི -> "s'i") - and the strict Wylie arms read those differently
+# (gyul -> གྱུལ, gng -> གང, pStack s'i -> སྰི) than the permissive old path
+# did.
+#
+# Wave 3.5 (mark-aware Wylie renderer, kangyur corpus): the u2w leg now
+# writes dots before subjoinable stacks (གཡུལ -> "g.yul"), an implicit @a@
+# before a following full letter (སའི -> "sa'i", མུན་གནག -> "mun gnag")
+# and drops a leading a-chen that only carries a vowel (ཨུ -> "u"). The
+# kangyur round-trip climbs back to 254, and the u2w legs gain the same
+# shapes: jsewts 16->50, Lingua 15->47, java 0->1. No implicit vowel is
+# written after a syllable's closing letter (ས -> "s", མངའ -> "mnga'"):
+# per the spelling rules a closing mark never takes an explicit vowel, and
+# writing one leaks a fresh a-chen through the back leg (ཁྱེའུས ->
+# "khྱe'usa" -> ཁྱེའུསཨ).
+#
+# Wave 3.4.2/3.4.3 (the prefix position in the single-pass parse): the warning
+# checks left this ratchet on 30.09.2026. The prefix rule fires inline in the
+# grammar's head window now, with our own records and wording under
+# Test.Diagnostic; the conversion numbers below are untouched.
+#
+# Waves 3.4.4-3.4.6 (legality windows, the ambiguity recommendation, the
+# tokenizer cases) move the conversion numbers for the first time since 3.5:
+# a final mark no longer opens a run and stays as it was written, so Mi and
+# "mo . ???" read the way the reference reads them. w2u 185->187 (jsewts) and
+# 188->190 (Lingua), round-trip 179->180 and 181->182; the ratchet is raised
+# to the new numbers in 3.4.7. The stray-mark echo and the orphan-dot finding
+# are conversion-neutral on the other corpora. A stack dot the grammar did not
+# use is now reported (ka.), which is a message, not a conversion.
+#
+# Waves 3.4.7-3.4.9 (the final chain, the caret chain and their windows): the
+# floor reaches the counts of 3.4.9 for the first time - w2u 187->191 (jsewts)
+# and 190->194 (Lingua), round-trip 180->184 and 182->186, and java w2u 4->5,
+# which had been sitting under its own count since an earlier wave. The floor
+# moves UP; it is a floor, not a target, and it caps nothing. The u2w legs,
+# ewts-rs and the kangyur round-trip stay where they were. The numbers are
+# still far from `total`, and that gap is the remaining work.
+#
+# Wave 3.4.10 (the superfix gate a subjoined la shuts, defect 8): the floor
+# moves UP again - w2u 191->192 (jsewts) and 194->195 (Lingua), round-trip
+# 184->185 and 186->187. One spelling changes (grglam), the u2w legs, ewts-rs,
+# java and the kangyur round-trip stay where they were.
+#
+# Wave 3.4.11 (the honest U->W stack renderer, defect 3): the u2w legs jump.
+# Glyph-sourced syllables now render through the stack grouping the reference
+# uses - a regular stack spelled plain, a non-regular one plus-joined, the
+# dot only where prefix + stack close a regular stack (and read through the
+# structure windows, so a bare "gy" stays a stack), the implicit @a@ of a
+# vowel-less root and none on the lone final suffix of several stacks
+# (བརྙེས -> "b+r+nyes", ས -> "sa"). Subjoined glyphs read as letters instead
+# of raw codepoints. u2w 50->149 (jsewts), 47->148 (Lingua), roundtrip
+# 185->189 and 187->191; w2u, ewts-rs, java and the kangyur roundtrip stay
+# where they were, and the kangyur U->W snapshot is regenerated - the old
+# one had recorded the raw subjoined glyphs.
+#
+# Wave 3.4.12 (defect 1, the six 6/6 lines): the junk branch of the sentence
+# no longer swallows letters behind it - a stray non-Tibetan sign (=, <, >,
+# parens, a Latin x) ends its Other run where a syllable could start
+# (ba=la -> བ༴ལ, <ba> -> ༺བ༻, blaxbla -> བླxབླ), and its u2w mirror parses
+# the same sign separately (བ༴ལ -> ba=la). The Wylie join sign '+' prints
+# nothing in the unmarked tail (g+X -> ག༷). The grammar reads the @a@ after a
+# +-joined subfix as the stack's implicit vowel (bo+ra -> བོྲ), and the U->W
+# stack renderer floats a late vowel back where it prints (བོྲ -> "bro").
+# w2u 192->199 (jsewts), 195->202 (Lingua); u2w 149->155, 148->154;
+# roundtrip 189->195, 191->197; ewts-rs, java and the kangyur roundtrip stay
+# where they were. The u2w bracket blocks ([comment], bla[x]bla, [???]) stay
+# open - bracketed foreign text is a wave 4 feature.
+#
+# Wave 3.4.13 (the unread tail, defect 2, the core A-D): a claimed run now
+# keeps the tail tokens no fresh run would claim - the marks the structures
+# refuse (a Tibetan long a beside its root, a final after the stack, a lone
+# join sign) hang over their stack, and the first dot past the structure is
+# eaten with an UnplacedDot finding, exactly one, as the reference lets its
+# stack take one dot (ka. -> ka-eaten, g....yag -> the run "g...." plus a
+# fresh "yag"). What a fresh run does claim stays in the input: it reads as
+# itself instead of echoing through the old run (g....yag -> ga...yag, "e"
+# after a dot opens its own stack). A broken hex escape is an opaque token
+# of its own now, splitting the tsekbars around it (a<escape>b -> a, <escape>,
+# b), and a forced final closes a stack the structure did not reach; the
+# implicit-a branch no longer runs behind an a-chen root. w2u 199->201 (jsewts),
+# 202->206 (Lingua), u2w 155->156 (jsewts), roundtrip 195->196 (jsewts) and
+# 197->199 (Lingua); Lingua u2w holds 154 (the AH line reads AH again),
+# ewts-rs, java and the kangyur roundtrip stay where they were.
+#
+# Step 4.4a (the bare a-chen stack; Q-6/Q-7, 16.10.2026): a Wylie a-chen root
+# closes its own vowel slot, so the reference reads @ae@ as ཨ + ཨེ and @aa@ as
+# two stacks. The U->W leg now writes the dot before a standalone a-chen, as
+# THL (ewts-js) and Lingua do. jsewts never writes that dot (its own ཨཨ spells
+# "aa", ཨཨེ spells "ae"), so on row 109 the same ཨཨ takes "aa" there and "a.a"
+# here: the two references disagree on one input, and the decision follows
+# THL. The jsewts u2w floor therefore DROPS by one, 156->155, as a recorded
+# divergence, not a silent loss.
+#
+# Step 4.4a, part two (the U->W long-vowel convention; 16.10.2026): the 4.4a
+# W->U counts now stand in the floor too (w2u 208->210 jsewts, 214->218
+# Lingua), and the U->W leg takes the reference's long-vowel convention. The
+# Tibetan side spells a long letter with the @ཱ@ sign and a short sign; the
+# generic stack absorbs both now, the @ཱ@ leaving the slot open for the @ི@ @ུ@
+# @ྀ@ that complete it (ཨཱི reads back as @I@, ཀཱུ as @kU@, ཅླཱྀ as @c+l-I@),
+# while a bare «ཨཱ» stays structure 1's own on the length tie. The compound
+# signs ཻ ཽ ྀ bind a stack the same way, so ཀཽ is one stack (@kau@) and ཨཻ/ཨཽ
+# read back as @ai@/@au@. That is what the reformatting leg needs: the
+# W->U->W->U chain stays inside its own language. u2w 155->172 (jsewts),
+# 154->173 (Lingua); roundtrip 198->200, 201->207. ewts-rs, java and the
+# kangyur roundtrip stay where they were. The remaining u2w gaps are the
+# reference's own quirks (bracketed foreign text, the @f@/@v@ caret, the
+# deprecated precomposed signs U+0f73/U+0f77, the @rdo+e@ force-join) - waves
+# 4 and later.
+#
+# Step 4.4, the Q-5 tail (17.10.2026): the fifth @textEwts()@ assertion reads
+# through the reference's one-argument toUnicode, i.e. its sloppy path
+# (toUnicode(str, null, true, false), fed by normalizeSloppyWylie), so it is not
+# a strict W->U pair. It moved to java_sloppy.tsv, the java w2u floor falls
+# 6->5, and the passing count stays 5: 5/5 on the strict set.
+#
+# Step 5.1 (the left typographic quote as a-chung): the a-chung alias table
+# takes U+2018 beside the U+2019 it already had, so 'ga' 'ga' (ewts-js 175,
+# the last open w2u line there) reads as its apostrophe twin does. The ewts-js
+# w2u leg closes completely, 211->212, and its round-trip follows the same
+# line, 201->202. Everything else holds.
+#
+# Step 5.0 (the Kangyur u2w oracle): wkang.txt - the reference's own
+# toWylie(kang.txt, {sloppy:false}) export - was copied into test/vectors and
+# became the expected Wylie for every Kangyur line, so the corpus has a u2w
+# leg for the first time: 250/254. The comparison runs under the round-trip
+# leg's normalisation (spaces dropped, the double shad expanded), plus the
+# Wylie side drops @_@ - the reference's spelling of an input ASCII space,
+# which the input side dropped with the space itself; space handling is wave
+# 5.12. The four open lines are the wave's own groups: the dot before a
+# standalone a-chen (jsewts writes none, the 4.4a canon follows THL), the
+# prefix-vs-two-suffixes reading (ganddu/gnaddu), a second vowel in the stack
+# (brib'a'am) and a bracket block with a space in it. rekang.txt was NOT
+# imported: it is fromWylie(wkang.txt) and equals kang.txt under this same
+# normalisation, i.e. the reference's own second leg - a self-check duplicate
+# of what the round-trip leg already covers (Q-5.1, orphan).
+# Step 5.2 (the f/v caret fold, 18.10.2026): the U->W stack renderer folds
+# the caret over a lone letter into the reference's mnemonic (m_tib_caret):
+# a stack of one letter under the caret spells as @f@/@v@ and the caret stays
+# unwritten (ཕ -> "fa", བ -> "va"), the mirror of the wave 0 expansion that
+# reads @f@ as pha + caret. u2w 172->176 (jsewts), 173->177 (Lingua),
+# 172->176 (ewts-js) - four f/v lines in each corpus, the mid-word form
+# (fa ba va pha) among them. w2u, round-trip, ewts-rs, java and the kangyur
+# u2w/round-trip hold: those lines already round-tripped through the
+# expansion, and the fold fires only on a caret stack of exactly one letter.
+#
+# Step 5.3 (brackets around foreign text, 18.10.2026): the U->W renderer wraps
+# a run of non-Tibetan items in [...], exactly where the reference's toWylie
+# opens a block, and escapes a [ or a ] inside it. The run is the longest
+# chain of Space and Foreign items that holds at least one Foreign item; a
+# chain without one is printed as it was, an ASCII space outside a block still
+# spelling @_@. A space after a syllable stays inside the syllable and prints
+# as @_@ (bla x -> "bla_[x]", the reference "bla[ x]") - the split belongs to
+# space handling, wave 5.12. u2w 176->186 (jsewts), 177->188 (Lingua),
+# 176->187 (ewts-js), 250->251 (kangyur); round-trip 200->206, 207->214,
+# 202->209. w2u, ewts-rs and java hold. The kangyur U->W snapshot is
+# regenerated: one line's NBSP is bracketed now (lags/[ ]'di), which is the
+# same block the reference opens.
+#
+# Step 5.4 (orphan signs and unnameable glyphs, 18.10.2026): a mark with no
+# letter to attach to (vowel, subjoined, final) and a Tibetan character no
+# table names now escape as \uXXXX - the reference's own escape - instead of
+# printing a mnemonic or the raw glyph; an escape joins a bracket block that
+# foreign text has already opened and opens none itself. u2w 186->190 (jsewts),
+# 188->192 (Lingua), 187->191 (ewts-js); round-trip 206->208, 214->216,
+# 209->209. ewts-js trades two rows rather than gaining: the digit+glyph line
+# round-trips now (its leaked brackets were the old failure), while the long
+# vowel line is flagged "should not round-trip" although its own w2u and u2w
+# expectations force any conforming converter to round-trip it - that flag
+# used to pass only because our u2w was wrong. w2u, the kangyur and the other
+# corpora hold.
+#
+# Step 5.5 (precomposed input; 20.10.2026): the deprecated decompositions
+# already stood since wave 0, so the only new entry is U+0F00 (OM) -> a-chen +
+# o + anusvara, as ewts-js does; jsewts, java and Lingua print the escape
+# instead, and no corpus carries the character, so no number moves. The
+# remaining Lingua line 195 (ra + U+0F77 -> "rr-I") is an accepted divergence,
+# NOT an open gap: ewts-js and jsewts both print our "r+r-I" (checked by
+# running both converters), and "rr-I" is Lingua's own rule that treats a
+# subjoined r/l with a vocalic vowel as one vowel.
+#
+# Step 5.6 (a mark written after a final still joins the stack, 20.10.2026):
+# the grammar already read བཾྲ and བཾུ as one syllable (root b, final M, then
+# the subjoined r or the vowel u), but the U->W renderer printed the marks in
+# input order ("baMr", "baMu"). It now lays each stack out the way the
+# reference collects it - letters (full and subjoined, in written order),
+# caret, vowels, finals - so both spell "braM" and "buM". u2w 190->192
+# (jsewts), 192->194 (Lingua), 191->193 (ewts-js); round-trip, w2u, the
+# kangyur and the java pair hold.
+# Step 5.7 (the implicit @a@ after a prefix and the compact stacks, 20.10.2026):
+# the U->W renderer now reads a run the way the reference does - stack by
+# stack, with the reference's own role tables (m_prefixes, m_suffixes,
+# m_suff2, m_ambiguous_key) deciding which stack is a prefix, a suffix or a
+# second suffix, and so which one loses its implicit @a@. The grammar's
+# positions are the book's reading, not the reference's: གརླ is prefix + root +
+# subfix by the book but "garla" by the reference, because g is no prefix
+# before r+l. The same tables settle mand -> "mnad", dgas -> "dgas",
+# mgs -> "mags" - i.e. step 5.8's readings come for free. u2w 192->208
+# (jsewts), 194->209 (Lingua), 193->209 (ewts-js), 251->253 (kangyur);
+# round-trip 208->209, 216->217, 209->210. w2u holds on every corpus.
+#
+# Accepted divergences of this step: Lingua's badz+ra (lines 184-186) against
+# badzra, which jsewts, ewts-js and Lingua's own line 184 spell - the stack
+# table has dz+r and b has no dz+r among its prefix roots; Lingua's cr-i/cl-I
+# (lines 65-67) against our c+r-i/c+l-I, the 4.4a canon (jsewts agrees with
+# us); and Lingua's mgas (line 214), where its own m_ambiguous_key, like
+# jsewts's, gives "mags". The one open kangyur u2w line is the 4.4a a-chen dot
+# after the comparison's own space dropping (གོ ཨང -> "go.ang" against the
+# reference's "goang"), a rule the W->U canon keeps.
+#
+# REFACTOR-AST step 3 (the nested syllable; 21.10.2026): both renderers now walk
+# the stacks, so the role a structure gave a sign is what prints. The output
+# follows the canonical field order (caret after subfixes, subfixes before the
+# vowel), separators are input syntax and print nothing, and a mark the run
+# swallowed but no stack took is no item of its own. The cases where this is a
+# deliberate difference from the reference are listed in
+# test/parity/known_divergences.tsv and are NOT counted here: 6 w2u rows per
+# three large corpora and 9 kangyur u2w rows. The w2u totals drop by those six
+# (210 -> 204, 218 -> 212, 212 -> 206) and the kangyur u2w total by nine
+# (254 -> 245); every remaining check of those kinds passes, so the floor is
+# the total. The other legs hold. At step 3 the remaining kangyur rows were
+# role holes (structure 38 leaves a closing consonant a root: བའམ, ཁྱེའུས), the
+# book's own w-row not allowing c+w (བཅྭ), and one harness artefact (the
+# comparison drops spaces from the input, which fuses two runs); each open row's
+# reason is in test/parity/known_divergences.tsv.
+#
+# REFACTOR-AST step 6a (the tail roles): the closing sign of the generic word is
+# a suffix, and a head prefix letter its own table cannot lead is a root. The
+# role-hole rows left test/parity/known_divergences.tsv, so the u2w floors rise
+# by them: jsewts 187 -> 193, lingua 185 -> 194, ewts-js 188 -> 195, kangyur
+# 245 -> 250; the round-trip legs by one each (205 -> 206, 213 -> 214,
+# 206 -> 207). The rows still open are the book's own w-row and subjoin set,
+# the Q10 ties, the 6c escape case and the harness artefact.
+#
+# REFACTOR-AST R1 step A (29.10.2026, a full letter under a superfix is no
+# stack): the grammar stopped building a Wylie superfix stack whose root never
+# reaches a vowel (rt is ར + ཏ, not རྟ) and a glyph stack whose root is a full
+# letter rather than a joined sign. W->U does not move; U->W and the
+# round-trip each gain two rows on the three big corpora, exactly the
+# bart/gabsp rows whose journal entries closed: u2w 193 -> 195, 194 -> 196,
+# 195 -> 197 and roundtrip 206 -> 208, 214 -> 216, 207 -> 209.
+# Wave 6, slice 2 (30.10.2026, fix_spacing): a line break in Wylie input now
+# stands as written (both references keep it) instead of collapsing into a
+# tsheg, and the spaces behind a break are eaten, so one break can no longer
+# leave two tshegs; the Kangyur Wylie leg is compared exactly, the `_` spelling
+# of an input space no longer dropped on either side. No number moves: the four
+# open Kangyur rows are the same ones, but the space shapes are now checked
+# instead of normalised away.
+jsewts	w2u	204	204
+jsewts	u2w	195	195
+jsewts	roundtrip	208	208
+lingua	w2u	212	212
+lingua	u2w	196	196
+lingua	roundtrip	216	216
+ewts-rs	w2u	16	16
+java	w2u	5	5
+ewts-js	w2u	206	206
+ewts-js	u2w	197	197
+ewts-js	roundtrip	209	209
+java	u2w	1	1
+kangyur	roundtrip	254	254
+kangyur	u2w	250	250

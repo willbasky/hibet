@@ -1,0 +1,526 @@
+-- Ожидания: оракулы EWTS (правила входа); формулировки диагностик — hewts.
+
+module Test.Tokenizer.Tricky (tests) where
+
+import Convert.Diagnostic (renderDiagnostics)
+import Convert.Token
+import Convert.Token.Wylie
+    ( wylieConsonant
+    , wylieConsonantAliases
+    , wylieExpansions
+    , wylieFinal
+    , wylieNumber
+    , wyliePunctuation
+    , wylieSpace
+    , wylieSymbol
+    , wylieVowel
+    )
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (longTokenList, tokenizeWylie)
+import qualified Data.HashSet as HS
+import Data.Text (Text)
+import qualified Data.Text as T
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
+
+tests :: TestTree
+tests =
+    testGroup
+        "tricky"
+        [ testCase "wylie longest-match dzh stays one token" caseWylieDzh
+        , testCase "wylie longest-match -d+h beats -d" caseWylieDashDH
+        , testCase "wylie CRLF is a single lexical chunk" caseWylieCRLFChunk
+        , testCase
+            "wylie bracketed non-tibetan block is a single token"
+            caseWylieBracketedChunk
+        , testCase "wylie unicode escape chunk is a single token" caseWylieEscapeChunk
+        , testCase
+            "wylie stray special marker stays an unknown token"
+            caseWylieSpecialIssue
+        , testCase "wylie longest-match k+Sh is single chunk" caseWylieKPlusShChunk
+        , testCase "wylie longest-match dz+h then a" caseWylieDzPlusHThenA
+        , testCase "wylie longest-match -d+h then a" caseWylieDashDPlusHThenA
+        , testCase "wylie longest-match g+h then o" caseWylieGPlusHThenO
+        , testCase "wylie longest-match ~M` then a" caseWylieAnusvaraThenA
+        , testCase "wylie longest-match -I then a" caseWylieMinusIThenA
+        , testCase "wylie longest-match ai then a" caseWylieAiThenA
+        , testCase "wylie longest-match // then a" caseWylieDoubleShadThenA
+        , testCase "wylie longest-match Sh then a" caseWylieShThenA
+        , testCase "wylie longest-match th then a" caseWylieThThenA
+        , testGroup "wylie prefix conflicts" (map mkPrefixCase wyliePrefixCases)
+        , testCase
+            "wylie mixed special markers stay unknown tokens"
+            caseWylieMixedSpecial
+        , testCase
+            "wylie unknown latin stays an unknown token"
+            caseWylieUnknownLatin
+        , testCase
+            "unicode unexpected ASCII between Tibetan signs is isolated"
+            caseUnicodeUnexpectedAsciiBetweenTibetan
+        , testCase
+            "unicode repeated vowel marks are tokenized separately"
+            caseUnicodeRepeatedVowels
+        , testCase
+            "unicode rare combining mark stays unknown"
+            caseUnicodeRareCombiningUnknown
+        , testCase
+            "unicode mixed edge stream keeps raws intact"
+            caseUnicodeMixedEdge
+        , testCase
+            "unicode tsheg and ASCII space are different kinds"
+            caseUnicodeTshegVsSpace
+        , testCase "unicode unknown ASCII is preserved" caseUnicodeUnknownPreserved
+        , testGroup "wylie chunking contracts" wylieChunkingContractTests
+        , testGroup
+            "unicode normalization matrix"
+            (map mkUnicodeNormalizationCase unicodeNormalizationCases)
+        , testCase "unicode precomposed U+0F73 maps to VA+Vi" caseUnicodePrecomposed073
+        , testCase
+            "unicode decomposed U+0F71 U+0F72 maps to VA+Vi"
+            caseUnicodeDecomposed071072
+        , testCase "unicode precomposed U+0F75 maps to VA+Vu" caseUnicodePrecomposed075
+        , testCase
+            "unicode decomposed U+0F71 U+0F74 maps to VA+Vu"
+            caseUnicodeDecomposed071074
+        , testGroup "wylie lexical rules" (map mkLexCase wylieLexicalCases)
+        ]
+
+-- | Input-level rules taken from the reference's own reading of Wylie: what
+-- it skips, what it drops, and what it reports.
+wylieLexicalCases :: [(String, Assertion)]
+wylieLexicalCases =
+    [ ("BOM is skipped silently", wylieRaws "\xfeff" @?= [])
+    , ("BOM does not split the word after it", wylieRaws "\xfeffka" @?= ["k", "a"])
+    ,
+        ( "zero-width space is skipped silently"
+        , wylieRaws ("k\x200b" <> "a") @?= ["k", "a"]
+        )
+    ,
+        ( "line breaks stand as written"
+        , wylieRaws "a\r\nb\rc\nd" @?= ["a", "\r\n", "b", "\r", "c", "\n", "d"]
+        )
+    ,
+        ( "the spaces behind a break are eaten"
+        , wylieRaws "a \n  b" @?= ["a", " ", "\n", "b"]
+        )
+    ,
+        ( "a bare letter is unexpected"
+        , wylieWarnings "x"
+            @?= ["line 1: The character \"x\" belongs to no Wylie spelling."]
+        )
+    ,
+        ( "a special marker is unexpected"
+        , wylieWarnings "~"
+            @?= ["line 1: The character \"~\" belongs to no Wylie spelling."]
+        )
+    , ("a foreign character passes quietly", wylieWarnings "\x2019a" @?= [])
+    ,
+        ( "the second line is counted correctly"
+        , wylieWarnings "ka\nx"
+            @?= ["line 2: The character \"x\" belongs to no Wylie spelling."]
+        )
+    ,
+        ( "an escape stands for the character"
+        , escapedCharacter "de la \\3 yod/" @?= Just (TcUnknown (UnknownMark "3"))
+        )
+    , ("an escape reports nothing", wylieWarnings "de la \\3 yod/" @?= [])
+    ,
+        ( "a broken hex escape is reported"
+        , wylieWarnings "a\\u01x3a"
+            @?= ["line 1: The escape \"\\u01x3\" is not a valid code point."]
+        )
+    ,
+        ( "a broken hex escape leaves its text as a token"
+        , wylieRaws "a\\u01x3b" @?= ["a", "\\u01x3", "b"]
+        )
+    ,
+        ( "a bracket block is one token"
+        , bracketShape "[New York]k" @?= ("[New York]", "k")
+        )
+    ,
+        ( "an unclosed bracket is reported"
+        , wylieWarnings "a [unfinished [comment]"
+            @?= ["line 1: The bracketed foreign text is never closed."]
+        )
+    ,
+        ( "a closed bracket block is not reported"
+        , wylieWarnings "a [New York] b" @?= []
+        )
+    ,
+        ( "a run of spaces collapses to one tsheg"
+        , wylieRaws "a     " @?= ["a", "     "]
+        )
+    ,
+        ( "a run of spaces is a single tsheg token"
+        , wylieTshegs "a     " @?= ["     "]
+        )
+    , ("spaces only leave nothing", wylieRaws "   " @?= [])
+    ,
+        ( "leading spaces are dropped"
+        , wylieRaws "  bla" @?= ["b", "l", "a"]
+        )
+    ,
+        ( "a leading line break and spaces are dropped"
+        , wylieRaws "\r  bla" @?= ["b", "l", "a"]
+        )
+    ,
+        ( "runs of spaces between words are one tsheg each"
+        , wylieTshegs "bla   ma   " @?= ["   ", "   "]
+        )
+    ,
+        ( "a single space stays a single tsheg"
+        , wylieTshegs "a b" @?= [" "]
+        )
+    ]
+
+mkLexCase :: (String, Assertion) -> TestTree
+mkLexCase (name, assertion) = testCase name assertion
+
+-- | The raw slices of the tokens, with the empty continuation slices dropped.
+wylieRaws :: Text -> [Text]
+wylieRaws = filter (not . T.null) . map tokenRaw . fst . tokenizeWylie
+
+-- | The raw slices of the tsheg tokens: a run of spaces is one token whose raw
+-- slice is the whole run (wave 4.1).
+wylieTshegs :: Text -> [Text]
+wylieTshegs input =
+    [ tokenRaw tok
+    | tok <- fst (tokenizeWylie input)
+    , tokenCanonical tok == TcPunctuation PMTsheg
+    ]
+
+-- | The diagnostics for an input, in our own wording: the reference dictates
+-- only which cases warn, not the text (see 'Test.Diagnostic').
+wylieWarnings :: Text -> [Text]
+wylieWarnings input = renderDiagnostics input (snd (tokenizeWylie input))
+
+-- | What a backslash escape stands for: the token it produced, with the whole
+-- escape still in its raw slice.
+escapedCharacter :: Text -> Maybe TokenCanonical
+escapedCharacter input =
+    case [tok | tok <- fst (tokenizeWylie input), tokenRaw tok == "\\3"] of
+        (tok : _) -> Just (tokenCanonical tok)
+        [] -> Nothing
+
+-- | The raw slice of a bracket block, and the raw slice of what follows it.
+bracketShape :: Text -> (Text, Text)
+bracketShape input =
+    case fst (tokenizeWylie input) of
+        [blockTok, nextTok] ->
+            ( tokenRaw blockTok
+            , if tokenKind blockTok == TkNonTibetan
+                then tokenRaw nextTok
+                else "<not a bracket>"
+            )
+        [] -> ("<no token>", "")
+        _ -> ("<unexpected token count>", "")
+
+mkPrefixCase :: (String, Text, [Text]) -> TestTree
+mkPrefixCase (name, input, expected) =
+    testCase name (assertWylieRawTokens input expected)
+
+wyliePrefixCases :: [(String, Text, [Text])]
+wyliePrefixCases =
+    [ ("plain d before vowel", "da", ["d", "a"])
+    , ("dz beats d", "dza", ["dz", "a"])
+    , ("dzh beats dz", "dzha", ["dzh", "a"])
+    , ("dz+h beats dzh", "dz+ha", ["dz+h", "a"])
+    , ("plain -d before vowel", "-da", ["-d", "a"])
+    , ("-dh beats -d", "-dha", ["-dh", "a"])
+    , ("-d+h beats -dh", "-d+ha", ["-d+h", "a"])
+    , ("g+h beats g", "g+ha", ["g+h", "a"])
+    , ("gh alias stays one chunk", "gha", ["gh", "a"])
+    , ("D+h beats D", "D+ha", ["D+h", "a"])
+    , ("Dh alias stays one chunk", "Dha", ["Dh", "a"])
+    , ("b+h beats b", "b+ha", ["b+h", "a"])
+    , ("bh alias stays one chunk", "bha", ["bh", "a"])
+    , ("th beats t", "tha", ["th", "a"])
+    , ("tsh beats th", "tsha", ["tsh", "a"])
+    , ("sh beats s", "sha", ["sh", "a"])
+    , ("Sh beats s", "Sha", ["Sh", "a"])
+    , ("-sh beats -s fallback", "-sha", ["-sh", "a"])
+    , ("// beats /", "//a", ["//", "a"])
+    , ("single slash remains /", "/a", ["/", "a"])
+    , ("ai beats a", "aia", ["ai", "a"])
+    , ("au beats a", "aua", ["au", "a"])
+    , ("-I beats - and I", "-Ia", ["-I", "a"])
+    , ("~M` beats ~M", "~M`a", ["~M`", "a"])
+    , ("~M works standalone", "~Ma", ["~M", "a"])
+    , ("~X works standalone", "~Xa", ["~X", "a"])
+    , ("k+Sh beats k", "k+Sha", ["k+Sh", "a"])
+    , ("CRLF collapses, leaving a", "\r\na", ["a"])
+    , ("lone CR collapses, leaving a", "\ra", ["a"])
+    , ("LF stands between words, as the reference keeps it", "a\nb", ["a", "\n", "b"])
+    ]
+
+caseWylieDzh :: Assertion
+caseWylieDzh =
+    map tokenCanonical (fst (tokenizeWylie "dzh"))
+        @?= [TcConsonant Cdz, TcSubConsonant SCh]
+
+caseWylieDashDH :: Assertion
+caseWylieDashDH =
+    map tokenCanonical (fst (tokenizeWylie "-d+h"))
+        @?= [TcSubConsonant SCD, TcSubConsonant SCh]
+
+caseWylieCRLFChunk :: Assertion
+caseWylieCRLFChunk =
+    -- a line break ends a line but produces nothing: the reference collapses
+    -- it rather than carrying it into the output
+    assertWylieRawTokens "\r\n" []
+
+caseWylieBracketedChunk :: Assertion
+caseWylieBracketedChunk =
+    case fst (tokenizeWylie "[ab[cd]e]k") of
+        [blockTok, kTok] -> do
+            tokenRaw blockTok @?= "[ab[cd]e]"
+            tokenRaw kTok @?= "k"
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
+
+caseWylieEscapeChunk :: Assertion
+caseWylieEscapeChunk =
+    case fst (tokenizeWylie "\\u0f40a") of
+        [escTok, aTok] -> do
+            tokenRaw escTok @?= "\\u0f40"
+            tokenRaw aTok @?= "a"
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
+
+caseWylieSpecialIssue :: Assertion
+caseWylieSpecialIssue =
+    case fst (tokenizeWylie "~") of
+        [tok] -> do
+            tokenKind tok @?= TkUnknown
+            tokenCanonical tok @?= TcUnknown (UnknownMark "~")
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseWylieKPlusShChunk :: Assertion
+caseWylieKPlusShChunk =
+    assertWylieRawTokens "k+Sh" ["k+Sh"]
+
+caseWylieDzPlusHThenA :: Assertion
+caseWylieDzPlusHThenA =
+    assertWylieRawTokens "dz+ha" ["dz+h", "a"]
+
+caseWylieDashDPlusHThenA :: Assertion
+caseWylieDashDPlusHThenA =
+    assertWylieRawTokens "-d+ha" ["-d+h", "a"]
+
+caseWylieGPlusHThenO :: Assertion
+caseWylieGPlusHThenO =
+    assertWylieRawTokens "g+ho" ["g+h", "o"]
+
+caseWylieAnusvaraThenA :: Assertion
+caseWylieAnusvaraThenA =
+    assertWylieRawTokens "~M`a" ["~M`", "a"]
+
+caseWylieMinusIThenA :: Assertion
+caseWylieMinusIThenA =
+    assertWylieRawTokens "-Ia" ["-I", "a"]
+
+caseWylieAiThenA :: Assertion
+caseWylieAiThenA =
+    assertWylieRawTokens "aia" ["ai", "a"]
+
+caseWylieDoubleShadThenA :: Assertion
+caseWylieDoubleShadThenA =
+    assertWylieRawTokens "//a" ["//", "a"]
+
+caseWylieShThenA :: Assertion
+caseWylieShThenA =
+    assertWylieRawTokens "Sha" ["Sh", "a"]
+
+caseWylieThThenA :: Assertion
+caseWylieThThenA =
+    assertWylieRawTokens "tha" ["th", "a"]
+
+caseWylieMixedSpecial :: Assertion
+caseWylieMixedSpecial =
+    let toks = fst (tokenizeWylie "~+`]-.")
+     in do
+            map tokenRaw toks @?= ["~", "+", "`", "]", "-", "."]
+            map tokenKind toks
+                @?= [TkUnknown, TkConSpec, TkUnknown, TkUnknown, TkUnknown, TkConSpec]
+            map tokenCanonical toks
+                @?= [ TcUnknown (UnknownMark "~")
+                    , TcConSpec CSPlus
+                    , TcUnknown (UnknownMark "`")
+                    , TcUnknown (UnknownMark "]")
+                    , TcUnknown (UnknownMark "-")
+                    , TcConSpec CSDot
+                    ]
+
+caseWylieUnknownLatin :: Assertion
+caseWylieUnknownLatin =
+    case fst (tokenizeWylie "x") of
+        [tok] -> tokenCanonical tok @?= TcUnknown (UnknownMark "x")
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseUnicodeUnexpectedAsciiBetweenTibetan :: Assertion
+caseUnicodeUnexpectedAsciiBetweenTibetan =
+    case fst (tokenizeUnicode "ཀxི") of
+        [kTok, xTok, iTok] -> do
+            tokenKind kTok @?= TkConsonant
+            tokenKind xTok @?= TkUnknown
+            tokenKind iTok @?= TkVowel
+            tokenCanonical xTok @?= TcUnknown (UnknownMark "x")
+        xs -> error $ "Expected 3 tokens, got " <> show (length xs)
+
+caseUnicodeRepeatedVowels :: Assertion
+caseUnicodeRepeatedVowels =
+    case fst (tokenizeUnicode "ཀིི") of
+        [kTok, i1Tok, i2Tok] -> do
+            tokenKind kTok @?= TkConsonant
+            tokenKind i1Tok @?= TkVowel
+            tokenKind i2Tok @?= TkVowel
+            tokenCanonical i1Tok @?= TcVowel Vi
+            tokenCanonical i2Tok @?= TcVowel Vi
+        xs -> error $ "Expected 3 tokens, got " <> show (length xs)
+
+caseUnicodeRareCombiningUnknown :: Assertion
+caseUnicodeRareCombiningUnknown =
+    case fst (tokenizeUnicode "྆") of
+        [tok] -> do
+            tokenKind tok @?= TkSanskritMark
+            tokenCanonical tok @?= TcSanskritMark SMiLciRtags
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+caseUnicodeMixedEdge :: Assertion
+caseUnicodeMixedEdge =
+    map tokenRaw (fst (tokenizeUnicode "ཀིི ཀxི ྆།"))
+        @?= ["ཀ", "ི", "ི", " ", "ཀ", "x", "ི", " ", "྆", "།"]
+
+caseUnicodeTshegVsSpace :: Assertion
+caseUnicodeTshegVsSpace =
+    case fst (tokenizeUnicode "་ ") of
+        [tshegTok, spaceTok] -> do
+            tokenKind tshegTok @?= TkPunctuation
+            tokenKind spaceTok @?= TkSpace
+        xs -> error $ "Expected 2 tokens, got " <> show (length xs)
+
+caseUnicodeUnknownPreserved :: Assertion
+caseUnicodeUnknownPreserved =
+    case fst (tokenizeUnicode "x") of
+        [tok] -> tokenCanonical tok @?= TcUnknown (UnknownMark "x")
+        xs -> error $ "Expected 1 token, got " <> show (length xs)
+
+assertWylieRawTokens :: Text -> [Text] -> Assertion
+assertWylieRawTokens input expected =
+    -- Continuation tokens of decomposed spellings carry an empty raw slice;
+    -- drop them so chunking contract tests compare the source chunks only.
+    (filter (not . T.null) (tokenRaw <$> fst (tokenizeWylie input))) @?= expected
+
+wylieChunkingContractTests :: [TestTree]
+wylieChunkingContractTests =
+    [ testCase
+        "all multi-char tokenizer keys are listed in longTokenList"
+        caseAllMultiCharKeysListed
+    , testCase "no dead multi-char tokenizer keys" caseNoDeadMultiCharKeys
+    ]
+
+caseAllMultiCharKeysListed :: Assertion
+caseAllMultiCharKeysListed =
+    let longTokens = HS.fromList longTokenList
+        missing = filter (not . (`HS.member` longTokens)) multiCharTokenizerKeys
+     in missing @?= []
+
+caseNoDeadMultiCharKeys :: Assertion
+caseNoDeadMultiCharKeys =
+    mapM_ assertReachableMultiCharKey multiCharTokenizerKeys
+
+assertReachableMultiCharKey :: Text -> Assertion
+assertReachableMultiCharKey key =
+    case fst (tokenizeWylie key) of
+        tok : _ -> tokenRaw tok @?= key
+        [] -> error $ "No token produced for key " <> show key
+
+multiCharTokenizerKeys :: [Text]
+multiCharTokenizerKeys =
+    HS.toList . HS.fromList . filter ((> 1) . T.length) $
+        map wylieConsonant [minBound .. maxBound]
+            <> map wylieVowel [minBound .. maxBound]
+            <> map wylieFinal [minBound .. maxBound]
+            <> map wylieNumber [minBound .. maxBound]
+            <> map wyliePunctuation [minBound .. maxBound]
+            <> map wylieSpace [minBound .. maxBound]
+            <> map wylieSymbol [minBound .. maxBound]
+            <> map fst wylieConsonantAliases
+            <> map fst wylieExpansions
+
+mkUnicodeNormalizationCase :: (String, Text, [Text]) -> TestTree
+mkUnicodeNormalizationCase (name, input, expectedUnknownRaws) =
+    testCase name (assertUnicodeNormalizationCase input expectedUnknownRaws)
+
+assertUnicodeNormalizationCase :: Text -> [Text] -> Assertion
+assertUnicodeNormalizationCase input expectedUnknownRaws = do
+    let toks = fst (tokenizeUnicode input)
+        raws = map tokenRaw toks
+        unknowns = [tok | tok <- toks, tokenKind tok == TkUnknown]
+    -- Continuation tokens of decomposed spellings carry an empty raw slice;
+    -- the identity invariant is that the raws concatenate back to the input.
+    T.concat raws @?= input
+    map tokenRaw unknowns @?= expectedUnknownRaws
+    mapM_ assertUnknownShape unknowns
+
+assertUnknownShape :: Token -> Assertion
+assertUnknownShape tok =
+    tokenCanonical tok @?= TcUnknown (UnknownMark (tokenRaw tok))
+
+unicodeNormalizationCases :: [(String, Text, [Text])]
+unicodeNormalizationCases =
+    [ ("precomposed U+0F73", "ཱི", [])
+    , ("decomposed U+0F71 U+0F72", "ཱི", [])
+    , ("precomposed U+0F75", "ཱུ", [])
+    , ("decomposed U+0F71 U+0F74", "ཱུ", [])
+    , ("precomposed U+0F77 vocalic r", "ཷ", [])
+    , ("decomposed for U+0F77", "ཱྀུ", [])
+    , ("precomposed U+0F79 vocalic l", "ཹ", [])
+    , ("decomposed for U+0F79", "ཱྀ", [])
+    , ("syllable with precomposed U+0F73", "ཁཱི", [])
+    , ("syllable with decomposed U+0F71 U+0F72", "ཁཱི", [])
+    , ("repeated vowel i", "ཀིི", [])
+    , ("repeated vowel u", "ཀུུ", [])
+    , ("repeated vowel e", "ཀེེ", [])
+    , ("repeated vowel o", "ཀོོ", [])
+    , ("repeated vowel A", "ཀཱཱ", [])
+    , ("repeated minus-i vowel", "ཀྀྀ", [])
+    , ("repeated anusvara", "ཀཾཾ", [])
+    , ("repeated halanta", "ཀ྄྄", [])
+    , ("double shad punctuation", "ཀ།།", [])
+    , ("double tsheg punctuation", "ཀ་་", [])
+    , ("ascii letter between Tibetan chars", "ཀxི", ["x"])
+    , ("ascii question between Tibetan chars", "ཀ?ི", ["?"])
+    , ("ascii at between Tibetan chars", "ཀ@ི", ["@"])
+    , ("ascii space between Tibetan chars", "ཀ ི", [])
+    , ("tab between Tibetan chars", "ཀ\tི", ["\t"])
+    , ("newline between Tibetan chars", "ཀ\nི", ["\n"])
+    , ("carriage return between Tibetan chars", "ཀ\rི", ["\r"])
+    , ("ascii hash between Tibetan chars", "ཀ#ི", ["#"])
+    , ("ascii digit between Tibetan chars", "ཀ0ི", ["0"])
+    , ("leading NUL control", "\NULཀ", ["\NUL"])
+    , ("NUL inside Tibetan chars", "ཀ\NULི", ["\NUL"])
+    , ("DEL control between Tibetan chars", "ཀ\DELི", ["\DEL"])
+    , ("rare combining mark inside syllable", "ཀི྆", [])
+    , ("known unicode symbols around unknown ascii", "ཀ༄x།", ["x"])
+    , ("unicode sign sequence only", "༄༅༆", [])
+    , ("plus in unicode stream", "ཀ+་ི", ["+"])
+    , ("newline between shad marks", "ཀ།\n།ི", ["\n"])
+    , ("tab between shad marks", "ཀ།\t།ི", ["\t"])
+    , ("carriage return between shad marks", "ཀ།\r།ི", ["\r"])
+    , ("NUL between shad marks", "ཀ།\NUL།ི", ["\NUL"])
+    ]
+
+caseUnicodePrecomposed073 :: Assertion
+caseUnicodePrecomposed073 =
+    map tokenCanonical (fst (tokenizeUnicode "ཱི")) @?= [TcVowel VA, TcVowel Vi]
+
+caseUnicodeDecomposed071072 :: Assertion
+caseUnicodeDecomposed071072 =
+    map tokenCanonical (fst (tokenizeUnicode "ཱི")) @?= [TcVowel VA, TcVowel Vi]
+
+caseUnicodePrecomposed075 :: Assertion
+caseUnicodePrecomposed075 =
+    map tokenCanonical (fst (tokenizeUnicode "ཱུ")) @?= [TcVowel VA, TcVowel Vu]
+
+caseUnicodeDecomposed071074 :: Assertion
+caseUnicodeDecomposed071074 =
+    map tokenCanonical (fst (tokenizeUnicode "ཱུ")) @?= [TcVowel VA, TcVowel Vu]

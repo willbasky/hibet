@@ -1,0 +1,71 @@
+-- Ожидания: hewts — снимки токен-потока.
+
+module Test.Tokenizer.Golden (tests) where
+
+import Convert.Token
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Data.ByteString.Lazy (ByteString)
+import qualified Data.ByteString.Lazy as BL
+import Data.Text (Text)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.Golden (goldenVsString)
+
+tests :: TestTree
+tests =
+    testGroup
+        "golden"
+        [ goldenVsString
+            "wylie token stream"
+            "test/golden/wylie_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeWylie "gzhon nu'i dpe cha // +"))
+        , goldenVsString
+            "unicode token stream"
+            "test/golden/unicode_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "གཞོན་ནུའི་དཔེ་ཆ།། ་x"))
+        , goldenVsString
+            "wylie diagnostics token stream"
+            "test/golden/wylie_diagnostics_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeWylie "gzhon // ~+`]-. x"))
+        , goldenVsString
+            "unicode edge token stream"
+            "test/golden/unicode_edge_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "ཀིི ཀxི ྆།"))
+        , goldenVsString
+            "wylie dense stacks token stream"
+            "test/golden/wylie_dense_stacks_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeWylie "k+Shra dz+ha -d+h'i b+lai ~M` //"))
+        , goldenVsString
+            "wylie dense aliases token stream"
+            "test/golden/wylie_dense_aliases_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeWylie "D+hO b+hU dzhai -sha ~Xa //"))
+        , goldenVsString
+            "unicode punctuation and signs token stream"
+            "test/golden/unicode_punctuation_signs_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "༄༅།༎༏༑༔༈༉༊་ ༼ཀ༽"))
+        , goldenVsString
+            "unicode mixed garbage diagnostics token stream"
+            "test/golden/unicode_mixed_garbage_tokens.golden"
+            (pure $ renderTokensBS $ fst (tokenizeUnicode "ཀx?། @྆+་ི\n#ག"))
+        ]
+
+renderTokensBS :: [Token] -> ByteString
+renderTokensBS = BL.fromStrict . TE.encodeUtf8 . T.unlines . fmap renderToken
+
+renderToken :: Token -> Text
+renderToken tok =
+    T.pack (show (tokenSource tok))
+        <> "|"
+        <> T.pack (show (tokenKind tok))
+        <> "|"
+        <> T.pack (show (tokenCanonical tok))
+        <> "|raw="
+        <> tokenRaw tok
+        <> "|span="
+        <> spanText (tokenSpan tok)
+
+spanText :: Span -> Text
+spanText spP =
+    T.pack (show (offsetStart spP)) <> ":" <> T.pack (show (offsetEnd spP))

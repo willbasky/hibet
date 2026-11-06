@@ -61,11 +61,11 @@ thinking.txt
 src/Sandbox.hs
 *.prof.html
 *.svg
+hewts/test/parity/parity_report.txt
 
 # Build_files
 PKGBUILD
 *.pkg.tar.xz
-hibet/
 pkg/
 .hie/
 

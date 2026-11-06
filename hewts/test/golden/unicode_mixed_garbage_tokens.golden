@@ -1,0 +1,14 @@
+TsUnicode|TkConsonant|TcConsonant Ck|raw=ཀ|span=0:1
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "x")|raw=x|span=1:2
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "?")|raw=?|span=2:3
+TsUnicode|TkPunctuation|TcPunctuation PMShad|raw=།|span=3:4
+TsUnicode|TkSpace|TcSpace SMSpace|raw= |span=4:5
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "@")|raw=@|span=5:6
+TsUnicode|TkSanskritMark|TcSanskritMark SMiLciRtags|raw=྆|span=6:7
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "+")|raw=+|span=7:8
+TsUnicode|TkPunctuation|TcPunctuation PMTsheg|raw=་|span=8:9
+TsUnicode|TkVowel|TcVowel Vi|raw=ི|span=9:10
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "\n")|raw=
+|span=10:11
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "#")|raw=#|span=11:12
+TsUnicode|TkConsonant|TcConsonant Cg|raw=ག|span=12:13

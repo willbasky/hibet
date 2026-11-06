@@ -1,0 +1,219 @@
+# wylie	unicode	warnings	wylie back	warnings	different unicode?
+a	ཨ	0	a	0	0
+a 	ཨ་	0	a 	0	0
+a     	ཨ་	0	a 	0	0
+'a	འ	0	'a	0	0
+ka	ཀ	0	ka	0	0
+kaba	ཀབ	0	kab	0	0
+ga	ག	0	ga	0	0
+gha	གྷ	2	g+ha	0	0
+g+ha	གྷ	0	g+ha	0	0
+gang	གང	0	gang	0	0
+ganga	གང	0	gang	0	0
+ca	ཅ	0	ca	0	0
+cha	ཆ	0	cha	0	0
+Ta	ཊ	0	Ta	0	0
+nya	ཉ	0	nya	0	0
+n+ya	ནྱ	0	n+ya	0	0
+-ta	ཊ	0	Ta	0	0
+-tha	ཋ	0	Tha	0	0
+Tha	ཋ	0	Tha	0	0
+bhrUM	བྷྲཱུཾ	2	b+h+rUM	0	0
+b+h+rUM	བྷྲཱུཾ	0	b+h+rUM	0	0
+tsa	ཙ	0	tsa	0	0
+tsha	ཚ	0	tsha	0	0
+dza	ཛ	0	dza	0	0
+dzha	ཛྷ	2	dz+ha	0	0
+dz+ha	ཛྷ	0	dz+ha	0	0
+'a	འ	0	'a	0	0
+’a	འ	0	'a	0	0
+ya	ཡ	0	ya	0	0
+rya	རྱ	2	r+ya	0	0
+mrya	མྲྱ	2	m+r+ya	0	0
+sha	ཤ	0	sha	0	0
+Sha	ཥ	0	Sha	0	0
+s+ha	སྷ	0	s+ha	0	0
+s+wa	སྭ	0	swa	0	0
+s+Wa	སྺ	0	s+Wa	0	0
+s+ya	སྱ	0	s+ya	0	0
+sya	སྱ	2	s+ya	0	0
+s+Ya	སྻ	0	s+Ya	0	0
+s+ra	སྲ	0	sra	0	0
+sra	སྲ	0	sra	0	0
+s+Ra	སྼ	0	s+Ra	0	0
+s+a	སྸ	0	s+a	0	0
+fa	ཕ༹	0	fa	0	0
+va	བ༹	0	va	0	0
+f+ra	ཕ༹ྲ	0	phr^a	0	1
+v+la	བ༹ླ	0	bl^a	0	1
+r+-ta	རྚ	0	r+Ta	0	0
+r+Ta	རྚ	0	r+Ta	0	0
+m+Na	མྞ	0	m+Na	0	0
+m+'a	མྰ	0	m+'a	0	0
+mA	མཱ	0	mA	0	0
+e	ཨེ	0	e	0	0
+A	ཨཱ	0	A	0	0
+i	ཨི	0	i	0	0
+I	ཨཱི	0	I	0	0
+u	ཨུ	0	u	0	0
+U	ཨཱུ	0	U	0	0
+rU	རཱུ	0	rU	0	0
+rai	རཻ	0	rai	0	0
+ro	རོ	0	ro	0	0
+br-i	བྲྀ	0	br-i	0	0
+kr-i	ཀྲྀ	0	kr-i	0	0
+cr-i	ཅྲྀ	0	cr-i	0	0
+c+r-i	ཅྲྀ	0	cr-i	0	0
+c+l-I	ཅླཱྀ	0	cl-I	0	0
+oM	ཨོཾ	0	oM	0	0
+o~M`	ཨོྂ	0	o~M`	0	0
+o~M	ཨོྃ	0	o~M	0	0
+aH	ཨཿ	0	aH	0	0
+k?	ཀ྄	0	ka?	0	0
+aHX	ཨཿ༷	0	aHX	0	0
+aH~X	ཨཿ༵	0	aH~X	0	0
+ph^a	ཕ༹	0	fa	0	0
+0123456789	༠༡༢༣༤༥༦༧༨༩	0	0123456789	0	0
+gra gro	གྲ་གྲོ	0	gra gro	0	0
+gra*gro	གྲ༌གྲོ	0	gra*gro	0	0
+gra/	གྲ།	0	gra/	0	0
+gra//	གྲ༎	0	gra//	0	0
+gra;	གྲ༏	0	gra;	0	0
+gra|	གྲ༑	0	gra|	0	0
+gra!	གྲ༈	0	gra!	0	0
+oM:	ཨོཾ༔	0	oM:	0	0
+ba_la	བ ལ	0	ba_la	0	0
+ba=la	བ༴ལ	0	ba=la	0	0
+<ba>	༺བ༻	0	<ba>	0	0
+(ba)	༼བ༽	0	(ba)	0	0
+gra	གྲ	0	gra	0	0
+bsgra	བསྒྲ	0	bsgra	0	0
+u	ཨུ	0	u	0	0
+'u	འུ	0	'u	0	0
+gu	གུ	0	gu	0	0
+gru	གྲུ	0	gru	0	0
+bsgru	བསྒྲུ	0	bsgru	0	0
+pa	པ	0	pa	0	0
+pa'i	པའི	0	pa'i	0	0
+pa'am	པའམ	0	pa'am	0	0
+blo	བློ	0	blo	0	0
+bla ma	བླ་མ	0	bla ma	0	0
+[comment]	comment	2	[comment]	0	0
+[comment] gra	comment་གྲ	0	[comment] gra	0	0
+[comment [with embedded[]] brackets ]bslu	comment [with embedded[]] brackets བསླུ	0	[comment \[with embedded\[\]\] brackets ]bslu	0	0
+[comment\u0020with embedded\U00000020unicode escapes] a	comment with embedded unicode escapes་ཨ	0	[comment with embedded unicode escapes] a	0	0
+a [unfinished [comment]	ཨ་unfinished [comment]	2	a [unfinished \[comment\]]	0	0
+bla   ma   	བླ་མ་	0	bla ma 	0	0
+﻿bla	བླ	0	bla	0	0
+\u0020\U00000020\u0032\t\i\x\!	  2tix!	2	[  2tix!]	0	0
+  bla	བླ	0	bla	0	0
+a\u01x3a	ཨཨ	2	a.a	0	0
+xxx	xxx	2	[xxx]	0	0
+blaxbla	བླxབླ	2	bla[x]bla	0	0
+moX	མོ༷	0	moX	0	0
+mo . ???	མོ་.་???	2	mo [.] [???]	0	0
+sgra	སྒྲ	0	sgra	0	0
+sgrwa	སྒྲྭ	1	s+g+r+wa	0	0
+tgra	ཏགྲ	2	tagra	0	0
+g^ra	གྲ༹	0	gr^a	0	0
+g^r^a	གྲ༹	2	gr^a	0	0
+gr^a	གྲ༹	0	gr^a	0	0
+gra^	གྲ༹	0	gr^a	0	0
+rgwa	རྒྭ	0	rgwa	0	0
+rtswa	རྩྭ	0	rtswa	0	0
+rka	རྐ	0	rka	0	0
+rnga	རྔ	0	rnga	0	0
+lnga	ལྔ	0	lnga	0	0
+snga	སྔ	0	snga	0	0
+a	ཨ	0	a	0	0
+a+a	ཨྸ	0	a+a	0	0
+ba+a	བྸ	0	b+a	0	0
+b+ae	བྸེ	0	b+ae	0	0
+a+yo	ཨྱོ	0	a+yo	0	0
+c	ཅ	2	ca	0	0
+gra	གྲ	0	gra	0	0
+grwa	གྲྭ	0	grwa	0	0
+grywa	གརྱྭ	2	gar+y+wa	0	0
+grla	གརླ	2	garla	0	0
+brla	བརླ	0	brla	0	0
+cla	ཅླ	2	c+la	0	0
+rbya	རྦྱ	1	r+b+ya	0	0
+g+mra	གྨྲ	0	g+m+ra	0	0
+g+m+ra	གྨྲ	0	g+m+ra	0	0
+g+m+r+a	གྨྲྸ	0	g+m+r+a	0	0
+g+X	ག༷	2	gaX	0	0
+ge+a	གེྸ	2	g+ae	1	1
+ge+r	གེྲ	2	gre	1	1
+oM	ཨོཾ	0	oM	0	0
+oMM	ཨོཾ	2	oM	0	0
+o~M`	ཨོྂ	0	o~M`	0	0
+o~M`M	ཨོྂ	2	o~M`	0	0
+gyag	གྱག	0	gyag	0	0
+g.yag	གཡག	0	g.yag	0	0
+g....yag	ག...ཡག	2	ga[...]yag	0	0
+grglam	གརགླམ	2	garaglam	0	0
+AH	ཨཱཿ	0	AH	0	0
+bgru	བགྲུ	0	bgru	0	0
+pgru	པགྲུ	2	pagru	0	0
+bza	བཟ	0	bza	0	0
+bdza	བཛ	2	badza	0	0
+bz	བཟ	2	bza	0	0
+az	ཨཟ	1	aza	0	0
+bars	བརས	2	b.ras	0	0
+bart	བརཏ	2	b.rata	0	0
+gabs	གབས	0	gabs	0	0
+gabsp	གབསཔ	2	gabasapa	0	0
+b	བ	2	ba	0	0
+dag	དག	0	dag	0	0
+dga	དག	2	dag	0	0
+dgas	དགས	0	dgas	0	0
+'gas	འགས	0	'gas	0	0
+dbas	དབས	0	dbas	0	0
+dmas	དམས	0	dmas	0	0
+bags	བགས	0	bags	0	0
+mangs	མངས	0	mangs	0	0
+dags	དགས	2	dgas	0	0
+'ags	འགས	2	'gas	0	0
+dabs	དབས	2	dbas	0	0
+dams	དམས	2	dmas	0	0
+bgas	བགས	2	bags	0	0
+Mi	Mཨི	2	[M]i	0	0
+bde gshegs chos kyi sku mnga’ sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎	0	bde gshegs chos kyi sku mnga' sras bcas dang//	0	0
+bde gshegs chos kyi sku mnga' sras bcas dang//	བདེ་གཤེགས་ཆོས་ཀྱི་སྐུ་མངའ་སྲས་བཅས་དང༎	0	bde gshegs chos kyi sku mnga' sras bcas dang//	0	0
+oM ma Ni pad+me hU~M` 	ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྂ་	0	oM ma Ni pad+me hU~M` 	0	0
+oM aHhU~M` badzra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔	2	oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	0	0
+oM aHhU~M` badz+ra gu ru pad+ma sid+dhi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔	2	oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	0	0
+oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	ཨོཾ་ཨཿཧཱུྂ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྂ༔	0	oM aHhU~M` badz+ra gu ru pad+ma sid+d+hi hU~M`:	0	0
+bla \u0f20\u0fc2	བླ་༠࿂	0	bla 0\u0fc2	0	0
+bla \u0f73	བླ་ཱི	0	bla \u0f73	1	0
+bla \u0f04	བླ་༄	0	bla @	0	0
+bla \u0f09	བླ་༉	0	bla \u0f09	0	0
+bla\u0f0bblu	བླ་བླུ	0	bla blu	0	0
+bla\u0f0cblu	བླ༌བླུ	0	bla*blu	0	0
+bla\u0f73	བླཱི	0	blI	0	1
+ba\u0f76	བྲྀ	0	br-i	0	1
+ra\u0f77	རཷ	0	rr-I	0	1
+\u0f77	ཷ	2	\u0fb2\u0f71\u0f80	3	1
+bo+ra	བོྲ	2	bro	1	1
+baM\u0fb2	བཾྲ	0	braM	1	1
+baM\u0f74	བཾུ	0	buM	1	1
+baM\u0f82	བཾྂ	0	baM~M`	1	1
+a	ཨ	0	a	0	0
+e	ཨེ	0	e	0	0
+i	ཨི	0	i	0	0
+I	ཨཱི	0	I	0	0
+U	ཨཱུ	0	U	0	0
+fa ba va pha	ཕ༹་བ་བ༹་ཕ	0	fa ba va pha	0	0
+rdo+e	རྡོེ	0	rdo+e	0	0
+rda+e	རྡེ	0	rde	0	0
+bgra	བགྲ	0	bgra	0	0
+bgrwa	བགྲྭ	1	bgrwa	0	0
+bgrya	བགྲྱ	2	bag+r+ya	0	0
+mand	མནད	0	mnad	1	0
+pand	པནད	0	pand	0	0
+mgas	མགས	0	mgas	1	0
+aa	ཨཨ	0	a.a	0	0
+ae	ཨཨེ	0	a.e	0	0
+ba.a	བཨ	0	ba.a	0	0
+ba.e	བཨེ	0	ba.e	0	0
+be.a	བེཨ	0	be.a	0	0

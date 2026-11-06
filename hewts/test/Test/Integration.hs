@@ -1,0 +1,187 @@
+-- Ожидания: hewts — сквозной прогон: рендер, raw-roundtrip, escape.
+
+module Test.Integration (tests) where
+
+import Convert
+    ( OutputFormat (..)
+    , SpellItem (..)
+    , pSentence
+    , renderItems
+    , splitSentences
+    )
+import Convert.Grammar.Parser (parseEither)
+import Convert.Token
+import Convert.Token.Wylie (wylieOf)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text)
+import qualified Data.Text as T
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
+
+tests :: TestTree
+tests =
+    testGroup
+        "integration"
+        [ testCase "wylie raw roundtrip through tokens" caseWylieRawRoundtrip
+        , testCase "unicode raw roundtrip through tokens" caseUnicodeRawRoundtrip
+        , testCase "wylie canonical rendering" caseWylieCanonicalRender
+        , testCase "wylie f and v keep canonical distinction" caseWylieFvCanonicalDistinct
+        , testCase
+            "unicode aliases normalize to canonical rendering"
+            caseUnicodeCanonicalRender
+        , testCase "render to wylie from unicode" caseRenderUnicodeToWylie
+        , testCase "render to unicode from wylie" caseRenderWylieToUnicode
+        , testCase "same-script render keeps everything raw" caseRenderSameScriptKeepsRaw
+        , testCase "cross-script render f and v compose" caseRenderFvComposed
+        , testCase
+            "cross-script render normalizes to canonical"
+            caseRenderCrossScriptCanonical
+        , testCase "unicode stubs render to \\u0fxx escapes" caseRenderUnicodeStubsToWylie
+        , testCase
+            "escape input renders back to unicode (lossless)"
+            caseRenderEscapeToUnicode
+        , testCase
+            "render collapses space runs to one tsheg"
+            caseRenderCollapsedSpaces
+        , testCase
+            "a space between Tibetan bits prints as _"
+            caseSpaceBetweenTibetan
+        , testCase
+            "a line break stands as written (fix_spacing)"
+            caseRenderLineBreaks
+        ]
+
+caseWylieRawRoundtrip :: Assertion
+caseWylieRawRoundtrip =
+    let input = "gzhon nu'i dpe cha //"
+     in rawRoundtripWylie input @?= input
+
+caseUnicodeRawRoundtrip :: Assertion
+caseUnicodeRawRoundtrip =
+    let input = "གཞོན་ནུའི་དཔེ་ཆ།།"
+     in rawRoundtripUnicode input @?= input
+
+caseWylieCanonicalRender :: Assertion
+caseWylieCanonicalRender =
+    canonicalWylieFromWylie "W O ~M`" @?= "W Ao ~M`"
+
+caseWylieFvCanonicalDistinct :: Assertion
+caseWylieFvCanonicalDistinct =
+    canonicalWylieFromWylie "f v ph b" @?= "ph^ b^ ph b"
+
+caseUnicodeCanonicalRender :: Assertion
+caseUnicodeCanonicalRender =
+    canonicalWylieFromUnicode "ཝ ོ ཾ" @?= "w o M"
+
+caseRenderUnicodeToWylie :: Assertion
+caseRenderUnicodeToWylie =
+    renderInput OutWylie "ཀི་" @?= "ki "
+
+caseRenderWylieToUnicode :: Assertion
+caseRenderWylieToUnicode =
+    renderFromTokens OutUnicode (fst (tokenizeWylie "ki ")) @?= "ཀི་"
+
+caseRenderSameScriptKeepsRaw :: Assertion
+caseRenderSameScriptKeepsRaw =
+    renderInput OutUnicode "ཀི་" @?= "ཀི་"
+
+caseRenderFvComposed :: Assertion
+caseRenderFvComposed =
+    renderFromTokens OutUnicode (fst (tokenizeWylie "f v ")) @?= "ཕ༹་བ༹་"
+
+caseRenderCrossScriptCanonical :: Assertion
+caseRenderCrossScriptCanonical =
+    renderInput OutWylie "ཉ་ཱི" @?= "nya \\u0f71\\u0f72"
+
+caseRenderUnicodeStubsToWylie :: Assertion
+caseRenderUnicodeStubsToWylie =
+    renderInput OutWylie "ཫཬཷ༐༪྆࿐"
+        @?= "\\u0f6b\\u0f6c+r-I\\u0f10\\u0f2a\\u0f86\\u0fd0"
+
+caseRenderEscapeToUnicode :: Assertion
+caseRenderEscapeToUnicode =
+    renderFromTokens OutUnicode (fst (tokenizeWylie "\\u0f6c\\u0f76\\u0f12\\u0f33"))
+        @?= "ཬྲྀ༒༳"
+
+-- | The Wylie -> Unicode leg of the full pipeline: tokenize the Wylie input,
+-- run the grammar and render Unicode. Used for the wave 4.1 whitespace shapes,
+-- where the tokenizer's collapse has to survive the grammar.
+renderWylie :: Text -> Text
+renderWylie input =
+    either (error . T.unpack) (renderItems OutUnicode) $
+        parseEither (pSentence) (fst (tokenizeWylie input))
+
+-- | The Unicode -> Wylie leg of the same pipeline.
+unicodeToWylie :: Text -> Text
+unicodeToWylie input =
+    either (error . T.unpack) (renderItems OutWylie) (splitSentences input)
+
+caseRenderCollapsedSpaces :: Assertion
+caseRenderCollapsedSpaces = do
+    renderWylie "a     " @?= "ཨ་"
+    renderWylie "bla   ma   " @?= "བླ་མ་"
+    renderWylie "\r  bla" @?= "བླ"
+    renderWylie "a " @?= "ཨ་"
+    renderWylie "a b" @?= "ཨ་བ"
+
+-- | REFERENCES-FEATURES 7.11: a space between two Tibetan bits prints as @_@,
+-- one for each space (java @handleSpaces@); a space that runs into foreign text
+-- stays an ordinary space inside the brackets (java @followedByNonTibetan@).
+caseSpaceBetweenTibetan :: Assertion
+caseSpaceBetweenTibetan = do
+    unicodeToWylie "བཀྲ ཤིས" @?= "bkra_shis"
+    unicodeToWylie "བཀྲ  ཤིས" @?= "bkra__shis"
+    unicodeToWylie "བཀྲ abc" @?= "bkra[ abc]"
+    unicodeToWylie "བཀྲ  abc" @?= "bkra[  abc]"
+    -- the tail of the space after a single-stack run: the reference shape
+    unicodeToWylie "བླ x" @?= "bla[ x]"
+    unicodeToWylie "བླ  x" @?= "bla[  x]"
+
+-- | fix_spacing, the line-break half (wave 6, slice 2): a break stands as
+-- written, the spaces behind it are eaten, and the space before it keeps its
+-- one tsheg. The expectations are the reference's own: jsewts and ewts-js
+-- agree on all five cases.
+caseRenderLineBreaks :: Assertion
+caseRenderLineBreaks = do
+    renderWylie "bkra\nshis" @?= "བཀྲ\nཤིས"
+    renderWylie "bkra \n shis" @?= "བཀྲ་\nཤིས"
+    renderWylie "bkra\n\nshis" @?= "བཀྲ\n\nཤིས"
+    renderWylie "bkra\t shis" @?= "བཀྲ\t་ཤིས"
+    -- and the way back prints the break as itself
+    unicodeToWylie "བཀྲ་\nཤིས" @?= "bkra \nshis"
+    renderWylie "   " @?= ""
+
+rawRoundtripWylie :: Text -> Text
+rawRoundtripWylie = T.concat . fmap tokenRaw . (fst . tokenizeWylie)
+
+rawRoundtripUnicode :: Text -> Text
+rawRoundtripUnicode = T.concat . fmap tokenRaw . (fst . tokenizeUnicode)
+
+renderInput :: OutputFormat -> Text -> Text
+renderInput fmt = either (error . T.unpack) (renderItems fmt) . splitSentences
+
+renderFromTokens :: OutputFormat -> [Token] -> Text
+renderFromTokens fmt = renderItems fmt . map (Other . (: []))
+
+canonicalWylieFromWylie :: Text -> Text
+canonicalWylieFromWylie = T.concat . fmap canonicalPiece . (fst . tokenizeWylie)
+
+canonicalWylieFromUnicode :: Text -> Text
+canonicalWylieFromUnicode = T.concat . fmap canonicalPiece . (fst . tokenizeUnicode)
+
+canonicalPiece :: Token -> Text
+canonicalPiece tok =
+    case tokenCanonical tok of
+        TcConsonant Cw -> "w"
+        TcVowel VA -> "A"
+        TcVowel Vo -> "o"
+        TcFinal FMAnusvara -> "M"
+        TcFinal FMBinduNada -> "~M`"
+        TcPunctuation PMTsheg -> " "
+        TcSpace SMSpace -> " "
+        TcUnknown (UnknownMark raw) -> raw
+        -- Canonical Wylie spelling when the token has one (renders compound
+        -- expansions like "f" -> "ph^" honestly), the raw slice otherwise.
+        _ -> fromMaybe (tokenRaw tok) (wylieOf (tokenCanonical tok))

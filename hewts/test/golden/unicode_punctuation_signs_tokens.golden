@@ -1,0 +1,15 @@
+TsUnicode|TkSymbol|TcSymbol SMAt|raw=༄|span=0:1
+TsUnicode|TkSymbol|TcSymbol SMHash|raw=༅|span=1:2
+TsUnicode|TkPunctuation|TcPunctuation PMShad|raw=།|span=2:3
+TsUnicode|TkPunctuation|TcPunctuation PMNyisShad|raw=༎|span=3:4
+TsUnicode|TkPunctuation|TcPunctuation PMTshegShad|raw=༏|span=4:5
+TsUnicode|TkPunctuation|TcPunctuation PMRinChenSpungsShad|raw=༑|span=5:6
+TsUnicode|TkPunctuation|TcPunctuation PMGterTshigMgo|raw=༔|span=6:7
+TsUnicode|TkSymbol|TcSymbol SMExclamation|raw=༈|span=7:8
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "\3849")|raw=༉|span=8:9
+TsUnicode|TkUnknown|TcUnknown (UnknownMark "\3850")|raw=༊|span=9:10
+TsUnicode|TkPunctuation|TcPunctuation PMTsheg|raw=་|span=10:11
+TsUnicode|TkSpace|TcSpace SMSpace|raw= |span=11:12
+TsUnicode|TkSymbol|TcSymbol SMLParen|raw=༼|span=12:13
+TsUnicode|TkConsonant|TcConsonant Ck|raw=ཀ|span=13:14
+TsUnicode|TkSymbol|TcSymbol SMRParen|raw=༽|span=14:15

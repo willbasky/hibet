@@ -1,0 +1,4 @@
+:set prompt "λ> "
+import Text.Pretty.Simple
+:set -interactive-print=Text.Pretty.Simple.pPrint
+import Data.Text.IO as TIO

@@ -1,0 +1,646 @@
+module Test.Parity (tests) where
+
+-- \| Parity against the reference corpora (see @test/README.md@).
+--
+-- This module and @test/vectors/@ are the **reference layer** of the suite: the
+-- copies of the references' own tests and the runner that drives them. In the
+-- tasty tree they sit under @reference vectors (parity)@. Everything outside
+-- that group is hewts's own suite.
+--
+-- Parity covers conversion only (30.09.2026): the reference's exported warning
+-- texts and the corpus warn columns are not read and not compared, because the
+-- diagnostics channel, its codes and its wording are our own (see
+-- 'Convert.Diagnostic').
+--
+-- Every corpus file uses the reference's own six-column layout:
+--
+-- > wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> roundtrip_differs
+--
+-- An expectation the reference does not state is either missing or written as
+-- @?@; such fields are not checked. Absence never means "zero".
+--
+-- The suite is a ratchet: @parity_baseline.tsv@ (in @test/parity/@, our own
+-- harness, not a reference vector) records how many checks of
+-- each kind passed when it was written, and the tests fail when the current
+-- numbers fall below it. Progress in the later waves means lowering the
+-- baseline, not deleting the corpora. @test/parity/parity_report.txt@ always
+-- holds the current full list of differences.
+
+import Convert
+    ( OutputFormat (..)
+    , SpellItem (..)
+    , documentDiagnostics
+    , legality
+    , pSentence
+    , renderItems
+    )
+import Convert.Diagnostic (Diagnostics)
+import Convert.Grammar.Parser (parseEither)
+import Convert.Token (Token)
+import Convert.Tokenizer.Unicode (tokenizeUnicode)
+import Convert.Tokenizer.Wylie (tokenizeWylie)
+import qualified Data.ByteString as BS
+import Data.List (foldl')
+import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Text (Text)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import qualified Data.Text.IO as TIO
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, assertBool, testCase)
+
+tests :: TestTree
+tests =
+    testGroup
+        "reference vectors (parity)"
+        [ testCase "corpus sizes" checkSizes
+        , testCase "jsewts 210" (checkCorpus CJsewts)
+        , testCase "lingua 218" (checkCorpus CLingua)
+        , testCase "ewts-js 212" (checkCorpus CEwtsJs)
+        , testCase "ewts-rs rules 16" (checkCorpus CRules)
+        , testCase "java EWTS 5" (checkCorpus CJava)
+        , testCase "kangyur u2w+round-trip 254" (checkCorpus CKang)
+        , testCase "known divergences still diverge" checkDivergences
+        , testCase "report file" writeReport
+        ]
+
+data Corpus
+    = CJsewts
+    | CLingua
+    | CEwtsJs
+    | CRules
+    | CJava
+    | CKang
+    deriving (Eq, Ord, Show, Enum, Bounded)
+
+data Kind
+    = KW2U
+    | KU2W
+    | KRoundtrip
+    deriving (Eq, Ord, Show, Enum, Bounded)
+
+-- | What a reference states about one corpus.
+data Case = Case
+    { caseLine :: !Int
+    , caseNote :: !(Maybe Text)
+    , caseWylie :: !Text
+    , caseUnicode :: !Text
+    , caseWylieBack :: !(Maybe Text)
+    , caseRoundtripDiffers :: !(Maybe Bool)
+    }
+
+data Outcome
+    = Pass
+    | Fail !Text
+    deriving (Eq, Show)
+
+data Item = Item
+    { itemLabel :: !Text
+    , itemKind :: !Kind
+    , itemLine :: !Int
+    , itemOutcome :: !Outcome
+    }
+
+-- | The whole corpus as check items; only the checks the reference actually
+-- specifies are produced.
+itemsFor :: Corpus -> IO [Item]
+itemsFor CKang = kangItems
+itemsFor corpus = do
+    text <- readUtf8File (corpusFile corpus)
+    pure (concatMap caseItems (readCorpus text))
+    where
+        caseItems c =
+            concat
+                [ [Item (label c) KW2U (caseLine c) (checkW2U c)]
+                , [Item (label c) KU2W (caseLine c) (checkU2W c) | caseWylieBack c /= Nothing]
+                , [ Item (label c) KRoundtrip (caseLine c) (checkRoundtrip c)
+                  | caseRoundtripDiffers c /= Nothing
+                  ]
+                ]
+
+-- | The Kangyur corpus states no expected output in @kang.txt@ itself, but
+-- wave 5.0 brought the reference's own U->W export of the same corpus
+-- (@wkang.txt@ = @toWylie(kang.txt)@): the u2w leg is now checked against it,
+-- and the round-trip leg checks our own U->W->U as before. Both files hold
+-- the same 254 lines in the same order (each opens with an empty line), so
+-- the pairing is positional; a length mismatch shows up as a corpus-size
+-- failure.
+kangItems :: IO [Item]
+kangItems = do
+    text <- readUtf8File (corpusFile CKang)
+    wylie <- readUtf8File kangWylieFile
+    pure
+        [ item
+        | (n, raw, want) <- zip3 [1 :: Int ..] (T.lines (dropBom text)) (T.lines wylie)
+        , not (T.null raw)
+        , item <-
+            [ Item (kangLabel n raw) KRoundtrip n (checkKangLine raw)
+            , Item (kangLabel n raw) KU2W n (checkKangU2W raw want)
+            ]
+        ]
+
+-- | One line of @kang.txt@, named the way both of its checks name it (the
+-- dedup in 'checkSizes' pins one label per line).
+kangLabel :: Int -> Text -> Text
+kangLabel n raw = "line " <> T.pack (show n) <> " " <> oneLine (T.take 20 raw)
+
+corpusFile :: Corpus -> FilePath
+corpusFile corpus =
+    case corpus of
+        CJsewts -> "test/vectors/jsewts_parity.tsv"
+        CLingua -> "test/vectors/lingua_parity.tsv"
+        CEwtsJs -> "test/vectors/ewts_js_parity.tsv"
+        CRules -> "test/vectors/ewts_rs_rules.tsv"
+        CJava -> "test/vectors/java_ewts.tsv"
+        CKang -> "test/vectors/kang.txt"
+
+-- | The reference's own U->W export of @kang.txt@ (wave 5.0): jsewts ran
+-- @toWylie(kang.txt, {sloppy:false})@ over the same corpus, so this file is
+-- the expected Wylie for every Kangyur line.
+kangWylieFile :: FilePath
+kangWylieFile = "test/vectors/wkang.txt"
+
+baselineFile :: FilePath
+baselineFile = "test/parity/parity_baseline.tsv"
+
+divergencesFile :: FilePath
+divergencesFile = "test/parity/known_divergences.tsv"
+
+reportFile :: FilePath
+reportFile = "test/parity/parity_report.txt"
+
+-- | A truncated or edited copy of a corpus must not silently shrink the
+-- sample, so the sizes are pinned.
+expectedSize :: Corpus -> Int
+expectedSize corpus =
+    case corpus of
+        CJsewts -> 210
+        CLingua -> 218
+        CEwtsJs -> 212
+        CRules -> 16
+        CJava -> 5
+        -- \| @kang.txt@ starts with a UTF-8 BOM that sits on a line of its own,
+        -- so the file holds 254 real lines (255 newlines, first line = BOM).
+        CKang -> 254
+
+-- | @kang.txt@ starts with a UTF-8 BOM; strip it before the first line.
+dropBom :: Text -> Text
+dropBom = T.dropWhile (== '\xfeff')
+
+-- | Read a vector file as UTF-8 regardless of the locale, so the corpora
+-- decode identically everywhere.
+readUtf8File :: FilePath -> IO Text
+readUtf8File path = do
+    bytes <- BS.readFile path
+    case TE.decodeUtf8' bytes of
+        Left err -> error (path ++ ": not valid UTF-8: " <> show err)
+        Right text -> pure text
+
+-- | Parse one corpus file. Row and column order is the reference's. A comment
+-- line above a row names it where there is one - the ewts-rs rules corpus
+-- labels its rows "@Rule N@", and that reads better in the report than the
+-- line number of a file we generated ourselves.
+readCorpus :: Text -> [Case]
+readCorpus txt = zipWith applyNote (rowNotes txt) (mapMaybe row (zip [1 ..] (T.lines txt)))
+    where
+        -- one note per data row: a comment line sets the note, a data row takes it
+        rowNotes t = reverse (snd (foldl' step (Nothing, []) (T.lines t)))
+        step (note, acc) line
+            | T.null line = (note, acc)
+            | "#" `T.isPrefixOf` line = (T.stripPrefix "# Rule " (T.strip line), acc)
+            | otherwise = (note, note : acc)
+        applyNote note c = c{caseNote = note}
+        row (n, line)
+            | T.null line = Nothing
+            | "#" `T.isPrefixOf` line = Nothing
+            | otherwise =
+                case T.splitOn "\t" line of
+                    [w, u] -> Just (Case n Nothing w u Nothing Nothing)
+                    [w, u, _ws] -> Just (Case n Nothing w u Nothing Nothing)
+                    [w, u, _ws, b] -> Just (Case n Nothing w u (Just b) Nothing)
+                    [w, u, _ws, b, _wsb] -> Just (Case n Nothing w u (Just b) Nothing)
+                    [w, u, _ws, b, _wsb, rt] -> Just (Case n Nothing w u (Just b) (differs rt))
+                    fields ->
+                        error
+                            ( "parity corpus: row "
+                                <> show n
+                                <> " has "
+                                <> show (length fields)
+                                <> " fields, expected 2..6: "
+                                <> show line
+                            )
+
+-- | The round-trip flag: @0@ means the reference round-trips back to the same
+-- Unicode, anything else numeric means it differs.
+differs :: Text -> Maybe Bool
+differs "0" = Just False
+differs t
+    | not (T.null t) && T.all (\c -> c >= '0' && c <= '9') t = Just True
+    | otherwise = Nothing
+
+-- | Wylie input parses under the Wylie arms of the grammar (the @a@ is written
+-- and consumed as the implicit vowel), Unicode input under the Tibetan arms.
+-- Both directions hand back the tokenizer's diagnostics plus the spelling
+-- walk's own (wave 3.4), which our own tests read; the corpus checkers compare
+-- the converted text only (30.09.2026).
+convertW2U :: Text -> (Either Text Text, Diagnostics)
+convertW2U input = go (parseItems tokens)
+    where
+        (tokens, diags) = tokenizeWylie input
+        go (Left err) = (Left err, diags)
+        go (Right items) =
+            ( Right (renderItems OutUnicode items)
+            , diags <> legality items <> documentDiagnostics input items
+            )
+
+convertU2W :: Text -> (Either Text Text, Diagnostics)
+convertU2W input = go (parseItems tokens)
+    where
+        (tokens, diags) = tokenizeUnicode input
+        go (Left err) = (Left err, diags)
+        go (Right items) = (Right (renderItems OutWylie items), diags <> legality items)
+
+parseItems :: [Token] -> Either Text [SpellItem]
+parseItems = parseEither pSentence
+
+-- | Wylie -> Unicode -> Wylie -> Unicode, all with our own converter.
+roundTripW2U :: Text -> Either Text Text
+roundTripW2U w = do
+    unicode <- fst (convertW2U w)
+    wylie <- fst (convertU2W unicode)
+    fst (convertW2U wylie)
+
+roundTripU2W :: Text -> Either Text Text
+roundTripU2W u = do
+    wylie <- fst (convertU2W u)
+    fst (convertW2U wylie)
+
+checkW2U :: Case -> Outcome
+checkW2U c =
+    case fst (convertW2U (caseWylie c)) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out
+            | out == caseUnicode c -> Pass
+            | otherwise -> Fail ("got " <> quoted out <> " want " <> quoted (caseUnicode c))
+
+checkU2W :: Case -> Outcome
+checkU2W c =
+    case fst (convertU2W (caseUnicode c)) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out
+            | out == want -> Pass
+            | otherwise -> Fail ("got " <> quoted out <> " want " <> quoted want)
+    where
+        want = fromMaybe "" (caseWylieBack c)
+
+-- | The warning messages we used to compare against the reference's exported
+-- texts (and, for the back leg, its counts) are gone: parity covers conversion
+-- only, the diagnostics are our own.
+checkRoundtrip :: Case -> Outcome
+checkRoundtrip c =
+    case roundTripW2U (caseWylie c) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out -> case caseRoundtripDiffers c of
+            Just False
+                | out == caseUnicode c -> Pass
+                | otherwise ->
+                    Fail
+                        ("should round-trip, got " <> quoted out <> " want " <> quoted (caseUnicode c))
+            Just True
+                | out /= caseUnicode c -> Pass
+                | otherwise -> Fail ("should not round-trip, but got " <> quoted out)
+            Nothing -> Fail "corpus row has no round-trip flag"
+
+-- | Mirror the reference's own normalising before comparing Kangyur lines:
+-- expand the double shad (see 'normalise'). Spaces no longer need it: since
+-- wave 6, slice 2 we spell an input space the way the reference does.
+checkKangLine :: Text -> Outcome
+checkKangLine raw =
+    case roundTripU2W (normalise raw) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out
+            | normalise out == want -> Pass
+            | otherwise ->
+                Fail ("got " <> quoted (normalise out) <> " want " <> quoted want)
+    where
+        want = normalise raw
+
+-- | The Kangyur U->W leg (wave 5.0): our Unicode -> Wylie of the line against
+-- the reference's own export (@wkang.txt@). Compared exactly: the reference
+-- spells an input ASCII space @_@ (@m_tib_other(' ')@ -> @_@) and we spell it
+-- the same way since wave 6, slice 2, so the line is read as written - no
+-- space is dropped on either side.
+checkKangU2W :: Text -> Text -> Outcome
+checkKangU2W raw want =
+    case fst (convertU2W raw) of
+        Left err -> Fail ("parse error: " <> err)
+        Right out
+            | out == want -> Pass
+            | otherwise ->
+                Fail ("got " <> quoted out <> " want " <> quoted want)
+
+-- | Expand the double shad: the reference's export writes it as two single
+-- shads, and the round trip brings back the component signs, so that is a
+-- representation, not a conversion. Spaces are compared as they are since
+-- wave 6, slice 2: '@_@' is the reference's spelling of an input space and we
+-- spell it the same way.
+normalise :: Text -> Text
+normalise = T.replace "\x0f0e" "\x0f0d\x0f0d"
+
+-- | One line of the reference's own corpus, named by its rule where the corpus
+-- names it, and by its line otherwise.
+label :: Case -> Text
+label c =
+    maybe byLine (\n -> "rule " <> n) (caseNote c) <> " " <> oneLine (caseWylie c)
+    where
+        byLine = "line " <> T.pack (show (caseLine c))
+
+oneLine :: Text -> Text
+oneLine t = T.unwords (T.words t)
+
+quoted :: Text -> Text
+quoted t
+    | T.null t = "<empty>"
+    | T.any (== '\t') t = "<" <> T.unwords (T.words t) <> ">"
+    | otherwise = t
+
+kindName :: Kind -> String
+kindName kind =
+    case kind of
+        KW2U -> "w2u"
+        KU2W -> "u2w"
+        KRoundtrip -> "roundtrip"
+
+corpusName :: Corpus -> String
+corpusName corpus =
+    case corpus of
+        CJsewts -> "jsewts"
+        CLingua -> "lingua"
+        CEwtsJs -> "ewts-js"
+        CRules -> "ewts-rs"
+        CJava -> "java"
+        CKang -> "kangyur"
+
+-- | The recorded floor: one row per corpus and check kind.
+data Baseline = Baseline
+    { baseCorpus :: !Corpus
+    , baseKind :: !Kind
+    , baseTotal :: !Int
+    , basePass :: !Int
+    }
+
+readBaseline :: IO [Baseline]
+readBaseline = do
+    text <- readUtf8File baselineFile
+    pure
+        [ Baseline c k total passed
+        | line <- T.lines text
+        , not ("#" `T.isPrefixOf` line)
+        , not (T.null line)
+        , let fs = T.splitOn "\t" line
+        , Just (c, k, total, passed) <- [row fs]
+        ]
+    where
+        row :: [Text] -> Maybe (Corpus, Kind, Int, Int)
+        row fs = do
+            c <- lookupCorpus (fs !! 0)
+            k <- lookupKind (fs !! 1)
+            pure (c, k, readInt (fs !! 2), readInt (fs !! 3))
+        readInt :: Text -> Int
+        readInt t =
+            case [n | (n, rest) <- reads (T.unpack t), all (== ' ') rest] of
+                (n : _) -> n
+                [] -> error ("parity baseline: expected a number, got " <> show t)
+
+lookupCorpus :: Text -> Maybe Corpus
+lookupCorpus t = lookup (T.unpack t) [(corpusName c, c) | c <- [minBound .. maxBound]]
+
+lookupKind :: Text -> Maybe Kind
+lookupKind t = lookup (T.unpack t) [(kindName k, k) | k <- [minBound .. maxBound]]
+
+-- | A case where our output is deliberately not the reference's: the input is
+-- read correctly and the difference is a decision recorded in REFACTOR-AST
+-- §11, not a defect. The parity check leaves such a case out of its counts and
+-- fails when the case starts to pass - then the row is closed and deleted.
+data Divergence = Divergence
+    { divCorpus :: !Corpus
+    , divKind :: !Kind
+    , divLine :: !Int
+    }
+
+readDivergences :: IO [Divergence]
+readDivergences = do
+    text <- readUtf8File divergencesFile
+    pure
+        [ Divergence c k n
+        | line <- T.lines text
+        , not ("#" `T.isPrefixOf` line)
+        , not (T.null line)
+        , let fs = T.splitOn "\t" line
+        , (length fs >= 3) || error ("known divergences: bad row: " <> show line)
+        , Just k <- [lookupKind (fs !! 0)]
+        , Just c <- [lookupCorpus (fs !! 1)]
+        , Just n <- [readIntText (fs !! 2)]
+        ]
+    where
+        readIntText t = case [n | (n, rest) <- reads (T.unpack t), all (== ' ') rest] of
+            (n : _) -> Just n
+            [] -> Nothing
+
+divergenceKey :: Corpus -> Kind -> Int -> (Corpus, Kind, Int)
+divergenceKey c k n = (c, k, n)
+
+-- | Every recorded divergence still differs, and points at a real case.
+checkDivergences :: Assertion
+checkDivergences = do
+    recorded <- readDivergences
+    corpusItems <- mapM (\c -> (,) c <$> itemsFor c) [minBound .. maxBound]
+    let allItems = concatMap snd corpusItems
+        byKey = map (\(c, items) -> (c, items)) corpusItems
+        findItem (c, k, n) =
+            [ item
+            | (c', items) <- byKey
+            , c' == c
+            , item <- items
+            , itemKind item == k
+            , itemLine item == n
+            ]
+        missing = [d | d <- recorded, null (findItem (divCorpus d, divKind d, divLine d))]
+        closed =
+            [ d
+            | d <- recorded
+            , item <- findItem (divCorpus d, divKind d, divLine d)
+            , itemOutcome item == Pass
+            ]
+    assertBool
+        ( "known divergences point at no case:\n"
+            <> unlines
+                [ corpusName c <> " " <> kindName k <> " line " <> show n
+                | Divergence c k n <- missing
+                ]
+        )
+        (null missing)
+    assertBool
+        ( "divergence closed - remove the row from "
+            <> divergencesFile
+            <> ":\n"
+            <> unlines
+                [ corpusName c <> " " <> kindName k <> " line " <> show n
+                | Divergence c k n <- closed
+                ]
+        )
+        (null closed)
+    assertBool
+        "no divergence rows read"
+        (not (null recorded) && not (null allItems))
+
+-- | A corpus plus its checks, one group per check kind that actually applies
+-- (a kind the corpus says nothing about is not a group, and needs no baseline
+-- row).
+grouped :: [Item] -> [(Kind, [Item])]
+grouped items =
+    [ (kind, [item | item <- items, itemKind item == kind])
+    | kind <- [minBound .. maxBound]
+    , any ((== kind) . itemKind) items
+    ]
+
+counts :: [Item] -> (Int, Int)
+counts items = (length items, length [() | item <- items, itemOutcome item == Pass])
+
+checkSizes :: Assertion
+checkSizes = mapM_ one [minBound .. maxBound]
+    where
+        one corpus = do
+            items <- itemsFor corpus
+            let seen = length (dedup [itemLabel item | item <- items])
+            assertBool
+                ( "corpus size changed for "
+                    <> corpusName corpus
+                    <> ": found "
+                    <> show seen
+                    <> " cases, expected "
+                    <> show (expectedSize corpus)
+                )
+                (seen == expectedSize corpus)
+        dedup = foldl' (\acc x -> if x `elem` acc then acc else acc <> [x]) []
+
+-- | Ratchet: never fewer passing checks than recorded, and the totals must
+-- still match the corpus.
+checkCorpus :: Corpus -> Assertion
+checkCorpus corpus = do
+    items <- itemsFor corpus
+    baseline <- readBaseline
+    divergences <- readDivergences
+    let expected =
+            [ divergenceKey (divCorpus d) (divKind d) (divLine d)
+            | d <- divergences
+            , divCorpus d == corpus
+            ]
+        kept =
+            [ item
+            | item <- items
+            , divergenceKey corpus (itemKind item) (itemLine item) `notElem` expected
+            ]
+    mapM_ (ratchet corpus baseline) (grouped kept)
+    where
+        ratchet c baselines (kind, group) = do
+            let (total, passed) = counts group
+                recorded = [b | b <- baselines, baseCorpus b == c, baseKind b == kind]
+            case recorded of
+                [] ->
+                    assertBool
+                        ( "no baseline row for "
+                            <> corpusName c
+                            <> " / "
+                            <> kindName kind
+                            <> " ("
+                            <> show total
+                            <> " checks) — add it to "
+                            <> baselineFile
+                        )
+                        False
+                [b] -> do
+                    assertBool
+                        ( "check count changed for "
+                            <> corpusName c
+                            <> " / "
+                            <> kindName kind
+                            <> ": "
+                            <> show total
+                            <> " now, "
+                            <> show (baseTotal b)
+                            <> " in the baseline"
+                        )
+                        (total == baseTotal b)
+                    let regressions = [item | item <- group, itemOutcome item /= Pass]
+                    assertBool
+                        ( unlines
+                            [ "parity regression in "
+                                <> corpusName c
+                                <> " / "
+                                <> kindName kind
+                                <> ": "
+                                <> show passed
+                                <> "/"
+                                <> show total
+                                <> " pass, baseline is "
+                                <> show (basePass b)
+                            , unlines (map (unwords . describe) (take 20 regressions))
+                            , "full list: " <> reportFile
+                            ]
+                        )
+                        (passed >= basePass b)
+                _ -> assertBool "duplicate baseline rows" False
+        describe item =
+            [ T.unpack (itemLabel item)
+            , case itemOutcome item of
+                Pass -> "unexpectedly PASS"
+                Fail reason -> T.unpack reason
+            ]
+
+-- | Regenerate the human-readable report; this is the "scales" output.
+writeReport :: Assertion
+writeReport = do
+    corpusItems <- mapM (\c -> (c,) <$> itemsFor c) [minBound .. maxBound]
+    baseline <- readBaseline
+    TIO.writeFile reportFile (T.unlines (render corpusItems baseline))
+    written <- TIO.readFile reportFile
+    assertBool ("report file " <> reportFile <> " is empty") (not (T.null written))
+    where
+        render corpusItems baselines = concatMap (one baselines) corpusItems
+            where
+                one bs (c, items) =
+                    [ T.pack (corpusName c)
+                        <> " ("
+                        <> T.pack (show (length (dedup [itemLabel item | item <- items])))
+                        <> " cases)"
+                    ]
+                        <> concatMap (row bs c) (grouped items)
+                        <> [""]
+                row bs c (kind, group) =
+                    let (total, passed) = counts group
+                        floor' = fromMaybe "-" (T.pack . show . basePass <$> lookupBase bs c kind)
+                     in [ "  "
+                            <> T.pack (kindName kind)
+                            <> "  "
+                            <> T.pack (show passed)
+                            <> "/"
+                            <> T.pack (show total)
+                            <> "  (baseline "
+                            <> floor'
+                            <> ")"
+                        , T.unlines
+                            [ "    " <> itemLabel item <> "  " <> reason item
+                            | item <- group
+                            , itemOutcome item /= Pass
+                            ]
+                        ]
+                reason item =
+                    case itemOutcome item of
+                        Pass -> "unexpectedly PASS"
+                        Fail r -> r
+                dedup = foldl' (\acc x -> if x `elem` acc then acc else acc <> [x]) []
+        lookupBase baselines c k =
+            case [b | b <- baselines, baseCorpus b == c, baseKind b == k] of
+                [b] -> Just b
+                _ -> Nothing
