@@ -15,6 +15,8 @@ and this project adheres to
   `megaparsec`; the input script is detected by the Unicode block
 * Remove the `debug` command, which only printed the removed radix tree
 * Build with GHC 9.10 alongside 9.6
+* Search dictionaries with `HMS.lookup` instead of scanning every key, and drop
+  `parList` from `getAnswer`: 61 lookups cost less than the sparks
 * Cover the Unicode input path with a query matrix: punctuation, spacing, line
   breaks, mixed and bracketed foreign text, a lookalike danda and digits reach
   the same entries as their Wylie key; a malformed syllable does not pass for

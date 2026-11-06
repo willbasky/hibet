@@ -343,6 +343,7 @@ test-suite hibet-env
     hibet,
     hspec >=2.11.12,
     text,
+    unordered-containers >=0.2.20 && <0.3,
 
 benchmark hibet-benchmark
   type: exitcode-stdio-1.0
