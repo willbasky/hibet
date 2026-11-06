@@ -50,7 +50,8 @@ splitSentences input =
 -- input as a whole and is nobody's per-run finding, so the converters
 -- ('convertWylieToUnicode', 'convertUnicodeToWylie') add it themselves. A
 -- caller that assembles a conversion by hand has to add
--- 'documentDiagnostics' too (that was O6 in `REFACTOR-AST.md` §13.5).
+-- 'documentDiagnostics' too (that was O6 in
+-- `docs/archive/hewts/REFACTOR-AST.md` §13.5).
 splitSentencesWith :: Text -> Either Text ([SpellItem], Diagnostics)
 splitSentencesWith = parseSettings defaultSettings
 

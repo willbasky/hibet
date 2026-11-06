@@ -342,6 +342,7 @@ test-suite hibet-env
     effectful-core >=2.4.0.0 && <2.7,
     hibet,
     hspec >=2.11.12,
+    text,
 
 benchmark hibet-benchmark
   type: exitcode-stdio-1.0

@@ -1,4 +1,4 @@
--- Ожидания: спецификация (`docs/SPEC.md`, S1–S3, S5–S8) и корпуса
+-- Ожидания: спецификация (`docs/hewts/SPEC.md`, S1–S3, S5–S8) и корпуса
 -- эталонов (ewts-rs, java sloppy) для сквозного прогона через дверь API.
 module Test.Api (tests) where
 

@@ -19,6 +19,7 @@ import qualified Data.ByteString.Lazy as BSL
 import Data.Function ((&))
 import Data.List (sortOn)
 import Data.Maybe (mapMaybe)
+import Data.Text (Text)
 import Test.Hspec (Spec, describe, expectationFailure, hspec, it, shouldBe)
 
 main :: IO ()
@@ -138,6 +139,43 @@ translate =
                             fromTibet `shouldBe` fromWylie
                             length fromTibet `shouldBe` 4
                         answers -> expectationFailure $ show answers
+        it "Unicode query matrix reaches the same entries as its Wylie key" $ do
+            res <- runFileMock (withTestDicts <$> makeEnv)
+            case res of
+                Left err -> expectationFailure $ show err
+                Right env ->
+                    mapM_
+                        (\(wylie, unicode) -> answersOf env unicode `shouldBe` answersOf env wylie)
+                        unicodeMatrix
+        it "A malformed syllable does not resolve to the clean phrase" $ do
+            res <- runFileMock (withTestDicts <$> makeEnv)
+            case res of
+                Left err -> expectationFailure $ show err
+                -- The broken run contributes no key, so the typo cannot pass
+                -- for the phrase the user meant.
+                Right env -> answersOf env "ྐརེ་བ་མེད་པ" `shouldBe` Right []
+
+answersOf :: Env -> Text -> Either HibetError [Answer]
+answersOf env query = snd <$> getAnswer query env
+
+-- | Every Unicode input stands for the Wylie key next to it. The cases are
+-- the ways a query differs from a dictionary key: punctuation, spacing and
+-- line breaks, foreign text (bare and bracketed), a lookalike Devanagari danda
+-- instead of a shad, and digits.
+unicodeMatrix :: [(Text, Text)]
+unicodeMatrix =
+    [ ("re ba med pa", "རེ་བ་མེད་པ།")
+    , ("re ba med pa", "རེ་བ་ མེད་པ །")
+    , ("re ba med pa", "རེ་བ་\nམེད་པ།")
+    , ("re ba med pa", "རེ་བ་ hello མེད་པ།")
+    , ("re ba med pa", "རེ་བ་ [hello] མེད་པ།")
+    , ("re ba med pa", "རེ་ བ་ མེད་ པ")
+    , ("re ba med pa", "རེ་བ་མེད་པ।")
+    , ("re ba med pa", "རེ་བ་མེད་པ་༢༠༢༤")
+    , ("re ba byed pa", "རེ་བ་བྱེད་པ།")
+    , ("re ba", "རེ་བ།")
+    , ("ri ma", "རི་མ།")
+    ]
 
 runFileMock ::
     Eff
