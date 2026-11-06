@@ -5,8 +5,8 @@
 устройство, словарь, история работ и индекс тестов (общая карта —
 `../README.md`). Порядок работ — `ROADMAP.md`.
 
-Снимок на 05.11.2026. Машиночная правда — `cabal test all` (1136 тестов
-`hewts` + 10 `hibet`), `hewts/test/parity/parity_report.txt` и
+Снимок на 06.11.2026. Машиночная правда — `cabal test all` (1136 тестов
+`hewts` + 12 `hibet`), `hewts/test/parity/parity_report.txt` и
 `parity_baseline.tsv`; числа в этой таблице — их снимок, а не цель.
 
 ## 1. Требования
@@ -23,7 +23,7 @@
 | **S8** | Настройки: письмо входа, включение проверки, строгость | **сделано**: `inputFormat`, `withChecks`, `sloppy`, `strict`; строгие находки (`AmbiguousSpelling`, `IllegalSuperfixCombination`) показываются только при `strict = True`, `Severity` остаётся warning — как у эталона | `Settings`, `defaultSettings`, `Convert.Diagnostic.strictOnly` | `Test.Api` (строгие находки только по флагу, дефект — в обоих режимах) |
 | **S9** | Разбор: токены, слог как дерево стеков, роли | **сделано** | `Convert.Token`, `Convert.Grammar.*` | `Test.Grammar.*`, `Test.Render.Wylie` |
 | **S10** | Источник правды — корпуса эталонов, расхождения — в журнале | **сделано** | `test/parity/` | храповик + журнал (82 строки) + `Test.Parity` |
-| **S11** | Пакет `hibet` — только переводчик, конверсия живёт в `hewts` | **сделано** (Волна 8, 05.11.2026) | `hibet` зависит от `hewts`; `toTibetan`/`toWylie`, таблица слогов и легаси-парсеры удалены | `cabal test all`: 1136 + 10; `hibet-env` — тибетский запрос находит те же статьи, что его Wylie-ключ |
+| **S11** | Пакет `hibet` — только переводчик, конверсия живёт в `hewts` | **сделано** (Волна 8, 05.11.2026) | `hibet` зависит от `hewts`; `toTibetan`/`toWylie`, таблица слогов и легаси-парсеры удалены | `cabal test all`: 1136 + 12; `hibet-env` — тибетский запрос находит те же статьи, что его Wylie-ключ |
 | **S12** | Структура кода повторяет слои: `Convert.Token.*` (азбука), `Convert.Tokenizer.*` (чтение), `Convert.Grammar.*` (разбор), `Convert.Render.*` (печать); тесты — ту же раскладку, кроме сквозных | **сделано** (Волна 9) | см. дерево в `../archive/hewts/ROADMAP-waves.md`, Волна 9 | `Test.Architecture` (9 архитектурных проверок), индекс `hewts/test/README.md` |
 
 S7 закрыт: `fix_spacing` сделан (перенос строки стоит как написан, пробелы за ним

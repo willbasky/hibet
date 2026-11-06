@@ -15,6 +15,12 @@ and this project adheres to
   `megaparsec`; the input script is detected by the Unicode block
 * Remove the `debug` command, which only printed the removed radix tree
 * Build with GHC 9.10 alongside 9.6
+* Cover the Unicode input path with a query matrix: punctuation, spacing, line
+  breaks, mixed and bracketed foreign text, a lookalike danda and digits reach
+  the same entries as their Wylie key; a malformed syllable does not pass for
+  the clean phrase. The regression suspected in T5 is ruled out for ordinary
+  input; keys written in non-canonical Wylie (e.g. `bha` vs `b+ha`) still need
+  their own normalization.
 
 ## [1.4.1] - 2025-04-17
 

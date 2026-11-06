@@ -87,7 +87,8 @@ Error HibetError, Log, IOE
 
 ## Тесты
 
-- `hibet-env` — загрузка словарей, `getAnswer` на Wylie и Unicode.
+- `hibet-env` — загрузка словарей, `getAnswer` на Wylie и Unicode, матрица
+  Unicode-запросов (пунктуация, пробелы, смешанный текст, ошибки).
 - `hibet-labels` — метки словарей.
 - `hibet-pretty` — вывод.
 
