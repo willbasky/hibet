@@ -9,8 +9,9 @@
 -- copied from the book, not imported from 'Convert.Grammar.Superfix' or the
 -- parser's tables. That is what makes the check non-tautological.
 --
--- The model (recorded in 'docs/ROADMAP.md', Wave 10): the book's prose says a
--- bare consonant is naturally accompanied by the vowel a (1.2), while the
+-- The model (recorded in 'docs/archive/hewts/ROADMAP-waves.md', Wave 10):
+-- the book's prose says a bare consonant is naturally accompanied by the vowel
+-- a (1.2), while the
 -- formal G_i do not encode it (4.7 has Vowel = {i,u,e,o}); the oracle reads the
 -- book as 4.1-4.21 plus that implicit a. So a bare root carries a, and the 30
 -- "prefix + root" forms without a written vowel are legal, not divergences.

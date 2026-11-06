@@ -2,6 +2,8 @@
 
 Как запускать набор, как он устроен и откуда берутся ожидания.
 
+Исторические документы (`REFACTOR-AST`, план волн) — в `docs/archive/hewts/`.
+
 Запуск (из `hewts/`):
 
 ```
@@ -51,7 +53,7 @@ cabal run hewts-benchmark
 | `Test.Tokenizer.RoundTrip` | **hewts**: инвариант обратимости; написания — **оракулы EWTS** |
 | `Test.Render.Wylie` | **hewts**: нотация и W→W (REFACTOR-AST §9.1 п. 4–5); корпуса и Кангьюр (`wkang.txt`) — генератор |
 | `Test.Performance` | **hewts**: линейность разбора (REFACTOR-AST §9.1 п. 9); Кангьюр — генератор |
-| `Test.Api` | **спецификация** (`docs/SPEC.md` S1–S8): дверь API, режимы, sloppy, строгость, O6; корпуса ewts-rs и java_sloppy — сквозной прогон |
+| `Test.Api` | **спецификация** (`docs/hewts/SPEC.md` S1–S8): дверь API, режимы, sloppy, строгость, O6; корпуса ewts-rs и java_sloppy — сквозной прогон |
 | `Test.Corpus` | **hewts**: чтение корпусов для проверок выше (не проверка сама) |
 | `Test.Integration` | **hewts**: сквозной прогон (чтение → разбор → печать), raw-roundtrip, escape |
 | `Test.Tokenizer.Spans` | **hewts**: непрерывность спанов |
@@ -183,7 +185,7 @@ wylie <TAB> unicode <TAB> warns_w2u <TAB> wylie_back <TAB> warns_u2w <TAB> round
 `གནད` (Q10: ничья книжных структур 9/13, список кандидатов не книжный) и
 `བཅྭ` ×3 (книжная таблица 4.9 не разрешает `c+w`, поэтому пишем `bc+wa`).
 Это принятые расхождения (`known_divergences.tsv`), а не долг шага 6.
-Открытые дефекты и вопросы — `docs/REFACTOR-AST.md` §13.
+Открытые дефекты и вопросы — `docs/archive/hewts/REFACTOR-AST.md` §13.
 
 ### Известные пробелы (зафиксированы, чтобы не искать заново)
 

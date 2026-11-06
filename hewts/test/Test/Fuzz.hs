@@ -6,8 +6,10 @@
 --
 -- Домен — только эталонный текст: вырожденные формы (escape-запись знаков без
 -- Wylie-написания, чужой текст в скобках, пара а-чунгов) через петлю не
--- устойчивы — это разобранные формы Волны 5 (@ROADMAP.md@) и §6.2
--- @REFACTOR-AST.md@, а не дефект этой проверки. Их сюда не подмешиваем.
+-- устойчивы — это разобранные формы Волны 5
+-- (@docs/archive/hewts/ROADMAP-waves.md@) и §6.2
+-- @docs/archive/hewts/REFACTOR-AST.md@, а не дефект этой проверки. Их сюда не
+-- подмешиваем.
 module Test.Fuzz (tests) where
 
 import Convert (convertUnicodeToWylie, convertWylieToUnicode, defaultSettings)
