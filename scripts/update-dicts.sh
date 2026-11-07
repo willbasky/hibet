@@ -150,3 +150,10 @@ done < "$tmp/list"
 
 printf 'up to date: %d, changed: %d, added: %d\n' "$same" "$changed" "$added"
 [[ $missing == 0 && ($check == 0 || ($changed == 0 && $added == 0)) ]]
+
+# The key aliases are derived from the dictionaries: a changed or added file
+# needs a fresh table, otherwise a Unicode query misses the new legacy keys.
+if [[ $check == 0 && ($changed -gt 0 || $added -gt 0) ]]; then
+    echo "regenerating hibet/stuff/key-aliases.tsv"
+    (cd "$repo" && cabal exec -- runghc scripts/gen-key-aliases.hs)
+fi

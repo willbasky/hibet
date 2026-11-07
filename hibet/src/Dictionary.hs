@@ -10,6 +10,7 @@ module Dictionary
     , Target (..)
     , Answer (..)
     , makeDictionary
+    , addAliases
     , searchTranslation
     , selectDict
     , sortOutput
@@ -61,6 +62,21 @@ makeDictionary =
         . map (second ((: []) . Target . T.drop 1) . T.span (< '|'))
         . Line.lines
         . Line.fromText
+
+-- | Add the canonical spelling of a key next to the key itself, with the same
+-- targets. Dictionary keys keep the spelling of their source, while a Unicode
+-- query goes through hewts and gets canonical Wylie; the alias closes the gap
+-- without touching the dictionaries. The legacy key stays: Wylie users keep
+-- typing it as before.
+addAliases :: HashMap Text Text -> Dictionary -> Dictionary
+addAliases aliases dict = HMS.foldlWithKey' add dict dict
+    where
+        add acc key targets = case HMS.lookup key aliases of
+            Just canonical
+                | canonical /= key ->
+                    HMS.insertWith merge canonical targets acc
+            _ -> acc
+        merge new old = if new == old then new else new <> old
 
 -- | Select several dictionaries by id.
 selectDict :: [Int] -> [DictionaryMeta] -> [DictionaryMeta]

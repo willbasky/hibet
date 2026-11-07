@@ -56,11 +56,13 @@ hibet (exe)
 
 - **`hewts`** не делает IO, не читает файлы, не знает про перевод. Всё, что
   нужно снаружи, приходит текстом и `Settings`.
-- **`hibet`** не содержит своей конверсии. Единственный модуль с
+- **`hibet`** не содержит своей конверсии. Единственный модуль библиотеки с
   `import Convert` — `hibet/src/Translator.hs`; своя логика письма там
-  отсутствует.
-- **Словари** (61 файл, ~103 МБ) — данные `hibet`. В браузер они не едут:
-  веб-конвертер собирается из одного `hewts`, веб-переводчик — сервер.
+  отсутствует. Offline-генератор ключей `scripts/gen-key-aliases.hs` тоже ходит
+  в hewts, но в приложение не входит.
+- **Словари** (59 файлов, ~103 МБ) — данные `hibet`; `stuff/key-aliases.tsv` —
+  производная таблица написаний ключей. В браузер они не едут: веб-конвертер
+  собирается из одного `hewts`, веб-переводчик — сервер.
 
 ## Модули
 
@@ -81,9 +83,9 @@ hibet (exe)
 |---|---|
 | `App` | сборка эффектов и запуск |
 | `Cli` | команды `shell`, `show names`, `show meta`, `om` |
-| `Translator` | диалог, `getAnswer`, граница с hewts |
-| `Dictionary` | формат словаря, поиск, сортировка ответов |
-| `Env` | загрузка словарей и меток, `MVar Env` |
+| `Translator` | диалог, `getAnswer`, `tibetToWylieKey`, граница с hewts |
+| `Dictionary` | формат словаря, поиск, добавление alias-ключей |
+| `Env` | загрузка словарей, меток и таблицы ключей, `MVar Env` |
 | `Effects.Console`, `.File`, `.PrettyPrint`, `.Common` | IO-обвязка |
 | `Pretty`, `Label`, `Type`, `Utility` | вывод, метаданные, ошибки, мелочи |
 
@@ -93,5 +95,7 @@ hibet (exe)
 - `cabal build all` — оба пакета.
 - `cabal test all` — тесты `hewts` и `hibet`.
 - `cabal run hewts-benchmark` — линейность разбора.
+- `cabal exec -- runghc scripts/gen-key-aliases.hs` — пересобрать
+  `hibet/stuff/key-aliases.tsv` после обновления словарей (около 2,5 мин).
 - `fourmolu` для `.hs`, `cabal-gild` для `.cabal`.
 - Nix: `nix build`, `nix develop`; `justfile` — короткие команды.

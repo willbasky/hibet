@@ -41,10 +41,13 @@ Error HibetError, Log, IOE
 `makeEnvFor ids`:
 
 1. `getLabels` из `stuff/titles.toml` (tomland).
-2. `dicts/` — 61 файл, около 103 МБ.
-3. `makeDictionary`: строка `ключ|перевод`, дубликаты склеиваются.
-4. `parMap rdeepseq` по файлам.
-5. `Env { dictionaryMeta :: [DictionaryMeta], labels :: Labels }`.
+2. `stuff/key-aliases.tsv` — пары «легаси-ключ → канонический Wylie» (см.
+   «Ключи и Unicode»).
+3. `dicts/` — 59 файлов, около 103 МБ.
+4. `makeDictionary`: строка `ключ|перевод`, дубликаты склеиваются.
+5. `addAliases`: канонический ключ кладётся рядом с легаси с теми же статьями.
+6. `parMap rdeepseq` по файлам.
+7. `Env { dictionaryMeta :: [DictionaryMeta], labels :: Labels }`.
 
 `readEnv` — `readMVar`; `modifyEnv` и `putEnvMVar` — запись.
 
@@ -58,10 +61,31 @@ Error HibetError, Log, IOE
    - `Tibet` → `hewts.splitSentences` + `hewts.renderItems OutWylie` по
      `SyllableItem`; ключ — `T.words`.
 3. `searchTranslation` — `HMS.lookup` по каждому словарю, последовательно:
-   61 lookup дешевле sparks на 61 задачу (замер T9).
+   59 lookup дешевле sparks на 59 задач (замер T9).
 4. `sortOutput` по `dictNumber`.
 
 Ключ словаря — Wylie. Пунктуация и пробелы запроса в ключ не попадают.
+
+## Ключи и Unicode
+
+Ключи словарей хранят Wylie в написании источника, а юникод-запрос после hewts
+даёт канонический Wylie. Для 6 100 из 348 433 ключей написания не совпадают
+(`bha ga` против `b+ha ga`, `gnad` против `gand`), и точный поиск промахивался.
+
+Нормализация вынесена из загрузки в данные: `stuff/key-aliases.tsv` хранит пары
+«легаси-ключ ⇥ канонический ключ», а `addAliases` при загрузке кладёт
+канонический ключ рядом с легаси с теми же статьями. Оба написания остаются
+рабочими, вывод hewts не меняется; юникод-запрос находит и `bha ga`, и `gnad`.
+
+Почему не канонизировать ключи при загрузке: 348 433 ключа через hewts — это
+140 с CPU (≈0,4 мс на ключ), а полная загрузка `Env` была 0,28 с. Таблица
+стоит одного чтения 259 КБ и ~348 тыс. lookups; запрос не дорожает.
+
+Таблица производная: после обновления словарей её надо перегенерировать
+(`cabal exec -- runghc scripts/gen-key-aliases.hs`, около 2,5 мин). `hibet-env`
+проверяет каждую строку: ключ должен совпадать с тем, что даёт юникод-путь, а
+оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
+слово, в таблицу не попадают.
 
 ## CLI
 
@@ -76,9 +100,11 @@ Error HibetError, Log, IOE
 
 ## Граница с hewts
 
-Единственный модуль с `import Convert` — `hibet/src/Translator.hs`. Используются
-`convertWylieToUnicode`, `splitSentences`, `renderItems OutWylie`,
+Единственный модуль библиотеки с `import Convert` — `hibet/src/Translator.hs`.
+Используются `convertWylieToUnicode`, `splitSentences`, `renderItems OutWylie`,
 `defaultSettings`, `OutputFormat`, `SpellItem`. Своей конверсии в `hibet` нет.
+Генератор ключей `scripts/gen-key-aliases.hs` тоже ходит в hewts, но это
+offline-инструмент, а не часть приложения.
 
 ## Что меняется (T2)
 
@@ -89,11 +115,13 @@ Error HibetError, Log, IOE
 ## Тесты
 
 - `hibet-env` — загрузка словарей, `getAnswer` на Wylie и Unicode, матрица
-  Unicode-запросов (пунктуация, пробелы, смешанный текст, ошибки).
+  Unicode-запросов (пунктуация, пробелы, смешанный текст, ошибки), инвариант
+  таблицы `stuff/key-aliases.tsv`.
 - `hibet-labels` — метки словарей.
 - `hibet-pretty` — вывод.
 
 ## Данные
 
-`dicts/*.txt` — 61 файл, около 103 МБ; `stuff/titles.toml` — метаданные.
+`dicts/*.txt` — 59 файлов, около 103 МБ; `stuff/titles.toml` — метаданные;
+`stuff/key-aliases.tsv` — производная таблица ключей (259 КБ).
 В браузер они не грузятся: веб-переводчик может быть только серверным.

@@ -7,6 +7,18 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [Unreleased]
+
+### Fixed
+
+* A Unicode query now reaches dictionary keys written in non-canonical Wylie:
+  `hibet/stuff/key-aliases.tsv` records the legacy spelling and the canonical
+  key the query path produces, and the loader adds the canonical key next to
+  the legacy one. Covers `bha ga`/`བྷ་ག`, `gnad`/`གནད` and `gand`; 6 100 keys,
+  while 26 keys where hewts changes the word are left alone.
+* New `scripts/gen-key-aliases.hs` regenerates the table after a dictionary
+  update; `hibet-env` checks every row against hewts.
+
 ## [2.0.0] - 2026-11-07
 
 ### Changed
