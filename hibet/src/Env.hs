@@ -11,15 +11,18 @@ module Env
     )
 where
 
-import Dictionary (DictionaryMeta, makeDictionary, toDictionaryMeta)
+import Dictionary (DictionaryMeta, addAliases, makeDictionary, toDictionaryMeta)
 import Effects.File (FileSystem)
 import qualified Effects.File as File
 import Label (LabelFull (..), Labels (..), getLabels)
 import Type (HibetError (..))
 
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
+import Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HMS
 import Data.List (find)
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import GHC.Generics (Generic)
@@ -57,6 +60,7 @@ makeEnvFor ::
 makeEnvFor selected = do
     labels@(Labels ls) <-
         getLabels <$> (File.readFileBS =<< File.getPath "stuff/titles.toml")
+    aliases <- readAliases
 
     dir <- File.getPath "dicts/"
     absDir <- File.parseAbsDir dir
@@ -71,7 +75,12 @@ makeEnvFor selected = do
     let dictsMeta =
             parMap
                 rdeepseq
-                (\(f, t) -> toDictionaryMeta ls f $ makeDictionary $ TL.toStrict t)
+                ( \(f, t) ->
+                    toDictionaryMeta ls f
+                        $ addAliases aliases
+                        $ makeDictionary
+                        $ TL.toStrict t
+                )
                 filesAndTexts
 
     pure
@@ -79,6 +88,27 @@ makeEnvFor selected = do
             { dictionaryMeta = dictsMeta
             , labels = labels
             }
+
+-- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
+-- the same word. The table is generated from the dictionaries; see
+-- @scripts/gen-key-aliases.hs@.
+readAliases ::
+    (FileSystem :> es) =>
+    Eff es (HashMap T.Text T.Text)
+readAliases = do
+    text <-
+        TE.decodeUtf8 <$> (File.readFileBS =<< File.getPath "stuff/key-aliases.tsv")
+    let aliases =
+            HMS.fromList
+                [ (legacy, canonical)
+                | line <- T.lines text
+                , let (legacy, rest) = T.breakOn "\t" line
+                , not (T.null legacy)
+                , not (T.null rest)
+                , let canonical = T.drop 1 rest
+                , not (T.null canonical)
+                ]
+    HMS.size aliases `seq` pure aliases
 
 getFilesTexts ::
     ( FileSystem :> es

@@ -15,6 +15,7 @@ category: Utility
 build-type: Simple
 data-files:
   dicts/*.txt
+  stuff/key-aliases.tsv
   stuff/titles.toml
 
 extra-source-files:
@@ -340,6 +341,7 @@ test-suite hibet-env
     base >=4.11 && <5,
     bytestring >=0.11.5.3 && <0.13,
     effectful-core >=2.4.0.0 && <2.7,
+    hewts >=0.1 && <0.2,
     hibet,
     hspec >=2.11.12,
     text,

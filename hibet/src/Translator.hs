@@ -1,6 +1,7 @@
 module Translator
     ( translator
     , getAnswer
+    , tibetToWylieKey
     )
 where
 
@@ -20,6 +21,7 @@ import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
 import Type (HibetError (..))
 
 import Data.Either.Extra (mapLeft)
+-- Kept for GHC 9.8, where `foldl'` is not in Prelude yet.
 import Data.List (foldl')
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
@@ -134,13 +136,20 @@ boilQuery script query = case script of
         tibetanText <- fromHewts $ fst <$> convertWylieToUnicode defaultSettings query
         pure (T.unwords (T.words query), tibetanText)
     Tibet -> do
-        -- The dictionary is keyed by Wylie words, so punctuation and spaces of the
-        -- query must not reach the key: take the syllables through the token layer.
-        items <- mapLeft UnknownError $ splitSentences query
-        let wylieText =
-                T.unwords
-                    [renderItems OutWylie [item] | item@SyllableItem{} <- items]
+        wylieText <- tibetToWylieKey query
         pure (wylieText, T.strip query)
+
+-- | The Wylie search key for Tibetan script. The dictionary is keyed by Wylie
+-- words, so punctuation and spaces of the query must not reach the key: take
+-- the syllables through the token layer. The same function names the keys in
+-- @stuff/key-aliases.tsv@, so a Unicode query lands on the canonical spelling
+-- of a legacy key.
+tibetToWylieKey :: Text -> Either HibetError Text
+tibetToWylieKey query = do
+    items <- mapLeft UnknownError $ splitSentences query
+    pure $
+        T.unwords
+            [renderItems OutWylie [item] | item@SyllableItem{} <- items]
 
 fromHewts :: Either Text a -> Either HibetError a
 fromHewts = mapLeft UnknownError
