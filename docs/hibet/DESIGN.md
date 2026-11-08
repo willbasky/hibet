@@ -7,14 +7,17 @@ Wylie, выход — статьи из словарей. Конверсию п�
 ## Слои
 
 ```
-app/Main.hs
+hibet-cli/app/Main.hs
   → App.app          разбор команды, Ki-scope, фоновая загрузка Env
       Cli            команды, запуск
       Shell          диалог, getAnswer, вывод
+      Pretty         терминальный вывод
+  ─────────────────────────────────────────────────────────
+hibet (движок)
       Translator     чистый getAnswer
       Dictionary     формат словаря, поиск
       Env            загрузка словарей и меток, MVar Env
-      Pretty, Label, Type, Utility
+      Label, Type, Utility
 ```
 
 ## Загрузка и фон
@@ -104,12 +107,12 @@ IO заворачиваются в `EffectError`. `App` запускает за�
 Генератор ключей `scripts/gen-key-aliases.hs` тоже ходит в hewts, но это
 offline-инструмент, а не часть приложения.
 
-## Что меняется (T2)
+## Пакеты
 
-`effectful` уже снят (T24): `Env` — значение, загрузка — `IO`, фон — `ki`.
-T2 остаётся: `hibet` — движок (`Dictionary`, `Env`, `Translator`, `Type`,
-`Utility`, `Label`), `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Pretty`,
-Haskeline, optparse). Подробности — `../TASKS.md`, T2.
+`hibet` — движок (`Dictionary`, `Env`, `Translator`, `Type`, `Utility`,
+`Label`); `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Pretty`, Haskeline,
+optparse, exe `hibet`). Движок не зависит от консольных пакетов, поэтому
+серверный API (`hibet-web`) сможет зависеть от `hibet` без Haskeline.
 
 ## Тесты
 
@@ -118,7 +121,7 @@ Haskeline, optparse). Подробности — `../TASKS.md`, T2.
   (пунктуация, пробелы, смешанный текст, ошибки), инвариант таблицы
   `stuff/key-aliases.tsv`.
 - `hibet-labels` — метки словарей.
-- `hibet-pretty` — вывод.
+- `hibet-pretty` — вывод (живёт в пакете `hibet-cli`).
 
 ## Данные
 

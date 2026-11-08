@@ -1,7 +1,8 @@
-# prepare the environment for the project
-prepare: 
+# first-time setup: cabal index and generated files
+bootstrap:
     cabal update
     gen-hie > hie.yaml
+    haskell-ci regenerate
 
 install: 
     cabal new-install exe:hibet --overwrite-policy=always
