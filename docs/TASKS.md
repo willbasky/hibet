@@ -1,15 +1,15 @@
 # Задачи репозитория
 
-Один список работ по обоим пакетам, `hewts` и `hibet`.
+Один список работ по пакетам репозитория.
 
 Статусы: `[ ]` не начато, `[~]` в работе, `[x]` закрыто. Задача закрывается
 только вместе с проверкой из раздела «Готово», а не вместе с кодом.
 
-Снимок: 07.11.2026.
+Снимок: 08.11.2026.
 
 ## Порядок
 
-Рекомендуемая очередь: **T2 → T7 → T6 → T3 → T4**. T1, T5, T9, T10 и T11
+Рекомендуемая очередь: **T2 → T7 → T6 → T3 → T4**. T1, T5, T9, T10, T11 и T24
 закрыты; T8 ни от чего не зависит и идёт параллельно с T3: методика замера у
 них общая. T12 (инструменты обновления словарей) ни от чего не зависит и идёт
 параллельно. T13–T23 — бэклог из разбора issue; порядок между ними не задан,
@@ -30,6 +30,8 @@ T2 остаётся первой.
 - T12 — перевести обновление словарей с bash/python на Haskell; ни от чего не
   зависит, идёт параллельно с T8 и T13–T23.
 - T13–T23 — бэклог из issue: T2 остаётся первой, T17 отложена.
+- T24 закрыта: `effectful` снят, фоновая загрузка идёт через `ki`; T2
+  остаётся первой и теперь только переносит модули.
 
 ---
 
@@ -120,10 +122,10 @@ docs/
 `[ ]`
 
 **Сейчас.** `hibet` — библиотека плюс exe. Exe — четыре строки (`app/Main.hs`),
-но внутри библиотеки лежат `Cli`, `App`, `Effects.Console`,
-`Effects.PrettyPrint`, `Pretty`, `Label` и зависимости `optparse-applicative`,
-`haskeline`, `terminal-size`, `pager`, `prettyprinter-ansi-terminal`. `Translator`
-смешивает движок и цикл Haskeline.
+но внутри библиотеки лежат `Cli`, `App`, `Shell`, `Pretty`, `Label` и
+зависимости `optparse-applicative`, `haskeline`, `terminal-size`, `pager`,
+`prettyprinter-ansi-terminal`. `Translator` уже чистый: диалог вынесен в
+`Shell` (T24).
 
 **Цель.** `hibet` — движок: `Dictionary`, `Env`, `Translator` (чистый
 `getAnswer`/`translate`), `Type`, `Utility`. `hibet-cli` — всё, что нужно консоли.
@@ -131,13 +133,12 @@ docs/
 
 **Работа.**
 
-1. Определить шов. `getAnswer :: Text -> Env -> Either HibetError (Text, [Answer])`
-   уже есть, но `Env` грузится через эффекты. Для веба нужен `Env` как значение
-   и отдельная загрузка (`readEnv`/`makeEnv`).
-2. Перенести в `hibet-cli`: `translator`, `loopDialog`, `Cli`, `App`,
-   `Effects.Console`, `Effects.PrettyPrint`, `Pretty`, `Label`.
-3. Оставить в `hibet`: `getAnswer`, `detectScript`, `boilQuery`, `Dictionary`,
-   `Env`, `Type`, `Utility`.
+1. Шов уже есть: `getAnswer` чистый, `makeEnv`/`makeEnvFor`/`makeEnvFrom`
+   возвращают `IO (Either HibetError Env)`. Отдельная загрузка не нужна.
+2. Перенести в `hibet-cli`: `Shell` (`translator`, `loopDialog`), `Cli`, `App`,
+   `Pretty`.
+3. Оставить в `hibet`: `getAnswer`, `tibetToWylieKey`, `Dictionary`, `Env`,
+   `Label`, `Type`, `Utility`.
 4. Разрезать `hibet.cabal` на два пакета; общие `default-extensions` и
    `ghc-options` продублировать (общего `common` между пакетами в Cabal нет).
 5. Убедиться, что exe собирается и ведёт себя как раньше.
@@ -277,16 +278,17 @@ Hackage. Нужно: W→U, U→W, проверка правописания, н
 
 **Сейчас.** `Env.makeEnvFor` читает 59 файлов (около 103 МБ) лениво и
 последовательно, а разбирает `parMap rdeepseq` по файлам. Это искры
-`Control.Parallel.Strategies`, а не потоки. Фоновый запуск — `withAsync`, то
-есть зелёный поток уже есть на уровне команды, но не на уровне разбора. Время
+`Control.Parallel.Strategies`, а не потоки. Фоновый запуск — `Ki.scoped` +
+`Ki.fork`, то есть зелёный поток уже есть на уровне команды, но не на уровне
+разбора. Время
 загрузки, пик памяти и то, во что упирается работа — CPU, диск или GC, — не
 измерены. У exe уже стоит `-with-rtsopts=-N -A4m -AL128m -qn8 -I0 -T`: эти
 настройки сильно влияют на память, их тоже надо учесть в замерах.
 
 **Цель.** Проверить на замерах, что быстрее и проще: оставить `parMap`,
-перевести разбор на зелёные потоки (`mapConcurrently`/`forConcurrently` поверх
-`Concurrent`) или разнести чтение и разбор по разным потокам. Если выигрыша
-нет — оставить как есть и записать почему.
+перевести разбор на зелёные потоки (`Ki.scoped` + `Ki.fork` или
+`mapConcurrently`) или разнести чтение и разбор по разным потокам. Если
+выигрыша нет — оставить как есть и записать почему.
 
 **Работа.**
 
@@ -636,12 +638,11 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 
 `[ ]`
 
-**Сейчас.** Ошибки ходят через `HibetError` и `Either`, но есть частичные
-функции и IO-исключения: `Label.hs:51` (`decodeUtf8`), `Label.hs:53`
-(`error` на ошибке TOML), `Env.hs:100` и `Env.hs:121` (`decodeUtf8`),
-`Effects/File.hs` (чтение файлов, `listDir`, `parseAbsDir`). `adapt` в
-`Effects/Common.hs:14` ловит только `Error`, поэтому IO-исключения до
-`handleHibetError` не доходят. Issue #134 предлагает `annotated-exception`.
+**Сейчас.** Ошибки ходят через `HibetError` и `Either`. IO-исключения
+загрузчика (`BS.readFile`, `listDirectory`) уже заворачиваются в `HibetError`
+через `try @IOException` (T24). Остались частичные функции и исключения не-IO:
+`Label.hs` (`decodeUtf8`, `error` на ошибке TOML), `Env.hs` (`decodeUtf8` в
+`readAliases`). Issue #134 предлагает `annotated-exception`.
 
 **Цель.** Исключения на границах не роняют программу без `HibetError`;
 решение по `annotated-exception` принято и записано.
@@ -651,9 +652,9 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 1. Инвентаризация: какие исключения реально вылетают (файлы, UTF-8, TOML,
    терминал, `exitSuccess`).
 2. Сравнить два пути: `annotated-exception` против `try`/`decodeUtf8'`/
-   `Either` на границах; проверить совместимость с GHC 9.8/9.10 и effectful.
-3. Выбрать меньший путь; убрать `error` и частичные декодеры; IO-исключения в
-   `adapt`/`runFileSystemIO` превращать в `HibetError`.
+   `Either` на границах; проверить совместимость с GHC 9.8/9.10.
+3. Выбрать меньший путь; убрать `error` и частичные декодеры; не-IO исключения
+   (`decodeUtf8`, TOML) превращать в `HibetError`.
 4. Тесты: отсутствующий файл, битый UTF-8 и битый TOML дают `HibetError`, а не
    падение.
 5. Записать решение в `DESIGN.md` и `CHANGELOG.md`.
@@ -847,6 +848,78 @@ CI зелёный.
 **Готово.** На промах есть подсказки; тесты зелёные; цена запроса записана.
 
 **Не делать.** Не менять точный поиск; не строить тяжёлый индекс без замера.
+
+---
+
+## T24. Убрать `effectful` из hibet
+
+`[x]`
+
+**Сейчас.** `hibet` держит эффект-стек `Concurrent`, `Resource`, `Console`,
+`FileSystem`, `PrettyPrint`, `Error HibetError`, `Log`, `IOE`. У каждого
+эффекта один интерпретатор, подмены в тестах нет:
+
+- `Console` — Haskeline и optparse, один `runConsole`;
+- `PrettyPrint` — `putDoc` и pager, один `runPrettyPrint`;
+- `FileSystem` — четыре однострочника; тесты вызывают `runFileSystemIO`, а не
+  заглушку, так что тестового шва эффект не даёт;
+- `Error` — `adapt` поверх `try`/`catch`;
+- `Log` — логгер создаётся, ни одного `logInfo_` нет (закомментирован);
+- `Resource` — `runResource`, ни одного `resource`;
+- `Concurrent` и `Reader` — `MVar` вокруг `Env`.
+
+Сверху `makeEffect` через Template Haskell, `-fplugin=Effectful.Plugin`,
+`withSeqEffToIO` и `localSeqUnliftIO`. Чистое ядро `getAnswer` эффектов не
+требует.
+
+**Цель.** `hibet` — чистое ядро плюс тонкий загрузчик в `IO`; консольные
+модули в том же пакете, но без `effectful`. После T2 они уедут в `hibet-cli`.
+
+**Работа.**
+
+1. Движок: `makeEnv`/`makeEnvFor` вернуть `IO (Either HibetError Env)`;
+   добавить `makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)`
+   для тестов и веба. Внутри — `BS.readFile`, `listDirectory`,
+   `getDataFileName`, `try`; `parMap` оставить.
+2. Удалить `Effects.File`, `Effects.Common`, `Effects.Console`,
+   `Effects.PrettyPrint`. `FileSystem` заменить на нативные функции, `Error` —
+   на `Either` и `try`.
+3. CLI: `App`, `Cli`, `Shell`, `Pretty` переписать на `IO`. Фоновую загрузку
+   `Env` вести через `ki`: `Ki.scoped` + `Ki.fork`; не через `async` и не
+   через `effectful`. `MVar` из `base` остаётся каналом: поток-загрузчик
+   кладёт `Env` в `MVar`, `readEnv` читает его как сейчас. `Ki.await` нужен
+   только если хранить результат в `Thread` вместо `MVar`. `scoped` сам
+   дождётся или погасит поток при выходе.
+4. `Log` и `Resource` убрать совсем: логов и ресурсов нет. Если понадобится
+   лог, это простая функция, а не эффект.
+5. Зависимости: из библиотеки убрать `effectful`, `effectful-core`,
+   `effectful-th`, `effectful-plugin`, `log-effectful`,
+   `resourcet-effectful`, `path`, `path-io`; добавить `ki`. `path`/`path-io`
+   остаются только у benchmark. `-fplugin=Effectful.Plugin` убрать из
+   `ghc-options`.
+6. Тесты: `runFileMock` убрать. `hibet-env` грузит `makeEnvFor testDicts` или
+   `makeEnvFrom "test/env/data" testDicts`. `mockMakeEnvSpec` удалить или
+   переписать на `makeEnvFrom`.
+7. Документы: `ARCHITECTURE.md`, `hibet/DESIGN.md`, `TASKS.md`, `CHANGELOG.md`.
+
+**Готово.** `cabal build all && cabal test all` зелёные; в `plan.json` у
+`lib:hibet` нет `effectful`, `path`, `path-io`; `getAnswer` вызывается из
+`cabal repl lib:hibet` без IO; вывод команд не изменился; фоновая загрузка
+не оставляет потоков после выхода.
+
+**Зависит от.** Сделано до T2: эффекты сняты на монолите, T2 теперь только
+переносит модули.
+
+**Не делать.** Не тащить Bluefin или другой effect system; не менять формат
+словарей, `getAnswer` и вывод; не трогать `hewts`.
+
+**Сделано 08.11.2026.** `effectful`, `path`, `path-io` убраны из библиотеки;
+`makeEnv`/`makeEnvFor`/`makeEnvFrom` возвращают `IO (Either HibetError Env)`;
+фоновая загрузка — `Ki.scoped` + `Ki.fork`, значение несёт `MVar`. `Effects.*`
+и мёртвый `Sandbox` удалены, диалог вынесен в `Shell`. `hibet-env` грузит
+только выбранные словари
+и проверяет `makeEnvFrom` на `test/env/data`, включая реальную пару
+`bha ga → b+ha ga`. Вывод `show`/`shell` совпал с baseline, тесты зелёные.
 
 ---
 

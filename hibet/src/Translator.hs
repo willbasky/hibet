@@ -1,6 +1,5 @@
 module Translator
-    ( translator
-    , getAnswer
+    ( getAnswer
     , tibetToWylieKey
     )
 where
@@ -13,90 +12,14 @@ import Convert
     , renderItems
     , splitSentences
     )
-import Dictionary (Answer, searchTranslation, sortOutput)
-import Effects.Console (Console, closeInput, exitSuccess, getHistory, getInput)
-import Effects.PrettyPrint (Line (NewLine), PrettyPrint, pprint, putColorDoc)
-import Env (Env (..), readEnv)
-import Pretty (blue, red, viewTranslations, withHeaderSpaces, yellow)
+import Dictionary (Answer, searchTranslation)
+import Env (Env (..))
 import Type (HibetError (..))
 
 import Data.Either.Extra (mapLeft)
--- Kept for GHC 9.8, where `foldl'` is not in Prelude yet.
-import Data.List (foldl')
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Prettyprinter (Doc)
-import Prettyprinter.Render.Terminal (AnsiStyle)
-import qualified System.Console.Haskeline as Haskeline
-import System.Console.Haskeline.History (History, historyLines)
-import System.Console.Haskeline.IO (InputState)
-import qualified System.Console.Haskeline.IO as Haskeline
-
-import Control.Exception (bracketOnError)
-import Effectful (Eff, IOE, withSeqEffToIO, type (:>))
-
--- import Effectful.Log ( logInfo_, Log )
-
-import Effectful.Concurrent.MVar (Concurrent, MVar)
-import Effectful.Reader.Dynamic (Reader)
-
--- | Load environment and start loop dialog
-translator ::
-    ( IOE :> es
-    , PrettyPrint :> es
-    , -- , Log :> es
-      Console :> es
-    , Reader (MVar Env) :> es
-    , Concurrent :> es
-    ) =>
-    Eff es ()
-translator = withSeqEffToIO $ \run -> bracketOnError
-    (Haskeline.initializeInput Haskeline.defaultSettings)
-    Haskeline.cancelInput -- This will only be called if an exception such as a SigINT is received.
-    $ \inputState -> run $ do
-        putColorDoc
-            blue
-            NewLine
-            "Input a word in the tibetan script or wylie transcription:"
-        loopDialog inputState
-        closeInput inputState
-
--- Looped dialog with user
-loopDialog ::
-    ( PrettyPrint :> es
-    , Console :> es
-    , Reader (MVar Env) :> es
-    , Concurrent :> es
-    ) =>
-    InputState
-    -> Eff es ()
--- Not 'forever': at EOF 'getInput' keeps returning 'Nothing', so 'forever'
--- would spin on the closed input. Returning lets 'translator' call 'closeInput'.
-loopDialog inputState = do
-    mQuery <- getInput inputState "> "
-    case T.strip . T.pack <$> mQuery of
-        Nothing -> pure ()
-        Just "" -> pure ()
-        Just ":q" -> do
-            putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
-            exitSuccess
-        Just ":h" -> do
-            history <- fromHistory <$> getHistory inputState
-            mapM_ (putColorDoc id NewLine) history
-        Just input -> do
-            env <- readEnv
-            case getAnswer input env of
-                Left _ -> do
-                    -- logInfo_ $ showT err
-                    putColorDoc red NewLine "Nothing found"
-                Right (query, answer) ->
-                    if null answer
-                        then putColorDoc red NewLine "Nothing found"
-                        else pprint $ mkOutput query answer
-    case mQuery of
-        Nothing -> pure ()
-        Just _ -> loopDialog inputState
 
 getAnswer :: Text -> Env -> Either HibetError (Text, [Answer])
 getAnswer query env = do
@@ -108,12 +31,6 @@ getAnswer query env = do
     let dscValues = mapMaybe (searchTranslation queryWylie) env.dictionaryMeta
     -- 5. Return
     pure (queryTibet, dscValues)
-
-fromHistory :: History -> [Text]
-fromHistory =
-    foldl' (\a x -> T.pack x : a) []
-        . filter (/= ":h")
-        . historyLines
 
 -- | Which writing the query is in. `hewts` has no auto-detection: a Latin
 -- letter may be foreign text inside Tibetan, so the caller says the writing.
@@ -153,9 +70,3 @@ tibetToWylieKey query = do
 
 fromHewts :: Either Text a -> Either HibetError a
 fromHewts = mapLeft UnknownError
-
-mkOutput :: Text -> [Answer] -> Doc AnsiStyle
-mkOutput query answers =
-    withHeaderSpaces yellow query
-        $ viewTranslations
-        $ sortOutput answers

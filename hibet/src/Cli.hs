@@ -7,19 +7,16 @@ module Cli
     , parser
     ) where
 
-import Effects.Console
-import Effects.PrettyPrint
 import Env (Env (..), readEnv)
 import Label (LabelFull (..), Labels (..), Title (unTitle))
 import Paths_hibet (version)
 import Pretty
-import Translator (translator)
-
--- import Type (HibetError (..))
+import Shell (translator)
 
 import Utility (showT)
 
 import Control.Applicative (many, optional, (<|>))
+import Control.Concurrent.MVar (MVar)
 import Data.Foldable (find, toList)
 import Data.List (sortBy)
 import Data.Text (Text)
@@ -48,15 +45,6 @@ import Options.Applicative
 import Options.Applicative.Help.Chunk (stringChunk)
 import Prelude hiding (lookup)
 
-import Effectful (Eff, IOE, type (:>))
-
--- import Effectful.Log ( Log )
-
-import Effectful.Concurrent.MVar (Concurrent, MVar)
-import Effectful.Reader.Dynamic (Reader)
-
--- import Polysemy.Trace (Trace)
-
 ---------------------------------------------------------------------------
 -- CLI
 ---------------------------------------------------------------------------
@@ -72,29 +60,17 @@ data Command
 data Opt = Names | Meta (Maybe Int)
 
 -- | Run 'hibet' with cli command
-runCommand ::
-    ( IOE :> es
-    , Reader (MVar Env) :> es
-    , Concurrent :> es
-    , PrettyPrint :> es
-    , Console :> es
-    ) =>
-    Command -> Eff es ()
-runCommand com = do
+runCommand :: MVar Env -> Command -> IO ()
+runCommand mv com = do
     case com of
         -- App.prepareEnv already filtered the dictionaries by these ids
-        Shell _ -> translator
+        Shell _ -> translator mv
         Om -> putColorDoc magenta NewLine om
-        ShowOption opt -> runShow opt
+        ShowOption opt -> runShow mv opt
 
-runShow ::
-    ( Reader (MVar Env) :> es
-    , Concurrent :> es
-    , PrettyPrint :> es
-    ) =>
-    Opt -> Eff es ()
-runShow opt = do
-    env <- readEnv
+runShow :: MVar Env -> Opt -> IO ()
+runShow mv opt = do
+    env <- readEnv mv
     let Labels labels = env.labels
     let filteredLabels = filterAvailable labels
     case opt of

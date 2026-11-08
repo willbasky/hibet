@@ -8,37 +8,34 @@ Wylie, выход — статьи из словарей. Конверсию п�
 
 ```
 app/Main.hs
-  → App.app
-      Cli          разбор команды, запуск
-      Translator   диалог, getAnswer
-      Dictionary   формат словаря, поиск
-      Env          загрузка словарей и меток
-      Effects.*    IO-обвязка: Console, File, PrettyPrint
+  → App.app          разбор команды, Ki-scope, фоновая загрузка Env
+      Cli            команды, запуск
+      Shell          диалог, getAnswer, вывод
+      Translator     чистый getAnswer
+      Dictionary     формат словаря, поиск
+      Env            загрузка словарей и меток, MVar Env
       Pretty, Label, Type, Utility
 ```
 
-## Эффекты
+## Загрузка и фон
 
-`App.HibetEffects`:
+`effectful` снят (T24). Загрузка словарей — обычный `IO`:
 
-```
-Concurrent, Resource, Console, FileSystem, PrettyPrint,
-Error HibetError, Log, IOE
-```
+- `makeEnv :: IO (Either HibetError Env)` — все словари;
+- `makeEnvFor :: [Int] -> IO (Either HibetError Env)` — выбранные;
+- `makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)` — данные из
+  произвольного каталога (тесты, сервер).
 
-`interpretHibet` снимает их по порядку: `runConcurrent` → `runResource` →
-`runConsole` → `runFileSystemIO` → `runPrettyPrint` → `runError` → `runLog` →
-`runEff`.
+Внутри — `getDataFileName`, `BS.readFile`, `listDirectory`, `try`; ошибки
+IO заворачиваются в `EffectError`. `App` запускает загрузку в фоне через
+`Ki.scoped` + `Ki.fork`; поток-загрузчик кладёт `Env` в `MVar`, `readEnv`
+читает его. `scoped` гасит или дожидается поток при выходе.
 
-- `Console` — Haskeline (ввод, история, выход) и optparse (парсер команд).
-- `FileSystem` — чтение `dicts/*.txt` и `stuff/titles.toml`, `Paths_hibet`.
-- `PrettyPrint` — `prettyprinter` + ANSI + pager.
-- `Env` живёт в `MVar`: `shell` читает его из параллельной ветки, пока
-  `prepareEnv` грузит словари.
+Консольный вывод (`putColorDoc`, `pprint`) — обычный `IO` в `Pretty`.
 
 ## Загрузка
 
-`makeEnvFor ids`:
+`makeEnvFor` или `makeEnvFrom`:
 
 1. `getLabels` из `stuff/titles.toml` (tomland).
 2. `stuff/key-aliases.tsv` — пары «легаси-ключ → канонический Wylie» (см.
@@ -49,7 +46,8 @@ Error HibetError, Log, IOE
 6. `parMap rdeepseq` по файлам.
 7. `Env { dictionaryMeta :: [DictionaryMeta], labels :: Labels }`.
 
-`readEnv` — `readMVar`; `modifyEnv` и `putEnvMVar` — запись.
+`readEnv :: MVar Env -> IO Env` — `readMVar`; `modifyEnv` и `putEnvMVar` —
+запись.
 
 ## Поиск
 
@@ -95,8 +93,8 @@ Error HibetError, Log, IOE
 - `hibet show meta [-d ID]` — описания словарей.
 - `hibet om` — картинка.
 
-`:q` — выход, `:h` — история. Словари грузятся в фоне (`withAsync prepareEnv`),
-поэтому shell открывается до окончания загрузки.
+`:q` — выход, `:h` — история. Словари грузятся в фоне (`Ki.scoped` +
+`Ki.fork`), поэтому shell открывается до окончания загрузки.
 
 ## Граница с hewts
 
@@ -108,15 +106,17 @@ offline-инструмент, а не часть приложения.
 
 ## Что меняется (T2)
 
-`hibet` станет движком, `hibet-cli` — консолью. Шов: `Env` как значение,
-`getAnswer`/`translate` без Haskeline; `Cli`, `App`, `Effects.Console`,
-`Effects.PrettyPrint`, `Pretty` уезжают в CLI. Подробности — `../TASKS.md`, T2.
+`effectful` уже снят (T24): `Env` — значение, загрузка — `IO`, фон — `ki`.
+T2 остаётся: `hibet` — движок (`Dictionary`, `Env`, `Translator`, `Type`,
+`Utility`, `Label`), `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Pretty`,
+Haskeline, optparse). Подробности — `../TASKS.md`, T2.
 
 ## Тесты
 
-- `hibet-env` — загрузка словарей, `getAnswer` на Wylie и Unicode, матрица
-  Unicode-запросов (пунктуация, пробелы, смешанный текст, ошибки), инвариант
-  таблицы `stuff/key-aliases.tsv`.
+- `hibet-env` — загрузка словарей (`makeEnvFor`, `makeEnvFrom` на
+  `test/env/data`), `getAnswer` на Wylie и Unicode, матрица Unicode-запросов
+  (пунктуация, пробелы, смешанный текст, ошибки), инвариант таблицы
+  `stuff/key-aliases.tsv`.
 - `hibet-labels` — метки словарей.
 - `hibet-pretty` — вывод.
 

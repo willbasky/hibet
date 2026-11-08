@@ -8,7 +8,7 @@
 | Пакет | Что это | Зависит от |
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
-| `hibet` | переводчик: словари, поиск, консольный цикл | `hewts`, `effectful`, `haskeline`, `optparse-applicative`, `prettyprinter` |
+| `hibet` | переводчик: словари, поиск, консольный цикл | `hewts`, `ki`, `haskeline`, `optparse-applicative`, `prettyprinter`, `tomland` |
 | `hibet-cli` | план T2: консоль отдельно от движка | `hibet` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
@@ -19,19 +19,18 @@
 
 ```
 hibet (exe)
-  → Cli: разбор команды
-  → App.app
-      → prepareEnv: stuff/titles.toml + dicts/*.txt → Env
-      → Translator.loopDialog (Haskeline)
-          → getAnswer
-              → detectScript        U+0F00–U+0FFF → Tibet, иначе Wylie
-              → boilQuery
-                  Wylie → hewts.convertWylieToUnicode
-                  Tibet → hewts.splitSentences + hewts.renderItems OutWylie
-              → Dictionary.searchTranslation (HMS.lookup) по всем словарям
-              → Dictionary.sortOutput по номеру словаря
-          → Pretty.mkOutput
-      → Effects.PrettyPrint.pprint
+  → App.app: Cli.parser через optparse execParser
+      → Ki.scoped + Ki.fork: makeEnvFor → MVar Env (в фоне)
+      → Cli.runCommand
+          → Shell.translator (Haskeline)
+              → getAnswer (чистая)
+                  → detectScript        U+0F00–0FFF → Tibet, иначе Wylie
+                  → boilQuery
+                      Wylie → hewts.convertWylieToUnicode
+                      Tibet → hewts.splitSentences + hewts.renderItems OutWylie
+                  → Dictionary.searchTranslation (HMS.lookup) по всем словарям
+              → Shell.mkOutput: Dictionary.sortOutput по номеру словаря
+              → Pretty.pprint
 ```
 
 Ключ словаря — Wylie. Пунктуация и пробелы запроса в ключ не попадают: тибетская
@@ -60,6 +59,8 @@ hibet (exe)
   `import Convert` — `hibet/src/Translator.hs`; своя логика письма там
   отсутствует. Offline-генератор ключей `scripts/gen-key-aliases.hs` тоже ходит
   в hewts, но в приложение не входит.
+- **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
+  (`makeEnv*` возвращает `Either`), фоновая загрузка — `ki`.
 - **Словари** (59 файлов, ~103 МБ) — данные `hibet`; `stuff/key-aliases.tsv` —
   производная таблица написаний ключей. В браузер они не едут: веб-конвертер
   собирается из одного `hewts`, веб-переводчик — сервер.
@@ -81,12 +82,12 @@ hibet (exe)
 
 | Модуль | Роль |
 |---|---|
-| `App` | сборка эффектов и запуск |
+| `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
 | `Cli` | команды `shell`, `show names`, `show meta`, `om` |
-| `Translator` | диалог, `getAnswer`, `tibetToWylieKey`, граница с hewts |
+| `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
+| `Translator` | чистый `getAnswer`, `tibetToWylieKey`, граница с hewts |
 | `Dictionary` | формат словаря, поиск, добавление alias-ключей |
-| `Env` | загрузка словарей, меток и таблицы ключей, `MVar Env` |
-| `Effects.Console`, `.File`, `.PrettyPrint`, `.Common` | IO-обвязка |
+| `Env` | загрузка словарей и меток в `IO`, `MVar Env` |
 | `Pretty`, `Label`, `Type`, `Utility` | вывод, метаданные, ошибки, мелочи |
 
 ## Сборка и проверки
