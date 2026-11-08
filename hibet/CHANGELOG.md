@@ -11,6 +11,10 @@ and this project adheres to
 
 ### Changed
 
+* The console is a separate package, `hibet-cli`: `App`, `Cli`, `Pretty`,
+  `Shell` and the `hibet` executable moved there. The `hibet` library is the
+  engine and no longer depends on `haskeline`, `optparse-applicative`,
+  `terminal-size`, `pager` or `prettyprinter-ansi-terminal`.
 * The translator no longer uses `effectful`: dictionary loading returns
   `IO (Either HibetError Env)`, the shell loads it in a `ki` scope, and the
   library drops `effectful`, `path` and `path-io`. `Effects.*` are gone; the

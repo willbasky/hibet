@@ -35,6 +35,9 @@
                 (hackageSrc "tasty-falsify" "0.1.0" "sha256-9CFa7ko/KaIHrDiOHzv9u5X93SmlQO50fny5qExaGdA=")
                 { };
             hibet = hself.callCabal2nix "hibet" ./hibet { };
+            hibet-cli = pkgs.haskell.lib.overrideCabal
+              (hself.callCabal2nix "hibet-cli" ./hibet-cli { })
+              (_: { mainProgram = "hibet"; });
             hewts = hself.callCabal2nix "hewts" ./hewts { };
           };
         };
@@ -42,8 +45,9 @@
       {
         packages = {
           hibet = haskellPackages.hibet;
+          hibet-cli = haskellPackages.hibet-cli;
           hewts = haskellPackages.hewts;
-          default = haskellPackages.hibet;
+          default = haskellPackages.hibet-cli;
         };
 
         devShells.default = pkgs.mkShell {

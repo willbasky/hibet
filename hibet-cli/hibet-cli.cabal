@@ -1,0 +1,187 @@
+cabal-version: 3.0
+name: hibet-cli
+version: 2.0.0
+license: BSD-3-Clause
+license-file: LICENSE
+copyright: 2023 willbasky
+maintainer: willgame(at)mail(dot)ru
+author: willbasky
+tested-with: ghc ==9.8.4 || ==9.10.3
+homepage: https://github.com/willbasky/Hibet
+bug-reports: https://github.com/willbasky/Hibet/issues
+synopsis: command-line interface for the hibet translator
+description: Interactive shell, command parser and terminal output for hibet.
+category: Utility
+build-type: Simple
+extra-doc-files:
+  CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/willbasky/Hibet.git
+
+library
+  exposed-modules:
+    App
+    Cli
+    Pretty
+    Shell
+
+  hs-source-dirs: src
+  other-modules:
+    Paths_hibet_cli
+
+  autogen-modules: Paths_hibet_cli
+  default-language: Haskell2010
+  default-extensions:
+    DataKinds
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedRecordDot
+    OverloadedStrings
+    PolyKinds
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    UndecidableInstances
+
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-uni-patterns
+    -Wincomplete-record-updates
+    -Wredundant-constraints
+    -fhide-source-paths
+    -Wpartial-fields
+    -Wmissing-deriving-strategies
+    -fwrite-ide-info
+    -hiedir=.hie
+    -Wunused-packages
+
+  build-depends:
+    base >=4.11 && <5,
+    gitrev >=1.3.1 && <1.4,
+    haskeline >=0.8.2 && <0.9,
+    hibet >=2.0 && <2.1,
+    ki >=1.0 && <1.1,
+    neat-interpolation >=0.5.1 && <0.6,
+    optparse-applicative >=0.18.1 && <0.19,
+    pager >=0.1.1 && <0.2,
+    prettyprinter >=1.7.1 && <1.8,
+    prettyprinter-ansi-terminal >=1.1.3 && <1.2,
+    terminal-size >=0.3.4 && <0.4,
+    text >=2.0.2 && <2.2,
+
+executable hibet
+  main-is: Main.hs
+  hs-source-dirs: app
+  default-language: Haskell2010
+  default-extensions:
+    DataKinds
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedStrings
+    PolyKinds
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    UndecidableInstances
+
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-uni-patterns
+    -Wincomplete-record-updates
+    -Wredundant-constraints
+    -fhide-source-paths
+    -Wpartial-fields
+    -Wmissing-deriving-strategies
+    -fwrite-ide-info
+    -hiedir=.hie
+    -Wunused-packages
+    -threaded
+    -rtsopts
+    -Wmissing-export-lists
+    "-with-rtsopts=-N -A4m -AL128m -qn8 -I0 -T"
+
+  build-depends:
+    base >=4.11 && <5,
+    hibet-cli,
+
+test-suite hibet-pretty
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs: test/pretty
+  default-language: Haskell2010
+  default-extensions:
+    DataKinds
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedStrings
+    PolyKinds
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    UndecidableInstances
+
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-uni-patterns
+    -Wincomplete-record-updates
+    -Wredundant-constraints
+    -fhide-source-paths
+    -Wpartial-fields
+    -Wmissing-deriving-strategies
+    -fwrite-ide-info
+    -hiedir=.hie
+    -Wunused-packages
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+
+  build-depends:
+    base >=4.11 && <5,
+    hibet,
+    hibet-cli,
+    hspec >=2.11.12,
+    prettyprinter >=1.7.1 && <1.8,

@@ -9,7 +9,7 @@ module Cli
 
 import Env (Env (..), readEnv)
 import Label (LabelFull (..), Labels (..), Title (unTitle))
-import Paths_hibet (version)
+import Paths_hibet_cli (version)
 import Pretty
 import Shell (translator)
 

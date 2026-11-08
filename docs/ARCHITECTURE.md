@@ -1,24 +1,24 @@
 # Архитектура репозитория
 
-Два пакета и одна зависимость: `hibet → hewts`. Обратной нет и не будет:
-`hewts` не знает ни про словари, ни про перевод, ни про консоль.
+Три пакета и цепочка зависимостей: `hibet-cli → hibet → hewts`. Обратных
+зависимостей нет и не будет: `hewts` не знает ни про словари, ни про перевод,
+ни про консоль, а `hibet` не знает про Haskeline и optparse.
 
 ## Пакеты
 
 | Пакет | Что это | Зависит от |
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
-| `hibet` | переводчик: словари, поиск, консольный цикл | `hewts`, `ki`, `haskeline`, `optparse-applicative`, `prettyprinter`, `tomland` |
-| `hibet-cli` | план T2: консоль отдельно от движка | `hibet` |
+| `hibet` | движок: словари, загрузка `Env`, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
-`hibet-cli` и `hibet-web` пока не существуют. Появление `hibet-cli` описано в
-`TASKS.md` (T2), веб-переводчика — в `hibet/ROADMAP.md`.
+`hibet-web` пока не существует; веб-переводчик описан в `hibet/ROADMAP.md`.
 
 ## Поток перевода
 
 ```
-hibet (exe)
+exe hibet (пакет hibet-cli)
   → App.app: Cli.parser через optparse execParser
       → Ki.scoped + Ki.fork: makeEnvFor → MVar Env (в фоне)
       → Cli.runCommand
@@ -59,6 +59,9 @@ hibet (exe)
   `import Convert` — `hibet/src/Translator.hs`; своя логика письма там
   отсутствует. Offline-генератор ключей `scripts/gen-key-aliases.hs` тоже ходит
   в hewts, но в приложение не входит.
+- **`hibet`** не зависит от консоли: `haskeline`, `optparse-applicative`,
+  `terminal-size`, `pager` и `prettyprinter-ansi-terminal` живут только в
+  `hibet-cli`.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка — `ki`.
 - **Словари** (59 файлов, ~103 МБ) — данные `hibet`; `stuff/key-aliases.tsv` —
@@ -82,19 +85,25 @@ hibet (exe)
 
 | Модуль | Роль |
 |---|---|
-| `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
-| `Cli` | команды `shell`, `show names`, `show meta`, `om` |
-| `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
 | `Translator` | чистый `getAnswer`, `tibetToWylieKey`, граница с hewts |
 | `Dictionary` | формат словаря, поиск, добавление alias-ключей |
 | `Env` | загрузка словарей и меток в `IO`, `MVar Env` |
-| `Pretty`, `Label`, `Type`, `Utility` | вывод, метаданные, ошибки, мелочи |
+| `Label`, `Type`, `Utility` | метаданные, ошибки, мелочи |
+
+### hibet-cli
+
+| Модуль | Роль |
+|---|---|
+| `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
+| `Cli` | команды `shell`, `show names`, `show meta`, `om` |
+| `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
+| `Pretty` | вывод в терминал и пейджер |
 
 ## Сборка и проверки
 
 - GHC 9.8.4 или 9.10.3, Cabal.
-- `cabal build all` — оба пакета.
-- `cabal test all` — тесты `hewts` и `hibet`.
+- `cabal build all` — три пакета.
+- `cabal test all` — тесты `hewts`, `hibet` и `hibet-cli`.
 - `cabal run hewts-benchmark` — линейность разбора.
 - `cabal exec -- runghc scripts/gen-key-aliases.hs` — пересобрать
   `hibet/stuff/key-aliases.tsv` после обновления словарей (около 2,5 мин).
