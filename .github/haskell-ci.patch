@@ -1,0 +1,11 @@
+--- a/.github/workflows/haskell-ci.yml
++++ b/.github/workflows/haskell-ci.yml
+@@ -123,7 +123,7 @@
+       - name: install cabal-plan
+         run: |
+           mkdir -p $HOME/.cabal/bin
+-          curl -sL https://github.com/haskell-hvr/cabal-plan/releases/download/v0.7.3.0/cabal-plan-0.7.3.0-x86_64-linux.xz > cabal-plan.xz
++          curl -sSLf --retry 10 --retry-delay 5 --retry-all-errors https://github.com/haskell-hvr/cabal-plan/releases/download/v0.7.3.0/cabal-plan-0.7.3.0-x86_64-linux.xz > cabal-plan.xz
+           echo 'f62ccb2971567a5f638f2005ad3173dba14693a45154c1508645c52289714cb2  cabal-plan.xz' | sha256sum -c -
+           xz -d < cabal-plan.xz > $HOME/.cabal/bin/cabal-plan
+           rm -f cabal-plan.xz
