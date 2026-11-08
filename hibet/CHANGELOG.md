@@ -9,6 +9,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+* The translator no longer uses `effectful`: dictionary loading returns
+  `IO (Either HibetError Env)`, the shell loads it in a `ki` scope, and the
+  library drops `effectful`, `path` and `path-io`. `Effects.*` are gone; the
+  dialog lives in `Shell` and console output is plain `IO` in `Pretty`.
+
 ### Fixed
 
 * A Unicode query now reaches dictionary keys written in non-canonical Wylie:

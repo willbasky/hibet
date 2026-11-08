@@ -7,24 +7,14 @@ import Convert
     , syllables
     )
 import Dictionary
-import Effectful (Eff, IOE, runEff)
-import Effectful.Error.Static
-    ( Error
-    , runErrorNoCallStack
-    )
-import Effects.File (FileSystem (..))
-import qualified Effects.File as EF
-import Env (Env (..), makeEnv)
+import Env (Env (..), makeEnvFor, makeEnvFrom)
 import Label (Title (..))
-import Paths (dictPath1, dictPath2, titlePath)
+import Paths (testDir)
 import Translator (getAnswer, tibetToWylieKey)
 import Type (HibetError (..))
 
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
-import Data.Function ((&))
 import qualified Data.HashMap.Strict as HMS
-import Data.List (sortOn)
+import Data.List (find, sortOn)
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -41,7 +31,7 @@ import Test.Hspec
 
 main :: IO ()
 main = hspec $ do
-    mockMakeEnvSpec
+    makeEnvFromSpec
     dictionarySearchSpec
     keyAliasSpec
     translate
@@ -85,18 +75,30 @@ dictionarySearchSpec =
         search query raw = searchTranslation query (meta (makeDictionary raw))
         meta dictionary = DictionaryMeta dictionary (Title "test") 1
 
-mockMakeEnvSpec :: Spec
-mockMakeEnvSpec =
-    describe "FileIO: " $ do
-        it "Read file titles" $ do
-            res <- runFileMock (EF.readFileBS titlePath)
-            res `shouldBe` Right toml
-        it "Read file lazy dict 1" $ do
-            res <- runFileMock (EF.readFileLazyBS dictPath1)
-            res `shouldBe` Right dict1
-        it "Read file lazy dict 2" $ do
-            res <- runFileMock (EF.readFileLazyBS dictPath2)
-            res `shouldBe` Right dict2
+makeEnvFromSpec :: Spec
+makeEnvFromSpec =
+    describe "Env loader" $ do
+        it "loads titles and dictionaries from a directory" $ do
+            res <- makeEnvFrom testDir []
+            case res of
+                Left err -> expectationFailure $ show err
+                Right env -> do
+                    let meta = sortOn (\dm -> dm.number) env.dictionaryMeta
+                    map (\dm -> dm.number) meta `shouldBe` [5, 7]
+                    map (\dm -> dm.title) meta
+                        `shouldBe` [Title "Hopkins", Title "Rangjung Yeshe"]
+        it "adds the canonical spelling from key-aliases.tsv" $ do
+            res <- makeEnvFrom testDir []
+            case res of
+                Left err -> expectationFailure $ show err
+                Right env ->
+                    case find (\dm -> dm.number == 5) env.dictionaryMeta of
+                        Nothing -> expectationFailure "Hopkins dictionary is missing"
+                        Just hopkins -> do
+                            fmap targets (searchTranslation "bha ga" hopkins)
+                                `shouldBe` Just [Target "bhaga"]
+                            fmap targets (searchTranslation "b+ha ga" hopkins)
+                                `shouldBe` Just [Target "bhaga"]
 
 -- | The alias table is derived data. Every row must still name the key the
 -- Unicode query path makes for the legacy spelling, and both spellings must
@@ -141,135 +143,112 @@ translate :: Spec
 translate =
     describe "Translate Wylie request" $ do
         it "Search mir" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env -> do
-                    let query = "mir"
-                    let reply = mapMaybe (searchTranslation query) env.dictionaryMeta
-                    sortOn dictNumber reply
-                        `shouldBe` [ Answer
-                                        { targets = [Target "termin. case of mi"]
-                                        , dictNumber = 15
-                                        , dictTitle = Title "James Valby"
-                                        }
-                                   , Answer
-                                        { targets = [Target "as/for/ to a human being"]
-                                        , dictNumber = 16
-                                        , dictTitle = Title "Ives Waldo"
-                                        }
-                                   , Answer
-                                        { targets =
-                                            [ Target
-                                                "{mi ru zhes pa'i ru yig bsdus pa ste/ srin po mir brdzus zhes pa lta bu/ (mir chags) ma'i mngal gyi byis pa/}"
-                                            ]
-                                        , dictNumber = 37
-                                        , dictTitle = Title "dag-yig gsar-bsgrigs"
-                                        }
-                                   ]
+            withEnv $ \env -> do
+                let query = "mir"
+                let reply = mapMaybe (searchTranslation query) env.dictionaryMeta
+                sortOn dictNumber reply
+                    `shouldBe` [ Answer
+                                    { targets = [Target "termin. case of mi"]
+                                    , dictNumber = 15
+                                    , dictTitle = Title "James Valby"
+                                    }
+                               , Answer
+                                    { targets = [Target "as/for/ to a human being"]
+                                    , dictNumber = 16
+                                    , dictTitle = Title "Ives Waldo"
+                                    }
+                               , Answer
+                                    { targets =
+                                        [ Target
+                                            "{mi ru zhes pa'i ru yig bsdus pa ste/ srin po mir brdzus zhes pa lta bu/ (mir chags) ma'i mngal gyi byis pa/}"
+                                        ]
+                                    , dictNumber = 37
+                                    , dictTitle = Title "dag-yig gsar-bsgrigs"
+                                    }
+                               ]
         it "Search ri ma" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env -> do
-                    let reply = mapMaybe (searchTranslation "ri ma") env.dictionaryMeta
-                    reply
-                        `shouldBe` [ Answer
-                                        { targets = [Target "arid/ non-irrigated land"]
-                                        , dictNumber = 16
-                                        , dictTitle = Title "Ives Waldo"
-                                        }
-                                   ]
+            withEnv $ \env -> do
+                let reply = mapMaybe (searchTranslation "ri ma") env.dictionaryMeta
+                reply
+                    `shouldBe` [ Answer
+                                    { targets = [Target "arid/ non-irrigated land"]
+                                    , dictNumber = 16
+                                    , dictTitle = Title "Ives Waldo"
+                                    }
+                               ]
         it "Search re ba byed pa" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env -> do
-                    let reply = mapMaybe (searchTranslation "re ba byed pa") env.dictionaryMeta
-                    sortOn dictNumber reply
-                        `shouldBe` [ Answer
-                                        { targets = [Target "to hope, wish, expect, demand, ask"]
-                                        , dictNumber = 7
-                                        , dictTitle = Title "Rangjung Yeshe"
-                                        }
-                                   , Answer
-                                        { targets = [Target "demand, ask, hope, wish, expect"]
-                                        , dictNumber = 15
-                                        , dictTitle = Title "James Valby"
-                                        }
-                                   ]
+            withEnv $ \env -> do
+                let reply = mapMaybe (searchTranslation "re ba byed pa") env.dictionaryMeta
+                sortOn dictNumber reply
+                    `shouldBe` [ Answer
+                                    { targets = [Target "to hope, wish, expect, demand, ask"]
+                                    , dictNumber = 7
+                                    , dictTitle = Title "Rangjung Yeshe"
+                                    }
+                               , Answer
+                                    { targets = [Target "demand, ask, hope, wish, expect"]
+                                    , dictNumber = 15
+                                    , dictTitle = Title "James Valby"
+                                    }
+                               ]
         it "Search re ba med pa" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env -> do
-                    let reply = mapMaybe (searchTranslation "re ba med pa") env.dictionaryMeta
-                    sortOn dictNumber reply
-                        `shouldBe` [ Answer
-                                        { targets = [Target "hopeless; no hope"]
-                                        , dictNumber = 5
-                                        , dictTitle = Title "Hopkins"
-                                        }
-                                   , Answer
-                                        { targets = [Target "hopeless, despairing"]
-                                        , dictNumber = 15
-                                        , dictTitle = Title "James Valby"
-                                        }
-                                   , Answer
-                                        { targets = [Target "hopeless, no hope of --"]
-                                        , dictNumber = 16
-                                        , dictTitle = Title "Ives Waldo"
-                                        }
-                                   , Answer
-                                        { targets = [Target "[MSA]nirapekṣa; [MSA]niṣpratikāṅkṣa"]
-                                        , dictNumber = 41
-                                        , dictTitle = Title "Hopkins Sanskrit"
-                                        }
-                                   ]
+            withEnv $ \env -> do
+                let reply = mapMaybe (searchTranslation "re ba med pa") env.dictionaryMeta
+                sortOn dictNumber reply
+                    `shouldBe` [ Answer
+                                    { targets = [Target "hopeless; no hope"]
+                                    , dictNumber = 5
+                                    , dictTitle = Title "Hopkins"
+                                    }
+                               , Answer
+                                    { targets = [Target "hopeless, despairing"]
+                                    , dictNumber = 15
+                                    , dictTitle = Title "James Valby"
+                                    }
+                               , Answer
+                                    { targets = [Target "hopeless, no hope of --"]
+                                    , dictNumber = 16
+                                    , dictTitle = Title "Ives Waldo"
+                                    }
+                               , Answer
+                                    { targets = [Target "[MSA]nirapekṣa; [MSA]niṣpratikāṅkṣa"]
+                                    , dictNumber = 41
+                                    , dictTitle = Title "Hopkins Sanskrit"
+                                    }
+                               ]
         it "Tibetan query reaches the same entries as its Wylie key" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env ->
-                    case (getAnswer "re ba med pa" env, getAnswer "རེ་བ་མེད་པ།" env) of
-                        (Right (_, fromWylie), Right (_, fromTibet)) -> do
-                            fromTibet `shouldBe` fromWylie
-                            length fromTibet `shouldBe` 4
-                        answers -> expectationFailure $ show answers
+            withEnv $ \env -> do
+                case (getAnswer "re ba med pa" env, getAnswer "རེ་བ་མེད་པ།" env) of
+                    (Right (_, fromWylie), Right (_, fromTibet)) -> do
+                        fromTibet `shouldBe` fromWylie
+                        length fromTibet `shouldBe` 4
+                    answers -> expectationFailure $ show answers
         it "Unicode query matrix reaches the same entries as its Wylie key" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env ->
-                    mapM_
-                        (\(wylie, unicode) -> answersOf env unicode `shouldBe` answersOf env wylie)
-                        unicodeMatrix
+            withEnv $ \env -> do
+                mapM_
+                    (\(wylie, unicode) -> answersOf env unicode `shouldBe` answersOf env wylie)
+                    unicodeMatrix
         it "Unicode reaches the canonical spelling of a legacy key" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
-                Right env -> do
-                    answersOf env "བྷ་ག" `shouldBe` answersOf env "b+ha ga"
-                    answersOf env "གནད" `shouldBe` answersOf env "gand"
-                    answersOf env "bha ga" `shouldSatisfy` hasAnswers
-                    answersOf env "gnad" `shouldSatisfy` hasAnswers
-                    case (answersOf env "bha ga", answersOf env "བྷ་ག") of
-                        (Right legacy, Right unicode) ->
-                            map dictNumber legacy
-                                `shouldSatisfy` all (`elem` map dictNumber unicode)
-                        other -> expectationFailure $ show other
-                    case (answersOf env "gnad", answersOf env "གནད") of
-                        (Right legacy, Right unicode) ->
-                            map dictNumber legacy
-                                `shouldSatisfy` all (`elem` map dictNumber unicode)
-                        other -> expectationFailure $ show other
+            withEnv $ \env -> do
+                answersOf env "བྷ་ག" `shouldBe` answersOf env "b+ha ga"
+                answersOf env "གནད" `shouldBe` answersOf env "gand"
+                answersOf env "bha ga" `shouldSatisfy` hasAnswers
+                answersOf env "gnad" `shouldSatisfy` hasAnswers
+                case (answersOf env "bha ga", answersOf env "བྷ་ག") of
+                    (Right legacy, Right unicode) ->
+                        map dictNumber legacy
+                            `shouldSatisfy` all (`elem` map dictNumber unicode)
+                    other -> expectationFailure $ show other
+                case (answersOf env "gnad", answersOf env "གནད") of
+                    (Right legacy, Right unicode) ->
+                        map dictNumber legacy
+                            `shouldSatisfy` all (`elem` map dictNumber unicode)
+                    other -> expectationFailure $ show other
         it "A malformed syllable does not resolve to the clean phrase" $ do
-            res <- runFileMock (withTestDicts <$> makeEnv)
-            case res of
-                Left err -> expectationFailure $ show err
+            withEnv $ \env -> do
                 -- The broken run contributes no key, so the typo cannot pass
                 -- for the phrase the user meant.
-                Right env -> answersOf env "ྐརེ་བ་མེད་པ" `shouldBe` Right []
+                answersOf env "ྐརེ་བ་མེད་པ" `shouldBe` Right []
 
 answersOf :: Env -> Text -> Either HibetError [Answer]
 answersOf env query = snd <$> getAnswer query env
@@ -295,39 +274,11 @@ unicodeMatrix =
     , ("gand", "གནད")
     ]
 
-runFileMock ::
-    Eff
-        '[ FileSystem
-         , Error HibetError
-         , -- , Log
-           IOE
-         ]
-        a
-    -> IO (Either HibetError a)
-runFileMock program =
-    program
-        & EF.runFileSystemIO
-        & runErrorNoCallStack @HibetError
-        -- & runLog "hibet" logger defaultLogLevel
-        & runEff
+withEnv :: (Env -> IO ()) -> IO ()
+withEnv action =
+    makeEnvFor testDicts >>= either (fail . show) action
 
 -- The expectations below are written for these dictionaries. New dictionaries
 -- must not change the result of the search tests.
 testDicts :: [Int]
 testDicts = [5, 7, 15, 16, 37, 41]
-
-withTestDicts :: Env -> Env
-withTestDicts env = env{dictionaryMeta = selectDict testDicts env.dictionaryMeta}
-
--- Data for mocking
-
-toml :: BS.ByteString
-toml =
-    "[[titles]]\n    path = \"Hopkins-2015-T|E\"\n    id = 5\n    label = \"Hopkins\"\n    about = \"The Uma Institute for Tibetan Studies Tibetan-Sanskrit-English Dictionary (Version: June 2015)|Jeffrey Hopkins, Editor.|Paul Hackett, Contributor and Technical Editor.| Contributors: Nathaniel Garson, William Magee, Andres Montano, John Powers, Craig Preston, Joe Wilson, Jongbok Yi|A PDF version of this dictionary is available for download at: www.uma-tibet.org\"\n    abbreviations = \"Hopkins\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n    year = 2015\n\n[[titles]]\n    path = \"RangjungYeshe-T|E\"\n    id = 7\n    label = \"Rangjung Yeshe\"\n    about = \"Rangjung Yeshe Dictionary|Rangjung Yeshe Tibetan-English Dharma Dictionary 3.0 by Erik Pema Kunsang (2003)|online version: http://rywiki.tsadra.org\"\n    abbreviations = \"RangjungYeshe\"\n    public = true\n    listCredits = true\n    available = true\n    source = \"Tibetan\"\n    target = [\"English\"]\n"
-
-dict1 :: BSL.ByteString
-dict1 = "re|each; every; single; hope\nre ba|hope\nre ba med pa|hopeless; no hope\n"
-
-dict2 :: BSL.ByteString
-dict2 =
-    "re ba|1) {re ba, re ba, re ba} intr. v. . to hope, aims; hopes, expectation. 2) woven cloth/ goat hair\nre ba byed pa|to hope, wish, expect, demand, ask\nre ba chad|give up hope\nme|fire, flame, ember, Anaka, [the 50th year, Male Fire Dragon]\nre|noun + re + noun - Das: Under \"re\", 4) Occurs as a particle mostly put between two closely connected words for the purpose of giving the compound word a verbal signification; thus {snying rje} signifying compassion, can be split in two with the particle {re} between them and then it means: to take pity upon {snying re rje}; in the same manner {'o brgyal} fatigue becomes {'o re brgyal} = was fatigued. In like manner, we have {nyams re dga'}; {blo re bde}, [to be delighted]; {skyug re log}; {zhe re 'jigs}; {yi re mug}; {don re chung}. MSS: To this list we can add: {zhe re skyid}; {dang re spro}; {sems re skyo}, I'm feeling sad, how sad. [mss]\n"

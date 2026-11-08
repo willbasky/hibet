@@ -20,6 +20,7 @@ data-files:
 
 extra-source-files:
   test/env/data/dicts/*.txt
+  test/env/data/stuff/key-aliases.tsv
   test/env/data/stuff/titles.toml
 
 extra-doc-files:
@@ -35,13 +36,10 @@ library
     App
     Cli
     Dictionary
-    Effects.Common
-    Effects.Console
-    Effects.File
-    Effects.PrettyPrint
     Env
     Label
     Pretty
+    Shell
     Translator
     Type
     Utility
@@ -49,7 +47,6 @@ library
   hs-source-dirs: src
   other-modules:
     Paths_hibet
-    Sandbox
 
   autogen-modules: Paths_hibet
   default-language: Haskell2010
@@ -90,7 +87,6 @@ library
     -fwrite-ide-info
     -hiedir=.hie
     -Wunused-packages
-    -fplugin=Effectful.Plugin
 
   build-depends:
     base >=4.11 && <5,
@@ -98,25 +94,18 @@ library
     containers >=0.6.7 && <0.8,
     deepseq >=1.4.8 && <1.6,
     directory >=1.3.7 && <1.4,
-    effectful >=2.4.0 && <2.7,
-    effectful-core >=2.4.0 && <2.7,
-    effectful-plugin >=1.1.0 && <2.1,
-    effectful-th >=1.0.0 && <1.1,
     extra >=1.8 && <1.9,
     filepath >=1.4.2 && <1.6,
     gitrev >=1.3.1 && <1.4,
     haskeline >=0.8.2 && <0.9,
     hewts >=0.1 && <0.2,
-    log-effectful >=1.0.0 && <1.1,
+    ki >=1.0 && <1.1,
     neat-interpolation >=0.5.1 && <0.6,
     optparse-applicative >=0.18.1 && <0.19,
     pager >=0.1.1 && <0.2,
     parallel >=3.2.2 && <3.3,
-    path >=0.9.5 && <0.10,
-    path-io >=1.8.2 && <1.9,
     prettyprinter >=1.7.1 && <1.8,
     prettyprinter-ansi-terminal >=1.1.3 && <1.2,
-    resourcet-effectful >=1.0.1 && <1.1,
     terminal-size >=0.3.4 && <0.4,
     text >=2.0.2 && <2.2,
     text-rope >=0.3 && <0.4,
@@ -291,9 +280,7 @@ test-suite hibet-env
   hs-source-dirs: test/env
   other-modules:
     Paths
-    Paths_hibet
 
-  autogen-modules: Paths_hibet
   default-language: Haskell2010
   default-extensions:
     DataKinds
@@ -339,8 +326,6 @@ test-suite hibet-env
 
   build-depends:
     base >=4.11 && <5,
-    bytestring >=0.11.5.3 && <0.13,
-    effectful-core >=2.4.0.0 && <2.7,
     hewts >=0.1 && <0.2,
     hibet,
     hspec >=2.11.12,

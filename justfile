@@ -12,3 +12,6 @@ build:
 # update the bounds of dependencies
 update:
     cabal-bounds update
+
+run:
+    cabal run exe:hibet 
