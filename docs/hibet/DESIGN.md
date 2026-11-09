@@ -104,6 +104,8 @@ hibet (движок)
 - `hibet` — интерактивный shell.
 - `hibet --data-dir DIR …` — явный корень данных для любой команды.
 - `hibet data status` — разрешённый data-root и версия из `manifest.toml`.
+  План T25: `hibet data install --from DIR` и `hibet data update` с проверкой
+  манифеста; данные остаются в основной репе, отдельной репы нет.
 - `hibet shell -s ID…` — shell с выбранными словарями.
 - `hibet show names` — список словарей.
 - `hibet show meta [-d ID]` — описания словарей.
@@ -141,7 +143,8 @@ optparse, exe `hibet`). Движок не зависит от консольны
 
 `data/dicts/*.txt` — 59 файлов, около 103 МБ; `data/titles.toml` —
 метаданные; `data/key-aliases.tsv` — производная таблица ключей (259 КБ);
-`data/manifest.toml` — версия набора и sha256 каждого файла. Это не
+`data/manifest.toml` — версия набора и sha256 каждого файла; его генерирует и
+сверяет с диском `hibet-tools` (`just gen-manifest`, `--check`). Это не
 `data-files` пакета: `cabal sdist` содержит только код и fixture, а бинарь
 ищет данные через `--data-dir`, `HIBET_DATA_DIR` или XDG. В браузер они не
 грузятся: веб-переводчик может быть только серверным.

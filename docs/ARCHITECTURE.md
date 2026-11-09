@@ -38,8 +38,15 @@ data/
 
 Кандидат принимается, только если в нём есть `titles.toml` и `dicts/`. Ошибка
 называет проверенные пути и подсказывает флаг и переменную. `hibet data status`
-печатает разрешённый путь и версию из `manifest.toml`. Манифест читают только
-CLI и будущий updater; библиотека `hibet` его не требует.
+печатает разрешённый путь и версию из `manifest.toml`.
+
+Ответственность разделена: `hibet-tools` — maintainer-only, обновляет `data/`
+в репе и готовит манифест; `hibet data install --from DIR` и
+`hibet data update` — пользовательские команды в `hibet-cli`, которые
+проверяют манифест и ставят данные в XDG. Релиз
+`hibet-data-<version>.tar.gz` публикуется в основной репе; отдельной репы
+данных нет. Манифест читают только updater и команды CLI; библиотека `hibet`
+его не требует.
 
 Для разработки `just run` выставляет `HIBET_DATA_DIR=$PWD/data`; `nix develop`
 делает то же через `shellHook`. Nix-пакет `hibet-cli` оборачивает бинарь и
@@ -48,14 +55,17 @@ CLI и будущий updater; библиотека `hibet` его не треб
 ## Обновление словарей
 
 `hibet-tools` (exe `hibet-update-dicts`) — maintainer-only замена
-`scripts/update-dicts.sh`. Он скачивает все upstream-файлы, нормализует их в
+`scripts/update-dicts.sh`; он не устанавливает данные пользователю. Он
+скачивает все upstream-файлы, нормализует их в
 NFC, применяет две локальные правки (`Sera-Textbook-Def`, `JimValby`),
 сравнивает с `data/dicts` и пишет только изменения. Счётчики те же, что у
 bash-версии; `--check` ничего не пишет и завершается кодом 1 при отличиях.
 `BASE_URL=file:///…` используется в тестах без сети, `REF` задаёт ветку.
 После изменений инструмент в том же процессе вызывает генератор
-`data/key-aliases.tsv`; отдельный режим — `just gen-key-aliases`.
-`data/manifest.toml` пока не пересобирается автоматически (T25, шаг 6).
+`data/key-aliases.tsv` и пересобирает `data/manifest.toml`; отдельные режимы —
+`just gen-key-aliases` (тоже обновляет манифест) и `just gen-manifest`.
+`--check` дополнительно сверяет `data/manifest.toml` с файлами на диске:
+пропавший или лишний файл, несовпадение размера или sha256 дают код 1.
 
 ## Поток перевода
 
@@ -152,6 +162,7 @@ exe hibet (пакет hibet-cli)
 | `Fetch` | HTTP-загрузка и `file://` для тестов |
 | `Update` | карта upstream-файлов, NFC, локальные правки, сравнение и запись |
 | `KeyAliases` | генератор `data/key-aliases.tsv` |
+| `Manifest` | генерация и проверка `data/manifest.toml` (sha256 и размеры) |
 
 ## Сборка и проверки
 
@@ -160,13 +171,14 @@ exe hibet (пакет hibet-cli)
 - `cabal test all` — тесты `hewts`, `hibet`, `hibet-cli` и `hibet-tools`.
 - `cabal run hewts-benchmark` — линейность разбора.
 - `just update-dicts` — скачать upstream и обновить `data/dicts`, затем
-  пересобрать `data/key-aliases.tsv` в том же процессе.
-- `just update-dicts-check` — то же без записи; код 1, если есть отличия.
-  `BASE_URL=file:///path` и `REF=...` сохраняют интерфейс старого скрипта.
+  пересобрать `data/key-aliases.tsv` и `data/manifest.toml` в том же процессе.
+- `just update-dicts-check` — то же без записи плюс сверка манифеста с диском;
+  код 1, если есть отличия или манифест устарел. `BASE_URL=file:///path` и
+  `REF=...` сохраняют интерфейс старого скрипта.
 - `just gen-key-aliases` — только пересобрать `data/key-aliases.tsv`
-  (около 2,5 мин).
-- `data/manifest.toml` после обновления словарей надо перегенерировать вручную:
-  генератор манифеста появится вместе с T25, шаг 6.
+  (около 2,5 мин) и обновить манифест.
+- `just gen-manifest` — только пересобрать `data/manifest.toml` из текущего
+  `data/`; версия набора — дата в формате `YYYY.MM.DD`.
 - `just run` — запуск из репы с `HIBET_DATA_DIR=$PWD/data`.
 - `hibet data status` — разрешённый data-root и версия набора.
 - `fourmolu` для `.hs`, `cabal-gild` для `.cabal`.

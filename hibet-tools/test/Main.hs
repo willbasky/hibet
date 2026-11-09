@@ -2,6 +2,7 @@ module Main (main) where
 
 import Fetch (newFetcher)
 import KeyAliases (generateAliases)
+import qualified Manifest
 import Update
     ( Config (..)
     , Entry (..)
@@ -14,7 +15,7 @@ import Update
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import System.Directory (createDirectoryIfMissing, doesFileExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile)
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
 import Test.Hspec
@@ -32,6 +33,7 @@ main = hspec $ do
     normalizeSpec
     updateSpec
     aliasSpec
+    manifestSpec
 
 normalizeSpec :: Spec
 normalizeSpec =
@@ -168,6 +170,59 @@ aliasSpec =
                 content <- TIO.readFile out
                 content
                     `shouldSatisfy` T.isInfixOf "bha ga\tb+ha ga"
+
+manifestSpec :: Spec
+manifestSpec =
+    describe "Manifest" $ do
+        it "writes hashes in a fixed order and verifies them" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                setupData root
+                written <- Manifest.writeManifest root "2026.11.09"
+                written `shouldBe` Right 3
+                content <- TIO.readFile (root </> "manifest.toml")
+                content
+                    `shouldSatisfy` T.isInfixOf
+                        "sha256 = \"92d944fe43bd6797e4ce6df996aab7b8243566737090d2e84790e539ea8fd78f\""
+                manifest <- Manifest.buildManifest root "2026.11.09"
+                map Manifest.name manifest.files
+                    `shouldBe` ["dicts/A-T|E.txt", "titles.toml", "key-aliases.tsv"]
+                Manifest.checkManifest root `shouldReturn` []
+        it "reports a changed file" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                setupData root
+                _ <- Manifest.writeManifest root "2026.11.09"
+                BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hopE\n"
+                Manifest.checkManifest root
+                    `shouldReturn` ["sha256 mismatch: dicts/A-T|E.txt"]
+        it "reports a missing file" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                setupData root
+                _ <- Manifest.writeManifest root "2026.11.09"
+                removeFile (root </> "dicts" </> "A-T|E.txt")
+                Manifest.checkManifest root
+                    `shouldReturn` ["missing: dicts/A-T|E.txt"]
+        it "reports a file that is not in the manifest" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                setupData root
+                _ <- Manifest.writeManifest root "2026.11.09"
+                BS.writeFile (root </> "dicts" </> "B-T|E.txt") "ri ma|land\n"
+                Manifest.checkManifest root
+                    `shouldReturn` ["not in manifest: dicts/B-T|E.txt"]
+        it "reports a missing manifest" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                problems <- Manifest.checkManifest root
+                problems
+                    `shouldSatisfy` ( \case
+                                        [problem] ->
+                                            "manifest.toml" `T.isInfixOf` problem
+                                        _ -> False
+                                    )
+    where
+        setupData root = do
+            createDirectoryIfMissing True (root </> "dicts")
+            BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hope\n"
+            BS.writeFile (root </> "titles.toml") "[[titles]]\n"
+            BS.writeFile (root </> "key-aliases.tsv") "bha ga\tb+ha ga\n"
 
 isLeft :: Either a b -> Bool
 isLeft (Left _) = True
