@@ -1,0 +1,308 @@
+# Generated from data/ on 2026-11-09. Do not edit by hand.
+schema = 1
+version = "2026.11.09"
+
+[[files]]
+name = "dicts/84000Definitions-T|E.txt"
+sha256 = "05e668865bc7fa8906145e85d07393193b8349dd0929441438ee263462f819b4"
+size = 7285724
+
+[[files]]
+name = "dicts/84000Dict-T|E.txt"
+sha256 = "3275656faa7dd3606b950c385432e999d4a61d35b748f003ca8c9e1577028461"
+size = 1308074
+
+[[files]]
+name = "dicts/84000Skt-T|S.txt"
+sha256 = "986140967ad7431fc9c02e75a8539b9674843d174167c3ff2d74b7b578a77f60"
+size = 701840
+
+[[files]]
+name = "dicts/84000Synonyms-T|T.txt"
+sha256 = "489febfa88e569ba169e994a34624a08a99ad5649c6fbd7da89202f607c87219"
+size = 503684
+
+[[files]]
+name = "dicts/Berzin-Def-T|E.txt"
+sha256 = "cfc9fc00e08c7aa10399adfca1cd41c6c85db1487a2f1c6611881c70f080cec3"
+size = 214773
+
+[[files]]
+name = "dicts/Berzin-T|E.txt"
+sha256 = "d7cd59251a19b0296924e68eb5715cb6b97d46403a49d87104550f0bdb7e8f7d"
+size = 43078
+
+[[files]]
+name = "dicts/Bialek-T|E.txt"
+sha256 = "9df9b08acc40d495ac18062f4d95d8ef5b9d9c93980c43548f97fb55f56178fc"
+size = 65817
+
+[[files]]
+name = "dicts/bod_rgya_nang_don_rig_pai_tshig_mdzod-T|T.txt"
+sha256 = "3128139888fd259a65d09c7b8426171c9a347b457ea3ed917645be0b728f64d0"
+size = 1204921
+
+[[files]]
+name = "dicts/bod_yig_tshig_gter_rgya_mtsho-T|T.txt"
+sha256 = "35132f036985a3464bb2d5a55da6a3d78ee0d12496b87ded1c32f4353144912c"
+size = 12635677
+
+[[files]]
+name = "dicts/brda_dkrol_gser_gyi_me_long-T|T.txt"
+sha256 = "475ed4f83ad22186d25539eeec27c5d4dea23b2fe5f5ecfb3d84e7a00a14d83b"
+size = 1989267
+
+[[files]]
+name = "dicts/chos_rnam_kun_btus-T|T.txt"
+sha256 = "f3bb9ed63e8c9f0ec158d07dd90d212dce7132f54890547c9f388d33f3e61101"
+size = 2300953
+
+[[files]]
+name = "dicts/CommonTerms-Lin-T|E.txt"
+sha256 = "e66e5a865affe4f4bfab17a5da6862ac005a73e65b53787881726777b8f4f663"
+size = 97454
+
+[[files]]
+name = "dicts/Computer-Terms-T|E.txt"
+sha256 = "561c559a1fa3f353eb3fb68566b469405d16d4f1948fe11053a11c18c64a9b1d"
+size = 198777
+
+[[files]]
+name = "dicts/dag_tshig_gsar_bsgrigs-T|T.txt"
+sha256 = "e93174983c79a07e0d60c727750e76dfac3feb531eb62648bdba66ac9b852d7a"
+size = 1485403
+
+[[files]]
+name = "dicts/DanMartin-T|TE.txt"
+sha256 = "e57efb4a45e42f2cf26db73ac5be85a53dd6c21d022d9590fa8134141b25b041"
+size = 1554210
+
+[[files]]
+name = "dicts/dung-dkar-tshig-mdzod-chen-mo-T|T.txt"
+sha256 = "e5e5e39a54941a34ca620581f9ffc871d6c72d2f85b6e5c438645871f5995a2a"
+size = 7051773
+
+[[files]]
+name = "dicts/Gaeng-Wetzel-T|ES.txt"
+sha256 = "7506e73ddbd35ab453fda654b091b354f3e31bbb9ff2b4830ef1cc4baba5d427"
+size = 38169
+
+[[files]]
+name = "dicts/gangs_can_mkhas_grub_rim_byon_ming_mdzod-T|T.txt"
+sha256 = "6e34ac9f4c7ff085009eabf1a1d004ead7061621cc75c4babd973cd429283f57"
+size = 2560096
+
+[[files]]
+name = "dicts/Gateway-To-Knowledge-T|E.txt"
+sha256 = "e23d9fadea8e24790e9340ba18d5217c8b661799458b3b2edc0aebaa930893bb"
+size = 25353
+
+[[files]]
+name = "dicts/Hackett-Def-2015-T|E.txt"
+sha256 = "6f53d018d3d67c08e47c615240bf5c325929fb0dc1676d6660e6c7f4640b2654"
+size = 145174
+
+[[files]]
+name = "dicts/Hopkins-2015-T|E.txt"
+sha256 = "50ddb430d4de8db57903b788e0bc387d62becdd120f9d1d7be5631bf42e03138"
+size = 984176
+
+[[files]]
+name = "dicts/Hopkins-2015-T|S.txt"
+sha256 = "46098962c870f269b61cf8fc956d4010812f8d2087ab9e85c7c1356b6be6ad9c"
+size = 689132
+
+[[files]]
+name = "dicts/Hopkins-Comment-T|E.txt"
+sha256 = "4f6bcf3dae1bcfd633d250a63eb34c358c08b7c6190fd1ab01e39ca899b53dbb"
+size = 358770
+
+[[files]]
+name = "dicts/Hopkins-Def-2015-T|E.txt"
+sha256 = "254610a25edf9b40e73d790f021f2ae61e44e9b8020ff287ba4dbae5e4d9f30a"
+size = 32489
+
+[[files]]
+name = "dicts/Hopkins-Def-2015-T|T.txt"
+sha256 = "a0a4e642a5bb72d07fa00c16f4204d9817f01cf81544fcb324c77923cf94b45d"
+size = 26567
+
+[[files]]
+name = "dicts/Hopkins-Divisions-2015-T|ES.txt"
+sha256 = "9cb3bff6fe85a61018817c5a9f0aaf9f58300d8a17c23bd445d8f4647fe45206"
+size = 31821
+
+[[files]]
+name = "dicts/Hopkins-Divisions-2015-T|T.txt"
+sha256 = "74328dbe719346dd415012262f13f11029909f07f37467bc74101128e389e273"
+size = 23371
+
+[[files]]
+name = "dicts/Hopkins-Examples-T|E.txt"
+sha256 = "0e810b955a2b5268146c370dd0260cbc260087e2022044dd61404fe09d2b46b9"
+size = 28633
+
+[[files]]
+name = "dicts/Hopkins-Examples-T|T.txt"
+sha256 = "ab63a744a01ad825b11083169cb1f97ba284e74b103009093975374457995b34"
+size = 19199
+
+[[files]]
+name = "dicts/Hopkins-others-T|E.txt"
+sha256 = "91ccdee9e4166d490d17a098e4cae3fb59a71267829cc4bfba4a33335d5b901d"
+size = 379071
+
+[[files]]
+name = "dicts/Hopkins-Synonyms-2015-T|T.txt"
+sha256 = "a3a82cb64df988650cdd49178d5752b1ef5e57600403d1671913e8fb661a22c7"
+size = 6433
+
+[[files]]
+name = "dicts/Hopkins-Synonyms-T|E.txt"
+sha256 = "64ed63b7e5ad2088af08ed0c4ea12f75d2d5fb24541441f4f6036ea418e762d4"
+size = 3918
+
+[[files]]
+name = "dicts/Hopkins-Synonyms-T|T.txt"
+sha256 = "ad56f5304a2e693f687ced07e5e1079b4d120795fe20ef9d245c3943faa06d30"
+size = 13598
+
+[[files]]
+name = "dicts/Hopkins-Tibetan-Tenses-2015-T|T.txt"
+sha256 = "acbe6c444a7b111b6b1078413d94dbedd7c690fd75596cdde4bbeb4cf6787725"
+size = 251098
+
+[[files]]
+name = "dicts/hotl1-T|E.txt"
+sha256 = "308bb9619ffcab39b9ee9206a3f451dace994c397c9eee5f9e1d83476a1e6adf"
+size = 168536
+
+[[files]]
+name = "dicts/hotl2-T|E.txt"
+sha256 = "e0d704365b9fde781612f8a37a9261570b0aab4cb6a02615314603448d26c2e9"
+size = 204565
+
+[[files]]
+name = "dicts/hotl3-T|E.txt"
+sha256 = "16aed923e5def726fffafc7a775b9c85fb8a8628e4a908ac6dc7c7f5aac1d0ff"
+size = 307006
+
+[[files]]
+name = "dicts/ITLR-T|ES.txt"
+sha256 = "fb56e0b3ffa25f753cdbbc51c000fb88c9b058eac848ec9f91d88e421774573b"
+size = 2736511
+
+[[files]]
+name = "dicts/IvesWaldo-T|E.txt"
+sha256 = "91cd8a9c011526ff76d04c6f7c8058860980ab44fd1a626e8466d4d6ef37271b"
+size = 8818225
+
+[[files]]
+name = "dicts/JimValby-T|E.txt"
+sha256 = "0bf309616c44f61ecbad9f3ba9eb8b8ba1a763e1bbc9fb95493c4637e8c034dc"
+size = 3094622
+
+[[files]]
+name = "dicts/LaineAbbreviations-T|T.txt"
+sha256 = "8303a15d38e25d6ef07797fddd138761947e57a03a8539788eb582453cbe327e"
+size = 597714
+
+[[files]]
+name = "dicts/li_shii_gur_khang-T|T.txt"
+sha256 = "58bbb1601e8d80ea14c4c569b0486263aaddca9e23a70fb891020d6eac5c3fad"
+size = 24076
+
+[[files]]
+name = "dicts/LokeshChandraSkt-T|S.txt"
+sha256 = "f89d118a85b9128bcf343ebde4dc92eafd3000a2f9d13f7219b71f986bd12b20"
+size = 642942
+
+[[files]]
+name = "dicts/Mahavyutpatti-T|S.txt"
+sha256 = "1809fc8c4bbfd6f62c171cf36306f63f8eff6c4ef69494e63a1a0d27d674aec0"
+size = 402609
+
+[[files]]
+name = "dicts/Misc-T|E.txt"
+sha256 = "8e85fad938adc8f39c24ca7588409dc649aa93377c61771402b4f3d0e8b3bf74"
+size = 13358
+
+[[files]]
+name = "dicts/NegiSkt-T|S.txt"
+sha256 = "7874f45c89437bc3c7be0a0b80b7701e979508e0af0ad89e23bdc9e5bcd4b020"
+size = 23192981
+
+[[files]]
+name = "dicts/RangjungYeshe-T|E.txt"
+sha256 = "c2349ef7165854c7522eb2410be666b369b81511e88adb2c73db674dffaa380f"
+size = 5618154
+
+[[files]]
+name = "dicts/RichardBarron-T|E.txt"
+sha256 = "fb32babb58e83a6e121778214117e542d4648332163b98e7ef9d0c2932f8aae1"
+size = 323713
+
+[[files]]
+name = "dicts/Sera-Textbook-Def-T|T.txt"
+sha256 = "8eb26005ca0123df780b30ec33646c739cfffeddf87de9fa1a535671cb8b62f8"
+size = 276162
+
+[[files]]
+name = "dicts/sgom_sde_tshig_mdzod_chen_mo-T|T.txt"
+sha256 = "849d6706f141e9d88ba5cc352e871de0ac48c986e7f8f1f3f66c350ea7c22b59"
+size = 5501788
+
+[[files]]
+name = "dicts/sgra_bye_brag_tu_rtogs_byed_chen_mo-T|ES.txt"
+sha256 = "e04dd2981aa3d65b6eb5147d26dcf3bfdb1dc48a70fe9c9488ed6c4f46d9b8c5"
+size = 864985
+
+[[files]]
+name = "dicts/sngas_rgyas_chos_gzhung_tshig_mdzod-T|T.txt"
+sha256 = "3ad0695c7f44a69668f5c606687392371858d172a9f3a9d09a5c2fd61608e5bf"
+size = 1567813
+
+[[files]]
+name = "dicts/ThomasDoctor-T|E.txt"
+sha256 = "e2c0552813a3d9afbc42f9ddf60f4a29ad55c67dd62b82b28d6449e776d4c3c3"
+size = 18639
+
+[[files]]
+name = "dicts/tibetanlanguage-school-T|E.txt"
+sha256 = "02824ea651baa03f8972d3673553eea74da36de90b4dfa95691e545d398a2ab9"
+size = 58300
+
+[[files]]
+name = "dicts/TibTermProject-T|E.txt"
+sha256 = "1973dbe980303c011ea7cb279822747e9dcb2e14ced7baa8ebdc9f9f48572246"
+size = 1155374
+
+[[files]]
+name = "dicts/TsepakRigdzin-T|E.txt"
+sha256 = "08c9ae10bc49f258b8d9ac066adb83e42c2aaf564ca1275872124c375353c3b2"
+size = 895754
+
+[[files]]
+name = "dicts/tshig-mdzod-chen-mo-T|T.txt"
+sha256 = "ce87a2099133b21a6d79e45aaa3265bdb88e1a96efd4859e6f09843cf18dca0d"
+size = 5584453
+
+[[files]]
+name = "dicts/Verbinator-T|TE.txt"
+sha256 = "ef8f361d33bd0e11f19ac527ec3f2ff947711dd21e6ea7f4f7cf0a6d65b64c3e"
+size = 818796
+
+[[files]]
+name = "dicts/Yoghacharabhumi-glossary-T|S.txt"
+sha256 = "4a74f6023db4232ea808213a3a23f08420df2c696ba440ea879c23f18a5a0e0e"
+size = 727437
+
+[[files]]
+name = "titles.toml"
+sha256 = "bf5a7ef050ac8c4ac6fb161d216717a6da5884c6d85ef5077dfa7762cd3f277c"
+size = 32186
+
+[[files]]
+name = "key-aliases.tsv"
+sha256 = "3116a1d7f10f4065bdba8395d58e41cc7b2d5d2e1c0f95bd3af626b440142108"
+size = 264836

@@ -15,4 +15,4 @@ update:
     cabal-bounds update
 
 run:
-    cabal run exe:hibet 
+    HIBET_DATA_DIR=$PWD/data cabal run exe:hibet

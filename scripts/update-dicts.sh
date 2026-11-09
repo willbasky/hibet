@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Update the dictionaries in hibet/dicts from Christian Steinert's
+# Update the dictionaries in data/dicts from Christian Steinert's
 # tibetan-dictionary project.
 #
 # Usage:
@@ -16,8 +16,8 @@ set -euo pipefail
 export LC_ALL=C.UTF-8
 
 repo=$(cd "$(dirname "$0")/.." && pwd)
-dicts="$repo/hibet/dicts"
-titles="$repo/hibet/stuff/titles.toml"
+dicts="$repo/data/dicts"
+titles="$repo/data/titles.toml"
 ref=${REF:-master}
 base=${BASE_URL:-https://raw.githubusercontent.com/christiansteinert/tibetan-dictionary/$ref/_input/dictionaries/public}
 check=0
@@ -154,6 +154,7 @@ printf 'up to date: %d, changed: %d, added: %d\n' "$same" "$changed" "$added"
 # The key aliases are derived from the dictionaries: a changed or added file
 # needs a fresh table, otherwise a Unicode query misses the new legacy keys.
 if [[ $check == 0 && ($changed -gt 0 || $added -gt 0) ]]; then
-    echo "regenerating hibet/stuff/key-aliases.tsv"
+    echo "regenerating data/key-aliases.tsv"
     (cd "$repo" && cabal exec -- runghc scripts/gen-key-aliases.hs)
+    echo "NOTE: regenerate data/manifest.toml before committing (T12/T25 step 6)" >&2
 fi

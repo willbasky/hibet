@@ -35,9 +35,21 @@
                 (hackageSrc "tasty-falsify" "0.1.0" "sha256-9CFa7ko/KaIHrDiOHzv9u5X93SmlQO50fny5qExaGdA=")
                 { };
             hibet = hself.callCabal2nix "hibet" ./hibet { };
-            hibet-cli = pkgs.haskell.lib.overrideCabal
-              (hself.callCabal2nix "hibet-cli" ./hibet-cli { })
-              (_: { mainProgram = "hibet"; });
+            # The dictionaries are not data-files any more; wrap the binary so
+            # `nix run` still finds the dataset in the repository.
+            hibet-cli = pkgs.symlinkJoin {
+              name = "hibet-cli";
+              paths = [
+                (pkgs.haskell.lib.overrideCabal
+                  (hself.callCabal2nix "hibet-cli" ./hibet-cli { })
+                  (_: { mainProgram = "hibet"; }))
+              ];
+              nativeBuildInputs = [ pkgs.makeWrapper ];
+              postBuild = ''
+                wrapProgram $out/bin/hibet --set-default HIBET_DATA_DIR ${./data}
+              '';
+              meta.mainProgram = "hibet";
+            };
             hewts = hself.callCabal2nix "hewts" ./hewts { };
           };
         };
@@ -57,6 +69,10 @@
             cabal-install
           ];
           inputsFrom = builtins.attrValues self.packages.${system};
+          # The dictionaries are not part of the packages any more.
+          shellHook = ''
+            export HIBET_DATA_DIR=$PWD/data
+          '';
         };
       });
 }

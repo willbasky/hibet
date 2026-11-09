@@ -13,15 +13,10 @@ synopsis: translator
 description: tibetan-english translator
 category: Utility
 build-type: Simple
-data-files:
-  dicts/*.txt
-  stuff/key-aliases.tsv
-  stuff/titles.toml
-
 extra-source-files:
   test/env/data/dicts/*.txt
-  test/env/data/stuff/key-aliases.tsv
-  test/env/data/stuff/titles.toml
+  test/env/data/key-aliases.tsv
+  test/env/data/titles.toml
 
 extra-doc-files:
   CHANGELOG.md
@@ -41,10 +36,6 @@ library
     Utility
 
   hs-source-dirs: src
-  other-modules:
-    Paths_hibet
-
-  autogen-modules: Paths_hibet
   default-language: Haskell2010
   default-extensions:
     DataKinds
@@ -204,6 +195,8 @@ test-suite hibet-env
 
   build-depends:
     base >=4.11 && <5,
+    directory >=1.3.7 && <1.4,
+    filepath >=1.4.2 && <1.6,
     hewts >=0.1 && <0.2,
     hibet,
     hspec >=2.11.12,
@@ -217,9 +210,7 @@ benchmark hibet-benchmark
   other-modules:
     Common
     Lines
-    Paths_hibet
 
-  autogen-modules: Paths_hibet
   default-language: Haskell2010
   default-extensions:
     DataKinds
@@ -265,8 +256,7 @@ benchmark hibet-benchmark
     base >=4.11 && <5,
     bytestring >=0.11.5.3 && <0.13,
     criterion >=1.6.4.0,
-    file-embed >=0.0.16.0,
-    path >=0.9.5 && <0.10,
-    path-io >=1.4.0 && <1.9,
+    directory >=1.3.7 && <1.4,
+    filepath >=1.4.2 && <1.6,
     text,
     text-rope >=0.3 && <0.4,

@@ -9,18 +9,47 @@
 | Пакет | Что это | Зависит от |
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
-| `hibet` | движок: словари, загрузка `Env`, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
-| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki` |
+| `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data status`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
 `hibet-web` пока не существует; веб-переводчик описан в `hibet/ROADMAP.md`.
+
+## Данные
+
+Словари и метаданные — не часть пакета. Они лежат в `data/` в корне репы:
+
+```
+data/
+├── dicts/*.txt         59 словарей, около 103 МБ
+├── titles.toml         метаданные словарей
+├── key-aliases.tsv     производная таблица ключей
+└── manifest.toml       версия набора и sha256 каждого файла
+```
+
+`hibet` не объявляет `data-files`; `cabal sdist` содержит только код и маленький
+тестовый fixture. Установленный бинарь находит данные так:
+
+1. `--data-dir DIR` — явный корень;
+2. `HIBET_DATA_DIR` — переменная окружения;
+3. `$XDG_DATA_HOME/hibet/data` — активный набор.
+
+Кандидат принимается, только если в нём есть `titles.toml` и `dicts/`. Ошибка
+называет проверенные пути и подсказывает флаг и переменную. `hibet data status`
+печатает разрешённый путь и версию из `manifest.toml`. Манифест читают только
+CLI и будущий updater; библиотека `hibet` его не требует.
+
+Для разработки `just run` выставляет `HIBET_DATA_DIR=$PWD/data`; `nix develop`
+делает то же через `shellHook`. Nix-пакет `hibet-cli` оборачивает бинарь и
+передаёт ему данные из `./data`.
 
 ## Поток перевода
 
 ```
 exe hibet (пакет hibet-cli)
   → App.app: Cli.parser через optparse execParser
-      → Ki.scoped + Ki.fork: makeEnvFor → MVar Env (в фоне)
+      → Env.resolveDataDir: --data-dir → HIBET_DATA_DIR → XDG
+      → Ki.scoped + Ki.fork: makeEnvForDataDir → MVar Env (в фоне)
       → Cli.runCommand
           → Shell.translator (Haskeline)
               → getAnswer (чистая)
@@ -64,9 +93,10 @@ exe hibet (пакет hibet-cli)
   `hibet-cli`.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка — `ki`.
-- **Словари** (59 файлов, ~103 МБ) — данные `hibet`; `stuff/key-aliases.tsv` —
-  производная таблица написаний ключей. В браузер они не едут: веб-конвертер
-  собирается из одного `hewts`, веб-переводчик — сервер.
+- **Словари** (59 файлов, ~103 МБ) — данные репозитория и установки, не
+  `data-files` пакета; `data/key-aliases.tsv` — производная таблица написаний
+  ключей, `data/manifest.toml` — версия и хэши. В браузер они не едут:
+  веб-конвертер собирается из одного `hewts`, веб-переводчик — сервер.
 
 ## Модули
 
@@ -106,6 +136,10 @@ exe hibet (пакет hibet-cli)
 - `cabal test all` — тесты `hewts`, `hibet` и `hibet-cli`.
 - `cabal run hewts-benchmark` — линейность разбора.
 - `cabal exec -- runghc scripts/gen-key-aliases.hs` — пересобрать
-  `hibet/stuff/key-aliases.tsv` после обновления словарей (около 2,5 мин).
+  `data/key-aliases.tsv` после обновления словарей (около 2,5 мин).
+- `data/manifest.toml` после обновления словарей надо перегенерировать вручную:
+  генератор манифеста появится вместе с Haskell-инструментом T12 (T25, шаг 6).
+- `just run` — запуск из репы с `HIBET_DATA_DIR=$PWD/data`.
+- `hibet data status` — разрешённый data-root и версия набора.
 - `fourmolu` для `.hs`, `cabal-gild` для `.cabal`.
 - Nix: `nix build`, `nix develop`; `justfile` — короткие команды.

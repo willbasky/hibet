@@ -5,17 +5,20 @@
 Статусы: `[ ]` не начато, `[~]` в работе, `[x]` закрыто. Задача закрывается
 только вместе с проверкой из раздела «Готово», а не вместе с кодом.
 
-Снимок: 08.11.2026.
+Снимок: 09.11.2026.
 
 ## Порядок
 
 Рекомендуемая очередь: **T7 → T6 → T3 → T4**. T1, T2, T5, T9, T10, T11 и T24
 закрыты; T8 ни от чего не зависит и идёт параллельно с T3: методика замера у
 них общая. T12 (инструменты обновления словарей) ни от чего не зависит и идёт
-параллельно. T25 (данные: `data/`, resolver, манифест, updater) опирается на
-T12 в шагах 6–7, а шаг 1 можно делать сразу. T26 (машинный интерфейс CLI)
-ни от чего не зависит и может идти параллельно. T13–T23 — бэклог из разбора
-issue; порядок между ними не задан, T7 идёт первой.
+параллельно. T25 (данные: `data/`, resolver, манифест, updater) сделан в
+шагах 1–5; шаги 6–7 ждут T12. T26 (машинный интерфейс CLI)
+ни от чего не зависит и может идти параллельно. T27 (убрать `path`/`path-io`
+из benchmark) — узкая уборка после T24; до T25 шага 1 benchmark берёт корень
+из `HIBET_DATA_DIR`. T28 (`DataRoot`) — опционально, после T25 шага 2.
+T13–T23 — бэклог из разбора issue; порядок между ними не задан, T7 идёт
+первой.
 
 - T1 задавал, где что лежит; закрыт.
 - T5 проверяла уже существующее поведение и сняла неизвестность по
@@ -32,12 +35,16 @@ issue; порядок между ними не задан, T7 идёт перв�
 - T12 — перевести обновление словарей с bash/python на Haskell; ни от чего не
   зависит, идёт параллельно с T8 и T13–T23.
 - T25 — данные: `data/` в корне, resolver, манифест, updater, затем отдельная
-  репа; шаг 1 не зависит от T12.
+  репа; шаги 1–5 сделаны, 6–8 остаются.
 - T26 — машинный интерфейс CLI: `translate` и NDJSON-поток; до T25 работает
   через `makeEnvFor`. Сервер с сокетом и кэш на диске в неё не входят.
 - T13–T23 — бэклог из issue: T7 идёт первой, T17 отложена.
 - T24 закрыта: `effectful` снят, фоновая загрузка идёт через `ki`; T2 после
   неё только переносила модули.
+- T27 — добить benchmark после T24: `path`/`path-io` и `file-embed` из
+  benchmark-станзы, данные через `HIBET_DATA_DIR`/`../data`.
+- T28 — опционально: `newtype DataRoot` вместо голого `FilePath` в
+  `resolveDataDir`/`makeEnvFrom`; `path` не возвращать.
 
 ---
 
@@ -439,7 +446,7 @@ hewts печатает U→W канонической нотацией EWTS, и 
 
 **Сделано 07.11.2026.** Выбран B′: нормализация вынесена из загрузки в данные.
 `scripts/gen-key-aliases.hs` один раз проходит 348 433 различных ключа (140,5 с)
-и пишет `hibet/stuff/key-aliases.tsv` — пары «легаси-ключ → канонический ключ,
+и пишет `data/key-aliases.tsv` — пары «легаси-ключ → канонический ключ,
 который даёт юникод-путь»; 6 100 пар. 26 ключей, где hewts меняет слово
 (`ma nya+dzu` → `ny+dzau`), не попали: `syllables` у них расходятся.
 
@@ -505,8 +512,8 @@ hewts печатает U→W канонической нотацией EWTS, и 
 `radix-tree` в проекте не используется (в истории был, сейчас нет ни импортов,
 ни зависимости, ни пакета в `dist-newstyle/cache/plan.json`); #63 — покрыто T10
 (обход всех ключей) и T12 (нормализация при обновлении). Остальные 14 сведены в
-задачи: T13 (#79), T14 (#75), T15 (#76), T16 (#134), T17 (#128, только hewts;
-hibet не публикуем из-за 103 МБ словарей), T18 (#107, #92), T19 (#126),
+задачи: T13 (#79), T14 (#75), T15 (#76), T16 (#134), T17 (#128, только hewts:
+hibet теперь публикуем после выноса данных в `data/`), T18 (#107, #92), T19 (#126),
 T20 (#125), T21 (#71–73), T22 (#70), T23 (#52). #128 остаётся открытой:
 публикация hewts отложена (T17).
 
@@ -524,7 +531,7 @@ T20 (#125), T21 (#71–73), T22 (#70), T23 (#52). #128 остаётся откр
 Отдельный Haskell-генератор уже есть — `scripts/gen-key-aliases.hs`.
 
 **Цель.** Один Haskell-инструмент делает то же самое: скачивает, нормализует,
-сравнивает, обновляет и пересобирает `stuff/key-aliases.tsv`. Точки входа —
+сравнивает, обновляет и пересобирает `data/key-aliases.tsv`. Точки входа —
 `just update-dicts` и `just update-dicts-check`; `python3` и `curl` не нужны.
 
 **Работа.**
@@ -604,7 +611,7 @@ ASCII/Wylie; `cabal test all` зелёный.
 
 1. Проверить `christiansteinert/tibetan-dictionary/_input/dictionaries/public_en`
    и другие источники; проверить лицензии.
-2. Добавить файлы в `hibet/dicts`, записи в `titles.toml` (`source =
+2. Добавить файлы в `data/dicts`, записи в `data/titles.toml` (`source =
    "English"`, `target = ["Tibetan"]`).
 3. Ввести третий род запроса или явный режим; искать по английскому ключу,
    выводить тибетский текст.
@@ -624,7 +631,7 @@ ASCII/Wylie; `cabal test all` зелёный.
 
 `[ ]`
 
-**Сейчас.** В `hibet/dicts` 59 файлов `ключ|перевод`, русского словаря нет.
+**Сейчас.** В `data/dicts` 59 файлов `ключ|перевод`, русского словаря нет.
 Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`/`.dict.dz`);
 парсера в проекте нет. Issue #76 предлагает словарь Tib-Eng-San-Rus.
 
@@ -639,10 +646,10 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 3. Конвертировать один раз внешним инструментом или коротким скриптом в
    `ключ|перевод`, NFC, без пустых строк; Stardict-парсер в библиотеку не
    тащить.
-4. Добавить в `titles.toml`, перегенерировать `key-aliases.tsv` (T10).
+4. Добавить в `data/titles.toml`, перегенерировать `data/key-aliases.tsv` (T10).
 5. Тест: тибетский ключ находит новый перевод.
 
-**Готово.** Словарь в `hibet/dicts` и `titles.toml`, тест, alias-таблица
+**Готово.** Словарь в `data/dicts` и `data/titles.toml`, тест, alias-таблица
 перегенерирована; или записано, что подходящих словарей нет.
 
 **Не делать.** Не добавлять Stardict-парсер в зависимости `hibet`; не
@@ -688,11 +695,12 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 `[ ]`
 
 **Отложено.** Решение 07.11.2026: hewts публиковать можно, hibet — нет, пока
-103 МБ словарей лежат в `data-files`. Делать, когда появится внешний
+103 МБ словарей лежали в `data-files`. После T25 (шаги 1–5) данные вынесены в
+`data/`, и библиотека `hibet` публикуема. Делать, когда появится внешний
 потребитель или по отдельному решению. Issue #128.
 
-**Сейчас.** hewts 0.1.0.0, `cabal check` в `hewts/` чистый; hibet 2.0.0
-публиковать со словарями нельзя.
+**Сейчас.** hewts 0.1.0.0, `cabal check` в `hewts/` чистый; `hibet` 2.0.0
+больше не несёт словари в пакете (`cabal sdist` — около 20 КБ).
 
 **Цель.** hewts доступен на Hackage; hibet остаётся в проекте.
 
@@ -911,8 +919,8 @@ CI зелёный.
 5. Зависимости: из библиотеки убрать `effectful`, `effectful-core`,
    `effectful-th`, `effectful-plugin`, `log-effectful`,
    `resourcet-effectful`, `path`, `path-io`; добавить `ki`. `path`/`path-io`
-   остаются только у benchmark. `-fplugin=Effectful.Plugin` убрать из
-   `ghc-options`.
+   остаются только у benchmark; убрать их оттуда — T27.
+   `-fplugin=Effectful.Plugin` убрать из `ghc-options`.
 6. Тесты: `runFileMock` убрать. `hibet-env` грузит `makeEnvFor testDicts` или
    `makeEnvFrom "test/env/data" testDicts`. `mockMakeEnvSpec` удалить или
    переписать на `makeEnvFrom`.
@@ -941,7 +949,7 @@ CI зелёный.
 
 ## T25. Данные: `data/`, resolver, манифест и обновление
 
-`[ ]`
+`[~]`
 
 **Сейчас.** 59 словарей (103 МБ), `titles.toml` и `key-aliases.tsv` лежат
 внутри пакета `hibet` (`hibet/dicts`, `hibet/stuff`) и объявлены в
@@ -974,20 +982,21 @@ XDG. Отдельная репа — последний шаг, а не перв
    Тестовый fixture `hibet/test/env/data` привести к тому же виду.
 2. **Resolver.** `Env.resolveDataDir :: Maybe FilePath -> IO (Either
    HibetError FilePath)`, порядок: `--data-dir` → `HIBET_DATA_DIR` →
-   `getXdgDirectory XdgData "hibet"` (активный `data/`) → `getDataFileName`
-   (пока `data-files` не убраны). `makeEnvFor` вызывает resolver;
+   `getXdgDirectory XdgData "hibet"` (активный `data/`). `getDataFileName`
+   не нужен: `data-files` удалены в шаге 4. `makeEnvFor` вызывает resolver;
    `makeEnvFrom` остаётся для тестов и сервера. Ошибка «данных нет» называет
-   команду обновления.
+   флаг и переменную.
 3. **CLI и dev.** Глобальный `--data-dir`; `hibet data status` печатает
    разрешённый путь и версию из манифеста. `just run` ставит
-   `HIBET_DATA_DIR=$PWD`; реальные словари в `hibet-env` грузятся через
+   `HIBET_DATA_DIR=$PWD/data`; реальные словари в `hibet-env` грузятся через
    `makeEnvFrom "../data"`, alias-таблица читается оттуда же. `cabal test all`
    зелёный без симлинков.
 4. **Убрать `data-files`.** Из `hibet.cabal` убрать `data-files` (сейчас
    там `dicts/*.txt` и `stuff/*`); поправить `benchmark/Common.hs`:
    `getDataFileName` заменить на путь из env, а `embedDir` на 103 МБ после
    выноса данных не переживёт `cabal sdist` — заменить маленьким fixture или
-   удалить ветку `embed`. Также поправить `scripts/gen-key-aliases.hs`,
+   удалить ветку `embed`; `path`/`path-io` из benchmark — T27. Также поправить
+   `scripts/gen-key-aliases.hs`,
    `scripts/update-dicts.sh`, `flake.nix` (данные больше не входят в
    `callCabal2nix ./hibet`) и docs. После этого `cabal sdist` маленький,
    библиотека `hibet` публикуема; CLI без данных требует `--data-dir`/env.
@@ -1026,6 +1035,21 @@ XDG. Отдельная репа — последний шаг, а не перв
 не вводить SQLite/индекс; не менять формат словарей, `getAnswer` и вывод; не
 тащить HTTP в библиотеку `hibet`; не переносить данные в отдельную репу до
 шага 7; не генерировать alias-таблицу при старте.
+
+**Сделано 09.11.2026 (шаги 1–5).** Данные переехали в `data/` в корне репы:
+`dicts/*.txt`, `titles.toml`, `key-aliases.tsv`, `manifest.toml`; fixture
+`hibet/test/env/data` — в той же раскладке. `Env.resolveDataDir` идёт
+`--data-dir` → `HIBET_DATA_DIR` → `$XDG_DATA_HOME/hibet/data`, проверяет
+`titles.toml` и `dicts/`; `makeEnvForDataDir` принимает явный корень,
+`makeEnvFrom` остаётся для тестов. В CLI добавлены глобальный `--data-dir` и
+`hibet data status`; `om` и `data status` больше не грузят `Env`. Из
+`hibet.cabal` удалены `data-files` и `Paths_hibet`; benchmark читает
+`HIBET_DATA_DIR` или `../data` и больше не тянет `path`, `path-io`,
+`file-embed`. Манифест: schema 1, версия `2026.11.09`, sha256 и размеры 59
+словарей, `titles.toml` и `key-aliases.tsv`. `cabal build all`,
+`cabal test all` и `cabal check` зелёные; `cabal sdist` для `hibet` — около 20 КБ;
+установленный бинарь без данных печатает понятную ошибку. Остались шаги 6–8
+(авторский инструмент T12, `hibet data update`, отдельная репа `hibet-data`).
 
 ---
 
@@ -1128,10 +1152,108 @@ hibet translate --stream` даёт два объекта за одну загр�
 
 ---
 
+## T27. Убрать `path`/`path-io` из benchmark
+
+`[x]`
+
+**Сейчас.** В HEAD benchmark держит `path`/`path-io`: `Common.hs` импортирует
+`Path` и `Path.IO`, `pathLoad`/`textLoad` идут через `parseAbsDir`, `listDir`
+и `fromAbsFile`, а `hibet.cabal` объявляет `path`, `path-io` и `file-embed`.
+В рабочем дереве уже есть черновик перевода `Common.hs` на
+`System.Directory`/`System.FilePath` и удаления `file-embed`; он не проверен
+и не закоммичен.
+
+**Цель.** У benchmark нет `path`, `path-io` и `file-embed`; данные читаются
+из `HIBET_DATA_DIR` или `../data`; замеры `linesDict` не меняются.
+
+**Работа.**
+
+1. `benchmark/Common.hs`: `dataDir` — `HIBET_DATA_DIR` или `../data`;
+   `dictPaths` — `listDirectory (dataDir </> "dicts")`; `textLoad` —
+   `BS.readFile` + `TE.decodeUtf8`. Убрать `pathLoad`, `titles`,
+   `dictinaries`.
+2. `benchmark/Main.hs`: убрать импорт `Common` и вызов `pathOrEmbedB`, если
+   они ещё остались.
+3. `hibet.cabal`: из benchmark-станзы убрать `path`, `path-io` и
+   `file-embed`; оставить `directory` и `filepath`.
+4. Проверить `plan.json`: у `bench:hibet-benchmark` нет `path`, `path-io`,
+   `file-embed`.
+5. `grep -rn -E '\bPath\b' hibet/benchmark` пусто; `cabal build all`;
+   `HIBET_DATA_DIR=<корень с dicts/> cabal bench bench:hibet-benchmark`
+   (сейчас корень — `hibet/`, после T25 — `data/`).
+
+**Готово.** `cabal build all` зелёный; `cabal bench bench:hibet-benchmark`
+запускается и печатает три замера `linesDict`; в `plan.json` у benchmark нет
+`path`, `path-io`, `file-embed`; `grep -rn -E '\bPath\b' hibet/benchmark`
+пусто.
+
+**Зависит от.** T24 — из библиотеки `path` уже убран. T25 шаг 1 — для
+default `../data`; до него benchmark работает через `HIBET_DATA_DIR`.
+
+**Не делать.** Не менять методику и набор замеров `linesDict`; не удалять
+benchmark; не переносить данные (это T25); не возвращать `path`; не трогать
+библиотеку и CLI.
+
+**Сделано 09.11.2026.** `Common.hs` читает `HIBET_DATA_DIR` или `../data`,
+`Main.hs` больше не импортирует `Common` и не зовёт `pathOrEmbedB`;
+`path`, `path-io` и `file-embed` убраны из benchmark-станзы. `cabal build all`
+зелёный; `grep -rn -E '\bPath\b' hibet/benchmark` пуст.
+
+---
+
+## T28. `DataRoot`: проверенный корень данных (опционально)
+
+`[ ]`
+
+**Сейчас.** `resolveDataDir :: Maybe FilePath -> IO (Either HibetError
+FilePath)` проверяет, что в корне есть `titles.toml` и `dicts/`, но
+возвращает голый `FilePath`; `makeEnvFrom :: FilePath -> ...` принимает любой
+путь, поэтому инвариант «корень проверен» живёт только в комментарии.
+`--data-dir` может быть относительным, так что `Path Abs Dir` здесь не
+подходит.
+
+**Цель.** `newtype DataRoot = DataRoot FilePath` — единственный способ
+передать проверенный корень в загрузчик. Без `path`/`path-io`; относительные
+пути и текст ошибок сохраняются.
+
+**Работа.**
+
+1. `Env`: `newtype DataRoot = DataRoot FilePath` (deriving `Eq`, `Show`);
+   экспортировать тип без конструктора, добавить `dataRootPath` для CLI и
+   сообщений; `resolveDataDir` возвращает `DataRoot`; проверка `hasData` не
+   меняется.
+2. `makeEnvForDataDir` резолвит `Maybe FilePath` в `DataRoot` и передаёт его
+   в `makeEnvFrom`; `makeEnvAt` разворачивает `DataRoot` один раз.
+3. `hibet-cli`: `data status` печатает `dataRootPath`; `prepareEnv` передаёт
+   `DataRoot`; разбор `--data-dir` не меняется.
+4. Тесты: валидный корень, отсутствие `titles.toml`, отсутствие `dicts/`,
+   относительный корень; `makeEnvFrom` вызывается только через
+   `resolveDataDir`.
+5. Документы: `DESIGN.md`, `ARCHITECTURE.md`, `CHANGELOG.md`; записать, что
+   `DataRoot` не гарантирует абсолютный путь и не убирает TOCTOU.
+
+**Готово.** `makeEnvFrom` нельзя вызвать с голым `FilePath`;
+`cabal build all && cabal test all` зелёные; относительный `--data-dir`
+работает; сообщения об ошибках не изменились; в `plan.json` нет `path`,
+`path-io`.
+
+**Зависит от.** T25 шаг 2 (resolver); если делать раньше, не менять порядок
+кандидатов. T27 не блокирует.
+
+**Риск.** `makeEnvFrom` — публичная функция; смена сигнатуры ломает внешних
+пользователей. До Hackage это допустимо, но `CHANGELOG.md` должен сказать
+явно.
+
+**Не делать.** Не делать `DataRoot` гарантией абсолютного пути; не добавлять
+`path`; не перепроверять корень на каждом чтении; не прятать путь из
+сообщений об ошибках; не менять раскладку данных.
+
+---
+
 ## Не входит в список, но связано
 
-- **Публикация hibet на Hackage.** Сейчас не публикуем: 103 МБ словарей в
-  `data-files`. T25 убирает их из пакета; после неё библиотека `hibet`
-  публикуема, а CLI требует установленных данных. hewts — T17 (отложена).
+- **Публикация hibet на Hackage.** T25 (шаги 1–5) убрала данные из пакета:
+  библиотека `hibet` публикуема, а CLI требует установленных данных. Нужен
+  отдельный проход по метаданным, как в T17; hewts — T17 (отложена).
 - **Веб-переводчик.** Отдельный сервер после T2; в браузер 103 МБ словарей не
   помещаются.

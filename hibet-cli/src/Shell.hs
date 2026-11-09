@@ -4,7 +4,7 @@ module Shell
 where
 
 import Dictionary (Answer, sortOutput)
-import Env (Env, readEnv)
+import Env (Env (..), readEnv)
 import Pretty
     ( Line (NewLine)
     , blue
@@ -65,13 +65,19 @@ loopDialog mv inputState = do
             mapM_ (putColorDoc id NewLine) history
         Just input -> do
             env <- readEnv mv
-            case getAnswer input env of
-                Left _ -> do
-                    putColorDoc red NewLine "Nothing found"
-                Right (query, answer) ->
-                    if null answer
-                        then putColorDoc red NewLine "Nothing found"
-                        else pprint $ mkOutput query answer
+            if null env.dictionaryMeta
+                then
+                    putColorDoc
+                        red
+                        NewLine
+                        "No dictionaries are selected. Run 'hibet show names' to list ids."
+                else case getAnswer input env of
+                    Left _ -> do
+                        putColorDoc red NewLine "Nothing found"
+                    Right (query, answer) ->
+                        if null answer
+                            then putColorDoc red NewLine "Nothing found"
+                            else pprint $ mkOutput query answer
     case mQuery of
         Nothing -> pure ()
         Just _ -> loopDialog mv inputState

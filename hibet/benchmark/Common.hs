@@ -1,33 +1,22 @@
 module Common where
 
-import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
-import Data.FileEmbed (embedDir, embedFile)
 import Data.Text (Text)
-import Data.Text.Encoding (decodeUtf8)
 import qualified Data.Text.Encoding as TE
-import Path
-import Path.IO
-import Paths_hibet (getDataFileName)
+import System.Directory (listDirectory)
+import System.Environment (lookupEnv)
+import System.FilePath ((</>))
 
-pathLoad :: IO [(BS.ByteString, FilePath)]
-pathLoad = do
-    dir <- getDataFileName "dicts"
-    dirAbs <- parseAbsDir dir
-    files <- snd <$> listDir dirAbs
-    let paths = map fromAbsFile files
-    mapM (\p -> (,p) <$> BS.readFile p) paths
+-- | Data root: @HIBET_DATA_DIR@ or @../data@ in a repository checkout.
+dataDir :: IO FilePath
+dataDir = do
+    envRoot <- lookupEnv "HIBET_DATA_DIR"
+    pure $ maybe "../data" id envRoot
+
+dictPaths :: IO [FilePath]
+dictPaths = do
+    dir <- (</> "dicts") <$> dataDir
+    map (dir </>) <$> listDirectory dir
 
 textLoad :: IO [Text]
-textLoad = do
-    dir <- getDataFileName "dicts"
-    dirAbs <- parseAbsDir dir
-    files <- snd <$> listDir dirAbs
-    let paths = map fromAbsFile files
-    mapM (fmap TE.decodeUtf8 . BS.readFile) paths
-
-titles :: Text
-titles = decodeUtf8 $(embedFile "stuff/titles.toml")
-
-dictinaries :: [(FilePath, ByteString)]
-dictinaries = $(embedDir "dicts")
+textLoad = dictPaths >>= mapM (fmap TE.decodeUtf8 . BS.readFile)

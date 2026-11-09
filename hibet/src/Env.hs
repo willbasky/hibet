@@ -4,7 +4,9 @@
 module Env
     ( makeEnv
     , makeEnvFor
+    , makeEnvForDataDir
     , makeEnvFrom
+    , resolveDataDir
     , Env (..)
     , readEnv
     , putEnvMVar
@@ -18,6 +20,7 @@ import Type (HibetError (..))
 
 import Control.Concurrent.MVar (MVar, modifyMVar_, putMVar, readMVar)
 import Control.Exception (IOException, try)
+import Control.Monad (filterM)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
 import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
@@ -31,8 +34,14 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import GHC.Generics (Generic)
-import Paths_hibet (getDataFileName)
-import System.Directory (listDirectory)
+import System.Directory
+    ( XdgDirectory (XdgData)
+    , doesDirectoryExist
+    , doesFileExist
+    , getXdgDirectory
+    , listDirectory
+    )
+import System.Environment (lookupEnv)
 import System.FilePath (takeBaseName, (</>))
 
 -- | Environment fot translator
@@ -48,20 +57,53 @@ makeEnv = makeEnvFor []
 
 -- | Read only the dictionaries with the given ids; @[]@ means all of them.
 makeEnvFor :: [Int] -> IO (Either HibetError Env)
-makeEnvFor selected = do
-    titlesPath <- getDataFileName "stuff/titles.toml"
-    aliasesPath <- getDataFileName "stuff/key-aliases.tsv"
-    dictsDir <- getDataFileName "dicts"
-    makeEnvAt titlesPath aliasesPath dictsDir selected
+makeEnvFor = makeEnvForDataDir Nothing
 
--- | Read a data directory laid out like @hibet/data@: @stuff/titles.toml@,
--- @stuff/key-aliases.tsv@ and @dicts/@. Used by tests and by a server that
--- keeps the dictionaries outside the package.
+-- | Like 'makeEnvFor', but an explicit data root wins over the environment.
+makeEnvForDataDir :: Maybe FilePath -> [Int] -> IO (Either HibetError Env)
+makeEnvForDataDir dir selected = do
+    resolved <- resolveDataDir dir
+    case resolved of
+        Left err -> pure (Left err)
+        Right root -> makeEnvFrom root selected
+
+-- | Resolve the data root: @--data-dir@, then @HIBET_DATA_DIR@, then
+-- @$XDG_DATA_HOME/hibet/data@. A candidate is accepted only if it holds
+-- @titles.toml@ and @dicts/@.
+resolveDataDir :: Maybe FilePath -> IO (Either HibetError FilePath)
+resolveDataDir explicit = do
+    candidates <- case explicit of
+        Just root -> pure [root]
+        Nothing -> do
+            envRoot <- lookupEnv "HIBET_DATA_DIR"
+            xdgRoot <- getXdgDirectory XdgData "hibet"
+            pure $ maybe [] (: []) (envRoot >>= nonEmpty) <> [xdgRoot </> "data"]
+    existing <- filterM hasData candidates
+    pure $ case existing of
+        root : _ -> Right root
+        [] -> Left $ noData candidates
+    where
+        nonEmpty "" = Nothing
+        nonEmpty root = Just root
+        hasData root = do
+            titles <- doesFileExist (root </> "titles.toml")
+            dicts <- doesDirectoryExist (root </> "dicts")
+            pure (titles && dicts)
+        noData candidates =
+            EffectError "Dictionary data not found" $
+                "looked in: "
+                    <> T.intercalate ", " (map T.pack candidates)
+                    <> ". Pass --data-dir=DIR or set HIBET_DATA_DIR"
+                    <> " to a data root with titles.toml and dicts/."
+
+-- | Read a data directory laid out like @data/@: @titles.toml@,
+-- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps
+-- the dictionaries outside the package.
 makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)
 makeEnvFrom root selected =
     makeEnvAt
-        (root </> "stuff" </> "titles.toml")
-        (root </> "stuff" </> "key-aliases.tsv")
+        (root </> "titles.toml")
+        (root </> "key-aliases.tsv")
         (root </> "dicts")
         selected
 

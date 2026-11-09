@@ -1,18 +1,12 @@
 module Main where
 
-
-import Common
 import Lines
 
 -- import Conduit ((.|))
 -- import Control.Concurrent.Async (mapConcurrently)
-import Criterion.Main
 -- import Data.Bifunctor (second)
 -- import Data.Conduit.Combinators (linesUnbounded)
 -- import Data.Text (Text)
--- import Path
--- import Path.IO
--- import Paths_hibet (getDataFileName)
 -- import Streamly
 -- import Streamly.Prelude ((|:))
 -- import Weigh
@@ -26,13 +20,11 @@ import Criterion.Main
 
 -- import Dictionary (Dictionary, Target, makeDictionary)
 
-
 main :: IO ()
 main = do
     -- memory
     -- crit
     -- memory2
-    pathOrEmbedB
     linesDict
 
 -- makeTextMapS :: Text -> Maybe Dictionary
@@ -41,7 +33,6 @@ main = do
 --         (S.map ((\ (y, x) -> (y, T.drop 1 x)) . T.span (< '|')) $
 --             S.fromList $ T.lines txt)
 
-
 -- makeTextMapC :: Text -> Dictionary
 -- makeTextMapC txt = HMS.fromListWith (\a1 a2 -> if a1 == a2 then a1 else T.concat [a1, "\n", a2])
 --   (C.runConduitPure
@@ -49,7 +40,6 @@ main = do
 --   .| linesUnbounded
 --   .| C.mapC (second (T.drop 1) . T.span (<'|'))
 --   .| C.sinkList)
-
 
 {-
 Case                    Allocated  GCs
@@ -130,22 +120,6 @@ mean                 2.680 μs   (2.670 μs .. 2.695 μs)
 std dev              40.46 ns   (30.96 ns .. 54.11 ns)
 variance introduced by outliers: 14% (moderately inflated)
 -}
-
-
-
-
-pathOrEmbedB :: IO ()
-pathOrEmbedB = do
-  -- let showTS = map (second TE.decodeUtf8)
-  defaultMain
-      [ bench "embed" $ nfIO pathLoad
-      , bench "path_hibet" $ nf id dictinaries
-      ]
-
-
-
-
-
 
 -- crit2 = do
 --     let path = "/media/metaxis/stock/Coding/Haskell/Hibet/dicts/RangjungYeshe-T|E.txt"

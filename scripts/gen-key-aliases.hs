@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- | Regenerate @hibet/stuff/key-aliases.tsv@ from the dictionaries.
+-- | Regenerate @data/key-aliases.tsv@ from the dictionaries.
 --
 -- Dictionary keys keep the spelling of their source, but a Unicode query goes
 -- through hewts and gets canonical Wylie. For most keys the two spellings are
@@ -15,6 +15,7 @@
 -- > cabal exec -- runghc scripts/gen-key-aliases.hs
 --
 -- Takes a couple of minutes: every distinct key goes through hewts once.
+-- This does not regenerate @data/manifest.toml@; that comes with T12.
 module Main (main) where
 
 import Convert
@@ -37,10 +38,10 @@ import System.FilePath ((</>))
 import Text.Printf (printf)
 
 dictDir :: FilePath
-dictDir = "hibet/dicts"
+dictDir = "data/dicts"
 
 outFile :: FilePath
-outFile = "hibet/stuff/key-aliases.tsv"
+outFile = "data/key-aliases.tsv"
 
 -- | The Tibetan for a Wylie key, or 'Nothing' when hewts cannot read the key.
 tibetOf :: T.Text -> Maybe T.Text

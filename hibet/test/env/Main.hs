@@ -7,24 +7,29 @@ import Convert
     , syllables
     )
 import Dictionary
-import Env (Env (..), makeEnvFor, makeEnvFrom)
+import Env (Env (..), makeEnvFrom, resolveDataDir)
 import Label (Title (..))
 import Paths (testDir)
 import Translator (getAnswer, tibetToWylieKey)
 import Type (HibetError (..))
 
+import Data.Either (isLeft)
 import qualified Data.HashMap.Strict as HMS
 import Data.List (find, sortOn)
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import System.Directory (doesFileExist)
+import System.Environment (lookupEnv)
+import System.FilePath ((</>))
 import Test.Hspec
     ( Spec
     , describe
     , expectationFailure
     , hspec
     , it
+    , pendingWith
     , shouldBe
     , shouldSatisfy
     )
@@ -32,6 +37,7 @@ import Test.Hspec
 main :: IO ()
 main = hspec $ do
     makeEnvFromSpec
+    resolveDataDirSpec
     dictionarySearchSpec
     keyAliasSpec
     translate
@@ -100,6 +106,21 @@ makeEnvFromSpec =
                             fmap targets (searchTranslation "b+ha ga" hopkins)
                                 `shouldBe` Just [Target "bhaga"]
 
+resolveDataDirSpec :: Spec
+resolveDataDirSpec =
+    describe "Data dir resolver" $ do
+        it "accepts an explicit data root" $ do
+            resolved <- resolveDataDir (Just testDir)
+            resolved `shouldBe` Right testDir
+        it "rejects a root without titles.toml and dicts/" $ do
+            resolved <- resolveDataDir (Just "test/env/no-such-data")
+            resolved `shouldSatisfy` isLeft
+            resolved
+                `shouldSatisfy` either (T.isInfixOf "HIBET_DATA_DIR" . message) (const False)
+    where
+        message (EffectError _ text) = text
+        message (UnknownError text) = text
+
 -- | The alias table is derived data. Every row must still name the key the
 -- Unicode query path makes for the legacy spelling, and both spellings must
 -- hold the same syllables; a stale row would silently add a wrong key.
@@ -107,13 +128,17 @@ keyAliasSpec :: Spec
 keyAliasSpec =
     describe "Key aliases" $ do
         it "every row maps a legacy key to the canonical query key" $ do
-            rows <- readAliasRows
-            length rows `shouldSatisfy` (> 0)
-            [ (legacy, canonical)
-              | (legacy, canonical) <- rows
-              , not (validRow legacy canonical)
-              ]
-                `shouldBe` []
+            mroot <- realDataDir
+            case mroot of
+                Nothing -> pendingWith "dictionary data is not available"
+                Just root -> do
+                    rows <- readAliasRows root
+                    length rows `shouldSatisfy` (> 0)
+                    [ (legacy, canonical)
+                      | (legacy, canonical) <- rows
+                      , not (validRow legacy canonical)
+                      ]
+                        `shouldBe` []
     where
         validRow legacy canonical =
             canonical /= legacy
@@ -124,9 +149,9 @@ keyAliasSpec =
             Left _ -> Nothing
             Right (tibet, _) -> Just tibet
 
-readAliasRows :: IO [(Text, Text)]
-readAliasRows = do
-    text <- TIO.readFile "stuff/key-aliases.tsv"
+readAliasRows :: FilePath -> IO [(Text, Text)]
+readAliasRows root = do
+    text <- TIO.readFile (root </> "key-aliases.tsv")
     pure
         [ (legacy, T.drop 1 rest)
         | line <- T.lines text
@@ -275,8 +300,24 @@ unicodeMatrix =
     ]
 
 withEnv :: (Env -> IO ()) -> IO ()
-withEnv action =
-    makeEnvFor testDicts >>= either (fail . show) action
+withEnv action = do
+    mroot <- realDataDir
+    case mroot of
+        Nothing -> pendingWith "dictionary data is not available"
+        Just root -> makeEnvFrom root testDicts >>= either (fail . show) action
+
+-- | The real data root is a repository checkout (@../data@ from the package
+-- directory) or whatever @HIBET_DATA_DIR@ names. Packed sources have no data;
+-- the tests that need it are reported as pending.
+realDataDir :: IO (Maybe FilePath)
+realDataDir = do
+    envRoot <- lookupEnv "HIBET_DATA_DIR"
+    firstExisting $ maybe [] pure envRoot <> ["../data"]
+    where
+        firstExisting [] = pure Nothing
+        firstExisting (root : rest) = do
+            hasTitles <- doesFileExist (root </> "titles.toml")
+            if hasTitles then pure (Just root) else firstExisting rest
 
 -- The expectations below are written for these dictionaries. New dictionaries
 -- must not change the result of the search tests.

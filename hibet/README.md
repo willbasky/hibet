@@ -28,6 +28,16 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
 
     cabal install exe:hibet --overwrite-policy=always
 
+3. Point hibet at the dictionaries. They are not part of the package: the
+   repository keeps them in `data/`, and an installed binary looks in
+   `--data-dir`, then `HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`.
+
+    HIBET_DATA_DIR=$PWD/data hibet shell
+    hibet --data-dir ./data shell
+
+   `hibet data status` prints the resolved data directory and the dataset
+   version from `manifest.toml`.
+
 ## Using Nix and direnv (Alternative)
 
 If you have [Nix](https://nixos.org/download.html) and [direnv](https://direnv.net/) installed, you can use them for a reproducible development environment:
@@ -79,17 +89,20 @@ Or run any other hibet command:
 
     Hibet is command line translator from Tibet to English language.
 
-    Usage: hibet [-v|--version] [[-s|--select DICT_ID] | COMMAND]
+    Usage: hibet [-v|--version] [--data-dir DIR] [[-s|--select DICT_ID] | COMMAND]
 
     Available options:
       -h,--help                Show this help text
       -v,--version             Show Hibet's version
+      --data-dir DIR           Directory with titles.toml, key-aliases.tsv and
+                               dicts/
       -s,--select DICT_ID      Select id of dictionary
 
     Available commands:
       shell                    Start the translate shell
       om                       Print Om to a terminal
       show                     Show names or meta of dictionaries
+      data                     Show dictionary data information
 
 
 `$ hibet show -h`
