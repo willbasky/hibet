@@ -2,6 +2,7 @@ packages:
     hewts
     hibet
     hibet-cli
+    hibet-tools
 
 tests: True
 benchmarks: True

@@ -94,7 +94,7 @@ hibet (движок)
 стоит одного чтения 259 КБ и ~348 тыс. lookups; запрос не дорожает.
 
 Таблица производная: после обновления словарей её надо перегенерировать
-(`cabal exec -- runghc scripts/gen-key-aliases.hs`, около 2,5 мин). `hibet-env`
+(`just gen-key-aliases`, около 2,5 мин). `hibet-env`
 проверяет каждую строку: ключ должен совпадать с тем, что даёт юникод-путь, а
 оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
 слово, в таблицу не попадают.
@@ -117,8 +117,8 @@ hibet (движок)
 Единственный модуль библиотеки с `import Convert` — `hibet/src/Translator.hs`.
 Используются `convertWylieToUnicode`, `splitSentences`, `renderItems OutWylie`,
 `defaultSettings`, `OutputFormat`, `SpellItem`. Своей конверсии в `hibet` нет.
-Генератор ключей `scripts/gen-key-aliases.hs` тоже ходит в hewts, но это
-offline-инструмент, а не часть приложения.
+Генератор ключей `hibet-update-dicts --gen-key-aliases` (пакет `hibet-tools`)
+тоже ходит в hewts, но это offline-инструмент, а не часть приложения.
 
 ## Пакеты
 

@@ -1,8 +1,9 @@
 # Архитектура репозитория
 
-Три пакета и цепочка зависимостей: `hibet-cli → hibet → hewts`. Обратных
-зависимостей нет и не будет: `hewts` не знает ни про словари, ни про перевод,
-ни про консоль, а `hibet` не знает про Haskeline и optparse.
+Четыре пакета и цепочка зависимостей: `hibet-cli → hibet → hewts`; отдельно
+`hibet-tools → hibet` для обновления данных. Обратных зависимостей нет и не
+будет: `hewts` не знает ни про словари, ни про перевод, ни про консоль, а
+`hibet` не знает про Haskeline, optparse и HTTP.
 
 ## Пакеты
 
@@ -11,6 +12,7 @@
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
 | `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data status`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki` |
+| `hibet-tools` | maintainer-инструмент: обновление словарей и alias-таблицы, HTTP/NFC | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
 `hibet-web` пока не существует; веб-переводчик описан в `hibet/ROADMAP.md`.
@@ -42,6 +44,18 @@ CLI и будущий updater; библиотека `hibet` его не треб
 Для разработки `just run` выставляет `HIBET_DATA_DIR=$PWD/data`; `nix develop`
 делает то же через `shellHook`. Nix-пакет `hibet-cli` оборачивает бинарь и
 передаёт ему данные из `./data`.
+
+## Обновление словарей
+
+`hibet-tools` (exe `hibet-update-dicts`) — maintainer-only замена
+`scripts/update-dicts.sh`. Он скачивает все upstream-файлы, нормализует их в
+NFC, применяет две локальные правки (`Sera-Textbook-Def`, `JimValby`),
+сравнивает с `data/dicts` и пишет только изменения. Счётчики те же, что у
+bash-версии; `--check` ничего не пишет и завершается кодом 1 при отличиях.
+`BASE_URL=file:///…` используется в тестах без сети, `REF` задаёт ветку.
+После изменений инструмент в том же процессе вызывает генератор
+`data/key-aliases.tsv`; отдельный режим — `just gen-key-aliases`.
+`data/manifest.toml` пока не пересобирается автоматически (T25, шаг 6).
 
 ## Поток перевода
 
@@ -86,8 +100,10 @@ exe hibet (пакет hibet-cli)
   нужно снаружи, приходит текстом и `Settings`.
 - **`hibet`** не содержит своей конверсии. Единственный модуль библиотеки с
   `import Convert` — `hibet/src/Translator.hs`; своя логика письма там
-  отсутствует. Offline-генератор ключей `scripts/gen-key-aliases.hs` тоже ходит
-  в hewts, но в приложение не входит.
+  отсутствует. Offline-генератор ключей в `hibet-tools` тоже ходит в hewts, но
+  в приложение не входит.
+- **`hibet-tools`** — maintainer-only: HTTP, NFC и запись словарей живут там,
+  а не в библиотеке `hibet`.
 - **`hibet`** не зависит от консоли: `haskeline`, `optparse-applicative`,
   `terminal-size`, `pager` и `prettyprinter-ansi-terminal` живут только в
   `hibet-cli`.
@@ -125,20 +141,32 @@ exe hibet (пакет hibet-cli)
 | Модуль | Роль |
 |---|---|
 | `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
-| `Cli` | команды `shell`, `show names`, `show meta`, `om` |
+| `Cli` | команды `shell`, `show names`, `show meta`, `om`, `data status` |
 | `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
 | `Pretty` | вывод в терминал и пейджер |
+
+### hibet-tools
+
+| Модуль | Роль |
+|---|---|
+| `Fetch` | HTTP-загрузка и `file://` для тестов |
+| `Update` | карта upstream-файлов, NFC, локальные правки, сравнение и запись |
+| `KeyAliases` | генератор `data/key-aliases.tsv` |
 
 ## Сборка и проверки
 
 - GHC 9.8.4 или 9.10.3, Cabal.
-- `cabal build all` — три пакета.
-- `cabal test all` — тесты `hewts`, `hibet` и `hibet-cli`.
+- `cabal build all` — четыре пакета.
+- `cabal test all` — тесты `hewts`, `hibet`, `hibet-cli` и `hibet-tools`.
 - `cabal run hewts-benchmark` — линейность разбора.
-- `cabal exec -- runghc scripts/gen-key-aliases.hs` — пересобрать
-  `data/key-aliases.tsv` после обновления словарей (около 2,5 мин).
+- `just update-dicts` — скачать upstream и обновить `data/dicts`, затем
+  пересобрать `data/key-aliases.tsv` в том же процессе.
+- `just update-dicts-check` — то же без записи; код 1, если есть отличия.
+  `BASE_URL=file:///path` и `REF=...` сохраняют интерфейс старого скрипта.
+- `just gen-key-aliases` — только пересобрать `data/key-aliases.tsv`
+  (около 2,5 мин).
 - `data/manifest.toml` после обновления словарей надо перегенерировать вручную:
-  генератор манифеста появится вместе с Haskell-инструментом T12 (T25, шаг 6).
+  генератор манифеста появится вместе с T25, шаг 6.
 - `just run` — запуск из репы с `HIBET_DATA_DIR=$PWD/data`.
 - `hibet data status` — разрешённый data-root и версия набора.
 - `fourmolu` для `.hs`, `cabal-gild` для `.cabal`.

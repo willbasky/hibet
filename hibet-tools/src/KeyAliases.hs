@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 -- | Regenerate @data/key-aliases.tsv@ from the dictionaries.
 --
 -- Dictionary keys keep the spelling of their source, but a Unicode query goes
@@ -9,14 +7,9 @@
 -- to the legacy one. Only faithful pairs are written: both spellings must
 -- hold the same syllables. Pairs that would change the word (hewts' known
 -- round-trip gaps) are reported and skipped.
---
--- Run from the project root (the directory with @cabal.project@):
---
--- > cabal exec -- runghc scripts/gen-key-aliases.hs
---
--- Takes a couple of minutes: every distinct key goes through hewts once.
--- This does not regenerate @data/manifest.toml@; that comes with T12.
-module Main (main) where
+module KeyAliases
+    ( generateAliases
+    ) where
 
 import Convert
     ( Settings (..)
@@ -37,32 +30,8 @@ import System.Directory (listDirectory)
 import System.FilePath ((</>))
 import Text.Printf (printf)
 
-dictDir :: FilePath
-dictDir = "data/dicts"
-
-outFile :: FilePath
-outFile = "data/key-aliases.tsv"
-
--- | The Tibetan for a Wylie key, or 'Nothing' when hewts cannot read the key.
-tibetOf :: T.Text -> Maybe T.Text
-tibetOf key = case convertWylieToUnicode defaultSettings{withChecks = False} key of
-    Left _ -> Nothing
-    Right (tibet, _) -> Just tibet
-
-keyOf :: T.Text -> T.Text
-keyOf = T.dropWhileEnd (== '\r') . fst . T.span (/= '|')
-
--- | Same word: hewts reads the same syllables from both spellings. Punctuation
--- and spacing do not count, the query path drops them too.
-sameWord :: T.Text -> T.Text -> Bool
-sameWord key canonical =
-    case (tibetOf key, tibetOf canonical) of
-        (Just fromKey, Just fromCanonical) ->
-            syllables fromKey == syllables fromCanonical
-        _ -> False
-
-main :: IO ()
-main = do
+generateAliases :: FilePath -> FilePath -> IO ()
+generateAliases dictDir outFile = do
     files <- sortOn id . filter (\f -> take 1 f /= ".") <$> listDirectory dictDir
     keys <- foldM addFileKeys HMS.empty files
     printf "files: %d, distinct keys: %d\n" (length files) (HMS.size keys)
@@ -117,3 +86,21 @@ main = do
                         ]
                 merged = HMS.union acc new
             HMS.size merged `seq` pure merged
+
+-- | The Tibetan for a Wylie key, or 'Nothing' when hewts cannot read the key.
+tibetOf :: T.Text -> Maybe T.Text
+tibetOf key = case convertWylieToUnicode defaultSettings{withChecks = False} key of
+    Left _ -> Nothing
+    Right (tibet, _) -> Just tibet
+
+keyOf :: T.Text -> T.Text
+keyOf = T.dropWhileEnd (== '\r') . fst . T.span (/= '|')
+
+-- | Same word: hewts reads the same syllables from both spellings. Punctuation
+-- and spacing do not count, the query path drops them too.
+sameWord :: T.Text -> T.Text -> Bool
+sameWord key canonical =
+    case (tibetOf key, tibetOf canonical) of
+        (Just fromKey, Just fromCanonical) ->
+            syllables fromKey == syllables fromCanonical
+        _ -> False

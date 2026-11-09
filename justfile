@@ -16,3 +16,15 @@ update:
 
 run:
     HIBET_DATA_DIR=$PWD/data cabal run exe:hibet
+
+# regenerate data/key-aliases.tsv from data/dicts
+gen-key-aliases:
+    cabal run exe:hibet-update-dicts -- --gen-key-aliases
+
+# download upstream dictionaries and update data/dicts
+update-dicts:
+    cabal run exe:hibet-update-dicts
+
+# report differences without changing data/dicts
+update-dicts-check:
+    cabal run exe:hibet-update-dicts -- --check

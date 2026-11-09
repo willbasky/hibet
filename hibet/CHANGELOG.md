@@ -37,8 +37,8 @@ and this project adheres to
   key the query path produces, and the loader adds the canonical key next to
   the legacy one. Covers `bha ga`/`བྷ་ག`, `gnad`/`གནད` and `gand`; 6 100 keys,
   while 26 keys where hewts changes the word are left alone.
-* New `scripts/gen-key-aliases.hs` regenerates the table after a dictionary
-  update; `hibet-env` checks every row against hewts.
+* `hibet-update-dicts --gen-key-aliases` regenerates the table after a
+  dictionary update; `hibet-env` checks every row against hewts.
 
 ## [2.0.0] - 2026-11-07
 

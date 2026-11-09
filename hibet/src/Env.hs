@@ -149,7 +149,7 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
--- @scripts/gen-key-aliases.hs@.
+-- @hibet-update-dicts --gen-key-aliases@.
 readAliases :: FilePath -> IO (HashMap Text Text)
 readAliases path = do
     text <- TE.decodeUtf8 <$> BS.readFile path
