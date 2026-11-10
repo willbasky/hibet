@@ -43,6 +43,13 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
    either points at an old checkout, the updated set is not used until you
    clear the override or point it at the new data.
 
+   Update prints its steps to `stderr`: `manifest`, `download`, `unpack`,
+   `verify`, `switch`, `done`. On a terminal it redraws one line with a
+   spinner and bytes/percent; in a pipe it prints one line per step. Ctrl+C
+   during download or unpack removes `data.new` and keeps the active set.
+   Running update again for the installed version prints
+   `data already up to date (<version>)` and does not download the archive.
+
 ## Using Nix and direnv (Alternative)
 
 If you have [Nix](https://nixos.org/download.html) and [direnv](https://direnv.net/) installed, you can use them for a reproducible development environment:

@@ -27,6 +27,7 @@ library
     Install
     Manifest
     Pretty
+    Progress
     Shell
 
   hs-source-dirs: src

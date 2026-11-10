@@ -4,12 +4,19 @@ import Install
     ( Installed (..)
     , installFromDir
     , installFromRelease
+    , installWith
     )
 import Manifest (Manifest (..), parseManifest, verifyDir)
+import Progress (withProgress)
 
 import qualified Codec.Archive.Tar as Tar
 import qualified Codec.Archive.Tar.Entry as Tare
 import qualified Codec.Compression.GZip as GZip
+import Control.Exception
+    ( AsyncException (UserInterrupt)
+    , throwIO
+    , try
+    )
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.List (isInfixOf)
@@ -19,6 +26,7 @@ import System.Directory
     ( createDirectoryIfMissing
     , doesDirectoryExist
     , doesFileExist
+    , removeFile
     )
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
@@ -37,6 +45,7 @@ main :: IO ()
 main = hspec $ do
     installSpec
     releaseSpec
+    installWithSpec
     manifestSpec
 
 installSpec :: Spec
@@ -110,7 +119,8 @@ releaseSpec =
                         target
                 case result of
                     Left err -> expectationFailure err
-                    Right installed -> do
+                    Right Nothing -> expectationFailure "expected an install"
+                    Right (Just installed) -> do
                         installed.installedVersion `shouldBe` "2026.11.09"
                         TIO.readFile
                             (target </> "data" </> "dicts" </> "A-T|E.txt")
@@ -163,6 +173,84 @@ releaseSpec =
                 TIO.writeFile (release </> "manifest.toml") manifestText
                 result <- installFromRelease release (tmp </> "hibet")
                 result `shouldSatisfy` isLeftWith "tar.gz"
+        it "skips the download when the installed version is current" $
+            withSystemTempDirectory "hibet-release" $ \tmp -> do
+                let release = tmp </> "release"
+                    target = tmp </> "hibet"
+                writeDataDir release
+                writeArchive
+                    (release </> "hibet-data-2026.11.09.tar.gz")
+                    dataFiles
+                _ <- installFromRelease release target
+                removeFile (release </> "hibet-data-2026.11.09.tar.gz")
+                result <- installFromRelease release target
+                result `shouldBe` Right Nothing
+                doesDirectoryExist (target </> "data.old")
+                    `shouldReturn` False
+        it "installs a newer version over the current one" $
+            withSystemTempDirectory "hibet-release" $ \tmp -> do
+                let release = tmp </> "release"
+                    target = tmp </> "hibet"
+                writeDataDir release
+                writeArchive
+                    (release </> "hibet-data-2026.11.09.tar.gz")
+                    dataFiles
+                _ <- installFromRelease release target
+                TIO.writeFile
+                    (release </> "manifest.toml")
+                    (manifestTextFor "2026.11.10")
+                writeArchive
+                    (release </> "hibet-data-2026.11.10.tar.gz")
+                    dataFiles
+                result <- installFromRelease release target
+                case result of
+                    Right (Just installed) ->
+                        installed.installedVersion `shouldBe` "2026.11.10"
+                    other -> expectationFailure (show other)
+                doesDirectoryExist (target </> "data.old")
+                    `shouldReturn` True
+        it "reinstalls when the local manifest is missing" $
+            withSystemTempDirectory "hibet-release" $ \tmp -> do
+                let release = tmp </> "release"
+                    target = tmp </> "hibet"
+                writeDataDir release
+                writeArchive
+                    (release </> "hibet-data-2026.11.09.tar.gz")
+                    dataFiles
+                _ <- installFromRelease release target
+                removeFile (target </> "data" </> "manifest.toml")
+                result <- installFromRelease release target
+                result `shouldSatisfy` \case
+                    Right (Just _) -> True
+                    _ -> False
+
+installWithSpec :: Spec
+installWithSpec =
+    describe "installWith" $
+        it "removes data.new and keeps data when staging throws" $
+            withSystemTempDirectory "hibet-install" $ \tmp -> do
+                let target = tmp </> "hibet"
+                    manifest = either error id (parseManifest manifestText)
+                createDirectoryIfMissing True (target </> "data")
+                BS.writeFile (target </> "data" </> "keep.txt") "keep"
+                result <-
+                    try
+                        ( withProgress $ \progress ->
+                            installWith progress target manifest $ \stage -> do
+                                createDirectoryIfMissing True stage
+                                BS.writeFile (stage </> "partial.txt") "partial"
+                                throwIO UserInterrupt
+                        ) ::
+                        IO (Either AsyncException (Either String Installed))
+                result `shouldSatisfy` \case
+                    Left UserInterrupt -> True
+                    _ -> False
+                doesDirectoryExist (target </> "data.new")
+                    `shouldReturn` False
+                doesFileExist (target </> "data" </> "keep.txt")
+                    `shouldReturn` True
+                doesDirectoryExist (target </> "data.old")
+                    `shouldReturn` False
 
 manifestSpec :: Spec
 manifestSpec =
@@ -189,10 +277,13 @@ manifestSpec =
                                 (T.isInfixOf "missing: dicts/A-T|E.txt")
 
 manifestText :: T.Text
-manifestText =
+manifestText = manifestTextFor "2026.11.09"
+
+manifestTextFor :: T.Text -> T.Text
+manifestTextFor version =
     T.unlines
         [ "schema = 1"
-        , "version = \"2026.11.09\""
+        , "version = \"" <> version <> "\""
         , ""
         , "[[files]]"
         , "name = \"dicts/A-T|E.txt\""

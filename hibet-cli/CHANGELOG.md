@@ -22,6 +22,12 @@ and this project adheres to
 
 ### Changed
 
+* `hibet data update` streams the archive and prints `manifest`, `download`,
+  `unpack`, `verify`, `switch` and `done` on `stderr`: an animated line with
+  bytes/percent on a terminal, one line per step in a pipe. Ctrl+C removes
+  `data.new`, keeps the active set and exits with 130. A repeated update for
+  the installed version prints `data already up to date (<version>)` without
+  downloading the archive.
 * A missing or unknown subcommand now prints the available commands, and an
   invalid dictionary id points to `hibet show names`.
 * `om` and `data status` no longer load the dictionaries before running.
