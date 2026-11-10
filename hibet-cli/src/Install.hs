@@ -6,6 +6,7 @@ module Install
     , hibetDataDir
     , installFromDir
     , installFromRelease
+    , installWith
     ) where
 
 import Manifest
@@ -15,13 +16,22 @@ import Manifest
     , readManifest
     , verifyDir
     )
+import Progress (Progress, beginStep, endStep, updateBytes, withProgress)
 
 import qualified Codec.Archive.Tar as Tar
 import qualified Codec.Compression.GZip as GZip
-import Control.Exception (IOException, evaluate, try)
-import Control.Monad (forM_, when)
+import Control.Exception
+    ( IOException
+    , evaluate
+    , onException
+    , try
+    , uninterruptibleMask_
+    )
+import Control.Monad (forM_, void, when)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
+import Data.Int (Int64)
 import Data.List (dropWhileEnd, stripPrefix)
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -29,12 +39,16 @@ import qualified Data.Text.Encoding as TE
 import Network.HTTP.Client
     ( HttpException
     , Manager
-    , httpLbs
+    , brRead
+    , checkResponse
     , parseRequest
     , responseBody
+    , responseHeaders
     , responseStatus
+    , withResponse
     )
 import Network.HTTP.Client.TLS (newTlsManager)
+import Network.HTTP.Types.Header (hContentLength)
 import Network.HTTP.Types.Status (statusCode)
 import System.Directory
     ( XdgDirectory (XdgData)
@@ -64,19 +78,26 @@ hibetDataDir = getXdgDirectory XdgData "hibet"
 -- | Copy a verified data directory (with @manifest.toml@, @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@) into the XDG data directory.
 installFromDir :: FilePath -> FilePath -> IO (Either String Installed)
-installFromDir source targetBase =
-    readManifest source >>= \case
+installFromDir source targetBase = withProgress $ \progress -> do
+    beginStep progress "manifest"
+    loaded <- readManifest source
+    endStep progress
+    case loaded of
         Left err -> pure (Left err)
         Right manifest -> do
+            beginStep progress "verify"
             problems <- verifyDir source manifest
+            endStep progress
             if null problems
-                then installWith targetBase manifest $ \stage -> do
+                then installWith progress targetBase manifest $ \stage -> do
+                    beginStep progress "copy"
                     copied <- try @IOException $ do
                         forM_ manifest.files $ \file ->
                             copyRelative source stage file.name
                         copyFile
                             (source </> "manifest.toml")
                             (stage </> "manifest.toml")
+                    endStep progress
                     pure $
                         either
                             (Left . ("cannot copy data: " <>) . show)
@@ -85,11 +106,14 @@ installFromDir source targetBase =
                 else pure (Left (renderProblems problems))
 
 -- | Download @manifest.toml@ and @hibet-data-<version>.tar.gz@ from a release
--- base (HTTP URL, @file://@ URL or local directory) and install them.
-installFromRelease :: String -> FilePath -> IO (Either String Installed)
-installFromRelease source targetBase = do
+-- base (HTTP URL, @file://@ URL or local directory) and install them. Returns
+-- 'Nothing' when the active set already has the released version.
+installFromRelease :: String -> FilePath -> IO (Either String (Maybe Installed))
+installFromRelease source targetBase = withProgress $ \progress -> do
     fetch <- makeFetcher source
-    fetchedManifest <- fetch "manifest.toml"
+    beginStep progress "manifest"
+    fetchedManifest <- fetch "manifest.toml" (\_ _ -> pure ())
+    endStep progress
     case fetchedManifest of
         Left err -> pure (Left err)
         Right raw -> case TE.decodeUtf8' raw of
@@ -98,55 +122,81 @@ installFromRelease source targetBase = do
             Right content -> case parseManifest content of
                 Left err -> pure (Left ("cannot parse manifest.toml: " <> err))
                 Right manifest -> do
-                    let archive =
-                            "hibet-data-" <> T.unpack manifest.version <> ".tar.gz"
-                    fetchedArchive <- fetch archive
-                    case fetchedArchive of
-                        Left err -> pure (Left err)
-                        Right bytes ->
-                            installWith targetBase manifest $ \stage -> do
-                                extracted <- extractArchive stage manifest bytes
-                                case extracted of
-                                    Left err -> pure (Left err)
-                                    Right () -> do
-                                        problems <- verifyDir stage manifest
-                                        if null problems
-                                            then do
-                                                written <-
-                                                    try @IOException $
-                                                        BS.writeFile
-                                                            (stage </> "manifest.toml")
-                                                            raw
-                                                pure $
-                                                    either
-                                                        (Left . show)
-                                                        Right
-                                                        written
-                                            else pure (Left (renderProblems problems))
+                    current <- readManifest (targetBase </> "data")
+                    case current of
+                        Right installed
+                            | installed.version == manifest.version ->
+                                pure (Right Nothing)
+                        _ -> do
+                            let archive =
+                                    "hibet-data-"
+                                        <> T.unpack manifest.version
+                                        <> ".tar.gz"
+                            beginStep progress "download"
+                            fetchedArchive <- fetch archive (updateBytes progress)
+                            endStep progress
+                            case fetchedArchive of
+                                Left err -> pure (Left err)
+                                Right bytes -> do
+                                    installed <-
+                                        installWith progress targetBase manifest $ \stage -> do
+                                            beginStep progress "unpack"
+                                            extracted <- extractArchive stage manifest bytes
+                                            endStep progress
+                                            case extracted of
+                                                Left err -> pure (Left err)
+                                                Right () -> do
+                                                    beginStep progress "verify"
+                                                    problems <- verifyDir stage manifest
+                                                    endStep progress
+                                                    if null problems
+                                                        then do
+                                                            written <-
+                                                                try @IOException $
+                                                                    BS.writeFile
+                                                                        (stage </> "manifest.toml")
+                                                                        raw
+                                                            pure $
+                                                                either
+                                                                    (Left . show)
+                                                                    Right
+                                                                    written
+                                                        else pure (Left (renderProblems problems))
+                                    pure (fmap Just installed)
 
 installWith ::
-    FilePath
+    Progress
+    -> FilePath
     -> Manifest
     -> (FilePath -> IO (Either String ()))
     -> IO (Either String Installed)
-installWith targetBase manifest action = do
+installWith progress targetBase manifest action = do
     createDirectoryIfMissing True targetBase
     let stage = targetBase </> "data.new"
+        cleanup = void (try @IOException (removePathForcibly stage))
+        install = do
+            prepared <- action stage
+            case prepared of
+                Left err -> cleanup >> pure (Left err)
+                Right () -> do
+                    beginStep progress "switch"
+                    switched <- swapIn targetBase stage
+                    endStep progress
+                    case switched of
+                        Left err -> pure (Left err)
+                        Right path -> do
+                            beginStep progress "done"
+                            endStep progress
+                            pure
+                                ( Right
+                                    Installed
+                                        { installedVersion = manifest.version
+                                        , installedFiles = length manifest.files
+                                        , installedPath = path
+                                        }
+                                )
     removePathForcibly stage
-    prepared <- action stage
-    case prepared of
-        Left err -> removePathForcibly stage >> pure (Left err)
-        Right () -> do
-            switched <- swapIn targetBase stage
-            pure $ case switched of
-                Left err -> Left err
-                Right path ->
-                    Right
-                        Installed
-                            { installedVersion = manifest.version
-                            , installedFiles = length manifest.files
-                            , installedPath = path
-                            }
+    install `onException` cleanup
 
 copyRelative :: FilePath -> FilePath -> FilePath -> IO ()
 copyRelative source stage name = do
@@ -154,11 +204,13 @@ copyRelative source stage name = do
     createDirectoryIfMissing True (takeDirectory dest)
     copyFile (source </> name) dest
 
+-- | Remove @data.old@, move @data@ aside and move the staged set in place.
+-- Masked from asynchronous exceptions: a Ctrl+C must not leave no active set.
 swapIn :: FilePath -> FilePath -> IO (Either String FilePath)
 swapIn targetBase stage = do
     let active = targetBase </> "data"
         old = targetBase </> "data.old"
-    result <- try @IOException $ do
+    result <- try @IOException $ uninterruptibleMask_ $ do
         activeExists <- doesDirectoryExist active
         when activeExists $ do
             removePathForcibly old
@@ -222,7 +274,10 @@ safeArchivePath path =
         && not (isAbsolute path)
         && all (`notElem` [".", ".."]) (splitDirectories path)
 
-type Fetch = FilePath -> IO (Either String BS.ByteString)
+type Fetch =
+    FilePath
+    -> (Int64 -> Maybe Int64 -> IO ())
+    -> IO (Either String BS.ByteString)
 
 makeFetcher :: String -> IO Fetch
 makeFetcher source
@@ -236,22 +291,44 @@ makeFetcher source
                 pure (httpFetcher manager source)
 
 localFetcher :: FilePath -> Fetch
-localFetcher dir name = do
+localFetcher dir name report = do
     result <- try @IOException (BS.readFile (dir </> name))
-    pure (either (Left . show) Right result)
+    case result of
+        Left err -> pure (Left (show err))
+        Right bytes -> do
+            report (fromIntegral (BS.length bytes)) Nothing
+            pure (Right bytes)
 
 httpFetcher :: Manager -> String -> Fetch
-httpFetcher manager base name = do
+httpFetcher manager base name report = do
     let url = joinUrl base name
     result <- try @HttpException $ do
-        request <- parseRequest url
-        response <- httpLbs request manager
-        let code = statusCode (responseStatus response)
-        pure $
+        request0 <- parseRequest url
+        let request = request0{checkResponse = \_ _ -> pure ()}
+        withResponse request manager $ \response -> do
+            let code = statusCode (responseStatus response)
             if code >= 200 && code < 300
-                then Right (BSL.toStrict (responseBody response))
-                else Left ("HTTP " <> show code <> " for " <> url)
+                then do
+                    let total =
+                            lookup hContentLength (responseHeaders response)
+                                >>= parseLength
+                    collect total (responseBody response) 0 []
+                else pure (Left ("HTTP " <> show code <> " for " <> url))
     pure (either (Left . show) id result)
+    where
+        collect total body done chunks = do
+            chunk <- brRead body
+            if BS.null chunk
+                then pure (Right (BS.concat (reverse chunks)))
+                else do
+                    let done' = done + fromIntegral (BS.length chunk)
+                    done' `seq` report done' total
+                    collect total body done' (chunk : chunks)
+
+parseLength :: BS.ByteString -> Maybe Int64
+parseLength raw = case reads (BSC.unpack raw) of
+    [(size, "")] -> Just size
+    _ -> Nothing
 
 joinUrl :: String -> FilePath -> String
 joinUrl base name = dropWhileEnd (== '/') base <> "/" <> name

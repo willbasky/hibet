@@ -134,24 +134,35 @@ runDataInstall source = do
 runDataUpdate :: Maybe String -> IO ()
 runDataUpdate msource = do
     target <- hibetDataDir
-    installFromRelease (fromMaybe defaultReleaseSource msource) target
-        >>= reportInstalled "update"
+    installFromRelease (fromMaybe defaultReleaseSource msource) target >>= \case
+        Left err -> reportFailure "update" err
+        Right Nothing -> do
+            mversion <-
+                readManifestVersion (target </> "data" </> "manifest.toml")
+            TIO.putStrLn $
+                "data already up to date"
+                    <> maybe "" (\v -> " (" <> v <> ")") mversion
+        Right (Just installed) -> reportSuccess installed
 
 reportInstalled :: String -> Either String Installed -> IO ()
-reportInstalled verb result = case result of
-    Left err -> do
-        TIO.hPutStrLn
-            stderr
-            ("data " <> T.pack verb <> " failed: " <> T.pack err)
-        exitFailure
-    Right installed -> do
-        TIO.putStrLn $
-            "installed data "
-                <> installed.installedVersion
-                <> " ("
-                <> T.pack (show installed.installedFiles)
-                <> " data files)"
-        TIO.putStrLn $ "data dir: " <> T.pack installed.installedPath
+reportInstalled verb = either (reportFailure verb) reportSuccess
+
+reportFailure :: String -> String -> IO ()
+reportFailure verb err = do
+    TIO.hPutStrLn
+        stderr
+        ("data " <> T.pack verb <> " failed: " <> T.pack err)
+    exitFailure
+
+reportSuccess :: Installed -> IO ()
+reportSuccess installed = do
+    TIO.putStrLn $
+        "installed data "
+            <> installed.installedVersion
+            <> " ("
+            <> T.pack (show installed.installedFiles)
+            <> " data files)"
+    TIO.putStrLn $ "data dir: " <> T.pack installed.installedPath
 
 -- | 'hibet data status' only needs the version; the full schema parser lives
 -- in 'Manifest'.
