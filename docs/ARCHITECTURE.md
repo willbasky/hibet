@@ -12,17 +12,17 @@
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
 | `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
-| `hibet-tools` | maintainer-инструмент: обновление словарей и alias-таблицы, HTTP/NFC | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms` |
+| `hibet-tools` | maintainer-инструмент: обновление словарей, alias-таблица, манифест и релизный архив | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms`, `optparse-applicative`, `tar`, `zlib` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
 `hibet-web` пока не существует; веб-переводчик описан в `hibet/ROADMAP.md`.
 
 ## Данные
 
-Словари и метаданные — не часть пакета. Они лежат в `data/` в корне репы:
+Словари и метаданные — не часть пакета. Они лежат в `hibet-data/` в корне репы:
 
 ```
-data/
+hibet-data/
 ├── dicts/*.txt         59 словарей, около 103 МБ
 ├── titles.toml         метаданные словарей
 ├── key-aliases.tsv     производная таблица ключей
@@ -38,17 +38,20 @@ data/
 
 Кандидат принимается, только если в нём есть `titles.toml` и `dicts/`. Ошибка
 называет проверенные пути и подсказывает флаг и переменную. `hibet data status`
-печатает разрешённый путь и версию из `manifest.toml`.
+печатает разрешённый путь и версию из `manifest.toml`. Флаг и переменная
+побеждают XDG: `hibet data update` всегда ставит набор в
+`$XDG_DATA_HOME/hibet/data`, поэтому при старом переопределении приложение
+продолжит читать старый путь.
 
-Ответственность разделена: `hibet-tools` — maintainer-only, обновляет `data/`
-в репе и готовит манифест; `hibet data install --from DIR` и
+Ответственность разделена: `hibet-tools` — maintainer-only, обновляет
+`hibet-data/` в репе и готовит манифест; `hibet data install --from DIR` и
 `hibet data update` — пользовательские команды в `hibet-cli`, которые
 проверяют манифест и ставят данные в XDG. Релиз
 `hibet-data-<version>.tar.gz` публикуется в основной репе; отдельной репы
 данных нет. Манифест читают только updater и команды CLI; библиотека `hibet`
 его не требует.
 
-Установленный набор лежит плоско, как `data/` в репе:
+Установленный набор лежит плоско, как `hibet-data/` в репе:
 `$XDG_DATA_HOME/hibet/data/{dicts,titles.toml,key-aliases.tsv,manifest.toml}`.
 Перед заменой активного набора данные собираются в `data.new`, а старый
 набор уезжает в `data.old`. Обе команды не зависят от текущего каталога,
@@ -61,18 +64,22 @@ data/
 
 ## Обновление словарей
 
-`hibet-tools` (exe `hibet-update-dicts`) — maintainer-only замена
+`hibet-tools` (exe `hibet-dataset`) — maintainer-only замена
 `scripts/update-dicts.sh`; он не устанавливает данные пользователю. Он
 скачивает все upstream-файлы, нормализует их в
 NFC, применяет две локальные правки (`Sera-Textbook-Def`, `JimValby`),
-сравнивает с `data/dicts` и пишет только изменения. Счётчики те же, что у
-bash-версии; `--check` ничего не пишет и завершается кодом 1 при отличиях.
+сравнивает с `hibet-data/dicts` и пишет только изменения. Счётчики те же, что у
+bash-версии; команда `check` ничего не пишет и завершается кодом 1 при отличиях.
 `BASE_URL=file:///…` используется в тестах без сети, `REF` задаёт ветку.
 После изменений инструмент в том же процессе вызывает генератор
-`data/key-aliases.tsv` и пересобирает `data/manifest.toml`; отдельные режимы —
-`just gen-key-aliases` (тоже обновляет манифест) и `just gen-manifest`.
-`--check` дополнительно сверяет `data/manifest.toml` с файлами на диске:
+`hibet-data/key-aliases.tsv` и пересобирает `hibet-data/manifest.toml`;
+отдельные команды —
+`hibet-dataset generate-key-aliases` (тоже обновляет манифест) и
+`hibet-dataset generate-manifest` (обёртки: `just generate-key-aliases`,
+`just generate-manifest`).
+Команда `check` дополнительно сверяет `hibet-data/manifest.toml` с файлами на диске:
 пропавший или лишний файл, несовпадение размера или sha256 дают код 1.
+Команды и рабочий процесс maintainer'а — в `../hibet-tools/README.md`.
 
 ## Установка данных
 
@@ -83,8 +90,22 @@ bash-версии; `--check` ничего не пишет и завершает�
 `hibet-data-<version>.tar.gz`, распаковывает только обычные файлы из
 манифеста (ссылки и пути с `..` отвергаются) и сверяет хэши. `--source`
 принимает HTTP URL, `file://` или локальный каталог; по умолчанию берётся
-`releases/latest/download` основной репы. Сеть и tar живут в `hibet-cli`,
+`releases/download/hibet-data` основной репы. Сеть и tar живут в `hibet-cli`,
 не в библиотеке `hibet`.
+
+## Релиз данных
+
+`just check-manifest` сверяет `hibet-data/manifest.toml` с `hibet-data/` без сети.
+`just data-release` запускает `hibet-dataset release`: тот сам проверяет манифест,
+собирает `dist/data-release/hibet-data-<version>.tar.gz` на Haskell (`tar` +
+`zlib`, без системного `tar`) и копирует туда же `manifest.toml`.
+`just data-publish` делает то же и публикует артефакты в GitHub Releases:
+создаёт релиз или загружает новые файлы с `--clobber` и обновляет notes.
+Оба файла живут под тегом `hibet-data`; этот тег не двигается, а `manifest.toml` и
+версионный архив обновляются через `gh release upload --clobber`. Поэтому
+`hibet data update` не зависит от того, какой релиз GitHub считает latest.
+Старые версии архива остаются в том же релизе и годятся для Nix/AUR по
+неизменяемому URL `.../releases/download/hibet-data/hibet-data-<version>.tar.gz`.
 
 ## Поток перевода
 
@@ -139,8 +160,8 @@ exe hibet (пакет hibet-cli)
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка — `ki`.
 - **Словари** (59 файлов, ~103 МБ) — данные репозитория и установки, не
-  `data-files` пакета; `data/key-aliases.tsv` — производная таблица написаний
-  ключей, `data/manifest.toml` — версия и хэши. В браузер они не едут:
+  `data-files` пакета; `hibet-data/key-aliases.tsv` — производная таблица
+  написаний ключей, `hibet-data/manifest.toml` — версия и хэши. В браузер они не едут:
   веб-конвертер собирается из одного `hewts`, веб-переводчик — сервер.
 
 ## Модули
@@ -182,8 +203,9 @@ exe hibet (пакет hibet-cli)
 |---|---|
 | `Fetch` | HTTP-загрузка и `file://` для тестов |
 | `Update` | карта upstream-файлов, NFC, локальные правки, сравнение и запись |
-| `KeyAliases` | генератор `data/key-aliases.tsv` |
-| `Manifest` | генерация и проверка `data/manifest.toml` (sha256 и размеры) |
+| `KeyAliases` | генератор `hibet-data/key-aliases.tsv` |
+| `Manifest` | генерация и проверка `hibet-data/manifest.toml` (sha256 и размеры) |
+| `Release` | проверка манифеста и сборка `hibet-data-<version>.tar.gz` |
 
 ## Сборка и проверки
 
@@ -191,15 +213,18 @@ exe hibet (пакет hibet-cli)
 - `cabal build all` — четыре пакета.
 - `cabal test all` — тесты `hewts`, `hibet`, `hibet-cli` и `hibet-tools`.
 - `cabal run hewts-benchmark` — линейность разбора.
-- `just update-dicts` — скачать upstream и обновить `data/dicts`, затем
-  пересобрать `data/key-aliases.tsv` и `data/manifest.toml` в том же процессе.
+- `just update-dicts` — скачать upstream и обновить `hibet-data/dicts`, затем
+  пересобрать `hibet-data/key-aliases.tsv` и `hibet-data/manifest.toml` в том же процессе.
 - `just update-dicts-check` — то же без записи плюс сверка манифеста с диском;
   код 1, если есть отличия или манифест устарел. `BASE_URL=file:///path` и
   `REF=...` сохраняют интерфейс старого скрипта.
-- `just gen-key-aliases` — только пересобрать `data/key-aliases.tsv`
+- `just generate-key-aliases` — только пересобрать `hibet-data/key-aliases.tsv`
   (около 2,5 мин) и обновить манифест.
-- `just gen-manifest` — только пересобрать `data/manifest.toml` из текущего
-  `data/`; версия набора — дата в формате `YYYY.MM.DD`.
+- `just generate-manifest` — только пересобрать `hibet-data/manifest.toml` из
+  текущего `hibet-data/`; версия набора — дата в формате `YYYY.MM.DD`.
+- `just check-manifest` — сверить манифест с `hibet-data/` без сети.
+- `just data-release` — собрать `dist/data-release/` для GitHub Releases
+  (`hibet-dataset release` сам проверяет манифест перед сборкой).
 - `just run` — запуск из репы с `HIBET_DATA_DIR=$PWD/data`.
 - `hibet data status` — разрешённый data-root и версия набора.
 - `hibet data install --from data` — поставить данные из репы в XDG;

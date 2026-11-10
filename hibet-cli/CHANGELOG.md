@@ -17,7 +17,8 @@ and this project adheres to
   kept in `data.old`.
 * `hibet data update [--source URL|DIR]` downloads `manifest.toml` and
   `hibet-data-<version>.tar.gz`, verifies the archive and swaps the active
-  data set. `file://` and local directories work without network.
+  data set. `file://` and local directories work without network; without
+  `--source` it reads the `hibet-data` release.
 
 ### Changed
 

@@ -98,7 +98,7 @@ resolveDataDir explicit = do
                     <> " set HIBET_DATA_DIR to a data root with titles.toml"
                     <> " and dicts/."
 
--- | Read a data directory laid out like @data/@: @titles.toml@,
+-- | Read a data directory laid out like @hibet-data/@: @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps
 -- the dictionaries outside the package.
 makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)
@@ -151,7 +151,7 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
--- @hibet-update-dicts --gen-key-aliases@.
+-- @hibet-dataset generate-key-aliases@.
 readAliases :: FilePath -> IO (HashMap Text Text)
 readAliases path = do
     text <- TE.decodeUtf8 <$> BS.readFile path

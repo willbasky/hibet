@@ -1,4 +1,4 @@
--- | Generate and verify @data/manifest.toml@: the dataset version plus sha256
+-- | Generate and verify @hibet-data/manifest.toml@: the dataset version plus sha256
 -- and size of every file the application reads from the data root.
 module Manifest
     ( Manifest (..)
@@ -6,6 +6,7 @@ module Manifest
     , buildManifest
     , checkManifest
     , defaultManifestVersion
+    , readManifest
     , writeManifest
     ) where
 
@@ -79,44 +80,44 @@ writeManifest root version = do
                 Left err -> Left ("cannot write " <> path <> ": " <> show err)
                 Right () -> Right (length manifest.files)
 
+-- | Read @root/manifest.toml@. Only schema 1 is accepted.
+readManifest :: FilePath -> IO (Either String Manifest)
+readManifest root = do
+    let path = root </> "manifest.toml"
+    exists <- doesFileExist path
+    if not exists
+        then pure (Left ("missing " <> path))
+        else do
+            loaded <- try @IOException (BS.readFile path)
+            pure $ case loaded of
+                Left err -> Left ("cannot read " <> path <> ": " <> show err)
+                Right raw -> case TE.decodeUtf8' raw of
+                    Left err -> Left ("cannot decode " <> path <> ": " <> show err)
+                    Right content -> parseManifest content
+
 -- | Problems with the manifest itself and with every data file it describes.
 -- An empty list means the manifest is current.
 checkManifest :: FilePath -> IO [Text]
 checkManifest root = do
-    let path = root </> "manifest.toml"
-    exists <- doesFileExist path
-    if not exists
-        then pure ["missing " <> T.pack path]
-        else do
-            loaded <- try @IOException (BS.readFile path)
-            case loaded of
-                Left err ->
-                    pure ["cannot read " <> T.pack path <> ": " <> T.pack (show err)]
-                Right raw -> case TE.decodeUtf8' raw of
+    manifest <- readManifest root
+    case manifest of
+        Left err -> pure [T.pack err]
+        Right current
+            | current.schema /= 1 ->
+                pure
+                    [ "unsupported schema "
+                        <> T.pack (show current.schema)
+                    ]
+            | otherwise -> do
+                checked <- try @IOException (compareFiles root current)
+                pure $ case checked of
                     Left err ->
-                        pure
-                            [ "cannot decode " <> T.pack path <> ": " <> T.pack (show err)
-                            ]
-                    Right content -> case parseManifest content of
-                        Left err ->
-                            pure ["cannot parse " <> T.pack path <> ": " <> T.pack err]
-                        Right manifest
-                            | manifest.schema /= 1 ->
-                                pure
-                                    [ "unsupported schema "
-                                        <> T.pack (show manifest.schema)
-                                    ]
-                            | otherwise -> do
-                                checked <-
-                                    try @IOException (compareFiles root manifest)
-                                pure $ case checked of
-                                    Left err ->
-                                        [ "cannot check "
-                                            <> T.pack root
-                                            <> ": "
-                                            <> T.pack (show err)
-                                        ]
-                                    Right problems -> problems
+                        [ "cannot check "
+                            <> T.pack root
+                            <> ": "
+                            <> T.pack (show err)
+                        ]
+                    Right problems -> problems
 
 compareFiles :: FilePath -> Manifest -> IO [Text]
 compareFiles root manifest = do
@@ -173,7 +174,7 @@ hexSha256 bytes = T.pack (show (hash bytes :: Digest SHA256))
 renderManifest :: Manifest -> Text
 renderManifest manifest =
     T.unlines $
-        [ "# Generated from data/ on "
+        [ "# Generated from hibet-data/ on "
             <> T.replace "." "-" manifest.version
             <> ". Do not edit by hand."
         , "schema = " <> T.pack (show manifest.schema)

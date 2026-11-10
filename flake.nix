@@ -46,7 +46,7 @@
               ];
               nativeBuildInputs = [ pkgs.makeWrapper ];
               postBuild = ''
-                wrapProgram $out/bin/hibet --set-default HIBET_DATA_DIR ${./data}
+                wrapProgram $out/bin/hibet --set-default HIBET_DATA_DIR ${./hibet-data}
               '';
               meta.mainProgram = "hibet";
             };
@@ -71,7 +71,7 @@
           inputsFrom = builtins.attrValues self.packages.${system};
           # The dictionaries are not part of the packages any more.
           shellHook = ''
-            export HIBET_DATA_DIR=$PWD/data
+            export HIBET_DATA_DIR=$PWD/hibet-data
           '';
         };
       });

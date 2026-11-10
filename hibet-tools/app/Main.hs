@@ -3,6 +3,7 @@ module Main (main) where
 import Fetch (newFetcher)
 import KeyAliases (generateAliases)
 import Manifest (checkManifest, defaultManifestVersion, writeManifest)
+import Release (ReleaseInfo (..), buildRelease)
 import Update
     ( Config (..)
     , Result (..)
@@ -15,36 +16,140 @@ import Control.Monad (when)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import System.Environment (getArgs, lookupEnv)
+import Options.Applicative
+    ( Parser
+    , ParserInfo
+    , argument
+    , command
+    , customExecParser
+    , fullDesc
+    , help
+    , helper
+    , info
+    , metavar
+    , optional
+    , prefs
+    , progDesc
+    , showHelpOnEmpty
+    , str
+    , subparser
+    )
+import System.Environment (lookupEnv)
 import System.Exit (exitFailure)
+import System.FilePath ((</>))
 import System.IO (hPutStrLn, stderr)
 import Text.Printf (printf)
 
+datasetDir :: FilePath
+datasetDir = "hibet-data"
+
+data Command
+    = UpdateData
+    | CheckData
+    | CheckManifest
+    | GenerateKeyAliases
+    | GenerateManifest
+    | Release (Maybe FilePath)
+
 main :: IO ()
 main = do
-    args <- getArgs
-    case args of
-        [] -> updateMode False
-        ["--check"] -> updateMode True
-        ["--gen-key-aliases"] -> do
-            generateAliases "data/dicts" "data/key-aliases.tsv"
+    selected <- customExecParser (prefs showHelpOnEmpty) commandInfo
+    case selected of
+        UpdateData -> updateMode False
+        CheckData -> updateMode True
+        CheckManifest -> checkManifestMode
+        GenerateKeyAliases -> do
+            generateAliases
+                (datasetDir </> "dicts")
+                (datasetDir </> "key-aliases.tsv")
             refreshManifest
-        ["--gen-manifest"] -> refreshManifest
-        _ -> do
-            hPutStrLn
-                stderr
-                "usage: hibet-update-dicts [--check | --gen-key-aliases | --gen-manifest]"
-            exitFailure
+        GenerateManifest -> refreshManifest
+        Release mdir -> releaseMode (fromMaybe "dist/data-release" mdir)
+
+commandInfo :: ParserInfo Command
+commandInfo =
+    info
+        (helper <*> commandP)
+        (fullDesc <> progDesc "Maintain hibet dictionary data")
+
+commandP :: Parser Command
+commandP =
+    subparser $
+        command
+            "update"
+            ( info
+                (helper <*> pure UpdateData)
+                $ progDesc "Download upstream dictionaries and update hibet-data/dicts"
+            )
+            <> command
+                "check"
+                ( info
+                    (helper <*> pure CheckData)
+                    $ progDesc "Compare hibet-data/dicts with upstream and verify the manifest"
+                )
+            <> command
+                "check-manifest"
+                ( info
+                    (helper <*> pure CheckManifest)
+                    $ progDesc "Verify hibet-data/manifest.toml against hibet-data/ without network"
+                )
+            <> command
+                "generate-key-aliases"
+                ( info
+                    (helper <*> pure GenerateKeyAliases)
+                    $ progDesc "Rebuild hibet-data/key-aliases.tsv and the manifest"
+                )
+            <> command
+                "generate-manifest"
+                ( info
+                    (helper <*> pure GenerateManifest)
+                    $ progDesc "Rebuild hibet-data/manifest.toml"
+                )
+            <> command
+                "release"
+                ( info
+                    (helper <*> releaseP)
+                    $ progDesc "Build the release archive"
+                )
+    where
+        releaseP =
+            Release
+                <$> optional
+                    ( argument
+                        str
+                        ( metavar "DIR"
+                            <> help "Output directory (default: dist/data-release)"
+                        )
+                    )
+
+releaseMode :: FilePath -> IO ()
+releaseMode outDir = do
+    built <- buildRelease datasetDir outDir
+    case built of
+        Left err -> hPutStrLn stderr ("release failed: " <> err) >> exitFailure
+        Right result -> do
+            putStrLn ("artifact: " <> result.releaseArchive)
+            putStrLn ("manifest: " <> result.releaseManifest)
+            putStrLn ("version: " <> T.unpack result.releaseVersion)
+            putStrLn (show result.releaseFiles <> " data files")
+
+checkManifestMode :: IO ()
+checkManifestMode = do
+    problems <- checkManifest datasetDir
+    mapM_ (TIO.hPutStrLn stderr . ("manifest: " <>)) problems
+    if null problems
+        then putStrLn "manifest: ok"
+        else exitFailure
 
 refreshManifest :: IO ()
 refreshManifest = do
     version <- defaultManifestVersion
-    result <- writeManifest "data" version
+    result <- writeManifest datasetDir version
     case result of
         Left err -> hPutStrLn stderr err >> exitFailure
         Right count ->
             putStrLn
-                ( "wrote data/manifest.toml: "
+                ( "wrote hibet-data/manifest.toml: "
                     <> show count
                     <> " files, version "
                     <> T.unpack version
@@ -55,12 +160,12 @@ updateMode checkOnly = do
     ref <- fromMaybe "master" <$> lookupEnv "REF"
     base <- fromMaybe (defaultBaseUrl ref) <$> lookupEnv "BASE_URL"
     putStrLn ("source: " <> base)
-    putStrLn "target: data/dicts"
+    putStrLn "target: hibet-data/dicts"
     fetcher <- newFetcher
     result <-
         runUpdate
             Config
-                { dataRoot = "data"
+                { dataRoot = datasetDir
                 , baseUrl = base
                 , checkOnly = checkOnly
                 , fetch = fetcher
@@ -80,7 +185,7 @@ updateMode checkOnly = do
                 stats.changed
                 stats.added
             manifestProblems <-
-                if checkOnly then checkManifest "data" else pure []
+                if checkOnly then checkManifest datasetDir else pure []
             mapM_
                 (TIO.hPutStrLn stderr . ("manifest: " <>))
                 manifestProblems
@@ -92,6 +197,8 @@ updateMode checkOnly = do
             if failed
                 then exitFailure
                 else when (not checkOnly && dirty) $ do
-                    putStrLn "regenerating data/key-aliases.tsv"
-                    generateAliases "data/dicts" "data/key-aliases.tsv"
+                    putStrLn "regenerating hibet-data/key-aliases.tsv"
+                    generateAliases
+                        (datasetDir </> "dicts")
+                        (datasetDir </> "key-aliases.tsv")
                     refreshManifest

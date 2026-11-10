@@ -29,14 +29,19 @@ The Hibet translates with all dictionaries from [tibetan-dictionary](https://git
     cabal install exe:hibet --overwrite-policy=always
 
 3. Point hibet at the dictionaries. They are not part of the package: the
-   repository keeps them in `data/`, and an installed binary looks in
+   repository keeps them in `hibet-data/`, and an installed binary looks in
    `--data-dir`, then `HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`.
 
-    HIBET_DATA_DIR=$PWD/data hibet shell
-    hibet --data-dir ./data shell
+    HIBET_DATA_DIR=$PWD/hibet-data hibet shell
+    hibet --data-dir ./hibet-data shell
 
    `hibet data status` prints the resolved data directory and the dataset
    version from `manifest.toml`.
+
+   `hibet data update` always installs into `$XDG_DATA_HOME/hibet/data`.
+   `--data-dir` and `HIBET_DATA_DIR` take precedence over that location, so if
+   either points at an old checkout, the updated set is not used until you
+   clear the override or point it at the new data.
 
 ## Using Nix and direnv (Alternative)
 

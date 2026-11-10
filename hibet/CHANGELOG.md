@@ -11,8 +11,9 @@ and this project adheres to
 
 ### Changed
 
-* Dictionary data moved out of the package: `data/dicts`, `data/titles.toml`
-  and `data/key-aliases.tsv` live in the repository root, and `data-files` is
+* Dictionary data moved out of the package: `hibet-data/dicts`,
+  `hibet-data/titles.toml` and `hibet-data/key-aliases.tsv` live in the
+  repository root, and `data-files` is
   gone. `cabal sdist` no longer carries the 103 MB dataset; the installed
   binary resolves a data root through `--data-dir`, `HIBET_DATA_DIR` or
   `$XDG_DATA_HOME/hibet/data`.
@@ -21,7 +22,7 @@ and this project adheres to
   `stuff/titles.toml` layout is no longer read. The "data not found" error
   points to `hibet data install`/`update` as well as `--data-dir` and
   `HIBET_DATA_DIR`.
-* `data/manifest.toml` records the schema and dataset version plus sha256 and
+* `hibet-data/manifest.toml` records the schema and dataset version plus sha256 and
   size of every dictionary, `titles.toml` and `key-aliases.tsv`.
 * The console is a separate package, `hibet-cli`: `App`, `Cli`, `Pretty`,
   `Shell` and the `hibet` executable moved there. The `hibet` library is the
@@ -35,11 +36,11 @@ and this project adheres to
 ### Fixed
 
 * A Unicode query now reaches dictionary keys written in non-canonical Wylie:
-  `data/key-aliases.tsv` records the legacy spelling and the canonical
+  `hibet-data/key-aliases.tsv` records the legacy spelling and the canonical
   key the query path produces, and the loader adds the canonical key next to
   the legacy one. Covers `bha ga`/`བྷ་ག`, `gnad`/`གནད` and `gand`; 6 100 keys,
   while 26 keys where hewts changes the word are left alone.
-* `hibet-update-dicts --gen-key-aliases` regenerates the table after a
+* `hibet-dataset generate-key-aliases` regenerates the table after a
   dictionary update; `hibet-env` checks every row against hewts.
 
 ## [2.0.0] - 2026-11-07

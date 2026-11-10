@@ -56,7 +56,7 @@ data Installed = Installed
 
 defaultReleaseSource :: String
 defaultReleaseSource =
-    "https://github.com/willbasky/hibet/releases/latest/download"
+    "https://github.com/willbasky/hibet/releases/download/hibet-data"
 
 hibetDataDir :: IO FilePath
 hibetDataDir = getXdgDirectory XdgData "hibet"

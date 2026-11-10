@@ -40,7 +40,7 @@ cradle:
       component: "lib:hibet-tools"
 
     - path: "hibet-tools/app/Main.hs"
-      component: "hibet-tools:exe:hibet-update-dicts"
+      component: "hibet-tools:exe:hibet-dataset"
 
     - path: "hibet-tools/test"
       component: "hibet-tools:test:hibet-tools-test"

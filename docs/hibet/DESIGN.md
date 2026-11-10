@@ -84,7 +84,7 @@ hibet (движок)
 даёт канонический Wylie. Для 6 100 из 348 433 ключей написания не совпадают
 (`bha ga` против `b+ha ga`, `gnad` против `gand`), и точный поиск промахивался.
 
-Нормализация вынесена из загрузки в данные: `data/key-aliases.tsv` хранит пары
+Нормализация вынесена из загрузки в данные: `hibet-data/key-aliases.tsv` хранит пары
 «легаси-ключ ⇥ канонический ключ», а `addAliases` при загрузке кладёт
 канонический ключ рядом с легаси с теми же статьями. Оба написания остаются
 рабочими, вывод hewts не меняется; юникод-запрос находит и `bha ga`, и `gnad`.
@@ -94,7 +94,7 @@ hibet (движок)
 стоит одного чтения 259 КБ и ~348 тыс. lookups; запрос не дорожает.
 
 Таблица производная: после обновления словарей её надо перегенерировать
-(`just gen-key-aliases`, около 2,5 мин). `hibet-env`
+(`just generate-key-aliases`, около 2,5 мин). `hibet-env`
 проверяет каждую строку: ключ должен совпадать с тем, что даёт юникод-путь, а
 оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
 слово, в таблицу не попадают.
@@ -109,9 +109,11 @@ hibet (движок)
 - `hibet data update [--source URL|DIR]` — скачать `manifest.toml` и
   `hibet-data-<version>.tar.gz` из релиза, проверить sha256 и заменить набор.
   `--source` принимает `file://` и локальный каталог; без него берётся
-  `releases/latest/download` основной репы.
+  `releases/download/hibet-data` основной репы.
 - Установка всегда идёт в XDG: `--data-dir` и `HIBET_DATA_DIR` задают, откуда
   читать при работе, но не куда ставить. Старый набор остаётся в `data.old`.
+  Если один из них указывает на старый клон, `hibet` продолжит читать его,
+  хотя `data update` положит новый набор в XDG.
 - `hibet shell -s ID…` — shell с выбранными словарями.
 - `hibet show names` — список словарей.
 - `hibet show meta [-d ID]` — описания словарей.
@@ -125,7 +127,7 @@ hibet (движок)
 Единственный модуль библиотеки с `import Convert` — `hibet/src/Translator.hs`.
 Используются `convertWylieToUnicode`, `splitSentences`, `renderItems OutWylie`,
 `defaultSettings`, `OutputFormat`, `SpellItem`. Своей конверсии в `hibet` нет.
-Генератор ключей `hibet-update-dicts --gen-key-aliases` (пакет `hibet-tools`)
+Генератор ключей `hibet-dataset generate-key-aliases` (пакет `hibet-tools`)
 тоже ходит в hewts, но это offline-инструмент, а не часть приложения.
 
 ## Пакеты
@@ -139,7 +141,7 @@ optparse, exe `hibet`). Движок не зависит от консольны
 
 - `hibet-env` — загрузка словарей (`makeEnvFrom` на `test/env/data`), resolver,
   `getAnswer` на Wylie и Unicode, матрица Unicode-запросов (пунктуация,
-  пробелы, смешанный текст, ошибки), инвариант таблицы `data/key-aliases.tsv`.
+  пробелы, смешанный текст, ошибки), инвариант таблицы `hibet-data/key-aliases.tsv`.
   Тесты с реальными словарями берут `../data` или `HIBET_DATA_DIR`; в распакованном
   `sdist` данных нет, и они помечаются pending, а не падают.
 - `hibet-labels` — метки словарей.
@@ -150,12 +152,24 @@ optparse, exe `hibet`). Движок не зависит от консольны
 
 ## Данные
 
-`data/dicts/*.txt` — 59 файлов, около 103 МБ; `data/titles.toml` —
-метаданные; `data/key-aliases.tsv` — производная таблица ключей (259 КБ);
-`data/manifest.toml` — версия набора и sha256 каждого файла; его генерирует и
-сверяет с диском `hibet-tools` (`just gen-manifest`, `--check`). Это не
+`hibet-data/dicts/*.txt` — 59 файлов, около 103 МБ; `hibet-data/titles.toml` —
+метаданные; `hibet-data/key-aliases.tsv` — производная таблица ключей (259 КБ);
+`hibet-data/manifest.toml` — версия набора и sha256 каждого файла; его генерирует и
+сверяет с диском `hibet-tools` (`just generate-manifest`, `hibet-dataset check`).
+Это не
 `data-files` пакета: `cabal sdist` содержит только код и fixture, а бинарь
 ищет данные через `--data-dir`, `HIBET_DATA_DIR` или XDG. Установленный набор
 лежит в `$XDG_DATA_HOME/hibet/data`; `hibet data install`/`update` собирают
 его в `data.new` и оставляют прежний в `data.old`. В браузер данные не
 грузятся: веб-переводчик может быть только серверным.
+
+## Релиз данных
+
+`just data-release` запускает `hibet-dataset release`: тот проверяет
+`hibet-data/manifest.toml` и собирает `dist/data-release/hibet-data-<version>.tar.gz`
+вместе с `manifest.toml` на Haskell, без системного `tar`.
+Артефакты публикуются в GitHub Releases основной репы под тегом `hibet-data`;
+версия живёт в имени архива и в манифесте, а не в теге. `hibet data update`
+по умолчанию читает `releases/download/hibet-data`, поэтому релиз данных не
+зависит от кодовых релизов и от того, какой из них GitHub считает latest.
+Отдельной репы `hibet-data` нет.

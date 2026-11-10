@@ -1,4 +1,4 @@
--- | Regenerate @data/key-aliases.tsv@ from the dictionaries.
+-- | Regenerate @hibet-data/key-aliases.tsv@ from the dictionaries.
 --
 -- Dictionary keys keep the spelling of their source, but a Unicode query goes
 -- through hewts and gets canonical Wylie. For most keys the two spellings are

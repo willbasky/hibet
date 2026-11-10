@@ -10,7 +10,7 @@ tested-with: ghc ==9.8.4 || ==9.10.3
 homepage: https://github.com/willbasky/Hibet
 bug-reports: https://github.com/willbasky/Hibet/issues
 synopsis: maintainer tools for hibet
-description: Dictionary update and key alias generation for hibet.
+description: Dictionary update, key alias and manifest generation for hibet.
 category: Utility
 build-type: Simple
 extra-source-files:
@@ -18,6 +18,7 @@ extra-source-files:
 
 extra-doc-files:
   CHANGELOG.md
+  README.md
 
 source-repository head
   type: git
@@ -28,6 +29,7 @@ library
     Fetch
     KeyAliases
     Manifest
+    Release
     Update
 
   hs-source-dirs: src
@@ -81,12 +83,14 @@ library
     http-client >=0.7.17 && <0.8,
     http-client-tls >=0.3.6 && <0.5,
     http-types >=0.12.3 && <0.13,
+    tar >=0.6 && <0.7,
     text >=2.0.2 && <2.2,
     time >=1.9 && <1.15,
     unicode-transforms >=0.4 && <0.5,
     unordered-containers >=0.2.20 && <0.3,
+    zlib >=0.7 && <0.8,
 
-executable hibet-update-dicts
+executable hibet-dataset
   main-is: Main.hs
   hs-source-dirs: app
   default-language: Haskell2010
@@ -110,7 +114,9 @@ executable hibet-update-dicts
 
   build-depends:
     base >=4.11 && <5,
+    filepath >=1.4.2 && <1.6,
     hibet-tools,
+    optparse-applicative >=0.18.1 && <0.19,
     text >=2.0.2 && <2.2,
 
 test-suite hibet-tools-test
@@ -143,5 +149,7 @@ test-suite hibet-tools-test
     filepath >=1.4.2 && <1.6,
     hibet-tools,
     hspec >=2.11.12,
+    tar >=0.6 && <0.7,
     temporary >=1.3 && <1.4,
     text,
+    zlib >=0.7 && <0.8,

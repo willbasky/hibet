@@ -3,6 +3,7 @@ module Main (main) where
 import Fetch (newFetcher)
 import KeyAliases (generateAliases)
 import qualified Manifest
+import Release (ReleaseInfo (..), buildRelease)
 import Update
     ( Config (..)
     , Entry (..)
@@ -12,7 +13,11 @@ import Update
     , runUpdate
     )
 
+import qualified Codec.Archive.Tar as Tar
+import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BSL
+import Data.List (isInfixOf)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile)
@@ -21,6 +26,7 @@ import System.IO.Temp (withSystemTempDirectory)
 import Test.Hspec
     ( Spec
     , describe
+    , expectationFailure
     , hspec
     , it
     , shouldBe
@@ -34,6 +40,7 @@ main = hspec $ do
     updateSpec
     aliasSpec
     manifestSpec
+    releaseSpec
 
 normalizeSpec :: Spec
 normalizeSpec =
@@ -217,12 +224,68 @@ manifestSpec =
                                             "manifest.toml" `T.isInfixOf` problem
                                         _ -> False
                                     )
+
+releaseSpec :: Spec
+releaseSpec =
+    describe "Release" $ do
+        it "builds manifest.toml and a tar.gz with the data files" $
+            withSystemTempDirectory "hibet-release" $ \tmp -> do
+                let root = tmp </> "data"
+                    out = tmp </> "dist"
+                setupData root
+                _ <- Manifest.writeManifest root "2026.11.09"
+                built <- buildRelease root out
+                case built of
+                    Left err -> expectationFailure err
+                    Right info -> do
+                        info.releaseVersion `shouldBe` "2026.11.09"
+                        info.releaseFiles `shouldBe` 3
+                        info.releaseArchive
+                            `shouldBe` out </> "hibet-data-2026.11.09.tar.gz"
+                        info.releaseManifest
+                            `shouldBe` out </> "manifest.toml"
+                        doesFileExist info.releaseArchive `shouldReturn` True
+                        doesFileExist info.releaseManifest `shouldReturn` True
+                        names <- archiveEntries info.releaseArchive
+                        names
+                            `shouldBe` [ "manifest.toml"
+                                       , "dicts/A-T|E.txt"
+                                       , "titles.toml"
+                                       , "key-aliases.tsv"
+                                       ]
+        it "refuses to build when the data does not match the manifest" $
+            withSystemTempDirectory "hibet-release" $ \tmp -> do
+                let root = tmp </> "data"
+                    out = tmp </> "dist"
+                setupData root
+                _ <- Manifest.writeManifest root "2026.11.09"
+                BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hopE\n"
+                built <- buildRelease root out
+                built `shouldSatisfy` isLeftWith "sha256 mismatch"
+                doesFileExist (out </> "hibet-data-2026.11.09.tar.gz")
+                    `shouldReturn` False
+
+archiveEntries :: FilePath -> IO [FilePath]
+archiveEntries path = do
+    bytes <- BS.readFile path
+    pure (go (Tar.read (GZip.decompress (BSL.fromStrict bytes))))
     where
-        setupData root = do
-            createDirectoryIfMissing True (root </> "dicts")
-            BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hope\n"
-            BS.writeFile (root </> "titles.toml") "[[titles]]\n"
-            BS.writeFile (root </> "key-aliases.tsv") "bha ga\tb+ha ga\n"
+        go = \case
+            Tar.Fail err -> error (show err)
+            Tar.Done -> []
+            Tar.Next entry rest -> Tar.entryPath entry : go rest
+
+setupData :: FilePath -> IO ()
+setupData root = do
+    createDirectoryIfMissing True (root </> "dicts")
+    BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hope\n"
+    BS.writeFile (root </> "titles.toml") "[[titles]]\n"
+    BS.writeFile (root </> "key-aliases.tsv") "bha ga\tb+ha ga\n"
+
+isLeftWith :: String -> Either String a -> Bool
+isLeftWith needle = \case
+    Left err -> needle `isInfixOf` err
+    Right _ -> False
 
 isLeft :: Either a b -> Bool
 isLeft (Left _) = True
