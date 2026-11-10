@@ -7,11 +7,11 @@ import System.Directory (listDirectory)
 import System.Environment (lookupEnv)
 import System.FilePath ((</>))
 
--- | Data root: @HIBET_DATA_DIR@ or @../data@ in a repository checkout.
+-- | Data root: @HIBET_DATA_DIR@ or @../hibet-data@ in a repository checkout.
 dataDir :: IO FilePath
 dataDir = do
     envRoot <- lookupEnv "HIBET_DATA_DIR"
-    pure $ maybe "../data" id envRoot
+    pure $ maybe "../hibet-data" id envRoot
 
 dictPaths :: IO [FilePath]
 dictPaths = do

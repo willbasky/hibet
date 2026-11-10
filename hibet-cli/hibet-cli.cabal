@@ -24,6 +24,8 @@ library
   exposed-modules:
     App
     Cli
+    Install
+    Manifest
     Pretty
     Shell
 
@@ -73,19 +75,26 @@ library
 
   build-depends:
     base >=4.11 && <5,
+    bytestring >=0.11.5.3 && <0.13,
+    crypton >=1.0 && <2,
     directory >=1.3.7 && <1.4,
     filepath >=1.4.2 && <1.6,
     gitrev >=1.3.1 && <1.4,
     haskeline >=0.8.2 && <0.9,
     hibet >=2.0 && <2.1,
+    http-client >=0.7.17 && <0.8,
+    http-client-tls >=0.3.6 && <0.5,
+    http-types >=0.12.3 && <0.13,
     ki >=1.0 && <1.1,
     neat-interpolation >=0.5.1 && <0.6,
     optparse-applicative >=0.18.1 && <0.19,
     pager >=0.1.1 && <0.2,
     prettyprinter >=1.7.1 && <1.8,
     prettyprinter-ansi-terminal >=1.1.3 && <1.2,
+    tar >=0.6 && <0.7,
     terminal-size >=0.3.4 && <0.4,
     text >=2.0.2 && <2.2,
+    zlib >=0.7 && <0.8,
 
 executable hibet
   main-is: Main.hs
@@ -187,3 +196,40 @@ test-suite hibet-pretty
     hibet-cli,
     hspec >=2.11.12,
     prettyprinter >=1.7.1 && <1.8,
+
+test-suite hibet-cli-data
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs: test/data
+  default-language: Haskell2010
+  default-extensions:
+    LambdaCase
+    OverloadedRecordDot
+    OverloadedStrings
+    RecordWildCards
+
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-uni-patterns
+    -Wincomplete-record-updates
+    -Wredundant-constraints
+    -fhide-source-paths
+    -Wpartial-fields
+    -Wmissing-deriving-strategies
+    -fwrite-ide-info
+    -hiedir=.hie
+    -Wunused-packages
+
+  build-depends:
+    base >=4.11 && <5,
+    bytestring >=0.11.5.3 && <0.13,
+    directory >=1.3.7 && <1.4,
+    filepath >=1.4.2 && <1.6,
+    hibet-cli,
+    hspec >=2.11.12,
+    tar >=0.6 && <0.7,
+    temporary >=1.3 && <1.4,
+    text >=2.0.2 && <2.2,
+    zlib >=0.7 && <0.8,

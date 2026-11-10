@@ -93,10 +93,12 @@ resolveDataDir explicit = do
             EffectError "Dictionary data not found" $
                 "looked in: "
                     <> T.intercalate ", " (map T.pack candidates)
-                    <> ". Pass --data-dir=DIR or set HIBET_DATA_DIR"
-                    <> " to a data root with titles.toml and dicts/."
+                    <> ". Install it with `hibet data install --from DIR`"
+                    <> " or `hibet data update`, or pass --data-dir=DIR /"
+                    <> " set HIBET_DATA_DIR to a data root with titles.toml"
+                    <> " and dicts/."
 
--- | Read a data directory laid out like @data/@: @titles.toml@,
+-- | Read a data directory laid out like @hibet-data/@: @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps
 -- the dictionaries outside the package.
 makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)
@@ -149,7 +151,7 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
--- @scripts/gen-key-aliases.hs@.
+-- @hibet-dataset generate-key-aliases@.
 readAliases :: FilePath -> IO (HashMap Text Text)
 readAliases path = do
     text <- TE.decodeUtf8 <$> BS.readFile path

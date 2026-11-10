@@ -306,13 +306,13 @@ withEnv action = do
         Nothing -> pendingWith "dictionary data is not available"
         Just root -> makeEnvFrom root testDicts >>= either (fail . show) action
 
--- | The real data root is a repository checkout (@../data@ from the package
+-- | The real data root is a repository checkout (@../hibet-data@ from the package
 -- directory) or whatever @HIBET_DATA_DIR@ names. Packed sources have no data;
 -- the tests that need it are reported as pending.
 realDataDir :: IO (Maybe FilePath)
 realDataDir = do
     envRoot <- lookupEnv "HIBET_DATA_DIR"
-    firstExisting $ maybe [] pure envRoot <> ["../data"]
+    firstExisting $ maybe [] pure envRoot <> ["../hibet-data"]
     where
         firstExisting [] = pure Nothing
         firstExisting (root : rest) = do

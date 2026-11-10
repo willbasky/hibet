@@ -59,7 +59,7 @@ boilQuery script query = case script of
 -- | The Wylie search key for Tibetan script. The dictionary is keyed by Wylie
 -- words, so punctuation and spaces of the query must not reach the key: take
 -- the syllables through the token layer. The same function names the keys in
--- @data/key-aliases.tsv@, so a Unicode query lands on the canonical spelling
+-- @hibet-data/key-aliases.tsv@, so a Unicode query lands on the canonical spelling
 -- of a legacy key.
 tibetToWylieKey :: Text -> Either HibetError Text
 tibetToWylieKey query = do

@@ -12,6 +12,13 @@ and this project adheres to
 
 * Global `--data-dir DIR` option and `hibet data status`, which prints the
   resolved data root and the dataset version from `manifest.toml`.
+* `hibet data install --from DIR` verifies `manifest.toml`, sizes and sha256,
+  then installs the data into `$XDG_DATA_HOME/hibet/data`; the previous set is
+  kept in `data.old`.
+* `hibet data update [--source URL|DIR]` downloads `manifest.toml` and
+  `hibet-data-<version>.tar.gz`, verifies the archive and swaps the active
+  data set. `file://` and local directories work without network; without
+  `--source` it reads the `hibet-data` release.
 
 ### Changed
 

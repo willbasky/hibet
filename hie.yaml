@@ -35,3 +35,12 @@ cradle:
 
     - path: "hibet-cli/test/pretty"
       component: "hibet-cli:test:hibet-pretty"
+
+    - path: "hibet-tools/src"
+      component: "lib:hibet-tools"
+
+    - path: "hibet-tools/app/Main.hs"
+      component: "hibet-tools:exe:hibet-dataset"
+
+    - path: "hibet-tools/test"
+      component: "hibet-tools:test:hibet-tools-test"
