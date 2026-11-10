@@ -93,8 +93,10 @@ resolveDataDir explicit = do
             EffectError "Dictionary data not found" $
                 "looked in: "
                     <> T.intercalate ", " (map T.pack candidates)
-                    <> ". Pass --data-dir=DIR or set HIBET_DATA_DIR"
-                    <> " to a data root with titles.toml and dicts/."
+                    <> ". Install it with `hibet data install --from DIR`"
+                    <> " or `hibet data update`, or pass --data-dir=DIR /"
+                    <> " set HIBET_DATA_DIR to a data root with titles.toml"
+                    <> " and dicts/."
 
 -- | Read a data directory laid out like @data/@: @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps

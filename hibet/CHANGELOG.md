@@ -18,7 +18,9 @@ and this project adheres to
   `$XDG_DATA_HOME/hibet/data`.
 * `Env.resolveDataDir` and `makeEnvForDataDir` added; `makeEnvFor` uses the
   resolver, `makeEnvFrom` keeps taking an explicit root. The old
-  `stuff/titles.toml` layout is no longer read.
+  `stuff/titles.toml` layout is no longer read. The "data not found" error
+  points to `hibet data install`/`update` as well as `--data-dir` and
+  `HIBET_DATA_DIR`.
 * `data/manifest.toml` records the schema and dataset version plus sha256 and
   size of every dictionary, `titles.toml` and `key-aliases.tsv`.
 * The console is a separate package, `hibet-cli`: `App`, `Cli`, `Pretty`,

@@ -18,13 +18,14 @@
 - Unicode-вход покрыт матрицей (T5). Легаси-ключи (`bha` против `b+ha`, `gnad`
   против `gand`) юникод-запрос находит через таблицу `data/key-aliases.tsv`
   (T10): канонический ключ кладётся рядом с легаси при загрузке.
-- Данные вынесены из пакета в `data/` (T25, шаги 1–6): resolver
+- Данные вынесены из пакета в `data/` (T25, шаги 1–7): resolver
   `--data-dir` → `HIBET_DATA_DIR` → XDG, `hibet data status`, манифест с
   версией и sha256, `data-files` удалены, `hibet-tools` генерирует и проверяет
-  манифест. `cabal sdist` — около 20 КБ.
-- CLI: `shell`, `show names`, `show meta`, `om`, `data status`, глобальный
-  `--data-dir`. Консоль вынесена в пакет `hibet-cli` (T2): `hibet` — движок
-  без Haskeline и optparse.
+  манифест, `hibet data install`/`update` ставят его в XDG. `cabal sdist` —
+  около 20 КБ.
+- CLI: `shell`, `show names`, `show meta`, `om`, `data status`/`install`/
+  `update`, глобальный `--data-dir`. Консоль вынесена в пакет `hibet-cli`
+  (T2): `hibet` — движок без Haskeline и optparse.
 - Обновление словарей — `hibet-tools` (T12): `just update-dicts`,
   `just update-dicts-check`, `just gen-key-aliases`; bash/python/curl не
   нужны. Alias-таблица пересобирается в том же процессе.
@@ -53,11 +54,11 @@
    Tibetan (T14), Stardict (T15), исключения (T16), публикация hewts (T17,
    отложено), парсеры (T18), GUI (T19–T20), платформы (T21), выход без
    латиницы (T22), похожие ключи (T23). Порядок не задан; T6 идёт первой.
-6. **T25, шаги 7–8.** `hibet data install`/`update` в `hibet-cli` с проверкой
-   манифеста (шаг 7) и релиз `hibet-data-<version>.tar.gz` в основной репе
-   (шаг 8, без отдельной репы). Данные уже обновляются через
+6. **T25, шаг 8.** Релиз `hibet-data-<version>.tar.gz` и `manifest.toml` в
+   основной репе (без отдельной репы). Данные уже обновляются через
    `just update-dicts-check`/`just update-dicts` (T12), манифест
-   пересобирается там же (шаг 6).
+   пересобирается там же (шаг 6), а `hibet data install`/`update` ставят его
+   в XDG (шаг 7).
 
 ## Чего не делаем
 
@@ -75,5 +76,5 @@
 `data/` лежит в корне репы, установленный бинарь ищет его через `--data-dir`,
 `HIBET_DATA_DIR` или `$XDG_DATA_HOME/hibet/data`. Публикация `hibet` на Hackage
 теперь не упирается в 103 МБ; CLI без данных требует флаг или переменную.
-Осталось сделать пользовательские `hibet data install`/`update`; данные
-остаются в основной репе (T25, шаги 7–8). `hewts` — T17.
+Осталось собрать релизный архив и опубликовать его в GitHub Releases основной
+репы (T25, шаг 8). `hewts` — T17.

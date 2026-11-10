@@ -11,7 +11,7 @@
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
-| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data status`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
 | `hibet-tools` | maintainer-инструмент: обновление словарей и alias-таблицы, HTTP/NFC | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
@@ -48,6 +48,13 @@ data/
 данных нет. Манифест читают только updater и команды CLI; библиотека `hibet`
 его не требует.
 
+Установленный набор лежит плоско, как `data/` в репе:
+`$XDG_DATA_HOME/hibet/data/{dicts,titles.toml,key-aliases.tsv,manifest.toml}`.
+Перед заменой активного набора данные собираются в `data.new`, а старый
+набор уезжает в `data.old`. Обе команды не зависят от текущего каталога,
+`--data-dir` и `HIBET_DATA_DIR` задают только источник для запуска, но не
+цель установки.
+
 Для разработки `just run` выставляет `HIBET_DATA_DIR=$PWD/data`; `nix develop`
 делает то же через `shellHook`. Nix-пакет `hibet-cli` оборачивает бинарь и
 передаёт ему данные из `./data`.
@@ -66,6 +73,18 @@ bash-версии; `--check` ничего не пишет и завершает�
 `just gen-key-aliases` (тоже обновляет манифест) и `just gen-manifest`.
 `--check` дополнительно сверяет `data/manifest.toml` с файлами на диске:
 пропавший или лишний файл, несовпадение размера или sha256 дают код 1.
+
+## Установка данных
+
+`hibet data install --from DIR` читает `DIR/manifest.toml`, проверяет размеры
+и sha256 каждого файла, копирует только файлы из манифеста (плюс сам
+`manifest.toml`) в `$XDG_DATA_HOME/hibet/data.new` и переключает `data`.
+`hibet data update` делает то же с релизом: скачивает `manifest.toml`, затем
+`hibet-data-<version>.tar.gz`, распаковывает только обычные файлы из
+манифеста (ссылки и пути с `..` отвергаются) и сверяет хэши. `--source`
+принимает HTTP URL, `file://` или локальный каталог; по умолчанию берётся
+`releases/latest/download` основной репы. Сеть и tar живут в `hibet-cli`,
+не в библиотеке `hibet`.
 
 ## Поток перевода
 
@@ -151,7 +170,9 @@ exe hibet (пакет hibet-cli)
 | Модуль | Роль |
 |---|---|
 | `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
-| `Cli` | команды `shell`, `show names`, `show meta`, `om`, `data status` |
+| `Cli` | команды `shell`, `show names`, `show meta`, `om`, `data status`/`install`/`update` |
+| `Manifest` | разбор и проверка `manifest.toml` перед установкой |
+| `Install` | скачивание, распаковка и замена `data`/`data.old` |
 | `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
 | `Pretty` | вывод в терминал и пейджер |
 
@@ -181,5 +202,7 @@ exe hibet (пакет hibet-cli)
   `data/`; версия набора — дата в формате `YYYY.MM.DD`.
 - `just run` — запуск из репы с `HIBET_DATA_DIR=$PWD/data`.
 - `hibet data status` — разрешённый data-root и версия набора.
+- `hibet data install --from data` — поставить данные из репы в XDG;
+  `hibet data update --source DIR` — из локального релиза без сети.
 - `fourmolu` для `.hs`, `cabal-gild` для `.cabal`.
 - Nix: `nix build`, `nix develop`; `justfile` — короткие команды.

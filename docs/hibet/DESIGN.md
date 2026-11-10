@@ -104,8 +104,14 @@ hibet (движок)
 - `hibet` — интерактивный shell.
 - `hibet --data-dir DIR …` — явный корень данных для любой команды.
 - `hibet data status` — разрешённый data-root и версия из `manifest.toml`.
-  План T25: `hibet data install --from DIR` и `hibet data update` с проверкой
-  манифеста; данные остаются в основной репе, отдельной репы нет.
+- `hibet data install --from DIR` — поставить проверенный набор из каталога
+  (клон репы, распакованный релиз) в `$XDG_DATA_HOME/hibet/data`.
+- `hibet data update [--source URL|DIR]` — скачать `manifest.toml` и
+  `hibet-data-<version>.tar.gz` из релиза, проверить sha256 и заменить набор.
+  `--source` принимает `file://` и локальный каталог; без него берётся
+  `releases/latest/download` основной репы.
+- Установка всегда идёт в XDG: `--data-dir` и `HIBET_DATA_DIR` задают, откуда
+  читать при работе, но не куда ставить. Старый набор остаётся в `data.old`.
 - `hibet shell -s ID…` — shell с выбранными словарями.
 - `hibet show names` — список словарей.
 - `hibet show meta [-d ID]` — описания словарей.
@@ -138,6 +144,9 @@ optparse, exe `hibet`). Движок не зависит от консольны
   `sdist` данных нет, и они помечаются pending, а не падают.
 - `hibet-labels` — метки словарей.
 - `hibet-pretty` — вывод (живёт в пакете `hibet-cli`).
+- `hibet-cli-data` — установка: проверка манифеста, `data.new`/`data.old`,
+  локальный `file://`-релиз, несовпадение хэша, лишний и небезопасный путь в
+  архиве.
 
 ## Данные
 
@@ -146,5 +155,7 @@ optparse, exe `hibet`). Движок не зависит от консольны
 `data/manifest.toml` — версия набора и sha256 каждого файла; его генерирует и
 сверяет с диском `hibet-tools` (`just gen-manifest`, `--check`). Это не
 `data-files` пакета: `cabal sdist` содержит только код и fixture, а бинарь
-ищет данные через `--data-dir`, `HIBET_DATA_DIR` или XDG. В браузер они не
+ищет данные через `--data-dir`, `HIBET_DATA_DIR` или XDG. Установленный набор
+лежит в `$XDG_DATA_HOME/hibet/data`; `hibet data install`/`update` собирают
+его в `data.new` и оставляют прежний в `data.old`. В браузер данные не
 грузятся: веб-переводчик может быть только серверным.
