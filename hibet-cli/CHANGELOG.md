@@ -26,6 +26,8 @@ and this project adheres to
   has been waiting for the load (about 0,3 s on a warm cache) the first query
   costs the same as the second; `:q` on a fresh start still exits without
   waiting for the load. An immediately typed first query waits for the loader.
+* `show names` and `show meta` read only `titles.toml` and do not load the
+  dictionaries (about 0,02 s instead of 0,4 s).
 * `hibet data update` streams the archive and prints `manifest`, `download`,
   `unpack`, `verify`, `switch` and `done` on `stderr`: an animated line with
   bytes/percent on a terminal, one line per step in a pipe. Ctrl+C removes
