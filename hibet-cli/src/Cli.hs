@@ -10,7 +10,7 @@ module Cli
     , parser
     ) where
 
-import Env (Env (..), readEnv, resolveDataDir)
+import Env (Env, resolveDataDir)
 import Install
     ( Installed (..)
     , defaultReleaseSource
@@ -18,7 +18,7 @@ import Install
     , installFromDir
     , installFromRelease
     )
-import Label (LabelFull (..), Labels (..), Title (unTitle))
+import Label (LabelFull (..), Labels (..), Title (unTitle), getLabels)
 import Paths_hibet_cli (version)
 import Pretty
 import Shell (translator)
@@ -28,6 +28,7 @@ import Utility (showT)
 import Control.Applicative (many, optional, (<|>))
 import Control.Concurrent.MVar (MVar)
 import Control.Exception (throwIO)
+import qualified Data.ByteString as BS
 import Data.Foldable (find, toList)
 import Data.List (sortBy)
 import Data.Maybe (fromMaybe, listToMaybe)
@@ -85,15 +86,16 @@ data Action
 -- | Commands parsed with @show@ command
 data Opt = Names | Meta (Maybe Int)
 
--- | Whether a command needs the dictionaries loaded.
+-- | Whether a command needs the full environment, dictionaries included.
+-- @show@ reads only @titles.toml@ and goes through 'runStatic'.
 commandNeedsEnv :: Action -> Bool
 commandNeedsEnv = \case
     Shell _ -> True
-    ShowOption _ -> True
     DataInstall _ -> False
     DataStatus -> False
     DataUpdate _ -> False
     Om -> False
+    ShowOption _ -> False
 
 -- | Run a command that does not need the dictionaries.
 runStatic :: Command -> IO ()
@@ -103,19 +105,20 @@ runStatic (Command mdir action) = case action of
     DataUpdate msource -> runDataUpdate msource
     Om -> putColorDoc magenta NewLine om
     Shell _ -> pure ()
-    ShowOption _ -> pure ()
+    ShowOption opt -> runShowStatic mdir opt
 
--- | Run 'hibet' with cli command
+-- | Run 'hibet' with cli command. Only 'Shell' needs the loaded environment;
+-- the other actions are handled by 'runStatic' and stay for the exhaustiveness
+-- check.
 runCommand :: MVar Env -> Action -> IO ()
-runCommand mv action = do
-    case action of
-        -- App.prepareEnv already filtered the dictionaries by these ids
-        Shell _ -> translator mv
-        DataInstall _ -> pure ()
-        DataStatus -> pure ()
-        DataUpdate _ -> pure ()
-        Om -> putColorDoc magenta NewLine om
-        ShowOption opt -> runShow mv opt
+runCommand mv action = case action of
+    -- App.prepareEnv already filtered the dictionaries by these ids
+    Shell _ -> translator mv
+    DataInstall _ -> pure ()
+    DataStatus -> pure ()
+    DataUpdate _ -> pure ()
+    Om -> pure ()
+    ShowOption _ -> pure ()
 
 runDataStatus :: Maybe FilePath -> IO ()
 runDataStatus mdir = do
@@ -182,10 +185,16 @@ readManifestVersion path = do
                     , not (T.null rest)
                     ]
 
-runShow :: MVar Env -> Opt -> IO ()
-runShow mv opt = do
-    env <- readEnv mv
-    let Labels labels = env.labels
+-- | @show@ needs only the titles from @titles.toml@; the dictionaries are
+-- not loaded at all.
+runShowStatic :: Maybe FilePath -> Opt -> IO ()
+runShowStatic mdir opt = do
+    root <- resolveDataDir mdir >>= either throwIO pure
+    labels <- getLabels <$> BS.readFile (root </> "titles.toml")
+    runShow labels opt
+
+runShow :: Labels -> Opt -> IO ()
+runShow (Labels labels) opt = do
     let filteredLabels = filterAvailable labels
     case opt of
         Names -> do
