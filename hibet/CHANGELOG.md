@@ -11,6 +11,12 @@ and this project adheres to
 
 ### Changed
 
+* Dictionary files are now read strictly, one green thread per file (`ki`),
+  and then parsed with `parMap` (T8). Lazy bytestring reads under `parMap`
+  did not overlap; allocations dropped from 910 MB to 746 MB. With the new
+  `-A16m` executable a warm `Env` load is 0.25 s (0.40 s before, `-A4m`) and
+  0.26 s cold; peak RSS is 542 MB (`-A4m`: 384 MB), maximum residency stays
+  around 160 MB.
 * `Env.makeEnv*` now parse the dictionaries to NF before returning (`force`
   inside `try`). The CLI background loader no longer publishes a lazy `Env`, so
   the first query after the environment is ready costs the same as the second,
