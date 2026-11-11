@@ -140,7 +140,7 @@ executable hibet
     -threaded
     -rtsopts
     -Wmissing-export-lists
-    "-with-rtsopts=-N -A4m -AL128m -qn8 -I0 -T"
+    "-with-rtsopts=-N -A16m -AL128m -qn8 -I0 -T"
 
   build-depends:
     base >=4.11 && <5,

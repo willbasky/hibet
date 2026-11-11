@@ -10,7 +10,7 @@
 | Пакет | Что это | Зависит от |
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
-| `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `tomland` |
+| `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `ki`, `stm`, `tomland` |
 | `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
 | `hibet-tools` | maintainer-инструмент: обновление словарей, alias-таблица, манифест и релизный архив | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms`, `optparse-applicative`, `tar`, `zlib` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
@@ -113,7 +113,8 @@ bash-версии; команда `check` ничего не пишет и зав
 exe hibet (пакет hibet-cli)
   → App.app: Cli.parser через optparse execParser
       → Env.resolveDataDir: --data-dir → HIBET_DATA_DIR → XDG
-      → Ki.scoped + Ki.fork: makeEnvForDataDir → MVar Env (в фоне)
+      → Ki.scoped + Ki.fork: makeEnvForDataDir (чтение — ki, разбор — parMap)
+        → MVar Env (в фоне)
       → Cli.runCommand
           → Shell.translator (Haskeline)
               → getAnswer (чистая)
@@ -158,7 +159,8 @@ exe hibet (пакет hibet-cli)
   `terminal-size`, `pager` и `prettyprinter-ansi-terminal` живут только в
   `hibet-cli`.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
-  (`makeEnv*` возвращает `Either`), фоновая загрузка — `ki`.
+  (`makeEnv*` возвращает `Either`), фоновая загрузка и чтение файлов — `ki`,
+  разбор — `parMap` (T8).
 - **Словари** (59 файлов, ~103 МБ) — данные репозитория и установки, не
   `data-files` пакета; `hibet-data/key-aliases.tsv` — производная таблица
   написаний ключей, `hibet-data/manifest.toml` — версия и хэши. В браузер они не едут:
