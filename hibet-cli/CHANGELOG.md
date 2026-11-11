@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
-## [Unreleased]
+## [2.1.0] - 2026-11-11
 
 ### Added
 

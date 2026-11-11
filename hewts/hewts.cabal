@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name: hewts
-version: 0.1.0.0
+version: 0.1.0
 synopsis: Tibetan EWTS (Wylie) and Unicode converter with spelling checks
 description:
   Convert Tibetan text between EWTS (Extended Wylie) and Unicode, check

@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name: hibet
-version: 2.0.0
+version: 3.0.0
 license: BSD-3-Clause
 license-file: LICENSE
 copyright: 2023 willbasky
