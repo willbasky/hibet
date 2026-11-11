@@ -31,8 +31,11 @@
 | `hewts/ROADMAP.md` | что осталось у hewts и в каком порядке |
 | `hibet/DESIGN.md` | устройство движка: Env, Dictionary, Translator |
 | `hibet/ROADMAP.md` | что осталось у hibet |
+| `../README.md` | README проекта: пакеты, установка, команды |
 | `../hewts/README.md` | README пакета hewts |
-| `../hibet/README.md` | README переводчика |
+| `../hibet/README.md` | README движка перевода |
+| `../hibet-cli/README.md` | README консоли `hibet` |
+| `../hibet-tools/README.md` | README инструмента данных |
 | `../hewts/test/README.md` | индекс тестов hewts: модуль → источник ожиданий |
 | `archive/` | исторические документы, не обновляются |
 

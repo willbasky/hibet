@@ -1,181 +1,126 @@
-# Tibetan-English translator for CLI
+# Hibet
 
 [![Haskell-CI](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml/badge.svg)](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml)
-[![BSD3 license](https://img.shields.io/badge/license-bsd3-brightgreen)](LICENSE)
+[![BSD3 license](https://img.shields.io/badge/license-bsd3-brightgreen)](hibet/LICENSE)
 
 ![Bod](bod.png)
 
-## About
+Hibet translates Tibetan text into English with the 59 dictionaries of the
+[tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary)
+project. Input may be [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration)
+or [Tibetan script](https://en.wikipedia.org/wiki/Tibetan_script).
 
-The Hibet translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. It consume both [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) and [tibetan script](https://en.wikipedia.org/wiki/Tibetan_script) from input.
+## Packages
 
-## Features
+| Package | Role |
+|---|---|
+| [`hewts`](hewts/README.md) | Tibetan spelling: EWTS/Wylie and Unicode conversion, spelling findings. Pure library. |
+| [`hibet`](hibet/README.md) | translation engine: data loading, dictionary lookup, pure `getAnswer`. |
+| [`hibet-cli`](hibet-cli/README.md) | the `hibet` executable: interactive shell, dictionary metadata, data management. |
+| [`hibet-tools`](hibet-tools/README.md) | maintainer tool `hibet-dataset` for the dictionaries and the release archive. |
+| `hibet-data/` | the dictionaries themselves: 59 files, about 103 MB. Not a package and not part of the sdist. |
 
-1. Hibet uses 59 dictionaries to translate Tibetan words to English or Tibetan.
-2. If translations have Tibetan texts it printed as wylie.
+`hibet` takes the writing system from `hewts`; it has no converter of its own.
 
-## Installation
+## Install
 
-1. To install `hibet` you want to have `cabal` and `ghc` installed. The easiest way to grab it is using [ghcup](https://www.haskell.org/ghcup/). Once the `ghcup` is installed run command to install `ghc` and `cabal`:
+You need GHC 9.8.4 or 9.10.3 and Cabal; [ghcup](https://www.haskell.org/ghcup/)
+installs both. From the repository:
 
-    ghcup install ghc 9.6.7 && ghcup install cabal 3.12.1.0
+```
+git clone https://github.com/willbasky/hibet.git
+cd hibet
+cabal install exe:hibet --overwrite-policy=always
+```
 
-2. Install hibet
+The dictionaries are separate from the binary. `hibet data update` downloads the
+latest dataset (about 33 MB) from GitHub Releases into
+`$XDG_DATA_HOME/hibet/data`. From a checkout, point at the bundled data instead:
 
-    git clone https://github.com/willbasky/hibet.git
+```
+hibet --data-dir ./hibet-data shell
+```
 
-    cd ./hibet
+The data root is resolved in this order: `--data-dir`, `HIBET_DATA_DIR`, then
+`$XDG_DATA_HOME/hibet/data`. `hibet data status` prints what was resolved and
+the dataset version.
 
-    cabal install exe:hibet --overwrite-policy=always
+## Quick start
 
-3. Point hibet at the dictionaries. They are not part of the package: the
-   repository keeps them in `hibet-data/`, and an installed binary looks in
-   `--data-dir`, then `HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`.
+Wylie and Tibetan script reach the same article; `-s 7` loads only dictionary 7
+(Rangjung Yeshe). The output is shortened here:
 
-    HIBET_DATA_DIR=$PWD/hibet-data hibet shell
-    hibet --data-dir ./hibet-data shell
+```
+$ hibet shell -s 7
+Input a word in the tibetan script or wylie transcription:
+> mo
+  མོ
+  7. Rangjung Yeshe
+    the girl
+    lady, female, woman. 2) divination, prophecy
+    ...
+> མོ
+  མོ
+  7. Rangjung Yeshe
+    the girl
+    ...
+```
 
-   `hibet data status` prints the resolved data directory and the dataset
-   version from `manifest.toml`.
+`:q` leaves the shell, `:h` prints the session history, and the arrows work
+too. Without `-s`, every dictionary is loaded and searched.
 
-   `hibet data update` always installs into `$XDG_DATA_HOME/hibet/data`.
-   `--data-dir` and `HIBET_DATA_DIR` take precedence over that location, so if
-   either points at an old checkout, the updated set is not used until you
-   clear the override or point it at the new data.
+## Commands
 
-   Update prints its steps to `stderr`: `manifest`, `download`, `unpack`,
-   `verify`, `switch`, `done`. On a terminal it redraws one line with a
-   spinner and bytes/percent; in a pipe it prints one line per step. Ctrl+C
-   during download or unpack removes `data.new` and keeps the active set.
-   Running update again for the installed version prints
-   `data already up to date (<version>)` and does not download the archive.
+| Command | What it does |
+|---|---|
+| `hibet shell [-s ID]…` | interactive translator |
+| `hibet show names` | dictionary ids, titles and languages |
+| `hibet show meta [-d N]` | descriptions, all or one dictionary |
+| `hibet data status` | resolved data directory and dataset version |
+| `hibet data install --from DIR` | install a local dataset |
+| `hibet data update [--source URL\|DIR]` | download and install the latest dataset |
+| `hibet om` | print Om |
 
-## Using Nix and direnv (Alternative)
+Global options are `--data-dir DIR`, `-s/--select DICT_ID`, `-h` and `-v`.
+The full command reference, shell behaviour and data-update details are in
+[`hibet-cli/README.md`](hibet-cli/README.md).
 
-If you have [Nix](https://nixos.org/download.html) and [direnv](https://direnv.net/) installed, you can use them for a reproducible development environment:
+## Web
 
-1. Clone the repository:
+There is no web version. The translator needs the 103 MB dictionaries, so a
+browser-only translator is out of scope and a server would be a separate
+project. Only the `hewts` converter can run in a browser, and that page is not
+built yet (`docs/TASKS.md`, T4).
 
-    git clone https://github.com/willbasky/hibet.git
-    cd ./hibet
+## Documentation
 
-2. Allow direnv to load the environment:
+[`docs/README.md`](docs/README.md) is the map: architecture, terminology, the
+task queue, and design/roadmap documents per package. The normative
+requirements for the converter are in
+[`docs/hewts/SPEC.md`](docs/hewts/SPEC.md).
 
-    direnv allow
+## Development
 
-This will automatically set up a development shell with all necessary dependencies (GHC, Cabal, HLS, ghcid) using the Nix flake configuration.
+```
+cabal build all
+cabal test all
+```
 
-### Building with Nix
+`just` wraps the dictionary workflows: `just update-dicts`,
+`just check-manifest`, `just data-release` and `just data-publish`. Nix and
+direnv users get the same toolchain:
 
-You can also build the project directly with Nix:
+```
+direnv allow          # or: nix develop
+nix build
+nix run github:willbasky/hibet -- shell
+```
 
-    nix build
+## License
 
-Or enter a development shell manually:
-
-    nix develop
-
-Build specific package:
-
-    nix build .#hibet
-    nix build .#hewts
-
-### Running with Nix
-
-You can run hibet directly without cloning or installing:
-
-    nix run github:willbasky/hibet -- shell
-
-Or run any other hibet command:
-
-    nix run github:willbasky/hibet -- show names
-    nix run github:willbasky/hibet -- -h
-
-## Usage video
-
-[![asciicast](https://asciinema.org/a/271020.svg)](https://asciinema.org/a/271020)
-
-## Help commands:
-
-`$ hibet -h`
-
-    Hibet is command line translator from Tibet to English language.
-
-    Usage: hibet [-v|--version] [--data-dir DIR] [[-s|--select DICT_ID] | COMMAND]
-
-    Available options:
-      -h,--help                Show this help text
-      -v,--version             Show Hibet's version
-      --data-dir DIR           Directory with titles.toml, key-aliases.tsv and
-                               dicts/
-      -s,--select DICT_ID      Select id of dictionary
-
-    Available commands:
-      shell                    Start the translate shell
-      om                       Print Om to a terminal
-      show                     Show names or meta of dictionaries
-      data                     Show dictionary data information
-
-
-`$ hibet show -h`
-
-    Usage: hibet show COMMAND
-      Show names or meta of dictionaries
-
-    Available options:
-      -h,--help                Show this help text
-
-    Available commands:
-      names                    Show dictionary titles
-      meta                     Show dictionary descriptions
-
-`$ hibet shell -h`
-
-    Usage: hibet shell [-s|--select DICT_ID]
-      Start the translate shell
-
-    Available options:
-      -h,--help                Show this help text
-      -s,--select DICT_ID      Select id of dictionary
-
-
-Input `hibet shell` in terminal. And then write your `query` using _Wylie_ (mo) or _Tibet script_ (མོ་):
-
-    $ hibet shell -s{7,16}
-    Which a tibetan word to translate?
-    > mo
-
-    མོ
-
-    7. Rangjung Yeshe
-      the girl
-      lady, female, woman. 2) divination, prophecy
-      1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female,
-      woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5)
-      is [don ci mo: what is the meaning]
-
-    16. Ives Waldo
-      1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden
-      pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing particle
-      [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo,
-      chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/ prophesy [R];
-      2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4)
-      noun forming particle [R]; 5) is [don ci mo: what is the meaning]. 1)
-      auspicious, mo divination/ prophesy; 2) feminine particle, female, woman,
-      she; 3) terminative after MA; 4) noun forming particle; 5) is
-
-
-
-### To quit, just input:
-
-    :q
-
-### To get queries of the session, input:
-
-    :h
-
-or use arrows of keyboard.
+BSD-3-Clause. Every package carries its own `LICENSE`; see
+[`hibet/LICENSE`](hibet/LICENSE).
 
 ## Contribution
 
-Contributions are welcoming!
+Contributions are welcome: open an issue or a pull request.
