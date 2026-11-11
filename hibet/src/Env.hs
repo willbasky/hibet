@@ -19,7 +19,8 @@ import Label (LabelFull (..), Labels (..), getLabels)
 import Type (HibetError (..))
 
 import Control.Concurrent.MVar (MVar, modifyMVar_, putMVar, readMVar)
-import Control.Exception (IOException, try)
+import Control.DeepSeq (force)
+import Control.Exception (IOException, evaluate, try)
 import Control.Monad (filterM)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
 import Data.Bifunctor (first)
@@ -100,7 +101,8 @@ resolveDataDir explicit = do
 
 -- | Read a data directory laid out like @hibet-data/@: @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps
--- the dictionaries outside the package.
+-- the dictionaries outside the package. The returned environment is fully
+-- evaluated: every selected dictionary is parsed before it is returned.
 makeEnvFrom :: FilePath -> [Int] -> IO (Either HibetError Env)
 makeEnvFrom root selected =
     makeEnvAt
@@ -128,22 +130,24 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
         filesAndTexts <-
             getFilesTexts (map (dictsDir </>) (filter wanted names))
 
-        let dictsMeta =
-                parMap
-                    rdeepseq
-                    ( \(f, t) ->
-                        toDictionaryMeta ls f
-                            $ addAliases aliases
-                            $ makeDictionary
-                            $ TL.toStrict t
-                    )
-                    filesAndTexts
-
-        pure
-            Env
-                { dictionaryMeta = dictsMeta
-                , labels = labels
-                }
+        let env =
+                Env
+                    { dictionaryMeta =
+                        parMap
+                            rdeepseq
+                            ( \(f, t) ->
+                                toDictionaryMeta ls f
+                                    $ addAliases aliases
+                                    $ makeDictionary
+                                    $ TL.toStrict t
+                            )
+                            filesAndTexts
+                    , labels = labels
+                    }
+        -- The CLI loads the environment in a background thread: parse the
+        -- dictionaries here, not in the first query that reads the MVar.
+        _ <- evaluate (force env)
+        pure env
     pure $
         first
             (\e -> EffectError "Failed to load dictionaries" (T.pack (show e)))

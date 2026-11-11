@@ -11,6 +11,11 @@ and this project adheres to
 
 ### Changed
 
+* `Env.makeEnv*` now parse the dictionaries to NF before returning (`force`
+  inside `try`). The CLI background loader no longer publishes a lazy `Env`, so
+  the first query after the environment is ready costs the same as the second,
+  and a dictionary that fails to read is reported by the loader; `makeEnvFrom`
+  no longer returns an environment whose contents are still read from the files.
 * Dictionary data moved out of the package: `hibet-data/dicts`,
   `hibet-data/titles.toml` and `hibet-data/key-aliases.tsv` live in the
   repository root, and `data-files` is
