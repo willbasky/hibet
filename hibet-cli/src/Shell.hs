@@ -1,5 +1,7 @@
 module Shell
-    ( translator
+    ( mkOutput
+    , queryScale
+    , translator
     )
 where
 
@@ -11,6 +13,9 @@ import Pretty
     , pprint
     , putColorDoc
     , red
+    , sized
+    , supportsTextSizing
+    , terminalWidth
     , viewTranslations
     , withHeaderSpaces
     , yellow
@@ -77,7 +82,13 @@ loopDialog mv inputState = do
                     Right (query, answer) ->
                         if null answer
                             then putColorDoc red NewLine "Nothing found"
-                            else pprint $ mkOutput query answer
+                            else do
+                                width <- terminalWidth
+                                scalable <- supportsTextSizing
+                                let scale = if scalable then queryScale width query else 1
+                                pprint
+                                    (Haskeline.queryInput inputState (Haskeline.getInputChar ""))
+                                    $ mkOutput scale query answer
     case mQuery of
         Nothing -> pure ()
         Just _ -> loopDialog mv inputState
@@ -89,8 +100,13 @@ fromHistory =
         . filter (/= ":h")
         . historyLines
 
-mkOutput :: Text -> [Answer] -> Doc AnsiStyle
-mkOutput query answers =
-    withHeaderSpaces yellow query
+mkOutput :: Int -> Text -> [Answer] -> Doc AnsiStyle
+mkOutput scale query answers =
+    withHeaderSpaces yellow (if scale > 1 then sized scale query else query)
         $ viewTranslations
         $ sortOutput answers
+
+-- | Largest scale from 1 to 4 that keeps the query inside the terminal, less
+-- the 2-space indent and some slack. Scale 1 means plain text.
+queryScale :: Int -> Text -> Int
+queryScale width query = max 1 (min 4 ((width - 4) `div` max 1 (T.length query)))

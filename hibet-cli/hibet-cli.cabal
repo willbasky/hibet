@@ -90,7 +90,6 @@ library
     ki >=1.0 && <1.1,
     neat-interpolation >=0.5.1 && <0.6,
     optparse-applicative >=0.18.1 && <0.19,
-    pager >=0.1.1 && <0.2,
     prettyprinter >=1.7.1 && <1.8,
     prettyprinter-ansi-terminal >=1.1.3 && <1.2,
     tar >=0.6 && <0.7,
@@ -198,6 +197,7 @@ test-suite hibet-pretty
     hibet-cli,
     hspec >=2.11.12,
     prettyprinter >=1.7.1 && <1.8,
+    text >=2.0.2 && <2.2,
 
 test-suite hibet-cli-data
   type: exitcode-stdio-1.0

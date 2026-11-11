@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [Unreleased]
+
+### Changed
+
+* `hibet shell` draws the query up to four times its cell size through kitty's
+  OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
+  allows, so the Tibetan source stands out even when the terminal renders it
+  smaller than Latin. The sequence is sent only when `TERM` names kitty: a
+  terminal that does not know it may drop the query text with it.
+* Long answers are paged inside the shell: `Space` shows the next page, `q`
+  stops, both as single keypresses, and the first page stays on screen instead
+  of scrolling away. The `pager` dependency is gone; `less` strips OSC 66 and
+  would leave the query line blank.
+
 ## [2.1.0] - 2026-11-11
 
 ### Added

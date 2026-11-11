@@ -11,7 +11,7 @@
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `ki`, `stm`, `tomland` |
-| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
 | `hibet-tools` | maintainer-инструмент: обновление словарей, alias-таблица, манифест и релизный архив | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms`, `optparse-applicative`, `tar`, `zlib` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
@@ -156,8 +156,7 @@ exe hibet (пакет hibet-cli)
 - **`hibet-tools`** — maintainer-only: HTTP, NFC и запись словарей живут там,
   а не в библиотеке `hibet`.
 - **`hibet`** не зависит от консоли: `haskeline`, `optparse-applicative`,
-  `terminal-size`, `pager` и `prettyprinter-ansi-terminal` живут только в
-  `hibet-cli`.
+  `terminal-size` и `prettyprinter-ansi-terminal` живут только в `hibet-cli`.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка и чтение файлов — `ki`,
   разбор — `parMap` (T8).

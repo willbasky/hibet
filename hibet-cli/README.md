@@ -112,8 +112,13 @@ A Tibetan query reaches the same article:
 
 The first line of an entry is the dictionary number and title; its targets are
 indented below it, with `\n` inside a dictionary line expanded to real line
-breaks. Colour and the pager are aimed at a terminal; `LESS=-R` is set for
-paging when unset.
+breaks. In kitty 0.40 and newer the query line is drawn up to four times the
+cell size through OSC 66 (as large as the terminal width allows); other
+terminals print the usual size, because a terminal that does not know the
+sequence may drop the query with it. A long answer is shown in pages of the
+terminal height: `Space` shows the next page and `q` stops, both as single
+keypresses. The shell pages by itself because `less` strips the OSC sequence
+and would leave the query line blank.
 
 Shell keys:
 
