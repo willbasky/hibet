@@ -30,6 +30,7 @@ import qualified Test.Grammar.Wylie as Wylie
 import qualified Test.Integration as Integration
 import qualified Test.Parity as Parity
 import qualified Test.Performance as Performance
+import qualified Test.Readme as Readme
 import qualified Test.Render.Wylie as WylieOutput
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import qualified Test.Tokenizer.Classification as Classification
@@ -79,6 +80,7 @@ tests =
         , Sentence.tests
         , Convert.tests
         , ConvertGolden.tests
+        , Readme.tests
         , Performance.tests
         , Parity.tests
         ]

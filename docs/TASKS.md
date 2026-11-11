@@ -292,12 +292,23 @@ hewts. Юникод уже работает:
 
 ## T7. Обновить README hewts примерами
 
-`[ ]`
+`[x]`
 
 Сейчас в `hewts/README.md` стоит заглушка `See README for more info` и бейдж
 Hackage. Нужно: W→U, U→W, проверка правописания, настройки, диагностика,
 сборка и тесты, ссылки на `docs/hewts/DESIGN.md` и `docs/hewts/SPEC.md`.
 Примеры должны быть исполняемыми (ghci или тест), чтобы не разъехались с API.
+
+**Сделано 11.11.2026.** README переписан: что это, установка, разделы W→U,
+U→W, `checkSpelling`, диагностика, `Settings` (`withChecks`, `sloppy`,
+`strict`), `syllables`, сборка и тесты, ссылки на `SPEC.md`, `DESIGN.md`,
+`ROADMAP.md` и `test/README.md`. Все примеры — транскрипт `cabal repl`, и
+`Test.Readme` читает его из `README.md`: каждая строка `ghci>` обязана
+совпасть с ответом библиотеки, иначе тест падает. Найденный по ходу дефект не
+чинился: `.ghci` пакета ставит `-interactive-print` на `pretty-simple`, которого
+нет в зависимостях, поэтому `cabal repl` начинает с ошибки; примеры от этого не
+зависят (`print` и `TIO.putStrLn` не идут через interactive-print), но `.ghci`
+стоит починить отдельно.
 
 ---
 
