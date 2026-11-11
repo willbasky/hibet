@@ -149,6 +149,7 @@ test-suite hewts-test
     Test.Integration
     Test.Parity
     Test.Performance
+    Test.Readme
     Test.Render.Wylie
     Test.Tokenizer.Classification
     Test.Tokenizer.Golden

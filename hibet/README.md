@@ -1,174 +1,85 @@
-# Tibetan-English translator for CLI
+# hibet
 
 [![Haskell-CI](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml/badge.svg)](https://github.com/willbasky/hibet/actions/workflows/haskell-ci.yml)
 [![BSD3 license](https://img.shields.io/badge/license-bsd3-brightgreen)](LICENSE)
 
-![Bod](bod.png)
-
-## About
-
-The Hibet translates with all dictionaries from [tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary) project. It consume both [Wylie transliteration](https://en.wikipedia.org/wiki/Wylie_transliteration) and [tibetan script](https://en.wikipedia.org/wiki/Tibetan_script) from input.
-
-## Features
-
-1. Hibet uses about 60 dictionaries to translate Tibetan words to English or Tibetan.
-2. If translations have Tibetan texts it printed as wylie.
-
-## Installation
-
-1. To install `hibet` you want to have `cabal` and `ghc` installed. The easiest way to grab it is using [ghcup](https://www.haskell.org/ghcup/). Once the `ghcup` is installed run command to install `ghc` and `cabal`:
-
-    ghcup install ghc 9.6.7 && ghcup install cabal 3.12.1.0
-
-2. Install hibet
-
-    git clone https://github.com/willbasky/hibet.git
-
-    cd ./hibet
-
-    cabal install exe:hibet --overwrite-policy=always
-
-3. Point hibet at the dictionaries. They are not part of the package: the
-   repository keeps them in `hibet-data/`, and an installed binary looks in
-   `--data-dir`, then `HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`.
-
-    HIBET_DATA_DIR=$PWD/hibet-data hibet shell
-    hibet --data-dir ./hibet-data shell
-
-   `hibet data status` prints the resolved data directory and the dataset
-   version from `manifest.toml`.
-
-   `hibet data update` always installs into `$XDG_DATA_HOME/hibet/data`.
-   `--data-dir` and `HIBET_DATA_DIR` take precedence over that location, so if
-   either points at an old checkout, the updated set is not used until you
-   clear the override or point it at the new data.
-
-## Using Nix and direnv (Alternative)
-
-If you have [Nix](https://nixos.org/download.html) and [direnv](https://direnv.net/) installed, you can use them for a reproducible development environment:
-
-1. Clone the repository:
-
-    git clone https://github.com/willbasky/hibet.git
-    cd ./hibet
-
-2. Allow direnv to load the environment:
-
-    direnv allow
-
-This will automatically set up a development shell with all necessary dependencies (GHC, Cabal, HLS, ghcid) using the Nix flake configuration.
-
-### Building with Nix
-
-You can also build the project directly with Nix:
-
-    nix build
-
-Or enter a development shell manually:
-
-    nix develop
-
-Build specific package:
-
-    nix build .#hibet
-    nix build .#hewts
-
-### Running with Nix
-
-You can run hibet directly without cloning or installing:
-
-    nix run github:willbasky/hibet -- shell
-
-Or run any other hibet command:
-
-    nix run github:willbasky/hibet -- show names
-    nix run github:willbasky/hibet -- -h
-
-## Usage video
-
-[![asciicast](https://asciinema.org/a/271020.svg)](https://asciinema.org/a/271020)
-
-## Help commands:
-
-`$ hibet -h`
-
-    Hibet is command line translator from Tibet to English language.
-
-    Usage: hibet [-v|--version] [--data-dir DIR] [[-s|--select DICT_ID] | COMMAND]
-
-    Available options:
-      -h,--help                Show this help text
-      -v,--version             Show Hibet's version
-      --data-dir DIR           Directory with titles.toml, key-aliases.tsv and
-                               dicts/
-      -s,--select DICT_ID      Select id of dictionary
-
-    Available commands:
-      shell                    Start the translate shell
-      om                       Print Om to a terminal
-      show                     Show names or meta of dictionaries
-      data                     Show dictionary data information
-
-
-`$ hibet show -h`
-
-    Usage: hibet show COMMAND
-      Show names or meta of dictionaries
-
-    Available options:
-      -h,--help                Show this help text
-
-    Available commands:
-      names                    Show dictionary titles
-      meta                     Show dictionary descriptions
-
-`$ hibet shell -h`
-
-    Usage: hibet shell [-s|--select DICT_ID]
-      Start the translate shell
-
-    Available options:
-      -h,--help                Show this help text
-      -s,--select DICT_ID      Select id of dictionary
-
-
-Input `hibet shell` in terminal. And then write your `query` using _Wylie_ (mo) or _Tibet script_ (མོ་):
-
-    $ hibet shell -s{7,16}
-    Which a tibetan word to translate?
-    > mo
-
-    མོ
-
-    7. Rangjung Yeshe
-      the girl
-      lady, female, woman. 2) divination, prophecy
-      1) auspicious, mo divination/ prophesy [R]; 2) feminine particle, female,
-      woman, she [R]; 3) terminative after MA; 4) noun forming particle [R]; 5)
-      is [don ci mo: what is the meaning]
-
-    16. Ives Waldo
-      1) auspicious, mo divination [mo rgyag mkhan gyis mo ma btab gong du bden
-      pa bdar khul gyis mi la mgo skor gtong ba; 2) femine showing particle
-      [bya mo]; 3) terminative after MA; 4) noun forming particle [ring mo,
-      chen mo,//ltad mo,//nub mo]. 1) auspicious, mo divination/ prophesy [R];
-      2) feminine particle, female, woman, she [R]; 3) terminative after MA; 4)
-      noun forming particle [R]; 5) is [don ci mo: what is the meaning]. 1)
-      auspicious, mo divination/ prophesy; 2) feminine particle, female, woman,
-      she; 3) terminative after MA; 4) noun forming particle; 5) is
-
-
-
-### To quit, just input:
-
-    :q
-
-### To get queries of the session, input:
-
-    :h
-
-or use arrows of keyboard.
-
-## Contribution
-
-Contributions are welcoming!
+The translation engine behind the `hibet` command-line translator. It takes a
+query in Wylie transliteration or Tibetan script and returns articles from the
+[tibetan-dictionary](https://github.com/christiansteinert/tibetan-dictionary)
+dictionaries.
+
+This package is the engine only: no terminal, no command parser and no
+dictionaries inside the package. The console lives in
+[`hibet-cli`](../hibet-cli/README.md); the writing-system conversion comes from
+[`hewts`](../hewts/README.md).
+
+## What it does
+
+- **Data root** (`resolveDataDir`): `--data-dir`, then `HIBET_DATA_DIR`, then
+  `$XDG_DATA_HOME/hibet/data`.
+- **Loading** (`makeEnv`, `makeEnvFor`, `makeEnvForDataDir`, `makeEnvFrom`):
+  reads `titles.toml`, `key-aliases.tsv` and `dicts/` (59 files, about 103 MB),
+  parses them in parallel and forces the result before handing it over.
+- **Lookup** (`getAnswer`): pure; detects the writing of the query, converts the
+  Wylie key or the Tibetan syllables through `hewts`, and searches every loaded
+  dictionary by exact key.
+- **Labels** (`Label`): dictionary ids, titles, years, languages and
+  descriptions from `titles.toml`.
+- **Errors** (`Type`): `HibetError`, with IO failures wrapped in `EffectError`.
+
+## Use as a library
+
+```
+build-depends: hibet
+```
+
+The engine needs the dictionary data at runtime; point `HIBET_DATA_DIR` at a
+checkout of `hibet-data/` or install the dataset with the console
+(`hibet data update`). A complete program:
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+import Env (makeEnvFor)
+import Translator (getAnswer)
+
+main :: IO ()
+main = do
+    env <- makeEnvFor [7] -- [] loads every dictionary
+    case env of
+        Left err -> print err
+        Right e -> print (getAnswer "mo" e)
+```
+
+`getAnswer` returns `Either HibetError (Text, [Answer])`: the query in Tibetan
+(converted from Wylie when the input was Wylie) and the articles. Each `Answer`
+has `dictNumber`, `dictTitle` and `targets`. `makeEnvFrom` takes an explicit
+data directory, which is what tests and future servers use.
+
+## Build and tests
+
+Run from this directory:
+
+```
+cabal build hibet
+cabal test
+```
+
+The suites are `hibet-labels` (labels from `titles.toml`) and `hibet-env`
+(loading, search, aliases and the Unicode-input matrix). They use the small
+fixture in `test/env/data/`, not the full 103 MB dataset.
+
+## Documentation
+
+- [`../docs/hibet/DESIGN.md`](../docs/hibet/DESIGN.md) - layers, loading and
+  why the engine looks the way it does.
+- [`../docs/hibet/ROADMAP.md`](../docs/hibet/ROADMAP.md) - what is left.
+- [`../docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) - how the packages fit
+  together.
+
+The command-line interface is documented in
+[`../hibet-cli/README.md`](../hibet-cli/README.md).
+
+## License
+
+BSD-3-Clause, see [LICENSE](LICENSE).
