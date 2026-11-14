@@ -31,17 +31,17 @@ library
     App
     Cli
     Install
-    Keys
     Manifest
-    Pretty
-    Pretty.Art
     Progress
+    Render.Art
+    Render.Keys
+    Render.Pretty
     Shell
 
   hs-source-dirs: src
   other-modules:
     Paths_hibet_cli
-    Pretty.Braille
+    Render.Braille
 
   autogen-modules: Paths_hibet_cli
   default-language: Haskell2010
@@ -172,10 +172,10 @@ executable hibet
     base >=4.11 && <5,
     hibet-cli,
 
-test-suite hibet-pretty
+test-suite hibet-render
   type: exitcode-stdio-1.0
   main-is: Main.hs
-  hs-source-dirs: test/pretty
+  hs-source-dirs: test/render
   default-language: Haskell2010
   default-extensions:
     DataKinds

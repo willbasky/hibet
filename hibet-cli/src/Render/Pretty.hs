@@ -1,4 +1,4 @@
-module Pretty
+module Render.Pretty
     ( -- Colors
       blue
     , cyan
@@ -25,8 +25,8 @@ module Pretty
     ) where
 
 import Dictionary (Answer (..), Target (..))
-import Keys (Key (..), withRawKeys)
 import Label (Title (..))
+import Render.Keys (Key (..), withRawKeys)
 import Utility (showT)
 
 import Data.Char (isDigit, isSpace)
@@ -215,7 +215,7 @@ pprint header doc = do
 -- know how much room the scaled line takes. The window lives on the alternate
 -- screen, so it leaves no copies behind; on exit the full answer is printed to
 -- the normal screen once, and the scrollback holds the query and the text as
--- without a pager. Keys are read raw by "Keys", so arrows and PgUp/PgDn work;
+-- without a pager. Keys are read raw by "Render.Keys", so arrows and PgUp/PgDn work;
 -- @j@/@k@ and Ctrl-N/Ctrl-P move a line, Space/@b@, PgUp/PgDn and
 -- Ctrl-F/Ctrl-B or Ctrl-V/Alt-V move a page, @q@ quits.
 paged :: Int -> [Text] -> [Text] -> Text -> IO ()

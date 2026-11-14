@@ -9,7 +9,8 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
-import Pretty
+import Render.Art (renderQuery)
+import Render.Pretty
     ( Line (NewLine)
     , blue
     , pprint
@@ -23,7 +24,6 @@ import Pretty
     , withHeaderSpaces
     , yellow
     )
-import Pretty.Art (renderQuery)
 import Translator (getAnswer)
 
 import Control.Concurrent.MVar (MVar)

@@ -33,8 +33,8 @@ cradle:
     - path: "hibet-cli/app/Main.hs"
       component: "hibet-cli:exe:hibet"
 
-    - path: "hibet-cli/test/pretty"
-      component: "hibet-cli:test:hibet-pretty"
+    - path: "hibet-cli/test/render"
+      component: "hibet-cli:test:hibet-render"
 
     - path: "hibet-tools/src"
       component: "lib:hibet-tools"

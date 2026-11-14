@@ -1,4 +1,4 @@
-module Keys
+module Render.Keys
     ( Key (..)
     , withRawKeys
     )

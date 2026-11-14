@@ -2,8 +2,8 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Pretty (paginate, viewTranslations)
-import Pretty.Art (brailleRows, fitPpem, renderQuery)
+import Render.Art (brailleRows, fitPpem, renderQuery)
+import Render.Pretty (paginate, viewTranslations)
 import Shell (headerDoc, mkOutput, queryHeader, sizedHeader)
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
@@ -78,7 +78,7 @@ headerTextSpec = describe "queryHeader outside kitty" $ do
         render header `shouldSatisfy` not . T.null
 
 artSpec :: Spec
-artSpec = describe "Pretty.Art" $ do
+artSpec = describe "Render.Art" $ do
     it "draws a fully covered cell as a full braille glyph" $
         brailleRows 4 8 (replicate 32 255) `shouldBe` ["⣿"]
     it "crops empty borders around the ink" $

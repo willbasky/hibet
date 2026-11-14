@@ -1,6 +1,6 @@
 -- | Pure geometry of the Braille art: a pixel canvas folded into cells and the
 -- font size that keeps the art inside the terminal.
-module Pretty.Braille
+module Render.Braille
     ( brailleRows
     , fitPpem
     )

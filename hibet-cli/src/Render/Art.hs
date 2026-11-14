@@ -1,9 +1,9 @@
 {-# LANGUAGE CPP #-}
 
 -- | Braille art for the query header: the pure geometry from
--- "Pretty.Braille" plus the renderer, which is built only with the
+-- "Render.Braille" plus the renderer, which is built only with the
 -- @ascii-art@ flag.
-module Pretty.Art
+module Render.Art
     ( brailleRows
     , fitPpem
     , renderQuery
@@ -11,7 +11,7 @@ module Pretty.Art
 where
 
 import Data.Text (Text)
-import Pretty.Braille (brailleRows, fitPpem)
+import Render.Braille (brailleRows, fitPpem)
 
 -- The disabled regions hold the preprocessor lines, which fourmolu cannot
 -- parse; everything between them is formatted as usual.

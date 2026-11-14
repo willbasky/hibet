@@ -163,7 +163,7 @@ cabal build hibet-cli
 cabal test
 ```
 
-The suites are `hibet-pretty` (terminal output) and `hibet-cli-data` (dataset
+The suites are `hibet-render` (terminal output) and `hibet-cli-data` (dataset
 installation, manifest checks and update from a local source). They do not need
 network access.
 

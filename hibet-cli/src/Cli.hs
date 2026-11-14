@@ -20,7 +20,7 @@ import Install
     )
 import Label (LabelFull (..), Labels (..), Title (unTitle), getLabels)
 import Paths_hibet_cli (version)
-import Pretty
+import Render.Pretty
 import Shell (translator)
 
 import Utility (showT)

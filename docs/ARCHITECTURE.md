@@ -11,7 +11,7 @@
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `ki`, `stm`, `tomland` |
-| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton`, `unix` (raw keys of the pager); `harfbuzz-pure` и `freetype2` — только за флагом `ascii-art` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Render`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton`, `unix` (raw keys of the pager); `harfbuzz-pure` и `freetype2` — только за флагом `ascii-art` |
 | `hibet-tools` | maintainer-инструмент: обновление словарей, alias-таблица, манифест и релизный архив | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms`, `optparse-applicative`, `tar`, `zlib` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
@@ -124,12 +124,12 @@ exe hibet (пакет hibet-cli)
                       Tibet → hewts.splitSentences + hewts.renderItems OutWylie
                   → Dictionary.searchTranslation (HMS.lookup) по всем словарям
               → Shell.mkOutput: Dictionary.sortOutput по номеру словаря
-              → Pretty.pprint
+              → Render.Pretty.pprint
 ```
 
 Заголовок запроса выбирает `Shell.queryHeader`: в kitty — OSC 66 с
 масштабом до 4×, в остальных терминалах — брайлевский арт
-`Pretty.Art.renderQuery`, а без сборки с флагом `ascii-art`, без шрифта или
+`Render.Art.renderQuery`, а без сборки с флагом `ascii-art`, без шрифта или
 когда арт не влезает — обычный текст.
 
 Ключ словаря — Wylie. Пунктуация и пробелы запроса в ключ не попадают: тибетская
@@ -204,9 +204,9 @@ exe hibet (пакет hibet-cli)
 | `Manifest` | разбор и проверка `manifest.toml` перед установкой |
 | `Install` | скачивание, распаковка и замена `data`/`data.old` |
 | `Shell` | диалог Haskeline, `getAnswer`, сборка вывода, выбор заголовка |
-| `Keys` | чтение клавиш пейджера в raw-режиме: стрелки, PgUp/PgDn, Ctrl-* |
-| `Pretty` | вывод в терминал и пейджер |
-| `Pretty.Art` | брайлевский арт запроса; рендерер собирается только с флагом `ascii-art`, без него — заглушка |
+| `Render.Keys` | чтение клавиш пейджера в raw-режиме: стрелки, PgUp/PgDn, Ctrl-* |
+| `Render.Pretty` | вывод в терминал и пейджер |
+| `Render.Art` | брайлевский арт запроса; рендерер собирается только с флагом `ascii-art`, без него — заглушка |
 
 ### hibet-tools
 
