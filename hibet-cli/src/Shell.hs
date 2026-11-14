@@ -1,6 +1,8 @@
 module Shell
-    ( mkOutput
-    , queryScale
+    ( headerDoc
+    , mkOutput
+    , queryHeader
+    , sizedHeader
     , translator
     )
 where
@@ -15,18 +17,20 @@ import Pretty
     , red
     , sized
     , supportsTextSizing
+    , terminalHeight
     , terminalWidth
     , viewTranslations
     , withHeaderSpaces
     , yellow
     )
+import Pretty.Art (renderQuery)
 import Translator (getAnswer)
 
 import Control.Concurrent.MVar (MVar)
 import Control.Exception (bracketOnError)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Prettyprinter (Doc)
+import Prettyprinter (Doc, pretty, vsep)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import qualified System.Console.Haskeline as Haskeline
 import System.Console.Haskeline.History (History, historyLines)
@@ -83,12 +87,11 @@ loopDialog mv inputState = do
                         if null answer
                             then putColorDoc red NewLine "Nothing found"
                             else do
-                                width <- terminalWidth
-                                scalable <- supportsTextSizing
-                                let scale = if scalable then queryScale width query else 1
+                                header <- queryHeader query
                                 pprint
                                     (Haskeline.queryInput inputState (Haskeline.getInputChar ""))
-                                    $ mkOutput scale query answer
+                                    header
+                                    (mkOutput header answer)
     case mQuery of
         Nothing -> pure ()
         Just _ -> loopDialog mv inputState
@@ -100,13 +103,35 @@ fromHistory =
         . filter (/= ":h")
         . historyLines
 
-mkOutput :: Int -> Text -> [Answer] -> Doc AnsiStyle
-mkOutput scale query answers =
-    withHeaderSpaces yellow (if scale > 1 then sized scale query else query)
+mkOutput :: Doc AnsiStyle -> [Answer] -> Doc AnsiStyle
+mkOutput header answers =
+    withHeaderSpaces yellow header
         $ viewTranslations
         $ sortOutput answers
 
--- | Largest scale from 1 to 4 that keeps the query inside the terminal, less
--- the 2-space indent and some slack. Scale 1 means plain text.
-queryScale :: Int -> Text -> Int
-queryScale width query = max 1 (min 4 ((width - 4) `div` max 1 (T.length query)))
+-- | How the header is drawn: kitty scales the text through OSC 66. Other
+-- terminals get Braille art when the renderer is built and a Tibetan font is
+-- found; otherwise the plain query, because a terminal that does not know
+-- OSC 66 may drop the text with it.
+queryHeader :: Text -> IO (Doc AnsiStyle)
+queryHeader query = do
+    kitty <- supportsTextSizing
+    width <- terminalWidth
+    if kitty
+        then pure (sizedHeader width query)
+        else do
+            height <- terminalHeight
+            headerDoc query <$> renderQuery width height query
+
+-- | The query above the answers: Braille art when the renderer drew it,
+-- plain text otherwise.
+headerDoc :: Text -> Maybe [Text] -> Doc AnsiStyle
+headerDoc query = maybe (pretty query) (vsep . map pretty)
+
+-- | The query drawn through OSC 66 at the largest scale that fits @width@.
+sizedHeader :: Int -> Text -> Doc AnsiStyle
+sizedHeader width query
+    | scale > 1 = pretty (sized scale query)
+    | otherwise = pretty query
+    where
+        scale = max 1 (min 4 ((width - 4) `div` max 1 (T.length query)))

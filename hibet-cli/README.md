@@ -57,6 +57,26 @@ From a checkout, skip installation entirely:
 hibet --data-dir ./hibet-data shell
 ```
 
+## Drawing the query
+
+In kitty the shell draws the query through OSC 66, up to four times its cell
+size. Other terminals get the query as Braille art when the executable is
+built with the `ascii-art` flag:
+
+```
+cabal build -f ascii-art exe:hibet
+just build      # adds the flag when pkg-config finds freetype2 and harfbuzz
+```
+
+The renderer needs the system `freetype2` and `harfbuzz` libraries and a
+Tibetan font: `HIBET_TIBETAN_FONT`, then `fc-match "Noto Serif Tibetan"`, then
+the usual font directories. Without the flag, without those libraries or
+without a font the query stays plain text.
+
+`HIBET_ART_ROWS` overrides the number of rows the art aims for (the default is
+a third of the terminal height); width follows the same scale until it fills
+the terminal. It is a knob for tuning the size, not a stable option.
+
 ## Commands
 
 | Command | What it does |
@@ -114,11 +134,17 @@ The first line of an entry is the dictionary number and title; its targets are
 indented below it, with `\n` inside a dictionary line expanded to real line
 breaks. In kitty 0.40 and newer the query line is drawn up to four times the
 cell size through OSC 66 (as large as the terminal width allows); other
-terminals print the usual size, because a terminal that does not know the
-sequence may drop the query with it. A long answer is shown in pages of the
-terminal height: `Space` shows the next page and `q` stops, both as single
-keypresses. The shell pages by itself because `less` strips the OSC sequence
-and would leave the query line blank.
+terminals draw it as Braille art when the executable is built with the
+`ascii-art` flag (see [Drawing the query](#drawing-the-query)), and keep the
+normal size otherwise, because a terminal that does not know the sequence may
+drop the query with it. A long answer is shown one page at a
+time on the terminal's alternate screen: `Space` and `b` move a page forward
+and back, `j` and `k` a line down and up, `q` quits, all as single
+keypresses. The query stays pinned above every page,
+and the pages leave no copies behind: on `q` the whole answer is printed to
+the normal screen once, with the query on top, so the scrollback holds it
+exactly as without a pager. The shell pages by itself because `less` strips
+the OSC sequence and would leave the query line blank.
 
 Shell keys:
 

@@ -21,13 +21,13 @@ module Pretty
     , sized
     , supportsTextSizing
     , terminalWidth
+    , terminalHeight
     ) where
 
 import Dictionary (Answer (..), Target (..))
 import Label (Title (..))
 import Utility (showT)
 
-import Control.Exception (IOException, try)
 import Data.Char (isDigit, isSpace)
 import Data.Foldable (traverse_)
 import Data.List (intersperse, isInfixOf)
@@ -66,9 +66,9 @@ withHeader col header value =
     hang indentation $ vsep [col $ pretty header, value]
 
 -- | Header with spaces
-withHeaderSpaces :: Colorize -> Text -> Doc AnsiStyle -> Doc AnsiStyle
+withHeaderSpaces :: Colorize -> Doc AnsiStyle -> Doc AnsiStyle -> Doc AnsiStyle
 withHeaderSpaces col header value =
-    hang indentation $ vsep [space, col $ pretty header, space, value]
+    hang indentation $ vsep [space, col header, space, value]
 
 -- | kitty's text sizing protocol: the terminal draws the text at @scale@ times
 -- its cell size, so it takes @scale@ rows and @scale@ times the width. The
@@ -102,6 +102,10 @@ oscSizePrefix = "\ESC]66;s="
 -- | Terminal width, 80 when the size is unknown.
 terminalWidth :: IO Int
 terminalWidth = maybe 80 Terminal.width <$> Terminal.size
+
+-- | Terminal height, 24 when the size is unknown.
+terminalHeight :: IO Int
+terminalHeight = maybe 24 Terminal.height <$> Terminal.size
 
 -- | Whether the terminal draws OSC 66 text. Only kitty does among the common
 -- terminals; others either ignore the sequence (and lose the query with it) or
@@ -185,40 +189,84 @@ putColorDoc col line txt = do
 putColorList :: [(Colorize, Text)] -> IO ()
 putColorList = traverse_ (\(c, d) -> putColorDoc c CurrentLine d)
 
-pprint :: IO (Maybe Char) -> Doc AnsiStyle -> IO ()
-pprint readKey doc = do
+-- | Render the answer. On a terminal the answers are paged on the alternate
+-- screen with the query pinned above them; when the pager closes the whole
+-- answer is printed once, so the query and the text stay in the scrollback as
+-- they do without a pager.
+pprint :: IO (Maybe Char) -> Doc AnsiStyle -> Doc AnsiStyle -> IO ()
+pprint readKey header doc = do
     isTerminal <- hIsTerminalDevice stdout
     mSize <- Terminal.size
     let width = maybe 80 Terminal.width mSize
         height = maybe 24 Terminal.height mSize
         layoutOptions =
             defaultLayoutOptions{layoutPageWidth = AvailablePerLine width 1}
-        output = renderStrict $ layoutSmart layoutOptions doc
+        render = renderStrict . layoutSmart layoutOptions
+        output = render doc
+        prefix = hang indentation $ vsep [space, header, space]
+        (headerLines, bodyLines) = splitAt (length (T.lines (render prefix))) (T.lines output)
     if isTerminal
-        then paged readKey height (T.lines output)
+        then paged readKey height headerLines bodyLines output
         else TIO.putStr (T.snoc output '\n')
 
--- | Show lines in pages of the terminal height, one keypress per page. A
--- pager like @less@ cannot be used: it strips OSC 66 (the double-size query)
--- and does not know how much room the scaled line takes. Printing here lets
--- the terminal draw every line itself, and the first page stays on screen
--- instead of scrolling to the end of a long answer. Keys come through
--- @getInputChar@, so only printable ones arrive: Space pages, @q@ quits.
-paged :: IO (Maybe Char) -> Int -> [Text] -> IO ()
-paged readKey height = go . paginate (height - 1)
+-- | Show the answers a window at a time with the header pinned above. A pager
+-- like @less@ cannot be used: it strips OSC 66 (the scaled query) and does not
+-- know how much room the scaled line takes. The window lives on the alternate
+-- screen, so it leaves no copies behind; on exit the full answer is printed to
+-- the normal screen once, and the scrollback holds the query and the text as
+-- without a pager. Keys come through @getInputChar@, so only printable ones
+-- arrive: Space and @b@ move a page, @j@ and @k@ a line, @q@ quits.
+paged :: IO (Maybe Char) -> Int -> [Text] -> [Text] -> Text -> IO ()
+paged readKey height header body output =
+    case paginate pageSize body of
+        [] -> TIO.putStr (T.snoc output '\n')
+        [_] -> TIO.putStr (T.snoc output '\n')
+        _ -> do
+            TIO.putStr "\ESC[?1049h"
+            go 0
+            TIO.putStr "\ESC[?1049l"
+            TIO.putStr (T.snoc output '\n')
     where
-        go [] = pure ()
-        go [page] = traverse_ TIO.putStrLn page
-        go (page : rest) = do
-            traverse_ TIO.putStrLn page
-            putColorDoc cyan CurrentLine "-- Space: next page, q: quit --"
+        pageSize = max 1 (height - 1 - pageRows header)
+        lastStart = max 0 (length body - pageSize)
+
+        go offset = do
+            TIO.putStr "\ESC[H\ESC[2J"
+            traverse_ TIO.putStrLn (header <> take pageSize (drop offset body))
+            putColorDoc cyan CurrentLine (keys offset lastStart)
             hFlush stdout
-            key <- readKey
-            TIO.putStr "\r\ESC[2K"
+            key <- readNavigation readKey
             case key of
-                Just 'q' -> pure ()
-                Just _ -> go rest
-                Nothing -> pure ()
+                Just 'k' -> go (max 0 (offset - 1))
+                Just 'j' -> go (min lastStart (offset + 1))
+                Just 'b' -> go (max 0 (offset - pageSize))
+                Just ' ' -> go (min lastStart (offset + pageSize))
+                _ -> pure ()
+
+-- | Read one key, skipping keys the pager does not use. A terminal-style
+-- @getInputChar@ never returns Enter, so Enter stays inert.
+readNavigation :: IO (Maybe Char) -> IO (Maybe Char)
+readNavigation readKey = do
+    key <- readKey
+    case key of
+        Just 'q' -> pure key
+        Just 'b' -> pure key
+        Just ' ' -> pure key
+        Just 'j' -> pure key
+        Just 'k' -> pure key
+        Nothing -> pure Nothing
+        _ -> readNavigation readKey
+
+-- | Rows a page takes on screen: a scaled line takes as many rows as its scale.
+pageRows :: [Text] -> Int
+pageRows = sum . map lineRows
+
+-- | Keys that work from this offset.
+keys :: Int -> Int -> Text
+keys offset lastStart
+    | offset <= 0 = "-- j: down  Space: page down  q: quit --"
+    | offset >= lastStart = "-- k: up  b: page up  q: quit --"
+    | otherwise = "-- k: up  j: down  b/Space: page  q: quit --"
 
 -- | Split rendered lines into pages of at most @size@ terminal rows. A line
 -- drawn at scale N takes N rows, so it lowers the number of lines per page.

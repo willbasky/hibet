@@ -8,17 +8,33 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+* `hibet shell` draws the query as Braille art in terminals without OSC 66
+  when the executable is built with the `ascii-art` flag
+  (`cabal build -f ascii-art exe:hibet`). The flag needs the system
+  `freetype2`/`harfbuzz` libraries; the renderer looks for a Tibetan font in
+  `HIBET_TIBETAN_FONT`, then fontconfig, then the usual font directories, and
+  falls back to plain text when there is none. The art is fitted to the ink of
+  the shaped glyphs, so a tall `ཀ` stays a vertical rectangle next to a square
+  `པ` instead of both shrinking into squares.
+
 ### Changed
 
 * `hibet shell` draws the query up to four times its cell size through kitty's
   OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
   allows, so the Tibetan source stands out even when the terminal renders it
   smaller than Latin. The sequence is sent only when `TERM` names kitty: a
-  terminal that does not know it may drop the query text with it.
-* Long answers are paged inside the shell: `Space` shows the next page, `q`
-  stops, both as single keypresses, and the first page stays on screen instead
-  of scrolling away. The `pager` dependency is gone; `less` strips OSC 66 and
-  would leave the query line blank.
+  terminal that does not know it may drop the query text with it, so other
+  terminals keep the normal size.
+* Long answers are paged inside the shell, one page on screen: `Space` and
+  `b` move a page, `j` and `k` a line, `q` quits, all as single keypresses.
+  The pager draws the
+  pages on the terminal's alternate screen with the query pinned above them,
+  so nothing is duplicated and the keys line never stays in the text. On exit
+  the whole answer is printed to the normal screen once, with the query on
+  top: the scrollback holds it as without a pager. The `pager` dependency is
+  gone; `less` strips OSC 66 and would leave the query line blank.
 
 ## [2.1.0] - 2026-11-11
 

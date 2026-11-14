@@ -3,27 +3,32 @@ module Main where
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
 import Pretty (paginate, viewTranslations)
-import Shell (mkOutput, queryScale)
+import Pretty.Art (brailleRows, fitPpem, renderQuery)
+import Shell (headerDoc, mkOutput, queryHeader, sizedHeader)
 
-import Prettyprinter (defaultLayoutOptions, layoutPretty)
+import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.Text (renderStrict)
 
 import qualified Data.Text as T
+import Data.Word (Word8)
 import Test.Hspec
     ( Spec
     , describe
     , hspec
     , it
+    , pendingWith
     , shouldBe
     , shouldContain
-    , shouldNotContain
+    , shouldSatisfy
     )
 
 main :: IO ()
 main = hspec $ do
     viewTranslationsSpec
     mkOutputSpec
-    queryScaleSpec
+    queryHeaderSpec
+    headerTextSpec
+    artSpec
     paginateSpec
 
 viewTranslationsSpec :: Spec
@@ -51,24 +56,56 @@ answer2 =
         }
 
 mkOutputSpec :: Spec
-mkOutputSpec = describe "mkOutput" $ do
-    it "draws a short query at four times the cell size" $
-        T.unpack
-            (renderStrict (layoutPretty defaultLayoutOptions $ mkOutput 4 "མོ" [answer1]))
+mkOutputSpec =
+    describe "mkOutput"
+        $ it "puts the drawn query above the entries"
+        $ T.unpack (render $ mkOutput (sizedHeader 80 "མོ") [answer1])
             `shouldContain` "\ESC]66;s=4;མོ\a\ESC[3B"
-    it "leaves the query as plain text at scale one" $
-        T.unpack
-            (renderStrict (layoutPretty defaultLayoutOptions $ mkOutput 1 "མོ" [answer1]))
-            `shouldNotContain` "\ESC]66;"
 
-queryScaleSpec :: Spec
-queryScaleSpec = describe "queryScale" $ do
-    it "uses four times when there is room" $
-        queryScale 80 "མོ" `shouldBe` 4
-    it "falls back to plain when the query is wide" $
-        queryScale 12 "སེམས་ཅན" `shouldBe` 1
-    it "never goes below one" $
-        queryScale 0 "མོ" `shouldBe` 1
+queryHeaderSpec :: Spec
+queryHeaderSpec = describe "sizedHeader" $ do
+    it "scales the query for kitty up to four times" $
+        render (sizedHeader 80 "མོ") `shouldBe` "\ESC]66;s=4;མོ\a\ESC[3B"
+    it "keeps a long kitty query at normal size" $
+        render (sizedHeader 12 "སེམས་ཅན") `shouldBe` "སེམས་ཅན"
+
+headerTextSpec :: Spec
+headerTextSpec = describe "queryHeader outside kitty" $ do
+    it "keeps the query as plain text when the renderer has no art" $
+        render (headerDoc "མོ" Nothing) `shouldBe` "མོ"
+    it "keeps the query as plain text without OSC 66" $ do
+        header <- queryHeader "མོ"
+        render header `shouldSatisfy` not . T.null
+
+artSpec :: Spec
+artSpec = describe "Pretty.Art" $ do
+    it "draws a fully covered cell as a full braille glyph" $
+        brailleRows 4 8 (replicate 32 255) `shouldBe` ["⣿"]
+    it "crops empty borders around the ink" $
+        brailleRows 8 16 inkInBottomRightCell `shouldBe` ["⣿"]
+    it "picks the largest ppem that fits the budget" $
+        fitPpem 10 20 300 200 `shouldBe` Just 10
+    it "gives up when the art would be too small" $
+        fitPpem 10 20 300 60 `shouldBe` Nothing
+    it "renders a query when the renderer and a Tibetan font are there" $ do
+        art <- renderQuery 80 24 "མོ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> rows `shouldSatisfy` not . null
+    it "fits a tall stack to the height budget" $ do
+        art <- renderQuery 80 40 "ཀཔ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> length rows `shouldSatisfy` (>= 10)
+
+-- 8×16 pixels: ink only in the bottom-right cell.
+inkInBottomRightCell :: [Word8]
+inkInBottomRightCell =
+    concat (replicate 8 (replicate 8 0))
+        <> concat (replicate 8 [0, 0, 0, 0, 255, 255, 255, 255])
+
+render :: Doc ann -> T.Text
+render = renderStrict . layoutPretty defaultLayoutOptions
 
 paginateSpec :: Spec
 paginateSpec =

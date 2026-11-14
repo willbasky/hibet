@@ -1,3 +1,7 @@
+# Braille art needs the system freetype2 and harfbuzz. Build with the flag
+# only when both are installed; the plain build always works.
+art_flag := `pkg-config --exists freetype2 harfbuzz && echo "-f ascii-art" || echo ""`
+
 # first-time setup: cabal index and generated files
 bootstrap:
     cabal update
@@ -5,17 +9,21 @@ bootstrap:
     haskell-ci regenerate
 
 install: 
-    cabal new-install exe:hibet --overwrite-policy=always
+    cabal new-install {{art_flag}} exe:hibet --overwrite-policy=always
 
 build: 
-    cabal build
+    cabal build {{art_flag}} all
+
+# build the Braille renderer; fails when freetype2 or harfbuzz is missing
+build-art:
+    cabal build -f ascii-art all
 
 # update the bounds of dependencies
 update:
     cabal-bounds update
 
 run:
-    HIBET_DATA_DIR=$PWD/hibet-data cabal run exe:hibet
+    HIBET_DATA_DIR=$PWD/hibet-data cabal run {{art_flag}} exe:hibet
 
 # regenerate hibet-data/key-aliases.tsv and hibet-data/manifest.toml
 generate-key-aliases:
