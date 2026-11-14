@@ -138,9 +138,10 @@ terminals draw it as Braille art when the executable is built with the
 `ascii-art` flag (see [Drawing the query](#drawing-the-query)), and keep the
 normal size otherwise, because a terminal that does not know the sequence may
 drop the query with it. A long answer is shown one page at a
-time on the terminal's alternate screen: `Space` and `b` move a page forward
-and back, `j` and `k` a line down and up, `q` quits, all as single
-keypresses. The query stays pinned above every page,
+time on the terminal's alternate screen. Line by line: `↑`/`↓`, `j`/`k`,
+`Ctrl-N`/`Ctrl-P`. Page by page: `PgUp`/`PgDn`, `Space`/`b`,
+`Ctrl-F`/`Ctrl-B` or `Ctrl-V`/`Alt-V`. `q` quits, all as single keypresses.
+The query stays pinned above every page,
 and the pages leave no copies behind: on `q` the whole answer is printed to
 the normal screen once, with the query on top, so the scrollback holds it
 exactly as without a pager. The shell pages by itself because `less` strips

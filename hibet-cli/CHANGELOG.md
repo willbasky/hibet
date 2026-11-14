@@ -27,9 +27,10 @@ and this project adheres to
   smaller than Latin. The sequence is sent only when `TERM` names kitty: a
   terminal that does not know it may drop the query text with it, so other
   terminals keep the normal size.
-* Long answers are paged inside the shell, one page on screen: `Space` and
-  `b` move a page, `j` and `k` a line, `q` quits, all as single keypresses.
-  The pager draws the
+* Long answers are paged inside the shell, one page on screen. `↑`/`↓`,
+  `j`/`k` and `Ctrl-N`/`Ctrl-P` move a line, `PgUp`/`PgDn`, `Space`/`b`,
+  `Ctrl-F`/`Ctrl-B` and `Ctrl-V`/`Alt-V` a page, `q` quits, all as single
+  keypresses. The pager draws the
   pages on the terminal's alternate screen with the query pinned above them,
   so nothing is duplicated and the keys line never stays in the text. On exit
   the whole answer is printed to the normal screen once, with the query on

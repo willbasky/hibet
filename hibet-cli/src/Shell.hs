@@ -89,7 +89,6 @@ loopDialog mv inputState = do
                             else do
                                 header <- queryHeader query
                                 pprint
-                                    (Haskeline.queryInput inputState (Haskeline.getInputChar ""))
                                     header
                                     (mkOutput header answer)
     case mQuery of

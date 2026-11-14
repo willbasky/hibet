@@ -158,6 +158,7 @@ rasterize path upem glyphs ink ppem =
                 glyphs
             brailleRows canvasWidth canvasHeight <$> getElems canvas
 
+-- TODO: Параметры функции передавай в рекорде.
 drawGlyphs ::
     FT_Face
     -> IOUArray Int Word8
