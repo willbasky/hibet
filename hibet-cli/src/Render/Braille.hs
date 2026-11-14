@@ -1,8 +1,8 @@
 -- | Pure geometry of the Braille art: a pixel canvas folded into cells and the
--- font size that keeps the art inside the terminal.
+-- font size that holds the art at a fixed height in text lines.
 module Render.Braille
     ( brailleRows
-    , fitPpem
+    , fitHeight
     )
 where
 
@@ -12,20 +12,17 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Word (Word8)
 
--- | Largest ppem whose ink stays within the pixel budget; 'Nothing' below
--- 8 px, where the art stops reading. Width and height are pixels per ppem.
-fitPpem :: Double -> Double -> Int -> Int -> Maybe Int
-fitPpem widthPerPpem heightPerPpem maxWidth maxHeight
-    | widthPerPpem <= 0 || heightPerPpem <= 0 = Nothing
+-- | Largest ppem whose ink stays within @maxHeight@ pixels; 'Nothing' below
+-- 8 px, where the art stops reading. The width is deliberately not part of the
+-- fit: the art keeps its height relative to the font whatever the query
+-- length, and the width only decides whether it fits at all.
+fitHeight :: Double -> Int -> Maybe Int
+fitHeight heightPerPpem maxHeight
+    | heightPerPpem <= 0 = Nothing
     | ppem < 8 = Nothing
     | otherwise = Just ppem
     where
-        ppem =
-            floor
-                ( min
-                    (fromIntegral maxWidth / widthPerPpem)
-                    (fromIntegral maxHeight / heightPerPpem)
-                )
+        ppem = floor (fromIntegral maxHeight / heightPerPpem)
 
 -- | Braille art for a canvas of @width@ by @height@ grey pixels. One cell is
 -- a 2×4 dot grid, one dot is a 2×2 pixel block, and a dot is inked when more

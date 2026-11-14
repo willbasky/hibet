@@ -9,7 +9,7 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
-import Render.Art (renderQuery)
+import Render.Art (artLines, renderQuery)
 import Render.Pretty
     ( Line (NewLine)
     , blue
@@ -18,7 +18,6 @@ import Render.Pretty
     , red
     , sized
     , supportsTextSizing
-    , terminalHeight
     , terminalWidth
     , viewTranslations
     , withHeaderSpaces
@@ -111,16 +110,18 @@ mkOutput header answers =
 -- | How the header is drawn: kitty scales the text through OSC 66. Other
 -- terminals get Braille art when the renderer is built and a Tibetan font is
 -- found; otherwise the plain query, because a terminal that does not know
--- OSC 66 may drop the text with it.
+-- OSC 66 may drop the text with it. The art is sized only in text lines, so it
+-- follows the console font, not the window or the query.
 queryHeader :: Text -> IO (Doc AnsiStyle)
 queryHeader query = do
     kitty <- supportsTextSizing
-    width <- terminalWidth
     if kitty
-        then pure (sizedHeader width query)
+        then do
+            width <- terminalWidth
+            pure (sizedHeader width query)
         else do
-            height <- terminalHeight
-            headerDoc query <$> renderQuery width height query
+            lines' <- artLines
+            headerDoc query <$> renderQuery lines' query
 
 -- | The query above the answers: Braille art when the renderer drew it,
 -- plain text otherwise.

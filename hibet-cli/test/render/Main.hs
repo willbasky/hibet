@@ -2,7 +2,7 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Render.Art (brailleRows, fitPpem, renderQuery)
+import Render.Art (brailleRows, fitHeight, renderQuery)
 import Render.Pretty (paginate, viewTranslations)
 import Shell (headerDoc, mkOutput, queryHeader, sizedHeader)
 
@@ -83,20 +83,27 @@ artSpec = describe "Render.Art" $ do
         brailleRows 4 8 (replicate 32 255) `shouldBe` ["⣿"]
     it "crops empty borders around the ink" $
         brailleRows 8 16 inkInBottomRightCell `shouldBe` ["⣿"]
-    it "picks the largest ppem that fits the budget" $
-        fitPpem 10 20 300 200 `shouldBe` Just 10
-    it "gives up when the art would be too small" $
-        fitPpem 10 20 300 60 `shouldBe` Nothing
-    it "renders a query when the renderer and a Tibetan font are there" $ do
-        art <- renderQuery 80 24 "མོ"
+    it "picks the largest ppem that fits the height" $
+        fitHeight 20 200 `shouldBe` Just 10
+    it "gives up when the height is too small" $
+        fitHeight 20 60 `shouldBe` Nothing
+    it "keeps the default height for the one-layer reference" $ do
+        art <- renderQuery 4 "མ"
         case art of
             Nothing -> pendingWith "no renderer or no Tibetan font"
-            Just rows -> rows `shouldSatisfy` not . null
-    it "fits a tall stack to the height budget" $ do
-        art <- renderQuery 80 40 "ཀཔ"
-        case art of
-            Nothing -> pendingWith "no renderer or no Tibetan font"
-            Just rows -> length rows `shouldSatisfy` (>= 10)
+            Just rows -> length rows `shouldBe` 4
+    it "lets the rectangle grow for a taller stack" $ do
+        reference <- renderQuery 4 "མ"
+        tall <- renderQuery 4 "ཀ"
+        case (reference, tall) of
+            (Just a, Just b) -> length b `shouldSatisfy` (> length a)
+            _ -> pendingWith "no renderer or no Tibetan font"
+    it "keeps the height of a line of same-height stacks" $ do
+        short <- renderQuery 4 "མ"
+        long <- renderQuery 4 "མམམ"
+        case (short, long) of
+            (Just a, Just b) -> length a `shouldBe` length b
+            _ -> pendingWith "no renderer or no Tibetan font"
 
 -- 8×16 pixels: ink only in the bottom-right cell.
 inkInBottomRightCell :: [Word8]

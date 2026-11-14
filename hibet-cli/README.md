@@ -73,9 +73,13 @@ Tibetan font: `HIBET_TIBETAN_FONT`, then `fc-match "Noto Serif Tibetan"`, then
 the usual font directories. Without the flag, without those libraries or
 without a font the query stays plain text.
 
-`HIBET_ART_ROWS` overrides the number of rows the art aims for (the default is
-a third of the terminal height); width follows the same scale until it fills
-the terminal. It is a knob for tuning the size, not a stable option.
+The art's scale is set by the one-layer stack `མ` (ma): it is exactly `k` text
+lines tall, and every other query is drawn at the same scale. The rectangle
+floats with the ink, so taller stacks (`ཀ`, subjoined letters, vowels) come out
+taller while `མ` stays `k` lines. `k` is measured in text lines, so it follows
+the console font, not the window; six is the default and `HIBET_ART_LINES`
+overrides it. The width follows the glyphs and the query length; the renderer
+never looks at the terminal size.
 
 ## Commands
 
