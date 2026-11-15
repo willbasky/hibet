@@ -2,14 +2,23 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Render.Art (brailleRows, fitHeight, renderQuery)
+import Render.Art (artLines, brailleRows, fitHeight, renderQuery)
 import Render.Pretty
     ( kittyTextSizing
     , paginate
     , parseKittyVersion
+    , supportsTextSizing
     , viewTranslations
     )
-import Shell (headerDoc, mkOutput, omHeader, queryHeader, sizedHeader)
+import Shell
+    ( HeaderStyle (..)
+    , headerDoc
+    , mkOutput
+    , omHeader
+    , pickHeader
+    , queryHeader
+    , sizedHeader
+    )
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.Text (renderStrict)
@@ -33,7 +42,9 @@ main :: IO ()
 main = hspec $ do
     viewTranslationsSpec
     mkOutputSpec
+    pickHeaderSpec
     queryHeaderSpec
+    sizedHeaderSpec
     headerTextSpec
     kittyVersionSpec
     omHeaderSpec
@@ -71,8 +82,66 @@ mkOutputSpec =
         $ T.unpack (render $ mkOutput (sizedHeader 80 "མོ") [answer1])
             `shouldContain` "\ESC]66;s=4;མོ\a\ESC[3B"
 
+pickHeaderSpec :: Spec
+pickHeaderSpec = describe "pickHeader" $ do
+    let art = ["⣿⣿", "⣿"]
+        edge = [T.replicate 76 "⣿"]
+        wide = [T.replicate 77 "⣿"]
+    it "prefers art that fits, even in kitty" $
+        pickHeader 80 True (Just art) `shouldBe` ArtHeader art
+    it "takes OSC 66 in kitty when there is no art" $
+        pickHeader 80 True Nothing `shouldBe` SizedHeader
+    it "keeps the fallback outside kitty when there is no art" $
+        pickHeader 80 False Nothing `shouldBe` PlainHeader
+    it "sends art wider than the window to OSC 66 in kitty" $
+        pickHeader 80 True (Just wide) `shouldBe` SizedHeader
+    it "sends art wider than the window to the fallback outside kitty" $
+        pickHeader 80 False (Just wide) `shouldBe` PlainHeader
+    it "leaves a four-cell margin at the window edge" $
+        pickHeader 80 True (Just edge) `shouldBe` ArtHeader edge
+
 queryHeaderSpec :: Spec
-queryHeaderSpec = describe "sizedHeader" $ do
+queryHeaderSpec = describe "queryHeader" $ do
+    it "draws Braille art first when the renderer has one" $ do
+        art <- drawArt "མོ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> withEnv "TERM" "xterm-kitty" $ do
+                header <- queryHeader "མོ"
+                render header `shouldBe` T.intercalate "\n" rows
+    it "sends OSC 66 in a kitty without art" $
+        withArtlessKitty "མོ" $ do
+            header <- queryHeader "མོ"
+            T.unpack (render header) `shouldContain` "\ESC]66;s="
+    it "keeps the plain query outside kitty without art" $
+        withArtlessPlain "མོ" $ do
+            header <- queryHeader "མོ"
+            render header `shouldBe` "མོ"
+
+drawArt :: T.Text -> IO (Maybe [T.Text])
+drawArt query = artLines >>= \lines' -> renderQuery lines' query
+
+-- | Run the example only where the header has no art to pick and kitty draws
+-- OSC 66; otherwise it is pending, so the table above stays machine-free.
+withArtlessKitty :: T.Text -> IO () -> IO ()
+withArtlessKitty query action = do
+    art <- drawArt query
+    withEnv "TERM" "xterm-kitty" $ do
+        kitty <- supportsTextSizing
+        case (art, kitty) of
+            (Just _, _) -> pendingWith "the art takes the header in this build"
+            (_, False) -> pendingWith "no kitty 0.40 or newer here"
+            (Nothing, True) -> action
+
+withArtlessPlain :: T.Text -> IO () -> IO ()
+withArtlessPlain query action = do
+    art <- drawArt query
+    case art of
+        Just _ -> pendingWith "the art takes the header in this build"
+        Nothing -> withEnv "TERM" "xterm-256color" action
+
+sizedHeaderSpec :: Spec
+sizedHeaderSpec = describe "sizedHeader" $ do
     it "scales the query for kitty up to four times" $
         render (sizedHeader 80 "མོ") `shouldBe` "\ESC]66;s=4;མོ\a\ESC[3B"
     it "keeps a long kitty query at normal size" $
@@ -103,13 +172,24 @@ kittyVersionSpec = describe "parseKittyVersion" $ do
             `shouldBe` Just False
 
 omHeaderSpec :: Spec
-omHeaderSpec = describe "omHeader" $
-    it "draws Om through OSC 66 in kitty" $
-        withEnv "TERM" "xterm-kitty" $ do
+omHeaderSpec = describe "omHeader" $ do
+    it "draws the Om art first when the renderer has one" $ do
+        art <- drawArt "ༀ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> withEnv "TERM" "xterm-kitty" $ do
+                header <- omHeader "fallback"
+                render header `shouldBe` T.intercalate "\n" rows
+    it "draws Om through OSC 66 in a kitty without art" $
+        withArtlessKitty "ༀ" $ do
             header <- omHeader "fallback"
             let output = T.unpack (render header)
             output `shouldContain` "\ESC]66;s="
             output `shouldContain` "ༀ\a"
+    it "keeps the block art outside kitty without art" $
+        withArtlessPlain "ༀ" $ do
+            header <- omHeader "fallback"
+            render header `shouldBe` "fallback"
 
 withEnv :: String -> String -> IO a -> IO a
 withEnv name value action =

@@ -59,9 +59,15 @@ hibet --data-dir ./hibet-data shell
 
 ## Drawing the query
 
-In kitty the shell draws the query through OSC 66, up to four times its cell
-size. Other terminals get the query as Braille art when the executable is
-built with the `ascii-art` flag:
+The header is tried in three ways, in this order:
+
+1. Braille art, when the executable is built with the `ascii-art` flag and the
+   system libraries and a Tibetan font are found. The art wins in every
+   terminal, kitty included; a line wider than the window (with a four-cell
+   margin) sends the header to the next level.
+2. OSC 66, in kitty 0.40 and newer: the terminal draws the query up to four
+   times its cell size, as large as the width allows.
+3. Plain text.
 
 ```
 cabal build -f ascii-art exe:hibet
@@ -71,18 +77,20 @@ just build      # adds the flag when pkg-config finds freetype2 and harfbuzz
 The renderer needs the system `freetype2` and `harfbuzz` libraries and a
 Tibetan font: `HIBET_TIBETAN_FONT`, then `fc-match "Noto Serif Tibetan"`, then
 the usual font directories. Without the flag, without those libraries or
-without a font the query stays plain text.
+without a font the header falls through to OSC 66 in kitty and to plain text
+elsewhere.
 
 The art's scale is set by the one-layer stack `མ` (ma): it is exactly `k` text
 lines tall, and every other query is drawn at the same scale. The rectangle
 floats with the ink, so taller stacks (`ཀ`, subjoined letters, vowels) come out
 taller while `མ` stays `k` lines. `k` is measured in text lines, so it follows
-the console font, not the window; six is the default and `HIBET_ART_LINES`
+the console font, not the window; four is the default and `HIBET_ART_LINES`
 overrides it. The width follows the glyphs and the query length; the renderer
 never looks at the terminal size.
 
-`hibet om` follows the same route for the syllable `ༀ`: OSC 66 in kitty,
-Braille art when the renderer is built, and the fixed block art otherwise.
+`hibet om` follows the same route for the syllable `ༀ`: Braille art when the
+renderer is built, OSC 66 in kitty without art, and the fixed block art
+otherwise.
 
 ## Commands
 
@@ -139,12 +147,12 @@ A Tibetan query reaches the same article:
 
 The first line of an entry is the dictionary number and title; its targets are
 indented below it, with `\n` inside a dictionary line expanded to real line
-breaks. In kitty 0.40 and newer the query line is drawn up to four times the
-cell size through OSC 66 (as large as the terminal width allows); other
-terminals draw it as Braille art when the executable is built with the
-`ascii-art` flag (see [Drawing the query](#drawing-the-query)), and keep the
-normal size otherwise, because a terminal that does not know the sequence may
-drop the query with it. A long answer is shown one page at a
+breaks. The query line is drawn as Braille art when the executable is built
+with the `ascii-art` flag (see [Drawing the query](#drawing-the-query)); without
+art, kitty 0.40 and newer draws it up to four times the cell size through
+OSC 66 (as large as the terminal width allows), and other terminals keep the
+normal size, because a terminal that does not know the sequence may drop the
+query with it. A long answer is shown one page at a
 time on the terminal's alternate screen. Line by line: `↑`/`↓`, `j`/`k`,
 `Ctrl-N`/`Ctrl-P`. Page by page: `PgUp`/`PgDn`, `Space`/`b`,
 `Ctrl-F`/`Ctrl-B` or `Ctrl-V`/`Alt-V`. `q` quits, all as single keypresses.

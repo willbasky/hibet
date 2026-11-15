@@ -10,20 +10,21 @@ and this project adheres to
 
 ### Added
 
-* `hibet shell` draws the query as Braille art in terminals without OSC 66
-  when the executable is built with the `ascii-art` flag
-  (`cabal build -f ascii-art exe:hibet`). The flag needs the system
-  `freetype2`/`harfbuzz` libraries; the renderer looks for a Tibetan font in
-  `HIBET_TIBETAN_FONT`, then fontconfig, then the usual font directories, and
-  falls back to plain text when there is none. The art is fitted to the ink of
-  the shaped glyphs, so a tall `ཀ` stays a vertical rectangle next to a square
-  `པ` instead of both shrinking into squares.
+* `hibet shell` draws the query as Braille art when the executable is built
+  with the `ascii-art` flag (`cabal build -f ascii-art exe:hibet`). The flag
+  needs the system `freetype2`/`harfbuzz` libraries; the renderer looks for a
+  Tibetan font in `HIBET_TIBETAN_FONT`, then fontconfig, then the usual font
+  directories, and falls back to the next level when there is none. The art is
+  fitted to the ink of the shaped glyphs, so a tall `ཀ` stays a vertical
+  rectangle next to a square `པ` instead of both shrinking into squares.
 
 ### Changed
 
-* `hibet om` draws the syllable `ༀ` through kitty's OSC 66 text sizing
-  protocol and as Braille art when the executable is built with `ascii-art`;
-  other terminals keep the fixed block art.
+* The query header falls back in the opposite order: Braille art first in
+  every terminal, kitty included, when the executable is built with
+  `ascii-art`, a Tibetan font is found and no line is wider than the window;
+  then OSC 66 in kitty 0.40 and newer; then plain text. `hibet om` takes the
+  same route for `ༀ` and keeps its fixed block art as the last level.
 * `hibet shell` draws the query up to four times its cell size through kitty's
   OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
   allows, so the Tibetan source stands out even when the terminal renders it

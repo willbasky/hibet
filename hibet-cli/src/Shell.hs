@@ -1,7 +1,9 @@
 module Shell
-    ( headerDoc
+    ( HeaderStyle (..)
+    , headerDoc
     , mkOutput
     , omHeader
+    , pickHeader
     , queryHeader
     , sizedHeader
     , translator
@@ -108,11 +110,10 @@ mkOutput header answers =
         $ viewTranslations
         $ sortOutput answers
 
--- | How the query is drawn: kitty scales the text through OSC 66. Other
--- terminals get Braille art when the renderer is built and a Tibetan font is
--- found; otherwise the plain query, because a terminal that does not know
--- OSC 66 may drop the text with it. The art is sized only in text lines, so it
--- follows the console font, not the window or the query.
+-- | How the query is drawn: Braille art when the renderer is built and found a
+-- Tibetan font, then OSC 66 in kitty, then the plain query. The art is sized
+-- only in text lines, so it follows the console font, not the window or the
+-- query.
 queryHeader :: Text -> IO (Doc AnsiStyle)
 queryHeader query = largeHeader query (pretty query)
 
@@ -124,17 +125,37 @@ omHeader fallback = largeHeader omSyllable (pretty fallback)
 omSyllable :: Text
 omSyllable = "ༀ"
 
+-- | How the header is drawn, in the order the levels are tried.
+data HeaderStyle
+    = -- | Braille art that fits the window.
+      ArtHeader [Text]
+    | -- | OSC 66 in a kitty that draws it.
+      SizedHeader
+    | -- | Plain query, or the block art of @hibet om@.
+      PlainHeader
+    deriving stock (Eq, Show)
+
+-- | The first level that works: drawn art that fits the window, then OSC 66 in
+-- a terminal that draws it, then the fallback. The four-cell margin keeps the
+-- art off the window edge.
+pickHeader :: Int -> Bool -> Maybe [Text] -> HeaderStyle
+pickHeader width kitty mArt
+    | Just rows <- mArt
+    , all ((<= width - 4) . T.length) rows =
+        ArtHeader rows
+    | kitty = SizedHeader
+    | otherwise = PlainHeader
+
 largeHeader :: Text -> Doc AnsiStyle -> IO (Doc AnsiStyle)
 largeHeader query fallback = do
+    lines' <- artLines
+    art <- renderQuery lines' query
+    width <- terminalWidth
     kitty <- supportsTextSizing
-    if kitty
-        then do
-            width <- terminalWidth
-            pure (sizedHeader width query)
-        else do
-            lines' <- artLines
-            art <- renderQuery lines' query
-            pure $ maybe fallback (vsep . map pretty) art
+    pure $ case pickHeader width kitty art of
+        ArtHeader rows -> vsep (map pretty rows)
+        SizedHeader -> sizedHeader width query
+        PlainHeader -> fallback
 
 -- | The query above the answers: Braille art when the renderer drew it,
 -- plain text otherwise.
