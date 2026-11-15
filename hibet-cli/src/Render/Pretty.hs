@@ -14,7 +14,9 @@ module Render.Pretty
     , withHeaderSpaces
     -- Output
     , Line (..)
+    , kittyTextSizing
     , paginate
+    , parseKittyVersion
     , pprint
     , putColorDoc
     , putColorDoc'
@@ -30,6 +32,7 @@ import Label (Title (..))
 import Render.Keys (Key (..), withRawKeys)
 import Utility (showT)
 
+import Control.Exception (IOException, try)
 import Data.Char (isDigit, isSpace)
 import Data.Foldable (traverse_)
 import Data.List (intersperse, isInfixOf)
@@ -59,7 +62,10 @@ import Prettyprinter.Render.Terminal
     )
 import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv)
+import System.Exit (ExitCode (..))
 import System.IO (hFlush, hIsTerminalDevice, stdout)
+import System.IO.Unsafe (unsafePerformIO)
+import System.Process (readProcessWithExitCode)
 import Text.Read (readMaybe)
 
 -- | Header
@@ -109,13 +115,41 @@ terminalWidth = maybe 80 Terminal.width <$> Terminal.size
 terminalHeight :: IO Int
 terminalHeight = maybe 24 Terminal.height <$> Terminal.size
 
--- | Whether the terminal draws OSC 66 text. Only kitty does among the common
--- terminals; others either ignore the sequence (and lose the query with it) or
--- strip it. A CPR probe from the protocol would need to read the terminal's
--- answers, so this stays with the name the terminal reports.
+-- | Whether the terminal draws OSC 66 text: only kitty does, and only from 0.40
+-- on, where the text sizing protocol appeared. kitty exports no version
+-- variable and the protocol has no reply, so the version is asked from the
+-- @kitty@ binary. A missing binary (ssh, a macOS app bundle) leaves the version
+-- unknown, and the text is drawn as it was before the check.
 supportsTextSizing :: IO Bool
-supportsTextSizing =
-    maybe False ("kitty" `isInfixOf`) <$> lookupEnv "TERM"
+supportsTextSizing = do
+    term <- maybe "" id <$> lookupEnv "TERM"
+    pure $ "kitty" `isInfixOf` term && maybe True (>= kittyTextSizing) kittyVersion
+
+-- | First kitty version with the text sizing protocol.
+kittyTextSizing :: (Int, Int)
+kittyTextSizing = (0, 40)
+
+-- | Version of the installed kitty, asked once per process: the shell wants it
+-- for every query and it cannot change under a running one.
+kittyVersion :: Maybe (Int, Int)
+kittyVersion = unsafePerformIO $ do
+    result <-
+        try (readProcessWithExitCode "kitty" ["--version"] "") ::
+            IO (Either IOException (ExitCode, String, String))
+    pure $ case result of
+        Right (ExitSuccess, out, _) -> parseKittyVersion out
+        _ -> Nothing
+{-# NOINLINE kittyVersion #-}
+
+-- | Major and minor version from the line @kitty --version@ prints, e.g.
+-- @kitty 0.50.0 created by Kovid Goyal@.
+parseKittyVersion :: String -> Maybe (Int, Int)
+parseKittyVersion output = case words output of
+    ("kitty" : version : _) -> case break (== '.') version of
+        (major, '.' : minor) ->
+            (,) <$> readMaybe major <*> readMaybe (takeWhile isDigit minor)
+        _ -> Nothing
+    _ -> Nothing
 
 indentation :: Int
 indentation = 2

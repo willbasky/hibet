@@ -3,7 +3,12 @@ module Main where
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
 import Render.Art (brailleRows, fitHeight, renderQuery)
-import Render.Pretty (paginate, viewTranslations)
+import Render.Pretty
+    ( kittyTextSizing
+    , paginate
+    , parseKittyVersion
+    , viewTranslations
+    )
 import Shell (headerDoc, mkOutput, omHeader, queryHeader, sizedHeader)
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
@@ -30,6 +35,7 @@ main = hspec $ do
     mkOutputSpec
     queryHeaderSpec
     headerTextSpec
+    kittyVersionSpec
     omHeaderSpec
     artSpec
     paginateSpec
@@ -79,6 +85,22 @@ headerTextSpec = describe "queryHeader outside kitty" $ do
     it "keeps the query as plain text without OSC 66" $ do
         header <- queryHeader "མོ"
         render header `shouldSatisfy` not . T.null
+
+kittyVersionSpec :: Spec
+kittyVersionSpec = describe "parseKittyVersion" $ do
+    it "reads the major and minor version kitty prints" $
+        parseKittyVersion "kitty 0.50.0 created by Kovid Goyal\n"
+            `shouldBe` Just (0, 50)
+    it "reads a version without a patch number" $
+        parseKittyVersion "kitty 0.40" `shouldBe` Just (0, 40)
+    it "gives nothing for other output" $
+        parseKittyVersion "no version here" `shouldBe` Nothing
+    it "takes 0.40 as the first version with the protocol" $
+        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.40.0")
+            `shouldBe` Just True
+    it "rejects the kitty before the protocol" $
+        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.39.1")
+            `shouldBe` Just False
 
 omHeaderSpec :: Spec
 omHeaderSpec = describe "omHeader" $

@@ -40,6 +40,12 @@ and this project adheres to
   top: the scrollback holds it as without a pager. The `pager` dependency is
   gone; `less` strips OSC 66 and would leave the query line blank.
 
+### Fixed
+
+* OSC 66 is sent only to kitty 0.40 and newer, where the text sizing protocol
+  appeared: the version is asked from `kitty --version`, so an older kitty
+  keeps Braille art or the plain query instead of losing the text.
+
 ## [2.1.0] - 2026-11-11
 
 ### Added
