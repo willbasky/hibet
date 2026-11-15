@@ -21,6 +21,9 @@ and this project adheres to
 
 ### Changed
 
+* `hibet om` draws the syllable `ༀ` through kitty's OSC 66 text sizing
+  protocol and as Braille art when the executable is built with `ascii-art`;
+  other terminals keep the fixed block art.
 * `hibet shell` draws the query up to four times its cell size through kitty's
   OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
   allows, so the Tibetan source stands out even when the terminal renders it

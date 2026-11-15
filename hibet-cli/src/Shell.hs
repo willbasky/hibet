@@ -1,6 +1,7 @@
 module Shell
     ( headerDoc
     , mkOutput
+    , omHeader
     , queryHeader
     , sizedHeader
     , translator
@@ -107,13 +108,24 @@ mkOutput header answers =
         $ viewTranslations
         $ sortOutput answers
 
--- | How the header is drawn: kitty scales the text through OSC 66. Other
+-- | How the query is drawn: kitty scales the text through OSC 66. Other
 -- terminals get Braille art when the renderer is built and a Tibetan font is
 -- found; otherwise the plain query, because a terminal that does not know
 -- OSC 66 may drop the text with it. The art is sized only in text lines, so it
 -- follows the console font, not the window or the query.
 queryHeader :: Text -> IO (Doc AnsiStyle)
-queryHeader query = do
+queryHeader query = largeHeader query (pretty query)
+
+-- | The syllable drawn by @hibet om@: the same route as the query header, but
+-- the fixed block art stays as the fallback instead of plain text.
+omHeader :: Text -> IO (Doc AnsiStyle)
+omHeader fallback = largeHeader omSyllable (pretty fallback)
+
+omSyllable :: Text
+omSyllable = "ༀ"
+
+largeHeader :: Text -> Doc AnsiStyle -> IO (Doc AnsiStyle)
+largeHeader query fallback = do
     kitty <- supportsTextSizing
     if kitty
         then do
@@ -121,7 +133,8 @@ queryHeader query = do
             pure (sizedHeader width query)
         else do
             lines' <- artLines
-            headerDoc query <$> renderQuery lines' query
+            art <- renderQuery lines' query
+            pure $ maybe fallback (vsep . map pretty) art
 
 -- | The query above the answers: Braille art when the renderer drew it,
 -- plain text otherwise.

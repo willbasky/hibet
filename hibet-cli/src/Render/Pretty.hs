@@ -17,6 +17,7 @@ module Render.Pretty
     , paginate
     , pprint
     , putColorDoc
+    , putColorDoc'
     , putColorList
     , sized
     , supportsTextSizing
@@ -181,11 +182,13 @@ textToColorText col txt = renderStrict $ layoutSmart defaultLayoutOptions $ col 
 data Line = NewLine | CurrentLine
 
 putColorDoc :: Colorize -> Line -> Text -> IO ()
-putColorDoc col line txt = do
-    let txtLn = case line of
-            NewLine -> txt `T.snoc` '\n'
-            CurrentLine -> txt
-    putDoc $ col $ pretty txtLn
+putColorDoc col line = putColorDoc' col line . pretty
+
+-- | Like 'putColorDoc', but the document is already built.
+putColorDoc' :: Colorize -> Line -> Doc AnsiStyle -> IO ()
+putColorDoc' col line doc = putDoc $ col $ case line of
+    NewLine -> doc <> pretty ("\n" :: Text)
+    CurrentLine -> doc
 
 putColorList :: [(Colorize, Text)] -> IO ()
 putColorList = traverse_ (\(c, d) -> putColorDoc c CurrentLine d)

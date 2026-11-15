@@ -81,6 +81,9 @@ the console font, not the window; six is the default and `HIBET_ART_LINES`
 overrides it. The width follows the glyphs and the query length; the renderer
 never looks at the terminal size.
 
+`hibet om` follows the same route for the syllable `ༀ`: OSC 66 in kitty,
+Braille art when the renderer is built, and the fixed block art otherwise.
+
 ## Commands
 
 | Command | What it does |

@@ -62,7 +62,7 @@ artLines = do
         _ -> defaultArtLines
 
 -- | Default proportion of the art to the console font: the one-layer stack
--- takes six text lines. Taller stacks are drawn at the same scale, so their
+-- takes N text lines. Taller stacks are drawn at the same scale, so their
 -- floating rectangle grows.
 defaultArtLines :: Int
 defaultArtLines = 4

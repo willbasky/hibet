@@ -4,13 +4,15 @@ import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
 import Render.Art (brailleRows, fitHeight, renderQuery)
 import Render.Pretty (paginate, viewTranslations)
-import Shell (headerDoc, mkOutput, queryHeader, sizedHeader)
+import Shell (headerDoc, mkOutput, omHeader, queryHeader, sizedHeader)
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.Text (renderStrict)
 
+import Control.Exception (bracket)
 import qualified Data.Text as T
 import Data.Word (Word8)
+import System.Environment (lookupEnv, setEnv, unsetEnv)
 import Test.Hspec
     ( Spec
     , describe
@@ -28,6 +30,7 @@ main = hspec $ do
     mkOutputSpec
     queryHeaderSpec
     headerTextSpec
+    omHeaderSpec
     artSpec
     paginateSpec
 
@@ -76,6 +79,24 @@ headerTextSpec = describe "queryHeader outside kitty" $ do
     it "keeps the query as plain text without OSC 66" $ do
         header <- queryHeader "མོ"
         render header `shouldSatisfy` not . T.null
+
+omHeaderSpec :: Spec
+omHeaderSpec = describe "omHeader" $
+    it "draws Om through OSC 66 in kitty" $
+        withEnv "TERM" "xterm-kitty" $ do
+            header <- omHeader "fallback"
+            let output = T.unpack (render header)
+            output `shouldContain` "\ESC]66;s="
+            output `shouldContain` "ༀ\a"
+
+withEnv :: String -> String -> IO a -> IO a
+withEnv name value action =
+    bracket (lookupEnv name) restore $ \_ -> do
+        setEnv name value
+        action
+    where
+        restore Nothing = unsetEnv name
+        restore (Just old) = setEnv name old
 
 artSpec :: Spec
 artSpec = describe "Render.Art" $ do
