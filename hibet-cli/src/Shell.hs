@@ -2,8 +2,10 @@ module Shell
     ( HeaderStyle (..)
     , headerDoc
     , mkOutput
+    , omArtLines
     , omHeader
     , pickHeader
+    , queryArtLines
     , queryHeader
     , sizedHeader
     , translator
@@ -115,15 +117,39 @@ mkOutput header answers =
 -- only in text lines, so it follows the console font, not the window or the
 -- query.
 queryHeader :: Text -> IO (Doc AnsiStyle)
-queryHeader query = largeHeader query (pretty query)
+queryHeader query = do
+    lines' <- queryArtLines
+    largeHeader lines' query (pretty query)
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.
 omHeader :: Text -> IO (Doc AnsiStyle)
-omHeader fallback = largeHeader omSyllable (pretty fallback)
+omHeader fallback = do
+    lines' <- omArtLines
+    largeHeader lines' omSyllable (pretty fallback)
 
 omSyllable :: Text
 omSyllable = "ༀ"
+
+-- | Height of the query art in text lines. The code default; the
+-- @HIBET_ART_LINES@ environment variable only overrides it.
+defaultQueryLines :: Int
+defaultQueryLines = 4
+
+-- | Height of the @hibet om@ art in text lines. The code default; the
+-- @HIBET_OM_LINES@ environment variable only overrides it.
+defaultOmLines :: Int
+defaultOmLines = 10
+
+-- | Query art height: @HIBET_ART_LINES@ when it holds a positive number,
+-- otherwise 'defaultQueryLines'.
+queryArtLines :: IO Int
+queryArtLines = artLines "HIBET_ART_LINES" defaultQueryLines
+
+-- | @hibet om@ art height: @HIBET_OM_LINES@ when it holds a positive number,
+-- otherwise 'defaultOmLines'.
+omArtLines :: IO Int
+omArtLines = artLines "HIBET_OM_LINES" defaultOmLines
 
 -- | How the header is drawn, in the order the levels are tried.
 data HeaderStyle
@@ -146,9 +172,8 @@ pickHeader width kitty mArt
     | kitty = SizedHeader
     | otherwise = PlainHeader
 
-largeHeader :: Text -> Doc AnsiStyle -> IO (Doc AnsiStyle)
-largeHeader query fallback = do
-    lines' <- artLines
+largeHeader :: Int -> Text -> Doc AnsiStyle -> IO (Doc AnsiStyle)
+largeHeader lines' query fallback = do
     art <- renderQuery lines' query
     width <- terminalWidth
     kitty <- supportsTextSizing

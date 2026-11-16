@@ -50,22 +50,16 @@ renderQuery lines' query = do
         Nothing -> pure Nothing
         Just path -> drawQuery lines' query path
 
--- | How many text lines tall the reference one-layer stack should be. The line
--- height is the cell of the console font, so this is the proportion between the
--- art and the text and does not change when the window is resized.
--- @HIBET_ART_LINES@ overrides it while the size is being tuned.
-artLines :: IO Int
-artLines = do
-    override <- lookupEnv "HIBET_ART_LINES"
+-- | How many text lines tall the reference one-layer stack should be: the named
+-- environment variable when it holds a positive number, @fallback@ otherwise.
+-- The line height is the cell of the console font, so this is the proportion
+-- between the art and the text and does not change when the window is resized.
+artLines :: String -> Int -> IO Int
+artLines variable fallback = do
+    override <- lookupEnv variable
     pure $ case override >>= readMaybe of
         Just lines' | lines' > 0 -> lines'
-        _ -> defaultArtLines
-
--- | Default proportion of the art to the console font: the one-layer stack
--- takes N text lines. Taller stacks are drawn at the same scale, so their
--- floating rectangle grows.
-defaultArtLines :: Int
-defaultArtLines = 4
+        _ -> fallback
 
 -- | The one-layer stack that sets the scale of the art.
 reference :: Text
@@ -340,9 +334,9 @@ tibetanFonts dir = do
 #else
 {- FOURMOLU_ENABLE -}
 
--- | The renderer is not built, so the art has no height.
-artLines :: IO Int
-artLines = pure 0
+-- | The renderer is not built, so only the default art height is known.
+artLines :: String -> Int -> IO Int
+artLines _ fallback = pure fallback
 
 -- | The renderer is not built, so the header stays plain text.
 renderQuery :: Int -> Text -> IO (Maybe [Text])

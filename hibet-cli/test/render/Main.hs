@@ -2,7 +2,7 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Render.Art (artLines, brailleRows, fitHeight, renderQuery)
+import Render.Art (brailleRows, fitHeight, renderQuery)
 import Render.Pretty
     ( kittyTextSizing
     , paginate
@@ -14,8 +14,10 @@ import Shell
     ( HeaderStyle (..)
     , headerDoc
     , mkOutput
+    , omArtLines
     , omHeader
     , pickHeader
+    , queryArtLines
     , queryHeader
     , sizedHeader
     )
@@ -48,6 +50,7 @@ main = hspec $ do
     headerTextSpec
     kittyVersionSpec
     omHeaderSpec
+    artHeightSpec
     artSpec
     paginateSpec
 
@@ -103,29 +106,29 @@ pickHeaderSpec = describe "pickHeader" $ do
 queryHeaderSpec :: Spec
 queryHeaderSpec = describe "queryHeader" $ do
     it "draws Braille art first when the renderer has one" $ do
-        art <- drawArt "མོ"
+        art <- drawArt queryArtLines "མོ"
         case art of
             Nothing -> pendingWith "no renderer or no Tibetan font"
             Just rows -> withEnv "TERM" "xterm-kitty" $ do
                 header <- queryHeader "མོ"
                 render header `shouldBe` T.intercalate "\n" rows
     it "sends OSC 66 in a kitty without art" $
-        withArtlessKitty "མོ" $ do
+        withArtlessKitty queryArtLines "མོ" $ do
             header <- queryHeader "མོ"
             T.unpack (render header) `shouldContain` "\ESC]66;s="
     it "keeps the plain query outside kitty without art" $
-        withArtlessPlain "མོ" $ do
+        withArtlessPlain queryArtLines "མོ" $ do
             header <- queryHeader "མོ"
             render header `shouldBe` "མོ"
 
-drawArt :: T.Text -> IO (Maybe [T.Text])
-drawArt query = artLines >>= \lines' -> renderQuery lines' query
+drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
+drawArt height query = height >>= \lines' -> renderQuery lines' query
 
 -- | Run the example only where the header has no art to pick and kitty draws
 -- OSC 66; otherwise it is pending, so the table above stays machine-free.
-withArtlessKitty :: T.Text -> IO () -> IO ()
-withArtlessKitty query action = do
-    art <- drawArt query
+withArtlessKitty :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessKitty height query action = do
+    art <- drawArt height query
     withEnv "TERM" "xterm-kitty" $ do
         kitty <- supportsTextSizing
         case (art, kitty) of
@@ -133,9 +136,9 @@ withArtlessKitty query action = do
             (_, False) -> pendingWith "no kitty 0.40 or newer here"
             (Nothing, True) -> action
 
-withArtlessPlain :: T.Text -> IO () -> IO ()
-withArtlessPlain query action = do
-    art <- drawArt query
+withArtlessPlain :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessPlain height query action = do
+    art <- drawArt height query
     case art of
         Just _ -> pendingWith "the art takes the header in this build"
         Nothing -> withEnv "TERM" "xterm-256color" action
@@ -174,22 +177,38 @@ kittyVersionSpec = describe "parseKittyVersion" $ do
 omHeaderSpec :: Spec
 omHeaderSpec = describe "omHeader" $ do
     it "draws the Om art first when the renderer has one" $ do
-        art <- drawArt "ༀ"
+        art <- drawArt omArtLines "ༀ"
         case art of
             Nothing -> pendingWith "no renderer or no Tibetan font"
             Just rows -> withEnv "TERM" "xterm-kitty" $ do
                 header <- omHeader "fallback"
                 render header `shouldBe` T.intercalate "\n" rows
     it "draws Om through OSC 66 in a kitty without art" $
-        withArtlessKitty "ༀ" $ do
+        withArtlessKitty omArtLines "ༀ" $ do
             header <- omHeader "fallback"
             let output = T.unpack (render header)
             output `shouldContain` "\ESC]66;s="
             output `shouldContain` "ༀ\a"
     it "keeps the block art outside kitty without art" $
-        withArtlessPlain "ༀ" $ do
+        withArtlessPlain omArtLines "ༀ" $ do
             header <- omHeader "fallback"
             render header `shouldBe` "fallback"
+
+artHeightSpec :: Spec
+artHeightSpec = describe "art height" $
+    it "sizes the Om art separately from the query art" $
+        withEnv "HIBET_ART_LINES" "3" $
+            withEnv "HIBET_OM_LINES" "6" $ do
+                queryRows <- drawArt queryArtLines "མ"
+                omRows <- drawArt omArtLines "ༀ"
+                case (queryRows, omRows) of
+                    (Just expectedQuery, Just expectedOm) -> do
+                        query <- queryHeader "མ"
+                        om <- omHeader "fallback"
+                        render query `shouldBe` T.intercalate "\n" expectedQuery
+                        render om `shouldBe` T.intercalate "\n" expectedOm
+                        length expectedQuery `shouldBe` 3
+                    _ -> pendingWith "no renderer or no Tibetan font"
 
 withEnv :: String -> String -> IO a -> IO a
 withEnv name value action =

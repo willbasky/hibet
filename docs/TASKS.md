@@ -1814,8 +1814,11 @@ OSC 66 и проверку версии; не выбирать порядок п
 Тесты: таблица `pickHeader` не зависит от шрифта и версии kitty;
 `queryHeaderSpec`/`omHeaderSpec` ждут арт в арт-сборке с шрифтом, OSC 66 без
 арта в kitty 0.40+ и фолбэк вне kitty, недоступный на машине уровень помечают
-pending. Проверено: `cabal test -f ascii-art hibet-render` — 34 примера,
-0 failures, 4 pending; без флага — 34, 0 failures, 5 pending; `-Wall` чистый.
+pending. Проверено: `cabal test -f ascii-art hibet-render` — 35 примеров,
+0 failures, 4 pending; без флага — 35, 0 failures, 6 pending; `-Wall` чистый.
+Высота арта задаётся раздельно константами в коде: `defaultQueryLines` для
+запроса и `defaultOmLines` для `ༀ` (обе 4); `HIBET_ART_LINES` и
+`HIBET_OM_LINES` только переопределяют их.
 
 ---
 

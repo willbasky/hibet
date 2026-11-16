@@ -84,9 +84,11 @@ The art's scale is set by the one-layer stack `མ` (ma): it is exactly `k` text
 lines tall, and every other query is drawn at the same scale. The rectangle
 floats with the ink, so taller stacks (`ཀ`, subjoined letters, vowels) come out
 taller while `མ` stays `k` lines. `k` is measured in text lines, so it follows
-the console font, not the window; four is the default and `HIBET_ART_LINES`
-overrides it. The width follows the glyphs and the query length; the renderer
-never looks at the terminal size.
+the console font, not the window. The default height is a constant in
+`Shell.hs` (four lines for both); `HIBET_ART_LINES` and `HIBET_OM_LINES` only
+override it for the shell query and `hibet om`, so the two can differ. The
+width follows the glyphs and the query length; the renderer never looks at the
+terminal size.
 
 `hibet om` follows the same route for the syllable `ༀ`: Braille art when the
 renderer is built, OSC 66 in kitty without art, and the fixed block art

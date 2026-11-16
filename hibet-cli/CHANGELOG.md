@@ -25,6 +25,9 @@ and this project adheres to
   `ascii-art`, a Tibetan font is found and no line is wider than the window;
   then OSC 66 in kitty 0.40 and newer; then plain text. `hibet om` takes the
   same route for `ༀ` and keeps its fixed block art as the last level.
+* The art height is set per command: `HIBET_ART_LINES` for the shell query and
+  `HIBET_OM_LINES` for `hibet om`. The defaults are constants in `Shell.hs`
+  (four lines each); the variables only override them.
 * `hibet shell` draws the query up to four times its cell size through kitty's
   OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
   allows, so the Tibetan source stands out even when the terminal renders it
