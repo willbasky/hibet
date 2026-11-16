@@ -3,13 +3,16 @@ module Main where
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
 import Render.Art (brailleRows, fitHeight, renderQuery, renderQueryBlocks)
+import Render.Keys (Key (..), readKeyWith)
 import Render.Pretty
     ( kittyTextSizing
     , pageRows
     , paginate
     , parseKittyVersion
+    , pprint
     , supportsTextSizing
     , viewTranslations
+    , withHeaderSpaces
     )
 import Render.Wrap (wrapQuery)
 import Shell
@@ -24,40 +27,68 @@ import Shell
     , sizedHeader
     )
 
-import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty)
+import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty, pretty, vsep)
 import Prettyprinter.Render.Text (renderStrict)
 
-import Control.Exception (bracket)
+import Control.Exception (IOException, bracket, finally, try)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
+import Data.IORef (atomicModifyIORef', newIORef)
 import qualified Data.Text as T
 import Data.Word (Word8)
-import System.Environment (lookupEnv, setEnv, unsetEnv)
-import System.IO (hIsTerminalDevice, stdout)
+import System.Environment
+    ( getArgs
+    , getExecutablePath
+    , lookupEnv
+    , setEnv
+    , unsetEnv
+    )
+import System.IO (Handle, hClose, hFlush, hIsTerminalDevice, stdout)
+import System.Posix.IO (fdToHandle)
+import System.Posix.Terminal (openPseudoTerminal)
+import System.Process
+    ( CreateProcess (..)
+    , StdStream (..)
+    , createProcess
+    , proc
+    , terminateProcess
+    , waitForProcess
+    )
+import System.Timeout (timeout)
 import Test.Hspec
     ( Spec
     , describe
+    , expectationFailure
     , hspec
     , it
     , pendingWith
     , shouldBe
     , shouldContain
+    , shouldReturn
     , shouldSatisfy
     )
 
 main :: IO ()
-main = hspec $ do
-    viewTranslationsSpec
-    mkOutputSpec
-    pickHeaderSpec
-    queryHeaderSpec
-    sizedHeaderSpec
-    wrapQuerySpec
-    headerTextSpec
-    kittyVersionSpec
-    omHeaderSpec
-    artHeightSpec
-    artSpec
-    artBlocksSpec
-    paginateSpec
+main = do
+    args <- getArgs
+    case args of
+        ["--pager-child"] -> pagerChild
+        _ -> hspec $ do
+            viewTranslationsSpec
+            mkOutputSpec
+            pickHeaderSpec
+            queryHeaderSpec
+            sizedHeaderSpec
+            wrapQuerySpec
+            headerTextSpec
+            kittyVersionSpec
+            omHeaderSpec
+            artHeightSpec
+            artSpec
+            artBlocksSpec
+            paginateSpec
+            keySpec
+            pagerSpec
 
 viewTranslationsSpec :: Spec
 viewTranslationsSpec =
@@ -351,3 +382,159 @@ paginateSpec =
                 pageSize = max 1 (10 - 1 - pageRows header)
             map length (paginate pageSize (replicate 20 "answer"))
                 `shouldSatisfy` all (<= pageSize)
+
+keySpec :: Spec
+keySpec = describe "readKeyWith" $ mapM_ example keyTable
+    where
+        example (bytes, key) =
+            it (show bytes <> " reads as " <> show key) $
+                keyOf bytes `shouldReturn` key
+
+-- | Bytes of one key press and the key the pager acts on.
+keyTable :: [(String, Key)]
+keyTable =
+    [ ("q", Quit)
+    , ("\x03", Quit) -- Ctrl-C
+    , ("", Quit) -- end of input
+    , ("j", LineDown)
+    , ("k", LineUp)
+    , (" ", PageDown)
+    , ("b", PageUp)
+    , ("\x02", PageUp) -- Ctrl-B
+    , ("\x06", PageDown) -- Ctrl-F
+    , ("\x0e", LineDown) -- Ctrl-N
+    , ("\x10", LineUp) -- Ctrl-P
+    , ("\x16", PageDown) -- Ctrl-V
+    , ("\ESCv", PageUp) -- Alt-V
+    , ("\ESC[A", LineUp)
+    , ("\ESC[B", LineDown)
+    , ("\ESCOA", LineUp) -- application cursor keys
+    , ("\ESCOB", LineDown)
+    , ("\ESC[5~", PageUp)
+    , ("\ESC[6~", PageDown)
+    , ("\ESC[9~", Other)
+    , ("\ESC[5", Other) -- a cut sequence
+    , ("\ESC", Other) -- a lone Escape
+    , ("x", Other)
+    ]
+
+-- | Read one key press from a fixed byte string.
+keyOf :: String -> IO Key
+keyOf bytes = do
+    rest <- newIORef bytes
+    readKeyWith $ \_ -> atomicModifyIORef' rest $ \case
+        [] -> ([], Nothing)
+        (c : cs) -> (cs, Just c)
+
+pagerSpec :: Spec
+pagerSpec = describe "paged" $ do
+    it "pages on the alternate screen, moves a page and restores it on q" $
+        withPtyChild True $ \master -> do
+            drawn <- readPty "" master (BS.isInfixOf clearScreen)
+            BS.hPut master " " >> hFlush master
+            paged <- readPty drawn master (frameDone 2)
+            BS.hPut master "\ESC[5~" >> hFlush master
+            back <- readPty paged master (frameDone 3)
+            BS.hPut master "q" >> hFlush master
+            out <- readPty back master (const False)
+            case frames back of
+                [before, afterSpace, afterUp] -> do
+                    before `shouldSatisfy` BS.isInfixOf "L1;"
+                    afterSpace `shouldSatisfy` not . BS.isInfixOf "L1;"
+                    afterUp `shouldBe` before
+                fs -> expectationFailure ("expected three frames, got " <> show (length fs))
+            countSub "\ESC[?1049h" out `shouldBe` 1
+            countSub "\ESC[?1049l" out `shouldBe` 1
+            let afterAlt = snd (BS.breakSubstring "\ESC[?1049l" out)
+            afterAlt `shouldSatisfy` BS.isInfixOf "L1;"
+            countSub "L100;" afterAlt `shouldBe` 1
+            countSub ";" afterAlt `shouldBe` 100
+    it "keeps the plain output when stdin is not a terminal" $
+        withPtyChild False $ \master -> do
+            out <- readPty "" master (const False)
+            out `shouldSatisfy` not . BS.isInfixOf "\ESC[?1049h"
+            countSub "L100;" out `shouldBe` 1
+
+-- | The pager as the shell calls it: the document starts with the header.
+pagerChild :: IO ()
+pagerChild = pprint header (withHeaderSpaces id header body)
+    where
+        header = pretty ("query" :: T.Text)
+        body =
+            vsep
+                [ pretty ("L" <> T.pack (show n) <> ";")
+                | n <- [1 :: Int .. 100]
+                ]
+
+-- | Run this executable as @--pager-child@ with stdout on a fresh pty and
+-- stdin on the same pty when @ttyStdin@ is true, or on @/dev/null@ otherwise.
+-- Gives the master end to the example and kills the child when it fails.
+withPtyChild :: Bool -> (Handle -> IO a) -> IO a
+withPtyChild ttyStdin action = do
+    (master, slave) <- openPseudoTerminal
+    hMaster <- fdToHandle master
+    hSlave <- fdToHandle slave
+    exe <- getExecutablePath
+    (_, _, _, child) <-
+        createProcess
+            (proc exe ["--pager-child"])
+                { std_in = if ttyStdin then UseHandle hSlave else NoStream
+                , std_out = UseHandle hSlave
+                , std_err = Inherit
+                }
+    hClose hSlave
+    action hMaster
+        `finally` do
+            hClose hMaster
+            _ <- try (terminateProcess child) :: IO (Either IOException ())
+            _ <- waitForProcess child
+            pure ()
+
+-- | Bytes from the pty until @done@ holds for everything read so far, or the
+-- child closes the terminal.
+readPty :: ByteString -> Handle -> (ByteString -> Bool) -> IO ByteString
+readPty start handle done = go start
+    where
+        go acc
+            | done acc = pure acc
+            | otherwise = do
+                chunk <-
+                    try (timeout ptyWait (BS.hGetSome handle 4096)) ::
+                        IO (Either IOException (Maybe ByteString))
+                case chunk of
+                    Left _ -> pure acc
+                    Right Nothing -> expectationFailure "the pager did not answer" >> pure acc
+                    Right (Just bytes)
+                        | BS.null bytes -> pure acc
+                        | otherwise -> go (acc <> bytes)
+
+ptyWait :: Int
+ptyWait = 10000000
+
+-- | The pager clears the screen before every frame.
+clearScreen :: ByteString
+clearScreen = "\ESC[H\ESC[2J"
+
+frames :: ByteString -> [ByteString]
+frames = drop 1 . splitOn clearScreen
+
+-- | The n-th frame has started and the last one is complete: the keys line is
+-- drawn after the body.
+frameDone :: Int -> ByteString -> Bool
+frameDone n bs = case frames bs of
+    fs | length fs >= n -> "q: quit --" `BS.isInfixOf` last fs
+    _ -> False
+
+splitOn :: ByteString -> ByteString -> [ByteString]
+splitOn needle hay = case BS.breakSubstring needle hay of
+    (before, rest)
+        | BS.null rest -> [before]
+        | otherwise -> before : splitOn needle (BS.drop (BS.length needle) rest)
+
+countSub :: ByteString -> ByteString -> Int
+countSub needle = go
+    where
+        go hay = case BS.breakSubstring needle hay of
+            (_, rest)
+                | BS.null rest -> 0
+                | otherwise -> 1 + go (BS.drop (BS.length needle) rest)

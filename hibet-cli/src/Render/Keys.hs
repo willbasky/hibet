@@ -1,5 +1,6 @@
 module Render.Keys
     ( Key (..)
+    , readKeyWith
     , withRawKeys
     )
 where
@@ -41,7 +42,7 @@ data Key
 -- terminal from echoing or waiting for Enter, and turns Ctrl-C into a byte the
 -- pager reads as 'Quit'.
 withRawKeys :: (IO Key -> IO a) -> IO a
-withRawKeys action = bracket enter leave (const (action readKey))
+withRawKeys action = bracket enter leave (const (action (readKeyWith readByte)))
     where
         enter = do
             attributes <- getTerminalAttributes stdInput
@@ -65,8 +66,11 @@ raw attributes =
         , KeyboardInterrupts
         ]
 
-readKey :: IO Key
-readKey = do
+-- | Turn the bytes of one key press into a 'Key' through the given reader.
+-- @Nothing@ means the end of input, or a wait for the rest of an escape
+-- sequence that timed out; both count as a lone key press.
+readKeyWith :: (Maybe Int -> IO (Maybe Char)) -> IO Key
+readKeyWith byte = do
     first <- byte Nothing
     case first of
         Nothing -> pure Quit
@@ -113,16 +117,16 @@ readKey = do
             next <- byte (Just escapeDelay)
             pure (if next == Just '~' then key else Other)
 
-        -- Nothing means end of input; a timed-out byte means the previous ESC
-        -- was a lone key press.
-        byte :: Maybe Int -> IO (Maybe Char)
-        byte wait = case wait of
-            Nothing -> blocking
-            Just ms -> join <$> timeout ms blocking
-            where
-                blocking = do
-                    eof <- hIsEOF stdin
-                    if eof then pure Nothing else Just <$> hGetChar stdin
+-- | Nothing means end of input; a timed-out byte means the previous ESC was a
+-- lone key press.
+readByte :: Maybe Int -> IO (Maybe Char)
+readByte wait = case wait of
+    Nothing -> blocking
+    Just ms -> join <$> timeout ms blocking
+    where
+        blocking = do
+            eof <- hIsEOF stdin
+            if eof then pure Nothing else Just <$> hGetChar stdin
 
 -- | Long enough for the rest of an escape sequence, short enough to not feel
 -- stuck after a lone ESC.
