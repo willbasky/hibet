@@ -33,7 +33,7 @@ import Label (Title (..))
 import Render.Keys (Key (..), withRawKeys)
 import Utility (showT)
 
-import Control.Exception (IOException, try)
+import Control.Exception (IOException, bracket_, try)
 import Data.Char (isDigit, isSpace)
 import Data.Foldable (traverse_)
 import Data.List (intersperse, isInfixOf)
@@ -64,7 +64,7 @@ import Prettyprinter.Render.Terminal
 import qualified System.Console.Terminal.Size as Terminal
 import System.Environment (lookupEnv)
 import System.Exit (ExitCode (..))
-import System.IO (hFlush, hIsTerminalDevice, stdout)
+import System.IO (hFlush, hIsTerminalDevice, stdin, stdout)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcessWithExitCode)
 import Text.Read (readMaybe)
@@ -228,13 +228,15 @@ putColorDoc' col line doc = putDoc $ col $ case line of
 putColorList :: [(Colorize, Text)] -> IO ()
 putColorList = traverse_ (\(c, d) -> putColorDoc c CurrentLine d)
 
--- | Render the answer. On a terminal the answers are paged on the alternate
--- screen with the query pinned above them; when the pager closes the whole
--- answer is printed once, so the query and the text stay in the scrollback as
--- they do without a pager.
+-- | Render the answer. When both stdin and stdout are terminals, the answers
+-- are paged on the alternate screen with the query pinned above them; when the
+-- pager closes the whole answer is printed once, so the query and the text stay
+-- in the scrollback as they do without a pager. A redirected stream on either
+-- end keeps the plain output: the pager draws to stdout and reads keys from
+-- stdin, so it cannot run without both.
 pprint :: Doc AnsiStyle -> Doc AnsiStyle -> IO ()
 pprint header doc = do
-    isTerminal <- hIsTerminalDevice stdout
+    isTerminal <- (&&) <$> hIsTerminalDevice stdout <*> hIsTerminalDevice stdin
     mSize <- Terminal.size
     let width = maybe 80 Terminal.width mSize
         height = maybe 24 Terminal.height mSize
@@ -262,11 +264,13 @@ paged height header body output =
         [] -> TIO.putStr (T.snoc output '\n')
         [_] -> TIO.putStr (T.snoc output '\n')
         _ -> do
-            TIO.putStr "\ESC[?1049h"
-            withRawKeys $ \readKey -> do
-                draw 0
-                loop readKey 0
-            TIO.putStr "\ESC[?1049l"
+            bracket_
+                (TIO.putStr "\ESC[?1049h" >> hFlush stdout)
+                (TIO.putStr "\ESC[?1049l" >> hFlush stdout)
+                $ withRawKeys
+                $ \readKey -> do
+                    draw 0
+                    loop readKey 0
             TIO.putStr (T.snoc output '\n')
     where
         pageSize = max 1 (height - 1 - pageRows header)
