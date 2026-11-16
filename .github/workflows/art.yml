@@ -1,0 +1,44 @@
+# The `ascii-art` build is not covered by haskell-ci: without the flag
+# `Render.Art` is a stub and its tests are pending. This workflow builds the
+# real renderer and requires its tests to run, so a broken renderer or a
+# missing font fails CI instead of passing as pending.
+name: Art
+
+on:
+  - push
+  - pull_request
+  - merge_group
+  - workflow_dispatch
+
+jobs:
+  art:
+    name: Art - Linux - ghc-9.10.3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: hibet
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+      - name: apt-get install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libfreetype-dev libharfbuzz-dev fonts-noto-core pkg-config
+          sudo fc-cache -f
+      - name: Install GHC and cabal-install
+        uses: haskell-actions/setup@v2
+        with:
+          ghc-version: 9.10.3
+          cabal-version: 3.16.0.0
+      - name: build with the art renderer
+        run: cabal build -f ascii-art all
+      - name: test the art renderer
+        run: |
+          set -o pipefail
+          cabal test -f ascii-art hibet-render --test-show-details=direct 2>&1 | tee art.log
+          if grep -q "no renderer or no Tibetan font" art.log; then
+            echo "art tests are pending: the renderer or the Tibetan font is missing"
+            exit 1
+          fi
