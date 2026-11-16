@@ -43,6 +43,7 @@ import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified System.Console.Haskeline.IO as Haskeline
 import System.Exit (exitSuccess)
+import System.IO (hIsTerminalDevice, stdout)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
@@ -179,11 +180,13 @@ pickHeader width height kitty mArt
 
 largeHeader :: Int -> Text -> Text -> IO (Doc AnsiStyle)
 largeHeader lines' query fallback = do
+    isTerminal <- hIsTerminalDevice stdout
     width <- terminalWidth
     height <- terminalHeight
     blocks <- renderQueryBlocks width lines' query
     kitty <- supportsTextSizing
-    pure $ case pickHeader width height kitty (concat <$> blocks) of
+    -- A redirected stdout would keep the OSC 66 escape bytes around the query.
+    pure $ case pickHeader width height (isTerminal && kitty) (concat <$> blocks) of
         ArtHeader rows -> vsep (map pretty rows)
         SizedHeader -> sizedHeader width query
         PlainHeader -> vsep (map pretty (wrapQuery width fallback))

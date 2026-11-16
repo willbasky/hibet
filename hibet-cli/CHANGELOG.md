@@ -56,6 +56,8 @@ and this project adheres to
 * OSC 66 is sent only to kitty 0.40 and newer, where the text sizing protocol
   appeared: the version is asked from `kitty --version`, so an older kitty
   keeps Braille art or the plain query instead of losing the text.
+* OSC 66 is sent only to a terminal: `hibet shell > file` and `hibet om >
+  file` keep the plain query instead of the text sizing sequence around it.
 
 ## [2.1.0] - 2026-11-11
 

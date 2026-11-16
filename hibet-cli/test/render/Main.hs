@@ -31,6 +31,7 @@ import Control.Exception (bracket)
 import qualified Data.Text as T
 import Data.Word (Word8)
 import System.Environment (lookupEnv, setEnv, unsetEnv)
+import System.IO (hIsTerminalDevice, stdout)
 import Test.Hspec
     ( Spec
     , describe
@@ -126,6 +127,10 @@ queryHeaderSpec = describe "queryHeader" $ do
         withArtlessKitty queryArtLines "མོ" $ do
             header <- queryHeader "མོ"
             T.unpack (render header) `shouldContain` "\ESC]66;s="
+    it "keeps OSC 66 out of a redirected stdout" $
+        withArtlessRedirected queryArtLines "མོ" $ do
+            header <- queryHeader "མོ"
+            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
     it "keeps the plain query outside kitty without art" $
         withArtlessPlain queryArtLines "མོ" $ do
             header <- queryHeader "མོ"
@@ -134,17 +139,35 @@ queryHeaderSpec = describe "queryHeader" $ do
 drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
 drawArt height query = height >>= \lines' -> renderQuery lines' query
 
--- | Run the example only where the header has no art to pick and kitty draws
--- OSC 66; otherwise it is pending, so the table above stays machine-free.
+-- | Run the example only where the header has no art to pick and stdout is a
+-- kitty terminal that draws OSC 66; otherwise it is pending, so the table
+-- above stays machine-free.
 withArtlessKitty :: IO Int -> T.Text -> IO () -> IO ()
 withArtlessKitty height query action = do
     art <- drawArt height query
+    terminal <- hIsTerminalDevice stdout
     withEnv "TERM" "xterm-kitty" $ do
         kitty <- supportsTextSizing
-        case (art, kitty) of
-            (Just _, _) -> pendingWith "the art takes the header in this build"
-            (_, False) -> pendingWith "no kitty 0.40 or newer here"
-            (Nothing, True) -> action
+        case (art, kitty, terminal) of
+            (Just _, _, _) -> pendingWith "the art takes the header in this build"
+            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
+            (_, True, False) -> pendingWith "stdout is not a terminal"
+            (Nothing, True, True) -> action
+
+-- | Run the example where stdout is redirected: OSC 66 must stay out of the
+-- output. Pending when there is no art or no kitty, or when stdout is a
+-- terminal and the sequence is expected.
+withArtlessRedirected :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessRedirected height query action = do
+    art <- drawArt height query
+    terminal <- hIsTerminalDevice stdout
+    withEnv "TERM" "xterm-kitty" $ do
+        kitty <- supportsTextSizing
+        case (art, kitty, terminal) of
+            (Just _, _, _) -> pendingWith "the art takes the header in this build"
+            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
+            (_, True, True) -> pendingWith "stdout is a terminal"
+            (Nothing, True, False) -> action
 
 withArtlessPlain :: IO Int -> T.Text -> IO () -> IO ()
 withArtlessPlain height query action = do
@@ -220,6 +243,10 @@ omHeaderSpec = describe "omHeader" $ do
             let output = T.unpack (render header)
             output `shouldContain` "\ESC]66;s="
             output `shouldContain` "ༀ\a"
+    it "keeps OSC 66 out of a redirected stdout" $
+        withArtlessRedirected omArtLines "ༀ" $ do
+            header <- omHeader "fallback"
+            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
     it "keeps the block art outside kitty without art" $
         withArtlessPlain omArtLines "ༀ" $ do
             header <- omHeader "fallback"
