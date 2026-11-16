@@ -22,7 +22,7 @@ source-repository head
   location: https://github.com/willbasky/Hibet.git
 
 flag ascii-art
-  description: Draw the query as Braille art in terminals without OSC 66
+  description: Draw the query as Braille art (falls back to OSC 66, then plain text)
   default: False
   manual: True
 

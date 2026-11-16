@@ -85,7 +85,8 @@ lines tall, and every other query is drawn at the same scale. The rectangle
 floats with the ink, so taller stacks (`ཀ`, subjoined letters, vowels) come out
 taller while `མ` stays `k` lines. `k` is measured in text lines, so it follows
 the console font, not the window. The default height is a constant in
-`Shell.hs` (four lines for both); `HIBET_ART_LINES` and `HIBET_OM_LINES` only
+`Shell.hs` (four lines for the query, ten for `hibet om`); `HIBET_ART_LINES`
+and `HIBET_OM_LINES` only
 override it for the shell query and `hibet om`, so the two can differ. The
 width follows the glyphs and the query length; the renderer never looks at the
 terminal size.

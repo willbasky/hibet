@@ -11,7 +11,7 @@ hibet-cli/app/Main.hs
   → App.app          разбор команды, Ki-scope, фоновая загрузка Env
       Cli            команды, запуск
       Shell          диалог, getAnswer, вывод
-      Pretty         терминальный вывод
+      Render.Pretty  терминальный вывод
   ─────────────────────────────────────────────────────────
 hibet (движок)
       Translator     чистый getAnswer
@@ -54,7 +54,7 @@ hibet (движок)
 целиком: это около 0,03 с на фоне 0,25 с разбора и +0,03 с к немедленному
 первому запросу.
 
-Консольный вывод (`putColorDoc`, `pprint`) — обычный `IO` в `Pretty`.
+Консольный вывод (`putColorDoc`, `pprint`) — обычный `IO` в `Render.Pretty`.
 
 ## Загрузка
 
@@ -155,7 +155,7 @@ hibet (движок)
 ## Пакеты
 
 `hibet` — движок (`Dictionary`, `Env`, `Translator`, `Type`, `Utility`,
-`Label`); `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Pretty`, Haskeline,
+`Label`); `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Render`, Haskeline,
 optparse, exe `hibet`). Движок не зависит от консольных пакетов, поэтому
 серверный API (`hibet-web`) сможет зависеть от `hibet` без Haskeline.
 

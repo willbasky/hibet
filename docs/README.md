@@ -7,7 +7,7 @@
 - **`hibet`** — движок переводчика: загрузка `Env`, resolver data-root,
   чистый `getAnswer`; конверсию письма берёт у `hewts`. Словари лежат вне
   пакета, в `hibet-data/` (см. `ARCHITECTURE.md`).
-- **`hibet-cli`** — консоль: `App`, `Cli`, `Shell`, `Pretty` и exe `hibet`.
+- **`hibet-cli`** — консоль: `App`, `Cli`, `Shell`, `Render` и exe `hibet`.
 - **`hibet-tools`** — maintainer-инструмент: обновление словарей,
   alias-таблицы и манифеста (`hibet-dataset`).
 
