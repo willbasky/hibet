@@ -14,7 +14,7 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
-import Render.Art (artLines, renderQuery)
+import Render.Art (artLines, renderQueryBlocks)
 import Render.Pretty
     ( Line (NewLine)
     , blue
@@ -23,11 +23,13 @@ import Render.Pretty
     , red
     , sized
     , supportsTextSizing
+    , terminalHeight
     , terminalWidth
     , viewTranslations
     , withHeaderSpaces
     , yellow
     )
+import Render.Wrap (wrapQuery)
 import Translator (getAnswer)
 
 import Control.Concurrent.MVar (MVar)
@@ -119,14 +121,14 @@ mkOutput header answers =
 queryHeader :: Text -> IO (Doc AnsiStyle)
 queryHeader query = do
     lines' <- queryArtLines
-    largeHeader lines' query (pretty query)
+    largeHeader lines' query query
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.
 omHeader :: Text -> IO (Doc AnsiStyle)
 omHeader fallback = do
     lines' <- omArtLines
-    largeHeader lines' omSyllable (pretty fallback)
+    largeHeader lines' omSyllable fallback
 
 omSyllable :: Text
 omSyllable = "ༀ"
@@ -163,24 +165,28 @@ data HeaderStyle
 
 -- | The first level that works: drawn art that fits the window, then OSC 66 in
 -- a terminal that draws it, then the fallback. The four-cell margin keeps the
--- art off the window edge.
-pickHeader :: Int -> Bool -> Maybe [Text] -> HeaderStyle
-pickHeader width kitty mArt
+-- art off the window edge; one row is left for the answer and one for the
+-- pager keys.
+pickHeader :: Int -> Int -> Bool -> Maybe [Text] -> HeaderStyle
+pickHeader width height kitty mArt
     | Just rows <- mArt
-    , all ((<= width - 4) . T.length) rows =
+    , not (null rows)
+    , all ((<= width - 4) . T.length) rows
+    , length rows <= height - 4 =
         ArtHeader rows
     | kitty = SizedHeader
     | otherwise = PlainHeader
 
-largeHeader :: Int -> Text -> Doc AnsiStyle -> IO (Doc AnsiStyle)
+largeHeader :: Int -> Text -> Text -> IO (Doc AnsiStyle)
 largeHeader lines' query fallback = do
-    art <- renderQuery lines' query
     width <- terminalWidth
+    height <- terminalHeight
+    blocks <- renderQueryBlocks width lines' query
     kitty <- supportsTextSizing
-    pure $ case pickHeader width kitty art of
+    pure $ case pickHeader width height kitty (concat <$> blocks) of
         ArtHeader rows -> vsep (map pretty rows)
         SizedHeader -> sizedHeader width query
-        PlainHeader -> fallback
+        PlainHeader -> vsep (map pretty (wrapQuery width fallback))
 
 -- | The query above the answers: Braille art when the renderer drew it,
 -- plain text otherwise.
@@ -188,9 +194,13 @@ headerDoc :: Text -> Maybe [Text] -> Doc AnsiStyle
 headerDoc query = maybe (pretty query) (vsep . map pretty)
 
 -- | The query drawn through OSC 66 at the largest scale that fits @width@.
+-- The scale is chosen once for the widest wrapped line, so the lines do not
+-- jump in size.
 sizedHeader :: Int -> Text -> Doc AnsiStyle
 sizedHeader width query
-    | scale > 1 = pretty (sized scale query)
-    | otherwise = pretty query
+    | scale > 1 = vsep (map (pretty . sized scale) rows)
+    | otherwise = vsep (map pretty rows)
     where
-        scale = max 1 (min 4 ((width - 4) `div` max 1 (T.length query)))
+        rows = wrapQuery width query
+        widest = maximum (0 : map T.length rows)
+        scale = max 1 (min 4 ((width - 4) `div` max 1 widest))

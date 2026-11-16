@@ -36,6 +36,7 @@ library
     Render.Art
     Render.Keys
     Render.Pretty
+    Render.Wrap
     Shell
 
   hs-source-dirs: src

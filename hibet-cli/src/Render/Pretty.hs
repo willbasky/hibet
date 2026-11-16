@@ -15,6 +15,7 @@ module Render.Pretty
     -- Output
     , Line (..)
     , kittyTextSizing
+    , pageRows
     , paginate
     , parseKittyVersion
     , pprint

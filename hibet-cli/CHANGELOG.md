@@ -27,7 +27,14 @@ and this project adheres to
   same route for `ༀ` and keeps its fixed block art as the last level.
 * The art height is set per command: `HIBET_ART_LINES` for the shell query and
   `HIBET_OM_LINES` for `hibet om`. The defaults are constants in `Shell.hs`
-  (four lines each); the variables only override them.
+  (four lines for the query, ten for `ༀ`); the variables only override them.
+* A query wider than the window is wrapped at `་` into lines at most four
+  cells narrower than the terminal; a syllable is never cut. Plain text and
+  OSC 66 use the same lines, with one scale for the whole header, and the
+  Braille art is drawn in blocks that fit the width. A header taller than the
+  window falls back to OSC 66 or plain text, so the pager keeps a row for the
+  answer and for the keys line.
+* The pager counts every line of a wrapped header when it sizes a page.
 * `hibet shell` draws the query up to four times its cell size through kitty's
   OSC 66 text sizing protocol (kitty 0.40+), as large as the terminal width
   allows, so the Tibetan source stands out even when the terminal renders it

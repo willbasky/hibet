@@ -8,6 +8,7 @@ module Render.Art
     , brailleRows
     , fitHeight
     , renderQuery
+    , renderQueryBlocks
     )
 where
 
@@ -21,19 +22,21 @@ import Render.Braille (brailleRows, fitHeight)
 {- FOURMOLU_ENABLE -}
 
 import Control.Exception (IOException, try)
-import Control.Monad (forM, forM_)
+import Control.Monad (forM, forM_, join)
 import Data.Array.IO (IOUArray, getElems, newArray, readArray, writeArray)
 import Data.Array.Unboxed (UArray, listArray, (!))
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.List (isInfixOf)
 import Data.Maybe (mapMaybe)
+import qualified Data.Text as T
 import Data.Text.Glyphize
 import qualified Data.Text.Lazy as TL
 import Data.Word (Word32, Word8)
 import Foreign.Marshal.Array (peekArray)
 import Foreign.Storable (peek)
 import FreeType
+import Render.Wrap (syllables)
 import System.Directory (doesDirectoryExist, getHomeDirectory, listDirectory)
 import System.Environment (lookupEnv)
 import System.FilePath (takeExtension, (</>))
@@ -45,10 +48,87 @@ import Text.Read (readMaybe)
 -- the art would be too small to read.
 renderQuery :: Int -> Text -> IO (Maybe [Text])
 renderQuery lines' query = do
+    mRows <- withQueryFont lines' $ \ftFace upem hbFont ppem ->
+        drawChunk ftFace upem hbFont ppem query
+    pure $ case mRows of
+        Just rows | not (null rows) -> Just rows
+        _ -> Nothing
+
+-- | Draw @query@ as blocks no wider than @width - 4@ cells. Syllables are
+-- added greedily until the drawn art no longer fits, then the block closes; a
+-- syllable wider by itself is kept whole. The ppem comes from the reference
+-- stack, so every block has the same scale.
+renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])
+renderQueryBlocks width lines' query = do
+    blocks <-
+        withQueryFont lines' $ \ftFace upem hbFont ppem ->
+            drawBlocks
+                (width - 4)
+                (drawChunk ftFace upem hbFont ppem)
+                (syllables query)
+    pure (join blocks)
+
+-- | Font lookup, face loading and the ppem shared by every block of a header.
+withQueryFont ::
+    Int ->
+    (FT_Face -> Double -> Font -> Int -> IO a) ->
+    IO (Maybe a)
+withQueryFont target action = do
     mFont <- findFont
     case mFont of
         Nothing -> pure Nothing
-        Just path -> drawQuery lines' query path
+        Just path -> do
+            font <- BS.readFile path
+            let face = createFace font 0
+                hbFont = createFont face
+                upem = fromIntegral (faceUpem face) :: Double
+                referenceGlyphs = shapeTibt hbFont reference
+            case inkBounds hbFont referenceGlyphs of
+                Nothing -> pure Nothing
+                Just referenceInk ->
+                    ft_With_FreeType $ \library ->
+                        ft_With_Face library path 0 $ \ftFace -> do
+                            mPpem <-
+                                scaleFor
+                                    target
+                                    (rasterizeAt ftFace upem referenceGlyphs referenceInk)
+                                    referenceInk
+                                    upem
+                            traverse
+                                (\ppem -> action ftFace upem hbFont ppem)
+                                mPpem
+
+-- | Greedy blocks of syllables. A syllable wider than the line is kept whole
+-- on a line of its own; 'Nothing' when there is no ink at all.
+drawBlocks ::
+    Int ->
+    (Text -> IO [Text]) ->
+    [Text] ->
+    IO (Maybe [[Text]])
+drawBlocks limit draw = go [] "" []
+  where
+    go done _ rows [] = pure (nonEmpty (reverse (add rows done)))
+    go done current rows (syllable : rest) = do
+        candidate <- draw (current <> syllable)
+        if T.null current || all ((<= limit) . T.length) candidate
+            then go done (current <> syllable) candidate rest
+            else go (add rows done) "" [] (syllable : rest)
+
+    add rows done
+        | null rows = done
+        | otherwise = rows : done
+
+    nonEmpty [] = Nothing
+    nonEmpty rows = Just rows
+
+-- | Ink of @text@ at @ppem@ as Braille rows; text with no ink gives no rows.
+drawChunk :: FT_Face -> Double -> Font -> Int -> Text -> IO [Text]
+drawChunk ftFace upem hbFont ppem text =
+    case inkBounds hbFont glyphs of
+        Nothing -> pure []
+        Just ink -> rasterizeAt ftFace upem glyphs ink ppem
+  where
+    glyphs = shapeTibt hbFont text
 
 -- | How many text lines tall the reference one-layer stack should be: the named
 -- environment variable when it holds a positive number, @fallback@ otherwise.
@@ -74,32 +154,6 @@ data Ink = Ink
     , top :: Double
     , bottom :: Double
     }
-
-drawQuery :: Int -> Text -> FilePath -> IO (Maybe [Text])
-drawQuery target query path = do
-    font <- BS.readFile path
-    let face = createFace font 0
-        hbFont = createFont face
-        upem = fromIntegral (faceUpem face) :: Double
-        glyphs = shapeTibt hbFont query
-        referenceGlyphs = shapeTibt hbFont reference
-    case (inkBounds hbFont glyphs, inkBounds hbFont referenceGlyphs) of
-        (Just ink, Just referenceInk) ->
-            ft_With_FreeType $ \library ->
-                ft_With_Face library path 0 $ \ftFace -> do
-                    mPpem <-
-                        scaleFor
-                            target
-                            (rasterizeAt ftFace upem referenceGlyphs referenceInk)
-                            referenceInk
-                            upem
-                    case mPpem of
-                        Nothing -> pure Nothing
-                        Just ppem -> nonEmpty <$> rasterizeAt ftFace upem glyphs ink ppem
-        _ -> pure Nothing
-    where
-        nonEmpty [] = Nothing
-        nonEmpty rows = Just rows
 
 shapeTibt :: Font -> Text -> [(GlyphInfo, GlyphPos)]
 shapeTibt hbFont text =
@@ -341,6 +395,10 @@ artLines _ fallback = pure fallback
 -- | The renderer is not built, so the header stays plain text.
 renderQuery :: Int -> Text -> IO (Maybe [Text])
 renderQuery _ _ = pure Nothing
+
+-- | The renderer is not built, so there are no blocks to draw.
+renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])
+renderQueryBlocks _ _ _ = pure Nothing
 
 {- FOURMOLU_DISABLE -}
 #endif

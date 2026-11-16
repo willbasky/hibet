@@ -2,14 +2,16 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Render.Art (brailleRows, fitHeight, renderQuery)
+import Render.Art (brailleRows, fitHeight, renderQuery, renderQueryBlocks)
 import Render.Pretty
     ( kittyTextSizing
+    , pageRows
     , paginate
     , parseKittyVersion
     , supportsTextSizing
     , viewTranslations
     )
+import Render.Wrap (wrapQuery)
 import Shell
     ( HeaderStyle (..)
     , headerDoc
@@ -47,11 +49,13 @@ main = hspec $ do
     pickHeaderSpec
     queryHeaderSpec
     sizedHeaderSpec
+    wrapQuerySpec
     headerTextSpec
     kittyVersionSpec
     omHeaderSpec
     artHeightSpec
     artSpec
+    artBlocksSpec
     paginateSpec
 
 viewTranslationsSpec :: Spec
@@ -90,18 +94,24 @@ pickHeaderSpec = describe "pickHeader" $ do
     let art = ["⣿⣿", "⣿"]
         edge = [T.replicate 76 "⣿"]
         wide = [T.replicate 77 "⣿"]
+        tall = replicate 20 "⣿"
+        tooTall = replicate 21 "⣿"
     it "prefers art that fits, even in kitty" $
-        pickHeader 80 True (Just art) `shouldBe` ArtHeader art
+        pickHeader 80 24 True (Just art) `shouldBe` ArtHeader art
     it "takes OSC 66 in kitty when there is no art" $
-        pickHeader 80 True Nothing `shouldBe` SizedHeader
+        pickHeader 80 24 True Nothing `shouldBe` SizedHeader
     it "keeps the fallback outside kitty when there is no art" $
-        pickHeader 80 False Nothing `shouldBe` PlainHeader
+        pickHeader 80 24 False Nothing `shouldBe` PlainHeader
     it "sends art wider than the window to OSC 66 in kitty" $
-        pickHeader 80 True (Just wide) `shouldBe` SizedHeader
+        pickHeader 80 24 True (Just wide) `shouldBe` SizedHeader
     it "sends art wider than the window to the fallback outside kitty" $
-        pickHeader 80 False (Just wide) `shouldBe` PlainHeader
+        pickHeader 80 24 False (Just wide) `shouldBe` PlainHeader
     it "leaves a four-cell margin at the window edge" $
-        pickHeader 80 True (Just edge) `shouldBe` ArtHeader edge
+        pickHeader 80 24 True (Just edge) `shouldBe` ArtHeader edge
+    it "keeps a row for the answer and one for the pager keys" $
+        pickHeader 80 24 True (Just tall) `shouldBe` ArtHeader tall
+    it "sends art taller than the window to the next level" $
+        pickHeader 80 24 True (Just tooTall) `shouldBe` SizedHeader
 
 queryHeaderSpec :: Spec
 queryHeaderSpec = describe "queryHeader" $ do
@@ -145,10 +155,31 @@ withArtlessPlain height query action = do
 
 sizedHeaderSpec :: Spec
 sizedHeaderSpec = describe "sizedHeader" $ do
+    let query = T.replicate 20 "ཀ་"
     it "scales the query for kitty up to four times" $
         render (sizedHeader 80 "མོ") `shouldBe` "\ESC]66;s=4;མོ\a\ESC[3B"
     it "keeps a long kitty query at normal size" $
         render (sizedHeader 12 "སེམས་ཅན") `shouldBe` "སེམས་ཅན"
+    it "wraps a wide query and keeps every line at one size" $
+        render (sizedHeader 30 query) `shouldBe` T.intercalate "\n" (wrapQuery 30 query)
+
+wrapQuerySpec :: Spec
+wrapQuerySpec = describe "wrapQuery" $ do
+    let query = T.replicate 20 "ཀ་"
+    it "breaks a wide query into lines within the margin" $ do
+        let rows = wrapQuery 20 query
+        length rows `shouldSatisfy` (> 1)
+        map T.length rows `shouldSatisfy` all (<= 16)
+    it "breaks only after a tsek" $
+        all (T.isSuffixOf "་") (init (wrapQuery 20 query)) `shouldBe` True
+    it "keeps the query whole" $
+        T.concat (wrapQuery 20 query) `shouldBe` query
+    it "starts a new line before the syllable that does not fit" $
+        wrapQuery 8 "ཀ་ཁ་ག" `shouldBe` ["ཀ་ཁ་", "ག"]
+    it "does not cut a syllable wider than the window" $
+        wrapQuery 8 (T.replicate 30 "ཀ") `shouldBe` [T.replicate 30 "ཀ"]
+    it "keeps a short query on one line" $
+        wrapQuery 80 "མོ" `shouldBe` ["མོ"]
 
 headerTextSpec :: Spec
 headerTextSpec = describe "queryHeader outside kitty" $ do
@@ -247,6 +278,23 @@ artSpec = describe "Render.Art" $ do
             (Just a, Just b) -> length a `shouldBe` length b
             _ -> pendingWith "no renderer or no Tibetan font"
 
+artBlocksSpec :: Spec
+artBlocksSpec = describe "renderQueryBlocks" $ do
+    it "draws a wide query as blocks that fit the window" $ do
+        blocks <- renderQueryBlocks 40 4 (T.replicate 20 "མ་")
+        case blocks of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> do
+                length rows `shouldSatisfy` (> 1)
+                concatMap (map T.length) rows `shouldSatisfy` all (<= 36)
+    it "keeps a syllable wider than the window whole" $ do
+        blocks <- renderQueryBlocks 10 4 (T.replicate 20 "ཀ")
+        case blocks of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> do
+                length rows `shouldBe` 1
+                maximum (map T.length (concat rows)) `shouldSatisfy` (> 6)
+
 -- 8×16 pixels: ink only in the bottom-right cell.
 inkInBottomRightCell :: [Word8]
 inkInBottomRightCell =
@@ -269,3 +317,10 @@ paginateSpec =
             paginate 2 [] `shouldBe` []
         it "never loops on a zero page size" $
             paginate 0 ["a"] `shouldBe` [["a"]]
+        it "counts every line of a multi-line header" $
+            pageRows ["", "query one", "query two", ""] `shouldBe` 4
+        it "keeps a page within the window under a multi-line header" $ do
+            let header = ["", "query one", "query two", ""]
+                pageSize = max 1 (10 - 1 - pageRows header)
+            map length (paginate pageSize (replicate 20 "answer"))
+                `shouldSatisfy` all (<= pageSize)

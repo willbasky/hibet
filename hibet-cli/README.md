@@ -63,8 +63,9 @@ The header is tried in three ways, in this order:
 
 1. Braille art, when the executable is built with the `ascii-art` flag and the
    system libraries and a Tibetan font are found. The art wins in every
-   terminal, kitty included; a line wider than the window (with a four-cell
-   margin) sends the header to the next level.
+   terminal, kitty included; a query wider than the window is drawn in blocks
+   that fit it, and a header taller than the window falls through to the next
+   level.
 2. OSC 66, in kitty 0.40 and newer: the terminal draws the query up to four
    times its cell size, as large as the width allows.
 3. Plain text.
@@ -90,6 +91,12 @@ and `HIBET_OM_LINES` only
 override it for the shell query and `hibet om`, so the two can differ. The
 width follows the glyphs and the query length; the renderer never looks at the
 terminal size.
+
+A query wider than the window is wrapped at syllable boundaries (`་`) into
+lines at most four cells narrower than the terminal; a syllable that is wider
+by itself is never cut. OSC 66 measures the wrapped lines once, so the whole
+header keeps one size, and the pager counts every header line so the keys line
+stays on screen.
 
 `hibet om` follows the same route for the syllable `ༀ`: Braille art when the
 renderer is built, OSC 66 in kitty without art, and the fixed block art
