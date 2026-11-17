@@ -58,6 +58,9 @@ and this project adheres to
   keeps Braille art or the plain query instead of losing the text.
 * OSC 66 is sent only to a terminal: `hibet shell > file` and `hibet om >
   file` keep the plain query instead of the text sizing sequence around it.
+* The pager reserves the rows the keys hint wraps to in a narrow window, so the
+  hint no longer pushes the page past the bottom and scrolls the query away on
+  a 20- or 40-column terminal.
 
 ## [2.1.0] - 2026-11-11
 

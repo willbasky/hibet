@@ -5,7 +5,8 @@ import Label (Title (Title))
 import Render.Art (brailleRows, fitHeight, renderQuery, renderQueryBlocks)
 import Render.Keys (Key (..), readKeyWith)
 import Render.Pretty
-    ( kittyTextSizing
+    ( keysRows
+    , kittyTextSizing
     , pageRows
     , paginate
     , parseKittyVersion
@@ -35,6 +36,7 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.IORef (atomicModifyIORef', newIORef)
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Data.Word (Word8)
 import System.Environment
     ( getArgs
@@ -44,7 +46,7 @@ import System.Environment
     , unsetEnv
     )
 import System.IO (Handle, hClose, hFlush, hIsTerminalDevice, stdout)
-import System.Posix.IO (fdToHandle)
+import System.Posix.IO (dup, fdToHandle)
 import System.Posix.Terminal (openPseudoTerminal)
 import System.Process
     ( CreateProcess (..)
@@ -87,6 +89,7 @@ main = do
             artSpec
             artBlocksSpec
             paginateSpec
+            keysRowsSpec
             keySpec
             pagerSpec
 
@@ -383,6 +386,17 @@ paginateSpec =
             map length (paginate pageSize (replicate 20 "answer"))
                 `shouldSatisfy` all (<= pageSize)
 
+keysRowsSpec :: Spec
+keysRowsSpec = describe "keysRows" $ do
+    it "takes one row for the full hint in a wide window" $
+        keysRows 80 `shouldBe` 1
+    it "wraps the widest hint in a 40-column window" $
+        keysRows 40 `shouldBe` 2
+    it "wraps the widest hint in a 20-column window" $
+        keysRows 20 `shouldBe` 3
+    it "never divides by a zero width" $
+        keysRows 0 `shouldSatisfy` (> 0)
+
 keySpec :: Spec
 keySpec = describe "readKeyWith" $ mapM_ example keyTable
     where
@@ -429,7 +443,7 @@ keyOf bytes = do
 pagerSpec :: Spec
 pagerSpec = describe "paged" $ do
     it "pages on the alternate screen, moves a page and restores it on q" $
-        withPtyChild True $ \master -> do
+        withPtyChild (80, 24) True $ \master -> do
             drawn <- readPty "" master (BS.isInfixOf clearScreen)
             BS.hPut master " " >> hFlush master
             paged <- readPty drawn master (frameDone 2)
@@ -449,11 +463,27 @@ pagerSpec = describe "paged" $ do
             afterAlt `shouldSatisfy` BS.isInfixOf "L1;"
             countSub "L100;" afterAlt `shouldBe` 1
             countSub ";" afterAlt `shouldBe` 100
+    it "keeps the page inside a narrow window" $
+        mapM_ fits [(20, 24), (40, 24)]
     it "keeps the plain output when stdin is not a terminal" $
-        withPtyChild False $ \master -> do
+        withPtyChild (80, 24) False $ \master -> do
             out <- readPty "" master (const False)
             out `shouldSatisfy` not . BS.isInfixOf "\ESC[?1049h"
             countSub "L100;" out `shouldBe` 1
+    where
+        -- The query stays pinned and the wrapped keys hint stays on screen:
+        -- header rows plus the page plus the hint fit the window height.
+        fits size@(width, height) =
+            withPtyChild size True $ \master -> do
+                out <- readPty "" master (frameDone 1)
+                case frames out of
+                    [frame] -> do
+                        frame `shouldSatisfy` BS.isInfixOf "query"
+                        frame `shouldSatisfy` BS.isInfixOf "q: quit --"
+                        frameRows width frame `shouldSatisfy` (<= height)
+                    fs ->
+                        expectationFailure
+                            ("expected one frame, got " <> show (length fs))
 
 -- | The pager as the shell calls it: the document starts with the header.
 pagerChild :: IO ()
@@ -466,14 +496,19 @@ pagerChild = pprint header (withHeaderSpaces id header body)
                 | n <- [1 :: Int .. 100]
                 ]
 
--- | Run this executable as @--pager-child@ with stdout on a fresh pty and
--- stdin on the same pty when @ttyStdin@ is true, or on @/dev/null@ otherwise.
--- Gives the master end to the example and kills the child when it fails.
-withPtyChild :: Bool -> (Handle -> IO a) -> IO a
-withPtyChild ttyStdin action = do
+-- | Run this executable as @--pager-child@ with stdout on a fresh pty of the
+-- given size and stdin on the same pty when @ttyStdin@ is true, or on
+-- @/dev/null@ otherwise. Gives the master end to the example and kills the
+-- child when it fails.
+withPtyChild :: (Int, Int) -> Bool -> (Handle -> IO a) -> IO a
+withPtyChild (width, height) ttyStdin action = do
     (master, slave) <- openPseudoTerminal
     hMaster <- fdToHandle master
     hSlave <- fdToHandle slave
+    -- createProcess takes the handle for the child and closes it, so stty gets
+    -- its own copy of the same device.
+    hSize <- fdToHandle =<< dup slave
+    setPtySize hSize width height
     exe <- getExecutablePath
     (_, _, _, child) <-
         createProcess
@@ -489,6 +524,20 @@ withPtyChild ttyStdin action = do
             _ <- try (terminateProcess child) :: IO (Either IOException ())
             _ <- waitForProcess child
             pure ()
+
+-- | Give the pty a real window size: a fresh one reports 0 rows by 0 columns,
+-- which no terminal has.
+setPtySize :: Handle -> Int -> Int -> IO ()
+setPtySize handle width height = do
+    (_, _, _, child) <-
+        createProcess
+            (proc "stty" ["rows", show height, "cols", show width])
+                { std_in = UseHandle handle
+                , std_out = NoStream
+                , std_err = Inherit
+                }
+    _ <- waitForProcess child
+    pure ()
 
 -- | Bytes from the pty until @done@ holds for everything read so far, or the
 -- child closes the terminal.
@@ -517,6 +566,26 @@ clearScreen = "\ESC[H\ESC[2J"
 
 frames :: ByteString -> [ByteString]
 frames = drop 1 . splitOn clearScreen
+
+-- | Rows a frame takes on a @width@-cell screen. The pager prints lines and
+-- lets the terminal wrap them, so a long line is more than one row.
+frameRows :: Int -> ByteString -> Int
+frameRows width frame =
+    sum (map rows (T.splitOn "\n" (stripEscapes (TE.decodeUtf8 frame))))
+    where
+        rows line = max 1 ((T.length line + width - 1) `div` max 1 width)
+
+-- | Drop color sequences: they take no cells.
+stripEscapes :: T.Text -> T.Text
+stripEscapes text = case T.breakOn "\ESC[" text of
+    (before, rest)
+        | T.null rest -> before
+        | otherwise ->
+            let after =
+                    T.drop
+                        1
+                        (T.dropWhile (\c -> c < '@' || c > '~') (T.drop 2 rest))
+             in before <> stripEscapes after
 
 -- | The n-th frame has started and the last one is complete: the keys line is
 -- drawn after the body.

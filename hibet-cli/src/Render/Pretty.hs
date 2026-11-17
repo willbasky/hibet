@@ -14,6 +14,7 @@ module Render.Pretty
     , withHeaderSpaces
     -- Output
     , Line (..)
+    , keysRows
     , kittyTextSizing
     , pageRows
     , paginate
@@ -247,7 +248,7 @@ pprint header doc = do
         prefix = hang indentation $ vsep [space, header, space]
         (headerLines, bodyLines) = splitAt (length (T.lines (render prefix))) (T.lines output)
     if isTerminal
-        then paged height headerLines bodyLines output
+        then paged width height headerLines bodyLines output
         else TIO.putStr (T.snoc output '\n')
 
 -- | Show the answers a window at a time with the header pinned above. A pager
@@ -258,8 +259,8 @@ pprint header doc = do
 -- without a pager. Keys are read raw by "Render.Keys", so arrows and PgUp/PgDn work;
 -- @j@/@k@ and Ctrl-N/Ctrl-P move a line, Space/@b@, PgUp/PgDn and
 -- Ctrl-F/Ctrl-B or Ctrl-V/Alt-V move a page, @q@ quits.
-paged :: Int -> [Text] -> [Text] -> Text -> IO ()
-paged height header body output =
+paged :: Int -> Int -> [Text] -> [Text] -> Text -> IO ()
+paged width height header body output =
     case paginate pageSize body of
         [] -> TIO.putStr (T.snoc output '\n')
         [_] -> TIO.putStr (T.snoc output '\n')
@@ -273,7 +274,7 @@ paged height header body output =
                     loop readKey 0
             TIO.putStr (T.snoc output '\n')
     where
-        pageSize = max 1 (height - 1 - pageRows header)
+        pageSize = max 1 (height - keysRows width - pageRows header)
         lastStart = max 0 (length body - pageSize)
 
         draw offset = do
@@ -306,9 +307,23 @@ pageRows = sum . map lineRows
 -- | Keys that work from this offset.
 keys :: Int -> Int -> Text
 keys offset lastStart
-    | offset <= 0 = "-- ↓/j: down  PgDn/Space: page down  q: quit --"
-    | offset >= lastStart = "-- ↑/k: up  PgUp/b: page up  q: quit --"
-    | otherwise = "-- ↑/k: up  ↓/j: down  PgUp/b, PgDn/Space: page  q: quit --"
+    | offset <= 0 = keysStart
+    | offset >= lastStart = keysEnd
+    | otherwise = keysMiddle
+
+keysStart, keysEnd, keysMiddle :: Text
+keysStart = "-- ↓/j: down  PgDn/Space: page down  q: quit --"
+keysEnd = "-- ↑/k: up  PgUp/b: page up  q: quit --"
+keysMiddle = "-- ↑/k: up  ↓/j: down  PgUp/b, PgDn/Space: page  q: quit --"
+
+-- | Rows the keys hint takes in a window @width@ cells wide. The longest hint
+-- is reserved whatever the offset, so the page size does not change as the
+-- pager moves between the shorter hints.
+keysRows :: Int -> Int
+keysRows width = max 1 ((longestHint + width' - 1) `div` width')
+    where
+        width' = max 1 width
+        longestHint = maximum (map T.length [keysStart, keysEnd, keysMiddle])
 
 -- | Split rendered lines into pages of at most @size@ terminal rows. A line
 -- drawn at scale N takes N rows, so it lowers the number of lines per page.
