@@ -1,6 +1,5 @@
 module Shell
     ( HeaderStyle (..)
-    , headerDoc
     , mkOutput
     , omArtLines
     , omHeader
@@ -190,11 +189,6 @@ largeHeader lines' query fallback = do
         ArtHeader rows -> vsep (map pretty rows)
         SizedHeader -> sizedHeader width query
         PlainHeader -> vsep (map pretty (wrapQuery width fallback))
-
--- | The query above the answers: Braille art when the renderer drew it,
--- plain text otherwise.
-headerDoc :: Text -> Maybe [Text] -> Doc AnsiStyle
-headerDoc query = maybe (pretty query) (vsep . map pretty)
 
 -- | The query drawn through OSC 66 at the largest scale that fits @width@.
 -- The scale is chosen once for the widest wrapped line, so the lines do not

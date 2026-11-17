@@ -2,7 +2,7 @@ module Main where
 
 import Dictionary (Answer (..), Target (Target))
 import Label (Title (Title))
-import Render.Art (brailleRows, fitHeight, renderQuery, renderQueryBlocks)
+import Render.Art (brailleRows, fitHeight, renderQueryBlocks)
 import Render.Keys (Key (..), readKeyWith)
 import Render.Pretty
     ( keysRows
@@ -18,7 +18,6 @@ import Render.Pretty
 import Render.Wrap (wrapQuery)
 import Shell
     ( HeaderStyle (..)
-    , headerDoc
     , mkOutput
     , omArtLines
     , omHeader
@@ -82,7 +81,6 @@ main = do
             queryHeaderSpec
             sizedHeaderSpec
             wrapQuerySpec
-            headerTextSpec
             kittyVersionSpec
             omHeaderSpec
             artHeightSpec
@@ -170,8 +168,11 @@ queryHeaderSpec = describe "queryHeader" $ do
             header <- queryHeader "མོ"
             render header `shouldBe` "མོ"
 
+-- | One syllable fits in a single block at 80 columns.
 drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
-drawArt height query = height >>= \lines' -> renderQuery lines' query
+drawArt height query = do
+    lines' <- height
+    fmap concat <$> renderQueryBlocks 80 lines' query
 
 -- | Run the example only where the header has no art to pick and stdout is a
 -- kitty terminal that draws OSC 66; otherwise it is pending, so the table
@@ -237,14 +238,6 @@ wrapQuerySpec = describe "wrapQuery" $ do
         wrapQuery 8 (T.replicate 30 "ཀ") `shouldBe` [T.replicate 30 "ཀ"]
     it "keeps a short query on one line" $
         wrapQuery 80 "མོ" `shouldBe` ["མོ"]
-
-headerTextSpec :: Spec
-headerTextSpec = describe "queryHeader outside kitty" $ do
-    it "keeps the query as plain text when the renderer has no art" $
-        render (headerDoc "མོ" Nothing) `shouldBe` "མོ"
-    it "keeps the query as plain text without OSC 66" $ do
-        header <- queryHeader "མོ"
-        render header `shouldSatisfy` not . T.null
 
 kittyVersionSpec :: Spec
 kittyVersionSpec = describe "parseKittyVersion" $ do
@@ -322,19 +315,19 @@ artSpec = describe "Render.Art" $ do
     it "gives up when the height is too small" $
         fitHeight 20 60 `shouldBe` Nothing
     it "keeps the default height for the one-layer reference" $ do
-        art <- renderQuery 4 "མ"
+        art <- drawArt (pure 4) "མ"
         case art of
             Nothing -> pendingWith "no renderer or no Tibetan font"
             Just rows -> length rows `shouldBe` 4
     it "lets the rectangle grow for a taller stack" $ do
-        reference <- renderQuery 4 "མ"
-        tall <- renderQuery 4 "ཀ"
+        reference <- drawArt (pure 4) "མ"
+        tall <- drawArt (pure 4) "ཀ"
         case (reference, tall) of
             (Just a, Just b) -> length b `shouldSatisfy` (> length a)
             _ -> pendingWith "no renderer or no Tibetan font"
     it "keeps the height of a line of same-height stacks" $ do
-        short <- renderQuery 4 "མ"
-        long <- renderQuery 4 "མམམ"
+        short <- drawArt (pure 4) "མ"
+        long <- drawArt (pure 4) "མམམ"
         case (short, long) of
             (Just a, Just b) -> length a `shouldBe` length b
             _ -> pendingWith "no renderer or no Tibetan font"

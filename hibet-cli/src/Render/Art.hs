@@ -7,7 +7,6 @@ module Render.Art
     ( artLines
     , brailleRows
     , fitHeight
-    , renderQuery
     , renderQueryBlocks
     )
 where
@@ -42,17 +41,6 @@ import System.Environment (lookupEnv)
 import System.FilePath (takeExtension, (</>))
 import System.Process (readProcess)
 import Text.Read (readMaybe)
-
--- | Draw @query@ as Braille art with the reference stack (@མ@, one layer)
--- exactly @lines'@ text lines tall. 'Nothing' when there is no Tibetan font or
--- the art would be too small to read.
-renderQuery :: Int -> Text -> IO (Maybe [Text])
-renderQuery lines' query = do
-    mRows <- withQueryFont lines' $ \ftFace upem hbFont ppem ->
-        drawChunk ftFace upem hbFont ppem query
-    pure $ case mRows of
-        Just rows | not (null rows) -> Just rows
-        _ -> Nothing
 
 -- | Draw @query@ as blocks no wider than @width - 4@ cells. Syllables are
 -- added greedily until the drawn art no longer fits, then the block closes; a
@@ -391,10 +379,6 @@ tibetanFonts dir = do
 -- | The renderer is not built, so only the default art height is known.
 artLines :: String -> Int -> IO Int
 artLines _ fallback = pure fallback
-
--- | The renderer is not built, so the header stays plain text.
-renderQuery :: Int -> Text -> IO (Maybe [Text])
-renderQuery _ _ = pure Nothing
 
 -- | The renderer is not built, so there are no blocks to draw.
 renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])
