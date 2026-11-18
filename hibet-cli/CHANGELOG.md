@@ -20,6 +20,10 @@ and this project adheres to
 
 ### Changed
 
+* `hibet shell` says goodbye with the Tibetan phrase alone: the English `Bye!`
+  is gone, and the farewell is drawn through the query header route (Braille
+  art, then OSC 66 at up to four times, then plain text) with the same
+  four-line default art height as the query.
 * The query header falls back in the opposite order: Braille art first in
   every terminal, kitty included, when the executable is built with
   `ascii-art`, a Tibetan font is found and no line is wider than the window;

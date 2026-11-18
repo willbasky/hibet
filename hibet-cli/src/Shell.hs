@@ -1,5 +1,7 @@
 module Shell
     ( HeaderStyle (..)
+    , farewell
+    , farewellHeader
     , mkOutput
     , omArtLines
     , omHeader
@@ -19,6 +21,7 @@ import Render.Pretty
     , blue
     , pprint
     , putColorDoc
+    , putColorDoc'
     , red
     , sized
     , supportsTextSizing
@@ -71,7 +74,8 @@ loopDialog mv inputState = do
         Nothing -> pure ()
         Just "" -> pure ()
         Just ":q" -> do
-            putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
+            header <- farewellHeader
+            putColorDoc' yellow NewLine header
             exitSuccess
         Just ":h" -> do
             history <-
@@ -122,6 +126,14 @@ queryHeader :: Text -> IO (Doc AnsiStyle)
 queryHeader query = do
     lines' <- queryArtLines
     largeHeader lines' query query
+
+-- | The farewell printed by @:q@: Tibetan only, no English text.
+farewell :: Text
+farewell = "ཞེས་བསྟན་འཛིན་བཟང་པོ།"
+
+-- | The farewell drawn through the same route and height as a query.
+farewellHeader :: IO (Doc AnsiStyle)
+farewellHeader = queryHeader farewell
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.

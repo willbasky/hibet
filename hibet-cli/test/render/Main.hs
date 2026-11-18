@@ -18,6 +18,8 @@ import Render.Pretty
 import Render.Wrap (wrapQuery)
 import Shell
     ( HeaderStyle (..)
+    , farewell
+    , farewellHeader
     , mkOutput
     , omArtLines
     , omHeader
@@ -33,6 +35,7 @@ import Prettyprinter.Render.Text (renderStrict)
 import Control.Exception (IOException, bracket, finally, try)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
+import Data.Char (isAscii)
 import Data.IORef (atomicModifyIORef', newIORef)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -79,6 +82,7 @@ main = do
             mkOutputSpec
             pickHeaderSpec
             queryHeaderSpec
+            farewellSpec
             sizedHeaderSpec
             wrapQuerySpec
             kittyVersionSpec
@@ -167,6 +171,22 @@ queryHeaderSpec = describe "queryHeader" $ do
         withArtlessPlain queryArtLines "མོ" $ do
             header <- queryHeader "མོ"
             render header `shouldBe` "མོ"
+
+farewellSpec :: Spec
+farewellSpec = describe "farewell" $ do
+    it "keeps the goodbye free of English text" $
+        T.all (not . isAscii) farewell `shouldBe` True
+    it "keeps OSC 66 out of a redirected stdout" $ do
+        terminal <- hIsTerminalDevice stdout
+        if terminal
+            then pendingWith "stdout is a terminal"
+            else withEnv "TERM" "xterm-kitty" $ do
+                header <- farewellHeader
+                render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
+    it "draws the plain farewell outside kitty without art" $
+        withArtlessPlain queryArtLines farewell $ do
+            header <- farewellHeader
+            render header `shouldBe` farewell
 
 -- | One syllable fits in a single block at 80 columns.
 drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
