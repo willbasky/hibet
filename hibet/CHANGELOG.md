@@ -7,6 +7,17 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [Unreleased]
+
+### Fixed
+
+* Broken `titles.toml`, `key-aliases.tsv` or dictionary text is now reported as
+  a `HibetError` value with the file path instead of a native `ErrorCall` or
+  `UnicodeException`: `Label.getLabels` takes the path and returns
+  `Either HibetError Labels`, `Env.readAliases` and `Env.getFilesTexts` return
+  `Either`, and `makeEnvAt` turns only `IOException` into the environment
+  loader error.
+
 ## [3.0.0] - 2026-11-11
 
 ### Changed

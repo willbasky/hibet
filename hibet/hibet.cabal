@@ -14,6 +14,8 @@ description: tibetan-english translator
 category: Utility
 build-type: Simple
 extra-source-files:
+  test/env/data/bad-toml/titles.toml
+  test/env/data/bad-utf8/titles.toml
   test/env/data/dicts/*.txt
   test/env/data/key-aliases.tsv
   test/env/data/titles.toml
@@ -90,6 +92,7 @@ library
     text >=2.0.2 && <2.2,
     text-rope >=0.3 && <0.4,
     tomland >=1.3.3.2 && <1.4,
+    transformers >=0.6 && <0.7,
     unordered-containers >=0.2.20 && <0.3,
 
 test-suite hibet-labels
@@ -144,6 +147,7 @@ test-suite hibet-labels
     containers >=0.6.7 && <0.8,
     hibet,
     hspec >=2.11.12,
+    text,
 
 test-suite hibet-env
   type: exitcode-stdio-1.0

@@ -121,6 +121,32 @@ hibet (движок)
 оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
 слово, в таблицу не попадают.
 
+## Ошибки
+
+Ошибки делим по назначению, а не по механизму:
+
+- ожидаемый сбой (нет данных, битый UTF-8/TOML, плохой запрос) — значение
+  `Either HibetError`;
+- баг или нарушенный инвариант — исключение (`error`/`throw`), в обычном
+  потоке не ловится;
+- асинхронность (`UserInterrupt`, `ThreadKilled`) — исключение, проходит
+  наверх;
+- «не найдено» — `Maybe` или пустой список, не ошибка.
+
+На границах нет нативных `ErrorCall` и `UnicodeException`: `Label.getLabels`
+возвращает `Either HibetError Labels`, `Env.readAliases` и `Env.getFilesTexts` —
+тоже `Either`, а путь входит в summary (`Failed to decode PATH`, `Failed to
+parse PATH`). `Env.makeEnvAt` не бросает `HibetError`: ошибки чтения и разбора
+возвращаются как `Left`, `IOException` снаружи становится `EffectError "Failed
+to load dictionaries"`. `Exception HibetError` остаётся транспортом из
+`Ki.fork` в главный поток; `Cli.runShowStatic` бросает его наверх, `App` ловит.
+
+`annotated-exception` не берём: он не превращает ожидаемые сбои в значения,
+тянет `safe-exceptions` и `unliftio-core` и окупается только в глубоких
+IO-стеках. Здесь стек короткий, API уже `Either`; с GHC 9.8/9.10 совместим,
+отказ не из-за версий. Пересмотреть, если появится `hibet-web` с глубокими
+middleware-стеками.
+
 ## CLI
 
 - `hibet` — интерактивный shell.

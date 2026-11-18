@@ -105,6 +105,23 @@ makeEnvFromSpec =
                                 `shouldBe` Just [Target "bhaga"]
                             fmap targets (searchTranslation "b+ha ga" hopkins)
                                 `shouldBe` Just [Target "bhaga"]
+        it "reports a missing data root as a load failure" $ do
+            res <- makeEnvFrom "test/env/no-such-data" []
+            summary res `shouldBe` Just "Failed to load dictionaries"
+        it "reports broken TOML with the file path" $ do
+            res <- makeEnvFrom (testDir <> "/bad-toml") []
+            summary res
+                `shouldBe` Just "Failed to parse test/env/data/bad-toml/titles.toml"
+        it "reports broken UTF-8 with the file path" $ do
+            res <- makeEnvFrom (testDir <> "/bad-utf8") []
+            summary res
+                `shouldBe` Just "Failed to decode test/env/data/bad-utf8/titles.toml"
+
+summary :: Either HibetError a -> Maybe Text
+summary = either (Just . text) (const Nothing)
+    where
+        text (EffectError s _) = s
+        text (UnknownError s) = s
 
 resolveDataDirSpec :: Spec
 resolveDataDirSpec =

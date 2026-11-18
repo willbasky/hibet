@@ -23,8 +23,9 @@ import Control.Concurrent.STM (atomically)
 import Control.DeepSeq (force)
 import Control.Exception (IOException, evaluate, try)
 import Control.Monad (filterM)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Except (ExceptT (..), runExceptT, throwE)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
-import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HMS
@@ -117,17 +118,18 @@ makeEnvAt ::
     -> [Int]
     -> IO (Either HibetError Env)
 makeEnvAt titlesPath aliasesPath dictsDir selected = do
-    result <- try @IOException $ do
-        labels@(Labels ls) <- getLabels <$> BS.readFile titlesPath
-        aliases <- readAliases aliasesPath
-        names <- listDirectory dictsDir
+    result <- try @IOException . runExceptT $ do
+        titles <- liftIO $ BS.readFile titlesPath
+        labels@(Labels ls) <- either throwE pure $ getLabels titlesPath titles
+        aliases <- ExceptT $ readAliases aliasesPath
+        names <- liftIO $ listDirectory dictsDir
         let wanted file =
                 null selected
                     || case find (\lf -> lf.path == T.pack (takeBaseName file)) ls of
                         Just lf -> lf.lfId `elem` selected
                         Nothing -> False
         filesAndTexts <-
-            getFilesTexts (map (dictsDir </>) (filter wanted names))
+            ExceptT $ getFilesTexts (map (dictsDir </>) (filter wanted names))
 
         let env =
                 Env
@@ -144,41 +146,59 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
                     }
         -- The CLI loads the environment in a background thread: parse the
         -- dictionaries here, not in the first query that reads the MVar.
-        _ <- evaluate (force env)
+        _ <- liftIO $ evaluate (force env)
         pure env
-    pure $
-        first
-            (\e -> EffectError "Failed to load dictionaries" (T.pack (show e)))
-            result
+    pure $ case result of
+        Left e ->
+            Left $
+                EffectError "Failed to load dictionaries" (T.pack (show e))
+        Right env -> env
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
 -- @hibet-dataset generate-key-aliases@.
-readAliases :: FilePath -> IO (HashMap Text Text)
+readAliases :: FilePath -> IO (Either HibetError (HashMap Text Text))
 readAliases path = do
-    text <- TE.decodeUtf8 <$> BS.readFile path
-    let aliases =
-            HMS.fromList
-                [ (legacy, canonical)
-                | line <- T.lines text
-                , let (legacy, rest) = T.breakOn "\t" line
-                , not (T.null legacy)
-                , not (T.null rest)
-                , let canonical = T.drop 1 rest
-                , not (T.null canonical)
-                ]
-    HMS.size aliases `seq` pure aliases
+    content <- BS.readFile path
+    pure $ case TE.decodeUtf8' content of
+        Left err ->
+            Left $
+                EffectError
+                    ("Failed to decode " <> T.pack path)
+                    (T.pack (show err))
+        Right text ->
+            let aliases =
+                    HMS.fromList
+                        [ (legacy, canonical)
+                        | line <- T.lines text
+                        , let (legacy, rest) = T.breakOn "\t" line
+                        , not (T.null legacy)
+                        , not (T.null rest)
+                        , let canonical = T.drop 1 rest
+                        , not (T.null canonical)
+                        ]
+             in HMS.size aliases `seq` Right aliases
 
 -- | Read the files strictly, one green thread per file. In T8 this beat lazy
 -- bytestring reads under 'parMap', and strict 'Text' allocated about 13% less.
-getFilesTexts :: [FilePath] -> IO [(FilePath, Text)]
+getFilesTexts :: [FilePath] -> IO (Either HibetError [(FilePath, Text)])
 getFilesTexts paths =
     Ki.scoped $ \scope -> do
         threads <-
             traverse
-                (\path -> Ki.fork scope ((path,) . TE.decodeUtf8 <$> BS.readFile path))
+                (\path -> Ki.fork scope (readOne path))
                 paths
-        atomically (traverse Ki.await threads)
+        sequence <$> atomically (traverse Ki.await threads)
+    where
+        readOne path = do
+            content <- BS.readFile path
+            pure $ case TE.decodeUtf8' content of
+                Left err ->
+                    Left $
+                        EffectError
+                            ("Failed to decode " <> T.pack path)
+                            (T.pack (show err))
+                Right text -> Right (path, text)
 
 readEnv :: MVar Env -> IO Env
 readEnv = readMVar
