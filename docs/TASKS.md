@@ -920,6 +920,31 @@ Issue #134 предлагает `annotated-exception`.
 код 1; битый `titles.toml` — `Failed to parse …`, код 1; рабочий `--data-dir` —
 код 0. `cabal test all` зелёный.
 
+**Сделано 18.11.2026 (этап 3).** `HibetError` разделён на `DataNotFound`,
+`DataUnreadable`, `DataInvalid` и `QueryInvalid`; `EffectError`/`UnknownError`
+удалены. `makeEnvAt` ловит `IOException` на каждом чтении (`readData`) и
+возвращает `DataUnreadable` с путём; `Label.getLabels` и `Env.readAliases`
+возвращают `DataInvalid` с путём и читаемым текстом tomland. `Translator`
+переводит `Left` из hewts в `QueryInvalid`. `Shell.queryReply` печатает
+`renderError` для ошибки и «Nothing found» только для пустого ответа.
+Тесты: `DataNotFound` в `resolveDataDir`, `DataUnreadable` на отсутствующий
+файл, `DataInvalid` на битые TOML/UTF-8, `renderError`/`queryReply` в
+`hibet-render`. `cabal test all` зелёный. `QueryInvalid` пока недостижим:
+hewts не возвращает `Left` ни на одном входе (проверены все одиночные
+символы и пары), поэтому тест только на рендер.
+
+**Сделано 18.11.2026 (этап 4).** `Manifest` один: `hibet-tools` умеет и
+генерировать, и читать/проверять; `hibet-cli/src/Manifest.hs` удалён,
+`hibet-cli` зависит от `hibet-tools`. `ManifestError` — поля `line`,
+`fieldName`, `reason` (все `Text`); `parseManifest`, `field`, `intField`,
+`readManifest`, `writeManifest` возвращают его, `renderManifestError` печатает
+одну строку. `parseManifest` сам проверяет schema 1 и безопасные пути. Тесты:
+отсутствующее поле, битое число, строка без кавычек, неверный sha256 (был).
+`cabal build all`, `cabal test all` зелёные. T16 остаётся `[~]`: строка
+«Готово» про `Install`/`Release`/`Update` без `Either String` не выполнена —
+их внешняя граница по-прежнему `Either String`, там IO/HTTP/архив, а не только
+манифест; этап 4 такого типа не заказывает.
+
 **Готово.**
 
 - Этап 1: `error` и частичные декодеры на границах убраны; тесты на

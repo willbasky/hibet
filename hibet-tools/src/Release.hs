@@ -10,6 +10,7 @@ import Manifest
     , ManifestFile (..)
     , checkManifest
     , readManifest
+    , renderManifestError
     )
 
 import qualified Codec.Archive.Tar as Tar
@@ -41,7 +42,7 @@ buildRelease dataRoot outDir = do
         _ : _ -> pure (Left (T.unpack (T.intercalate "; " problems)))
         [] ->
             readManifest dataRoot >>= \case
-                Left err -> pure (Left err)
+                Left err -> pure (Left (T.unpack (renderManifestError err)))
                 Right manifest -> do
                     -- The manifest comes first; its file list keeps the release
                     -- order reproducible.

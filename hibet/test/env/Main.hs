@@ -7,13 +7,12 @@ import Convert
     , syllables
     )
 import Dictionary
-import Env (Env (..), makeEnvFrom, resolveDataDir)
+import Env (Env (..), makeEnvFrom, readAliases, resolveDataDir)
 import Label (Title (..))
 import Paths (testDir)
 import Translator (getAnswer, tibetToWylieKey)
-import Type (HibetError (..))
+import Type (HibetError (..), renderError)
 
-import Data.Either (isLeft)
 import qualified Data.HashMap.Strict as HMS
 import Data.List (find, sortOn)
 import Data.Maybe (mapMaybe)
@@ -105,23 +104,35 @@ makeEnvFromSpec =
                                 `shouldBe` Just [Target "bhaga"]
                             fmap targets (searchTranslation "b+ha ga" hopkins)
                                 `shouldBe` Just [Target "bhaga"]
-        it "reports a missing data root as a load failure" $ do
+        it "reports a missing titles.toml as unreadable" $ do
             res <- makeEnvFrom "test/env/no-such-data" []
-            summary res `shouldBe` Just "Failed to load dictionaries"
-        it "reports broken TOML with the file path" $ do
+            isDataUnreadable res `shouldBe` True
+        it "reports broken TOML as invalid data with the file path" $ do
             res <- makeEnvFrom (testDir <> "/bad-toml") []
-            summary res
-                `shouldBe` Just "Failed to parse test/env/data/bad-toml/titles.toml"
-        it "reports broken UTF-8 with the file path" $ do
+            invalidPath res
+                `shouldBe` Just "test/env/data/bad-toml/titles.toml"
+        it "reports broken UTF-8 as invalid data with the file path" $ do
             res <- makeEnvFrom (testDir <> "/bad-utf8") []
-            summary res
-                `shouldBe` Just "Failed to decode test/env/data/bad-utf8/titles.toml"
+            invalidPath res
+                `shouldBe` Just "test/env/data/bad-utf8/titles.toml"
+        it "reports a missing file as unreadable" $ do
+            res <- readAliases "test/env/no-such-aliases.tsv"
+            isDataUnreadable res `shouldBe` True
 
-summary :: Either HibetError a -> Maybe Text
-summary = either (Just . text) (const Nothing)
-    where
-        text (EffectError s _) = s
-        text (UnknownError s) = s
+isDataNotFound :: Either HibetError a -> Bool
+isDataNotFound = \case
+    Left (DataNotFound _) -> True
+    _ -> False
+
+isDataUnreadable :: Either HibetError a -> Bool
+isDataUnreadable = \case
+    Left (DataUnreadable _ _) -> True
+    _ -> False
+
+invalidPath :: Either HibetError a -> Maybe FilePath
+invalidPath = \case
+    Left (DataInvalid path _) -> Just path
+    _ -> Nothing
 
 resolveDataDirSpec :: Spec
 resolveDataDirSpec =
@@ -131,12 +142,9 @@ resolveDataDirSpec =
             resolved `shouldBe` Right testDir
         it "rejects a root without titles.toml and dicts/" $ do
             resolved <- resolveDataDir (Just "test/env/no-such-data")
-            resolved `shouldSatisfy` isLeft
+            resolved `shouldSatisfy` isDataNotFound
             resolved
-                `shouldSatisfy` either (T.isInfixOf "HIBET_DATA_DIR" . message) (const False)
-    where
-        message (EffectError _ text) = text
-        message (UnknownError text) = text
+                `shouldSatisfy` either (T.isInfixOf "HIBET_DATA_DIR" . renderError) (const False)
 
 -- | The alias table is derived data. Every row must still name the key the
 -- Unicode query path makes for the legacy spelling, and both spellings must

@@ -63,10 +63,10 @@ boilQuery script query = case script of
 -- of a legacy key.
 tibetToWylieKey :: Text -> Either HibetError Text
 tibetToWylieKey query = do
-    items <- mapLeft UnknownError $ splitSentences query
+    items <- mapLeft QueryInvalid $ splitSentences query
     pure $
         T.unwords
             [renderItems OutWylie [item] | item@SyllableItem{} <- items]
 
 fromHewts :: Either Text a -> Either HibetError a
-fromHewts = mapLeft UnknownError
+fromHewts = mapLeft QueryInvalid

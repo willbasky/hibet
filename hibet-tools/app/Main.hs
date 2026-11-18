@@ -2,7 +2,12 @@ module Main (main) where
 
 import Fetch (newFetcher)
 import KeyAliases (generateAliases)
-import Manifest (checkManifest, defaultManifestVersion, writeManifest)
+import Manifest
+    ( checkManifest
+    , defaultManifestVersion
+    , renderManifestError
+    , writeManifest
+    )
 import Release (ReleaseInfo (..), buildRelease)
 import Update
     ( Config (..)
@@ -146,7 +151,7 @@ refreshManifest = do
     version <- defaultManifestVersion
     result <- writeManifest datasetDir version
     case result of
-        Left err -> hPutStrLn stderr err >> exitFailure
+        Left err -> hPutStrLn stderr (T.unpack (renderManifestError err)) >> exitFailure
         Right count ->
             putStrLn
                 ( "wrote hibet-data/manifest.toml: "

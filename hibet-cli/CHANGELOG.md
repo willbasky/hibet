@@ -8,10 +8,18 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+* The `Manifest` module moved to `hibet-tools`; `hibet-cli` imports the shared
+  parser, verifier and `ManifestError` from there. Manifest syntax errors are
+  printed through `renderManifestError`.
+
 ### Fixed
 
 * A failed command prints a readable error to `stderr` instead of the
   constructor on `stdout`, and exits with code 1.
+* The shell prints the reason of a rejected query instead of "Nothing found";
+  "Nothing found" now means the query was valid but matched no entry.
 
 ## [2.2.0] - 2026-11-18
 

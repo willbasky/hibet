@@ -8,6 +8,7 @@ module Shell
     , pickHeader
     , queryArtLines
     , queryHeader
+    , queryReply
     , sizedHeader
     , translator
     )
@@ -33,6 +34,7 @@ import Render.Pretty
     )
 import Render.Wrap (wrapQuery)
 import Translator (getAnswer)
+import Type (HibetError, renderError)
 
 import Control.Concurrent.MVar (MVar)
 import Control.Exception (bracketOnError)
@@ -90,20 +92,26 @@ loopDialog mv inputState = do
                         red
                         NewLine
                         "No dictionaries are selected. Run 'hibet show names' to list ids."
-                else case getAnswer input env of
-                    Left _ -> do
-                        putColorDoc red NewLine "Nothing found"
-                    Right (query, answer) ->
-                        if null answer
-                            then putColorDoc red NewLine "Nothing found"
-                            else do
-                                header <- queryHeader query
-                                pprint
-                                    header
-                                    (mkOutput header answer)
+                else case queryReply $ getAnswer input env of
+                    Left message -> do
+                        putColorDoc red NewLine message
+                    Right (query, answer) -> do
+                        header <- queryHeader query
+                        pprint
+                            header
+                            (mkOutput header answer)
     case mQuery of
         Nothing -> pure ()
         Just _ -> loopDialog mv inputState
+
+-- | What the shell shows for a query: the reason of a rejected query, the
+-- «Nothing found» marker of an empty answer, or the answer to draw.
+queryReply ::
+    Either HibetError (Text, [Answer])
+    -> Either Text (Text, [Answer])
+queryReply (Left err) = Left (renderError err)
+queryReply (Right (_, [])) = Left "Nothing found"
+queryReply (Right reply) = Right reply
 
 fromHistory :: History -> [Text]
 fromHistory =

@@ -8,6 +8,7 @@ module Env
     , makeEnvFrom
     , resolveDataDir
     , Env (..)
+    , readAliases
     , readEnv
     , putEnvMVar
     , modifyEnv
@@ -21,7 +22,7 @@ import Type (HibetError (..))
 import Control.Concurrent.MVar (MVar, modifyMVar_, putMVar, readMVar)
 import Control.Concurrent.STM (atomically)
 import Control.DeepSeq (force)
-import Control.Exception (IOException, evaluate, try)
+import Control.Exception (IOException, displayException, evaluate, try)
 import Control.Monad (filterM)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Except (ExceptT (..), runExceptT, throwE)
@@ -82,7 +83,7 @@ resolveDataDir explicit = do
     existing <- filterM hasData candidates
     pure $ case existing of
         root : _ -> Right root
-        [] -> Left $ noData candidates
+        [] -> Left (DataNotFound candidates)
     where
         nonEmpty "" = Nothing
         nonEmpty root = Just root
@@ -90,14 +91,6 @@ resolveDataDir explicit = do
             titles <- doesFileExist (root </> "titles.toml")
             dicts <- doesDirectoryExist (root </> "dicts")
             pure (titles && dicts)
-        noData candidates =
-            EffectError "Dictionary data not found" $
-                "looked in: "
-                    <> T.intercalate ", " (map T.pack candidates)
-                    <> ". Install it with `hibet data install --from DIR`"
-                    <> " or `hibet data update`, or pass --data-dir=DIR /"
-                    <> " set HIBET_DATA_DIR to a data root with titles.toml"
-                    <> " and dicts/."
 
 -- | Read a data directory laid out like @hibet-data/@: @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@. Used by tests and by a server that keeps
@@ -117,12 +110,12 @@ makeEnvAt ::
     -> FilePath
     -> [Int]
     -> IO (Either HibetError Env)
-makeEnvAt titlesPath aliasesPath dictsDir selected = do
-    result <- try @IOException . runExceptT $ do
-        titles <- liftIO $ BS.readFile titlesPath
+makeEnvAt titlesPath aliasesPath dictsDir selected =
+    runExceptT $ do
+        titles <- ExceptT $ readData titlesPath (BS.readFile titlesPath)
         labels@(Labels ls) <- either throwE pure $ getLabels titlesPath titles
         aliases <- ExceptT $ readAliases aliasesPath
-        names <- liftIO $ listDirectory dictsDir
+        names <- ExceptT $ readData dictsDir (listDirectory dictsDir)
         let wanted file =
                 null selected
                     || case find (\lf -> lf.path == T.pack (takeBaseName file)) ls of
@@ -148,24 +141,30 @@ makeEnvAt titlesPath aliasesPath dictsDir selected = do
         -- dictionaries here, not in the first query that reads the MVar.
         _ <- liftIO $ evaluate (force env)
         pure env
+
+-- | Run one IO step of the loader; an IO failure names the path it was
+-- reading.
+readData :: FilePath -> IO a -> IO (Either HibetError a)
+readData path action = do
+    result <- try @IOException action
     pure $ case result of
-        Left e ->
-            Left $
-                EffectError "Failed to load dictionaries" (T.pack (show e))
-        Right env -> env
+        Left e -> Left $ DataUnreadable path (T.pack (displayException e))
+        Right value -> Right value
+
+-- | Read UTF-8, naming the file when the bytes are not valid text.
+decodeData :: FilePath -> BS.ByteString -> Either HibetError Text
+decodeData path content = case TE.decodeUtf8' content of
+    Left err -> Left $ DataInvalid path (T.pack (show err))
+    Right text -> Right text
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
 -- @hibet-dataset generate-key-aliases@.
 readAliases :: FilePath -> IO (Either HibetError (HashMap Text Text))
 readAliases path = do
-    content <- BS.readFile path
-    pure $ case TE.decodeUtf8' content of
-        Left err ->
-            Left $
-                EffectError
-                    ("Failed to decode " <> T.pack path)
-                    (T.pack (show err))
+    content <- readData path (BS.readFile path)
+    pure $ case content >>= decodeData path of
+        Left err -> Left err
         Right text ->
             let aliases =
                     HMS.fromList
@@ -191,13 +190,9 @@ getFilesTexts paths =
         sequence <$> atomically (traverse Ki.await threads)
     where
         readOne path = do
-            content <- BS.readFile path
-            pure $ case TE.decodeUtf8' content of
-                Left err ->
-                    Left $
-                        EffectError
-                            ("Failed to decode " <> T.pack path)
-                            (T.pack (show err))
+            content <- readData path (BS.readFile path)
+            pure $ case content >>= decodeData path of
+                Left err -> Left err
                 Right text -> Right (path, text)
 
 readEnv :: MVar Env -> IO Env

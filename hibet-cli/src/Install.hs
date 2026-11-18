@@ -14,6 +14,7 @@ import Manifest
     , ManifestFile (..)
     , parseManifest
     , readManifest
+    , renderManifestError
     , verifyDir
     )
 import Progress (Progress, beginStep, endStep, updateBytes, withProgress)
@@ -83,7 +84,7 @@ installFromDir source targetBase = withProgress $ \progress -> do
     loaded <- readManifest source
     endStep progress
     case loaded of
-        Left err -> pure (Left err)
+        Left err -> pure (Left (T.unpack (renderManifestError err)))
         Right manifest -> do
             beginStep progress "verify"
             problems <- verifyDir source manifest
@@ -120,7 +121,13 @@ installFromRelease source targetBase = withProgress $ \progress -> do
             Left err ->
                 pure (Left ("cannot decode manifest.toml: " <> show err))
             Right content -> case parseManifest content of
-                Left err -> pure (Left ("cannot parse manifest.toml: " <> err))
+                Left err ->
+                    pure
+                        ( Left
+                            ( "cannot parse manifest.toml: "
+                                <> T.unpack (renderManifestError err)
+                            )
+                        )
                 Right manifest -> do
                     current <- readManifest (targetBase </> "data")
                     case current of

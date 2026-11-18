@@ -5,7 +5,6 @@ import Type (HibetError (..))
 
 import qualified Data.ByteString as BS
 import qualified Data.Set as Set
-import Data.Text (Text)
 import Test.Hspec (Spec, describe, hspec, it, shouldBe)
 
 main :: IO ()
@@ -18,17 +17,16 @@ getLabelsSpec =
         it "Success with Test 1" $
             getLabels "titles.toml" toml `shouldBe` Right labels
         it "Rejects broken TOML as a value" $
-            summary (getLabels "titles.toml" "[[titles]")
-                `shouldBe` Just "Failed to parse titles.toml"
+            invalidPath (getLabels "titles.toml" "[[titles]")
+                `shouldBe` Just "titles.toml"
         it "Rejects broken UTF-8 as a value" $
-            summary (getLabels "titles.toml" (BS.pack [0xff]))
-                `shouldBe` Just "Failed to decode titles.toml"
+            invalidPath (getLabels "titles.toml" (BS.pack [0xff]))
+                `shouldBe` Just "titles.toml"
 
-summary :: Either HibetError a -> Maybe Text
-summary = either (Just . text) (const Nothing)
-    where
-        text (EffectError s _) = s
-        text (UnknownError s) = s
+invalidPath :: Either HibetError a -> Maybe FilePath
+invalidPath = \case
+    Left (DataInvalid path _) -> Just path
+    _ -> Nothing
 
 labels :: Labels
 labels =

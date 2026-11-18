@@ -9,6 +9,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+* `HibetError` is split by cause: `DataNotFound` (a missing data root),
+  `DataUnreadable` (an IO failure, with the path), `DataInvalid` (broken UTF-8
+  or TOML, with the path) and `QueryInvalid` (the query was rejected).
+  `EffectError` and `UnknownError` are gone; `renderError` still prints any of
+  them as summary and detail without constructor names.
+
 ### Fixed
 
 * Broken `titles.toml`, `key-aliases.tsv` or dictionary text is now reported as

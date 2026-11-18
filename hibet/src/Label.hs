@@ -52,16 +52,13 @@ getLabels :: FilePath -> BS.ByteString -> Either HibetError Labels
 getLabels path fileContent =
     case TE.decodeUtf8' fileContent of
         Left err ->
-            Left $
-                EffectError
-                    ("Failed to decode " <> T.pack path)
-                    (T.pack (show err))
+            Left $ DataInvalid path (T.pack (show err))
         Right meta -> case Toml.decode labelsCodec meta of
             Left err ->
                 Left $
-                    EffectError
-                        ("Failed to parse " <> T.pack path)
-                        (T.pack (show err))
+                    DataInvalid
+                        path
+                        (T.intercalate "\n" (map Toml.prettyTomlDecodeError err))
             Right (Labels lbs) -> Right $ Labels $ sortOn lfId lbs
 
 labelFullCodec :: TomlCodec LabelFull

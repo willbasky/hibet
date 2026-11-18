@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+* `Manifest` now also reads and verifies manifests, so `hibet-cli` uses the
+  same parser instead of its own copy.
+* `ManifestError` names the source line, the manifest key and the reason;
+  `parseManifest`, `field`, `intField` and `readManifest` return it, and
+  `renderManifestError` turns it into one readable line. `writeManifest`
+  returns it instead of `Either String`.
+
+### Changed
+
+* `parseManifest` rejects an unsupported schema and unsafe paths, so every
+  caller gets the same checks.
+
 ## [0.2.0] - 2026-11-11
 
 ### Added

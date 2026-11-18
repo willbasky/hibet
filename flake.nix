@@ -35,6 +35,7 @@
                 (hackageSrc "tasty-falsify" "0.1.0" "sha256-9CFa7ko/KaIHrDiOHzv9u5X93SmlQO50fny5qExaGdA=")
                 { };
             hibet = hself.callCabal2nix "hibet" ./hibet { };
+            hibet-tools = hself.callCabal2nix "hibet-tools" ./hibet-tools { };
             # The dictionaries are not data-files any more; wrap the binary so
             # `nix run` still finds the dataset in the repository.
             hibet-cli = pkgs.symlinkJoin {
