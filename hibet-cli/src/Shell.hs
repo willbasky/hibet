@@ -1,33 +1,51 @@
 module Shell
-    ( translator
+    ( HeaderStyle (..)
+    , farewell
+    , farewellHeader
+    , mkOutput
+    , omArtLines
+    , omHeader
+    , pickHeader
+    , queryArtLines
+    , queryHeader
+    , sizedHeader
+    , translator
     )
 where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
-import Pretty
+import Render.Art (artLines, renderQueryBlocks)
+import Render.Pretty
     ( Line (NewLine)
     , blue
     , pprint
     , putColorDoc
+    , putColorDoc'
     , red
+    , sized
+    , supportsTextSizing
+    , terminalHeight
+    , terminalWidth
     , viewTranslations
     , withHeaderSpaces
     , yellow
     )
+import Render.Wrap (wrapQuery)
 import Translator (getAnswer)
 
 import Control.Concurrent.MVar (MVar)
 import Control.Exception (bracketOnError)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Prettyprinter (Doc)
+import Prettyprinter (Doc, pretty, vsep)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import qualified System.Console.Haskeline as Haskeline
 import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified System.Console.Haskeline.IO as Haskeline
 import System.Exit (exitSuccess)
+import System.IO (hIsTerminalDevice, stdout)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
@@ -56,7 +74,8 @@ loopDialog mv inputState = do
         Nothing -> pure ()
         Just "" -> pure ()
         Just ":q" -> do
-            putColorDoc yellow NewLine "ཞེས་བསྟན་འཛིན་བཟང་པོ། Bye!"
+            header <- farewellHeader
+            putColorDoc' yellow NewLine header
             exitSuccess
         Just ":h" -> do
             history <-
@@ -77,7 +96,11 @@ loopDialog mv inputState = do
                     Right (query, answer) ->
                         if null answer
                             then putColorDoc red NewLine "Nothing found"
-                            else pprint $ mkOutput query answer
+                            else do
+                                header <- queryHeader query
+                                pprint
+                                    header
+                                    (mkOutput header answer)
     case mQuery of
         Nothing -> pure ()
         Just _ -> loopDialog mv inputState
@@ -89,8 +112,104 @@ fromHistory =
         . filter (/= ":h")
         . historyLines
 
-mkOutput :: Text -> [Answer] -> Doc AnsiStyle
-mkOutput query answers =
-    withHeaderSpaces yellow query
+mkOutput :: Doc AnsiStyle -> [Answer] -> Doc AnsiStyle
+mkOutput header answers =
+    withHeaderSpaces yellow header
         $ viewTranslations
         $ sortOutput answers
+
+-- | How the query is drawn: Braille art when the renderer is built and found a
+-- Tibetan font, then OSC 66 in kitty, then the plain query. The art is sized
+-- only in text lines, so it follows the console font, not the window or the
+-- query.
+queryHeader :: Text -> IO (Doc AnsiStyle)
+queryHeader query = do
+    lines' <- queryArtLines
+    largeHeader lines' query query
+
+-- | The farewell printed by @:q@: Tibetan only, no English text.
+farewell :: Text
+farewell = "ཞེས་བསྟན་འཛིན་བཟང་པོ།"
+
+-- | The farewell drawn through the same route and height as a query.
+farewellHeader :: IO (Doc AnsiStyle)
+farewellHeader = queryHeader farewell
+
+-- | The syllable drawn by @hibet om@: the same route as the query header, but
+-- the fixed block art stays as the fallback instead of plain text.
+omHeader :: Text -> IO (Doc AnsiStyle)
+omHeader fallback = do
+    lines' <- omArtLines
+    largeHeader lines' omSyllable fallback
+
+omSyllable :: Text
+omSyllable = "ༀ"
+
+-- | Height of the query art in text lines. The code default; the
+-- @HIBET_ART_LINES@ environment variable only overrides it.
+defaultQueryLines :: Int
+defaultQueryLines = 4
+
+-- | Height of the @hibet om@ art in text lines. The code default; the
+-- @HIBET_OM_LINES@ environment variable only overrides it.
+defaultOmLines :: Int
+defaultOmLines = 10
+
+-- | Query art height: @HIBET_ART_LINES@ when it holds a positive number,
+-- otherwise 'defaultQueryLines'.
+queryArtLines :: IO Int
+queryArtLines = artLines "HIBET_ART_LINES" defaultQueryLines
+
+-- | @hibet om@ art height: @HIBET_OM_LINES@ when it holds a positive number,
+-- otherwise 'defaultOmLines'.
+omArtLines :: IO Int
+omArtLines = artLines "HIBET_OM_LINES" defaultOmLines
+
+-- | How the header is drawn, in the order the levels are tried.
+data HeaderStyle
+    = -- | Braille art that fits the window.
+      ArtHeader [Text]
+    | -- | OSC 66 in a kitty that draws it.
+      SizedHeader
+    | -- | Plain query, or the block art of @hibet om@.
+      PlainHeader
+    deriving stock (Eq, Show)
+
+-- | The first level that works: drawn art that fits the window, then OSC 66 in
+-- a terminal that draws it, then the fallback. The four-cell margin keeps the
+-- art off the window edge; one row is left for the answer and one for the
+-- pager keys.
+pickHeader :: Int -> Int -> Bool -> Maybe [Text] -> HeaderStyle
+pickHeader width height kitty mArt
+    | Just rows <- mArt
+    , not (null rows)
+    , all ((<= width - 4) . T.length) rows
+    , length rows <= height - 4 =
+        ArtHeader rows
+    | kitty = SizedHeader
+    | otherwise = PlainHeader
+
+largeHeader :: Int -> Text -> Text -> IO (Doc AnsiStyle)
+largeHeader lines' query fallback = do
+    isTerminal <- hIsTerminalDevice stdout
+    width <- terminalWidth
+    height <- terminalHeight
+    blocks <- renderQueryBlocks width lines' query
+    kitty <- supportsTextSizing
+    -- A redirected stdout would keep the OSC 66 escape bytes around the query.
+    pure $ case pickHeader width height (isTerminal && kitty) (concat <$> blocks) of
+        ArtHeader rows -> vsep (map pretty rows)
+        SizedHeader -> sizedHeader width query
+        PlainHeader -> vsep (map pretty (wrapQuery width fallback))
+
+-- | The query drawn through OSC 66 at the largest scale that fits @width@.
+-- The scale is chosen once for the widest wrapped line, so the lines do not
+-- jump in size.
+sizedHeader :: Int -> Text -> Doc AnsiStyle
+sizedHeader width query
+    | scale > 1 = vsep (map (pretty . sized scale) rows)
+    | otherwise = vsep (map pretty rows)
+    where
+        rows = wrapQuery width query
+        widest = maximum (0 : map T.length rows)
+        scale = max 1 (min 4 ((width - 4) `div` max 1 widest))

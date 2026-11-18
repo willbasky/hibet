@@ -11,7 +11,7 @@
 |---|---|---|
 | `hewts` | библиотека: конверсия Wylie ↔ Unicode, проверка правописания, диагностика | `base`, `text`, `bytestring`, `containers`, `megaparsec`, `bytestring-trie`, `unordered-containers` |
 | `hibet` | движок: загрузка `Env`, resolver data-root, чистый `getAnswer` | `hewts`, `parallel`, `ki`, `stm`, `tomland` |
-| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Pretty`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `pager`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton` |
+| `hibet-cli` | консоль: `App`, `Cli`, `Shell`, `Render`, `data install`/`update`, exe `hibet` | `hibet`, `haskeline`, `optparse-applicative`, `prettyprinter`, `ki`, `http-client-tls`, `tar`, `zlib`, `crypton`, `unix` (raw keys of the pager); `harfbuzz-pure` и `freetype2` — только за флагом `ascii-art` |
 | `hibet-tools` | maintainer-инструмент: обновление словарей, alias-таблица, манифест и релизный архив | `hibet`, `hewts`, `http-client-tls`, `unicode-transforms`, `optparse-applicative`, `tar`, `zlib` |
 | `hibet-web` | план: серверный API и веб-фронтенд | `hibet` |
 
@@ -124,8 +124,18 @@ exe hibet (пакет hibet-cli)
                       Tibet → hewts.splitSentences + hewts.renderItems OutWylie
                   → Dictionary.searchTranslation (HMS.lookup) по всем словарям
               → Shell.mkOutput: Dictionary.sortOutput по номеру словаря
-              → Pretty.pprint
+              → Render.Pretty.pprint
 ```
+
+Заголовок запроса выбирает `Shell.largeHeader` через чистую `pickHeader`:
+сначала брайлевский арт `Render.Art.renderQueryBlocks`, если сборка с флагом
+`ascii-art`, шрифт найден и арт влезает в окно (с запасом в 4 клетки по ширине
+и без выхода за высоту); потом OSC 66 с масштабом до 4× в kitty 0.40 и новее,
+где появился text sizing protocol (версию сообщает `kitty --version`); иначе —
+обычный текст. Запрос шире окна режется на строки в `Render.Wrap` только после
+`་`, арт — на блоки той же ширины; одна строка или слог не рвутся.
+`hibet om` идёт тем же путём для слога `ༀ`, но запасной вариант у него —
+фиксированный block-art из `Cli.hs`.
 
 Ключ словаря — Wylie. Пунктуация и пробелы запроса в ключ не попадают: тибетская
 ветка берёт только `SyllableItem` и печатает их в Wylie.
@@ -156,8 +166,10 @@ exe hibet (пакет hibet-cli)
 - **`hibet-tools`** — maintainer-only: HTTP, NFC и запись словарей живут там,
   а не в библиотеке `hibet`.
 - **`hibet`** не зависит от консоли: `haskeline`, `optparse-applicative`,
-  `terminal-size`, `pager` и `prettyprinter-ansi-terminal` живут только в
-  `hibet-cli`.
+  `terminal-size` и `prettyprinter-ansi-terminal` живут только в `hibet-cli`.
+- Растеризатор брайлевского арта (`harfbuzz-pure`, `freetype2`, системные
+  `freetype2`/`harfbuzz` и `fc-match`) необязателен: он входит в `hibet-cli`
+  только за флагом `ascii-art`, без флага пакет собирается как раньше.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка и чтение файлов — `ki`,
   разбор — `parMap` (T8).
@@ -196,8 +208,11 @@ exe hibet (пакет hibet-cli)
 | `Cli` | команды `shell`, `show names`, `show meta`, `om`, `data status`/`install`/`update` |
 | `Manifest` | разбор и проверка `manifest.toml` перед установкой |
 | `Install` | скачивание, распаковка и замена `data`/`data.old` |
-| `Shell` | диалог Haskeline, `getAnswer`, сборка вывода |
-| `Pretty` | вывод в терминал и пейджер |
+| `Shell` | диалог Haskeline, `getAnswer`, сборка вывода, выбор заголовка |
+| `Render.Keys` | чтение клавиш пейджера в raw-режиме: стрелки, PgUp/PgDn, Ctrl-* |
+| `Render.Pretty` | вывод в терминал и пейджер |
+| `Render.Wrap` | перенос запроса по границам слогов |
+| `Render.Art` | брайлевский арт запроса и его блоки; рендерер собирается только с флагом `ascii-art`, без него — заглушка |
 
 ### hibet-tools
 
@@ -213,6 +228,10 @@ exe hibet (пакет hibet-cli)
 
 - GHC 9.8.4 или 9.10.3, Cabal.
 - `cabal build all` — четыре пакета.
+- `cabal build -f ascii-art hibet-cli` — с брайлевским артом; нужны системные
+  `freetype2` и `harfbuzz`. `just build` ставит флаг сам, если `pkg-config
+  --exists freetype2 harfbuzz` проходит, а `just build-art` собирает с ним
+  всегда.
 - `cabal test all` — тесты `hewts`, `hibet`, `hibet-cli` и `hibet-tools`.
 - `cabal run hewts-benchmark` — линейность разбора.
 - `just update-dicts` — скачать upstream и обновить `hibet-data/dicts`, затем

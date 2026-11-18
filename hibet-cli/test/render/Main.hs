@@ -1,0 +1,622 @@
+module Main where
+
+import Dictionary (Answer (..), Target (Target))
+import Label (Title (Title))
+import Render.Art (brailleRows, fitHeight, renderQueryBlocks)
+import Render.Keys (Key (..), readKeyWith)
+import Render.Pretty
+    ( keysRows
+    , kittyTextSizing
+    , pageRows
+    , paginate
+    , parseKittyVersion
+    , pprint
+    , supportsTextSizing
+    , viewTranslations
+    , withHeaderSpaces
+    )
+import Render.Wrap (wrapQuery)
+import Shell
+    ( HeaderStyle (..)
+    , farewell
+    , farewellHeader
+    , mkOutput
+    , omArtLines
+    , omHeader
+    , pickHeader
+    , queryArtLines
+    , queryHeader
+    , sizedHeader
+    )
+
+import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty, pretty, vsep)
+import Prettyprinter.Render.Text (renderStrict)
+
+import Control.Exception (IOException, bracket, finally, try)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
+import Data.Char (isAscii)
+import Data.IORef (atomicModifyIORef', newIORef)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import Data.Word (Word8)
+import System.Environment
+    ( getArgs
+    , getExecutablePath
+    , lookupEnv
+    , setEnv
+    , unsetEnv
+    )
+import System.IO (Handle, hClose, hFlush, hIsTerminalDevice, stdout)
+import System.Posix.IO (dup, fdToHandle)
+import System.Posix.Terminal (openPseudoTerminal)
+import System.Process
+    ( CreateProcess (..)
+    , StdStream (..)
+    , createProcess
+    , proc
+    , terminateProcess
+    , waitForProcess
+    )
+import System.Timeout (timeout)
+import Test.Hspec
+    ( Spec
+    , describe
+    , expectationFailure
+    , hspec
+    , it
+    , pendingWith
+    , shouldBe
+    , shouldContain
+    , shouldReturn
+    , shouldSatisfy
+    )
+
+main :: IO ()
+main = do
+    args <- getArgs
+    case args of
+        ["--pager-child"] -> pagerChild
+        _ -> hspec $ do
+            viewTranslationsSpec
+            mkOutputSpec
+            pickHeaderSpec
+            queryHeaderSpec
+            farewellSpec
+            sizedHeaderSpec
+            wrapQuerySpec
+            kittyVersionSpec
+            omHeaderSpec
+            artHeightSpec
+            artSpec
+            artBlocksSpec
+            paginateSpec
+            keysRowsSpec
+            keySpec
+            pagerSpec
+
+viewTranslationsSpec :: Spec
+viewTranslationsSpec =
+    describe "Elem Text"
+        $ it "Success with Test 1"
+        $ renderStrict
+            (layoutPretty defaultLayoutOptions $ viewTranslations [answer1, answer2])
+            `shouldBe` "1. Dict1\n  target\n \n2. Dict2\n  target2"
+
+answer1 :: Answer
+answer1 =
+    Answer
+        { targets = [Target "target"]
+        , dictNumber = 1
+        , dictTitle = Title "Dict1"
+        }
+
+answer2 :: Answer
+answer2 =
+    Answer
+        { targets = [Target "target2"]
+        , dictNumber = 2
+        , dictTitle = Title "Dict2"
+        }
+
+mkOutputSpec :: Spec
+mkOutputSpec =
+    describe "mkOutput"
+        $ it "puts the drawn query above the entries"
+        $ T.unpack (render $ mkOutput (sizedHeader 80 "མོ") [answer1])
+            `shouldContain` "\ESC]66;s=4;མོ\a\ESC[3B"
+
+pickHeaderSpec :: Spec
+pickHeaderSpec = describe "pickHeader" $ do
+    let art = ["⣿⣿", "⣿"]
+        edge = [T.replicate 76 "⣿"]
+        wide = [T.replicate 77 "⣿"]
+        tall = replicate 20 "⣿"
+        tooTall = replicate 21 "⣿"
+    it "prefers art that fits, even in kitty" $
+        pickHeader 80 24 True (Just art) `shouldBe` ArtHeader art
+    it "takes OSC 66 in kitty when there is no art" $
+        pickHeader 80 24 True Nothing `shouldBe` SizedHeader
+    it "keeps the fallback outside kitty when there is no art" $
+        pickHeader 80 24 False Nothing `shouldBe` PlainHeader
+    it "sends art wider than the window to OSC 66 in kitty" $
+        pickHeader 80 24 True (Just wide) `shouldBe` SizedHeader
+    it "sends art wider than the window to the fallback outside kitty" $
+        pickHeader 80 24 False (Just wide) `shouldBe` PlainHeader
+    it "leaves a four-cell margin at the window edge" $
+        pickHeader 80 24 True (Just edge) `shouldBe` ArtHeader edge
+    it "keeps a row for the answer and one for the pager keys" $
+        pickHeader 80 24 True (Just tall) `shouldBe` ArtHeader tall
+    it "sends art taller than the window to the next level" $
+        pickHeader 80 24 True (Just tooTall) `shouldBe` SizedHeader
+
+queryHeaderSpec :: Spec
+queryHeaderSpec = describe "queryHeader" $ do
+    it "draws Braille art first when the renderer has one" $ do
+        art <- drawArt queryArtLines "མོ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> withEnv "TERM" "xterm-kitty" $ do
+                header <- queryHeader "མོ"
+                render header `shouldBe` T.intercalate "\n" rows
+    it "sends OSC 66 in a kitty without art" $
+        withArtlessKitty queryArtLines "མོ" $ do
+            header <- queryHeader "མོ"
+            T.unpack (render header) `shouldContain` "\ESC]66;s="
+    it "keeps OSC 66 out of a redirected stdout" $
+        withArtlessRedirected queryArtLines "མོ" $ do
+            header <- queryHeader "མོ"
+            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
+    it "keeps the plain query outside kitty without art" $
+        withArtlessPlain queryArtLines "མོ" $ do
+            header <- queryHeader "མོ"
+            render header `shouldBe` "མོ"
+
+farewellSpec :: Spec
+farewellSpec = describe "farewell" $ do
+    it "keeps the goodbye free of English text" $
+        T.all (not . isAscii) farewell `shouldBe` True
+    it "keeps OSC 66 out of a redirected stdout" $ do
+        terminal <- hIsTerminalDevice stdout
+        if terminal
+            then pendingWith "stdout is a terminal"
+            else withEnv "TERM" "xterm-kitty" $ do
+                header <- farewellHeader
+                render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
+    it "draws the plain farewell outside kitty without art" $
+        withArtlessPlain queryArtLines farewell $ do
+            header <- farewellHeader
+            render header `shouldBe` farewell
+
+-- | One syllable fits in a single block at 80 columns.
+drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
+drawArt height query = do
+    lines' <- height
+    fmap concat <$> renderQueryBlocks 80 lines' query
+
+-- | Run the example only where the header has no art to pick and stdout is a
+-- kitty terminal that draws OSC 66; otherwise it is pending, so the table
+-- above stays machine-free.
+withArtlessKitty :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessKitty height query action = do
+    art <- drawArt height query
+    terminal <- hIsTerminalDevice stdout
+    withEnv "TERM" "xterm-kitty" $ do
+        kitty <- supportsTextSizing
+        case (art, kitty, terminal) of
+            (Just _, _, _) -> pendingWith "the art takes the header in this build"
+            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
+            (_, True, False) -> pendingWith "stdout is not a terminal"
+            (Nothing, True, True) -> action
+
+-- | Run the example where stdout is redirected: OSC 66 must stay out of the
+-- output. Pending when there is no art or no kitty, or when stdout is a
+-- terminal and the sequence is expected.
+withArtlessRedirected :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessRedirected height query action = do
+    art <- drawArt height query
+    terminal <- hIsTerminalDevice stdout
+    withEnv "TERM" "xterm-kitty" $ do
+        kitty <- supportsTextSizing
+        case (art, kitty, terminal) of
+            (Just _, _, _) -> pendingWith "the art takes the header in this build"
+            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
+            (_, True, True) -> pendingWith "stdout is a terminal"
+            (Nothing, True, False) -> action
+
+withArtlessPlain :: IO Int -> T.Text -> IO () -> IO ()
+withArtlessPlain height query action = do
+    art <- drawArt height query
+    case art of
+        Just _ -> pendingWith "the art takes the header in this build"
+        Nothing -> withEnv "TERM" "xterm-256color" action
+
+sizedHeaderSpec :: Spec
+sizedHeaderSpec = describe "sizedHeader" $ do
+    let query = T.replicate 20 "ཀ་"
+    it "scales the query for kitty up to four times" $
+        render (sizedHeader 80 "མོ") `shouldBe` "\ESC]66;s=4;མོ\a\ESC[3B"
+    it "keeps a long kitty query at normal size" $
+        render (sizedHeader 12 "སེམས་ཅན") `shouldBe` "སེམས་ཅན"
+    it "wraps a wide query and keeps every line at one size" $
+        render (sizedHeader 30 query) `shouldBe` T.intercalate "\n" (wrapQuery 30 query)
+
+wrapQuerySpec :: Spec
+wrapQuerySpec = describe "wrapQuery" $ do
+    let query = T.replicate 20 "ཀ་"
+    it "breaks a wide query into lines within the margin" $ do
+        let rows = wrapQuery 20 query
+        length rows `shouldSatisfy` (> 1)
+        map T.length rows `shouldSatisfy` all (<= 16)
+    it "breaks only after a tsek" $
+        all (T.isSuffixOf "་") (init (wrapQuery 20 query)) `shouldBe` True
+    it "keeps the query whole" $
+        T.concat (wrapQuery 20 query) `shouldBe` query
+    it "starts a new line before the syllable that does not fit" $
+        wrapQuery 8 "ཀ་ཁ་ག" `shouldBe` ["ཀ་ཁ་", "ག"]
+    it "does not cut a syllable wider than the window" $
+        wrapQuery 8 (T.replicate 30 "ཀ") `shouldBe` [T.replicate 30 "ཀ"]
+    it "keeps a short query on one line" $
+        wrapQuery 80 "མོ" `shouldBe` ["མོ"]
+
+kittyVersionSpec :: Spec
+kittyVersionSpec = describe "parseKittyVersion" $ do
+    it "reads the major and minor version kitty prints" $
+        parseKittyVersion "kitty 0.50.0 created by Kovid Goyal\n"
+            `shouldBe` Just (0, 50)
+    it "reads a version without a patch number" $
+        parseKittyVersion "kitty 0.40" `shouldBe` Just (0, 40)
+    it "gives nothing for other output" $
+        parseKittyVersion "no version here" `shouldBe` Nothing
+    it "takes 0.40 as the first version with the protocol" $
+        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.40.0")
+            `shouldBe` Just True
+    it "rejects the kitty before the protocol" $
+        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.39.1")
+            `shouldBe` Just False
+
+omHeaderSpec :: Spec
+omHeaderSpec = describe "omHeader" $ do
+    it "draws the Om art first when the renderer has one" $ do
+        art <- drawArt omArtLines "ༀ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> withEnv "TERM" "xterm-kitty" $ do
+                header <- omHeader "fallback"
+                render header `shouldBe` T.intercalate "\n" rows
+    it "draws Om through OSC 66 in a kitty without art" $
+        withArtlessKitty omArtLines "ༀ" $ do
+            header <- omHeader "fallback"
+            let output = T.unpack (render header)
+            output `shouldContain` "\ESC]66;s="
+            output `shouldContain` "ༀ\a"
+    it "keeps OSC 66 out of a redirected stdout" $
+        withArtlessRedirected omArtLines "ༀ" $ do
+            header <- omHeader "fallback"
+            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
+    it "keeps the block art outside kitty without art" $
+        withArtlessPlain omArtLines "ༀ" $ do
+            header <- omHeader "fallback"
+            render header `shouldBe` "fallback"
+
+artHeightSpec :: Spec
+artHeightSpec = describe "art height" $
+    it "sizes the Om art separately from the query art" $
+        withEnv "HIBET_ART_LINES" "3" $
+            withEnv "HIBET_OM_LINES" "6" $ do
+                queryRows <- drawArt queryArtLines "མ"
+                omRows <- drawArt omArtLines "ༀ"
+                case (queryRows, omRows) of
+                    (Just expectedQuery, Just expectedOm) -> do
+                        query <- queryHeader "མ"
+                        om <- omHeader "fallback"
+                        render query `shouldBe` T.intercalate "\n" expectedQuery
+                        render om `shouldBe` T.intercalate "\n" expectedOm
+                        length expectedQuery `shouldBe` 3
+                    _ -> pendingWith "no renderer or no Tibetan font"
+
+withEnv :: String -> String -> IO a -> IO a
+withEnv name value action =
+    bracket (lookupEnv name) restore $ \_ -> do
+        setEnv name value
+        action
+    where
+        restore Nothing = unsetEnv name
+        restore (Just old) = setEnv name old
+
+artSpec :: Spec
+artSpec = describe "Render.Art" $ do
+    it "draws a fully covered cell as a full braille glyph" $
+        brailleRows 4 8 (replicate 32 255) `shouldBe` ["⣿"]
+    it "crops empty borders around the ink" $
+        brailleRows 8 16 inkInBottomRightCell `shouldBe` ["⣿"]
+    it "picks the largest ppem that fits the height" $
+        fitHeight 20 200 `shouldBe` Just 10
+    it "gives up when the height is too small" $
+        fitHeight 20 60 `shouldBe` Nothing
+    it "keeps the default height for the one-layer reference" $ do
+        art <- drawArt (pure 4) "མ"
+        case art of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> length rows `shouldBe` 4
+    it "lets the rectangle grow for a taller stack" $ do
+        reference <- drawArt (pure 4) "མ"
+        tall <- drawArt (pure 4) "ཀ"
+        case (reference, tall) of
+            (Just a, Just b) -> length b `shouldSatisfy` (> length a)
+            _ -> pendingWith "no renderer or no Tibetan font"
+    it "keeps the height of a line of same-height stacks" $ do
+        short <- drawArt (pure 4) "མ"
+        long <- drawArt (pure 4) "མམམ"
+        case (short, long) of
+            (Just a, Just b) -> length a `shouldBe` length b
+            _ -> pendingWith "no renderer or no Tibetan font"
+
+artBlocksSpec :: Spec
+artBlocksSpec = describe "renderQueryBlocks" $ do
+    it "draws a wide query as blocks that fit the window" $ do
+        blocks <- renderQueryBlocks 40 4 (T.replicate 20 "མ་")
+        case blocks of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> do
+                length rows `shouldSatisfy` (> 1)
+                concatMap (map T.length) rows `shouldSatisfy` all (<= 36)
+    it "keeps a syllable wider than the window whole" $ do
+        blocks <- renderQueryBlocks 10 4 (T.replicate 20 "ཀ")
+        case blocks of
+            Nothing -> pendingWith "no renderer or no Tibetan font"
+            Just rows -> do
+                length rows `shouldBe` 1
+                maximum (map T.length (concat rows)) `shouldSatisfy` (> 6)
+
+-- 8×16 pixels: ink only in the bottom-right cell.
+inkInBottomRightCell :: [Word8]
+inkInBottomRightCell =
+    concat (replicate 8 (replicate 8 0))
+        <> concat (replicate 8 [0, 0, 0, 0, 255, 255, 255, 255])
+
+render :: Doc ann -> T.Text
+render = renderStrict . layoutPretty defaultLayoutOptions
+
+paginateSpec :: Spec
+paginateSpec =
+    describe "paginate" $ do
+        it "keeps order and splits by page size" $
+            paginate 2 ["a", "b", "c", "d", "e"]
+                `shouldBe` [["a", "b"], ["c", "d"], ["e"]]
+        it "counts a scaled line as its scale rows" $
+            paginate 3 ["a", "\ESC]66;s=2;x\a", "b", "c"]
+                `shouldBe` [["a", "\ESC]66;s=2;x\a"], ["b", "c"]]
+        it "gives nothing for no lines" $
+            paginate 2 [] `shouldBe` []
+        it "never loops on a zero page size" $
+            paginate 0 ["a"] `shouldBe` [["a"]]
+        it "counts every line of a multi-line header" $
+            pageRows ["", "query one", "query two", ""] `shouldBe` 4
+        it "keeps a page within the window under a multi-line header" $ do
+            let header = ["", "query one", "query two", ""]
+                pageSize = max 1 (10 - 1 - pageRows header)
+            map length (paginate pageSize (replicate 20 "answer"))
+                `shouldSatisfy` all (<= pageSize)
+
+keysRowsSpec :: Spec
+keysRowsSpec = describe "keysRows" $ do
+    it "takes one row for the full hint in a wide window" $
+        keysRows 80 `shouldBe` 1
+    it "wraps the widest hint in a 40-column window" $
+        keysRows 40 `shouldBe` 2
+    it "wraps the widest hint in a 20-column window" $
+        keysRows 20 `shouldBe` 3
+    it "never divides by a zero width" $
+        keysRows 0 `shouldSatisfy` (> 0)
+
+keySpec :: Spec
+keySpec = describe "readKeyWith" $ mapM_ example keyTable
+    where
+        example (bytes, key) =
+            it (show bytes <> " reads as " <> show key) $
+                keyOf bytes `shouldReturn` key
+
+-- | Bytes of one key press and the key the pager acts on.
+keyTable :: [(String, Key)]
+keyTable =
+    [ ("q", Quit)
+    , ("\x03", Quit) -- Ctrl-C
+    , ("", Quit) -- end of input
+    , ("j", LineDown)
+    , ("k", LineUp)
+    , (" ", PageDown)
+    , ("b", PageUp)
+    , ("\x02", PageUp) -- Ctrl-B
+    , ("\x06", PageDown) -- Ctrl-F
+    , ("\x0e", LineDown) -- Ctrl-N
+    , ("\x10", LineUp) -- Ctrl-P
+    , ("\x16", PageDown) -- Ctrl-V
+    , ("\ESCv", PageUp) -- Alt-V
+    , ("\ESC[A", LineUp)
+    , ("\ESC[B", LineDown)
+    , ("\ESCOA", LineUp) -- application cursor keys
+    , ("\ESCOB", LineDown)
+    , ("\ESC[5~", PageUp)
+    , ("\ESC[6~", PageDown)
+    , ("\ESC[9~", Other)
+    , ("\ESC[5", Other) -- a cut sequence
+    , ("\ESC", Other) -- a lone Escape
+    , ("x", Other)
+    ]
+
+-- | Read one key press from a fixed byte string.
+keyOf :: String -> IO Key
+keyOf bytes = do
+    rest <- newIORef bytes
+    readKeyWith $ \_ -> atomicModifyIORef' rest $ \case
+        [] -> ([], Nothing)
+        (c : cs) -> (cs, Just c)
+
+pagerSpec :: Spec
+pagerSpec = describe "paged" $ do
+    it "pages on the alternate screen, moves a page and restores it on q" $
+        withPtyChild (80, 24) True $ \master -> do
+            drawn <- readPty "" master (BS.isInfixOf clearScreen)
+            BS.hPut master " " >> hFlush master
+            paged <- readPty drawn master (frameDone 2)
+            BS.hPut master "\ESC[5~" >> hFlush master
+            back <- readPty paged master (frameDone 3)
+            BS.hPut master "q" >> hFlush master
+            out <- readPty back master (const False)
+            case frames back of
+                [before, afterSpace, afterUp] -> do
+                    before `shouldSatisfy` BS.isInfixOf "L1;"
+                    afterSpace `shouldSatisfy` not . BS.isInfixOf "L1;"
+                    afterUp `shouldBe` before
+                fs -> expectationFailure ("expected three frames, got " <> show (length fs))
+            countSub "\ESC[?1049h" out `shouldBe` 1
+            countSub "\ESC[?1049l" out `shouldBe` 1
+            let afterAlt = snd (BS.breakSubstring "\ESC[?1049l" out)
+            afterAlt `shouldSatisfy` BS.isInfixOf "L1;"
+            countSub "L100;" afterAlt `shouldBe` 1
+            countSub ";" afterAlt `shouldBe` 100
+    it "keeps the page inside a narrow window" $
+        mapM_ fits [(20, 24), (40, 24)]
+    it "keeps the plain output when stdin is not a terminal" $
+        withPtyChild (80, 24) False $ \master -> do
+            out <- readPty "" master (const False)
+            out `shouldSatisfy` not . BS.isInfixOf "\ESC[?1049h"
+            countSub "L100;" out `shouldBe` 1
+    where
+        -- The query stays pinned and the wrapped keys hint stays on screen:
+        -- header rows plus the page plus the hint fit the window height.
+        fits size@(width, height) =
+            withPtyChild size True $ \master -> do
+                out <- readPty "" master (frameDone 1)
+                case frames out of
+                    [frame] -> do
+                        frame `shouldSatisfy` BS.isInfixOf "query"
+                        frame `shouldSatisfy` BS.isInfixOf "q: quit --"
+                        frameRows width frame `shouldSatisfy` (<= height)
+                    fs ->
+                        expectationFailure
+                            ("expected one frame, got " <> show (length fs))
+
+-- | The pager as the shell calls it: the document starts with the header.
+pagerChild :: IO ()
+pagerChild = pprint header (withHeaderSpaces id header body)
+    where
+        header = pretty ("query" :: T.Text)
+        body =
+            vsep
+                [ pretty ("L" <> T.pack (show n) <> ";")
+                | n <- [1 :: Int .. 100]
+                ]
+
+-- | Run this executable as @--pager-child@ with stdout on a fresh pty of the
+-- given size and stdin on the same pty when @ttyStdin@ is true, or on
+-- @/dev/null@ otherwise. Gives the master end to the example and kills the
+-- child when it fails.
+withPtyChild :: (Int, Int) -> Bool -> (Handle -> IO a) -> IO a
+withPtyChild (width, height) ttyStdin action = do
+    (master, slave) <- openPseudoTerminal
+    hMaster <- fdToHandle master
+    hSlave <- fdToHandle slave
+    -- createProcess takes the handle for the child and closes it, so stty gets
+    -- its own copy of the same device.
+    hSize <- fdToHandle =<< dup slave
+    setPtySize hSize width height
+    exe <- getExecutablePath
+    (_, _, _, child) <-
+        createProcess
+            (proc exe ["--pager-child"])
+                { std_in = if ttyStdin then UseHandle hSlave else NoStream
+                , std_out = UseHandle hSlave
+                , std_err = Inherit
+                }
+    hClose hSlave
+    action hMaster
+        `finally` do
+            hClose hMaster
+            _ <- try (terminateProcess child) :: IO (Either IOException ())
+            _ <- waitForProcess child
+            pure ()
+
+-- | Give the pty a real window size: a fresh one reports 0 rows by 0 columns,
+-- which no terminal has.
+setPtySize :: Handle -> Int -> Int -> IO ()
+setPtySize handle width height = do
+    (_, _, _, child) <-
+        createProcess
+            (proc "stty" ["rows", show height, "cols", show width])
+                { std_in = UseHandle handle
+                , std_out = NoStream
+                , std_err = Inherit
+                }
+    _ <- waitForProcess child
+    pure ()
+
+-- | Bytes from the pty until @done@ holds for everything read so far, or the
+-- child closes the terminal.
+readPty :: ByteString -> Handle -> (ByteString -> Bool) -> IO ByteString
+readPty start handle done = go start
+    where
+        go acc
+            | done acc = pure acc
+            | otherwise = do
+                chunk <-
+                    try (timeout ptyWait (BS.hGetSome handle 4096)) ::
+                        IO (Either IOException (Maybe ByteString))
+                case chunk of
+                    Left _ -> pure acc
+                    Right Nothing -> expectationFailure "the pager did not answer" >> pure acc
+                    Right (Just bytes)
+                        | BS.null bytes -> pure acc
+                        | otherwise -> go (acc <> bytes)
+
+ptyWait :: Int
+ptyWait = 10000000
+
+-- | The pager clears the screen before every frame.
+clearScreen :: ByteString
+clearScreen = "\ESC[H\ESC[2J"
+
+frames :: ByteString -> [ByteString]
+frames = drop 1 . splitOn clearScreen
+
+-- | Rows a frame takes on a @width@-cell screen. The pager prints lines and
+-- lets the terminal wrap them, so a long line is more than one row.
+frameRows :: Int -> ByteString -> Int
+frameRows width frame =
+    sum (map rows (T.splitOn "\n" (stripEscapes (TE.decodeUtf8 frame))))
+    where
+        rows line = max 1 ((T.length line + width - 1) `div` max 1 width)
+
+-- | Drop color sequences: they take no cells.
+stripEscapes :: T.Text -> T.Text
+stripEscapes text = case T.breakOn "\ESC[" text of
+    (before, rest)
+        | T.null rest -> before
+        | otherwise ->
+            let after =
+                    T.drop
+                        1
+                        (T.dropWhile (\c -> c < '@' || c > '~') (T.drop 2 rest))
+             in before <> stripEscapes after
+
+-- | The n-th frame has started and the last one is complete: the keys line is
+-- drawn after the body.
+frameDone :: Int -> ByteString -> Bool
+frameDone n bs = case frames bs of
+    fs | length fs >= n -> "q: quit --" `BS.isInfixOf` last fs
+    _ -> False
+
+splitOn :: ByteString -> ByteString -> [ByteString]
+splitOn needle hay = case BS.breakSubstring needle hay of
+    (before, rest)
+        | BS.null rest -> [before]
+        | otherwise -> before : splitOn needle (BS.drop (BS.length needle) rest)
+
+countSub :: ByteString -> ByteString -> Int
+countSub needle = go
+    where
+        go hay = case BS.breakSubstring needle hay of
+            (_, rest)
+                | BS.null rest -> 0
+                | otherwise -> 1 + go (BS.drop (BS.length needle) rest)

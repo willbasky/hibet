@@ -20,8 +20,8 @@ import Install
     )
 import Label (LabelFull (..), Labels (..), Title (unTitle), getLabels)
 import Paths_hibet_cli (version)
-import Pretty
-import Shell (translator)
+import Render.Pretty
+import Shell (omHeader, translator)
 
 import Utility (showT)
 
@@ -103,7 +103,9 @@ runStatic (Command mdir action) = case action of
     DataInstall source -> runDataInstall source
     DataStatus -> runDataStatus mdir
     DataUpdate msource -> runDataUpdate msource
-    Om -> putColorDoc magenta NewLine om
+    Om -> do
+        doc <- omHeader om
+        putColorDoc' magenta NewLine doc
     Shell _ -> pure ()
     ShowOption opt -> runShowStatic mdir opt
 
