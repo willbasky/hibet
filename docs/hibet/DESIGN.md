@@ -170,6 +170,12 @@ middleware-стеками.
 `:q` — выход, `:h` — история. Словари грузятся в фоне (`Ki.scoped` +
 `Ki.fork`), поэтому shell открывается до окончания загрузки.
 
+Ошибку, дошедшую до `App`, печатает `Type.renderError` — summary и detail без
+`Show`, поэтому в выводе нет имени конструктора. Текст идёт в `stderr`,
+процесс завершается кодом 1. Ловятся только `HibetError` и `IOException`
+(последний через `displayException`); `UserInterrupt`, `ExitSuccess` и
+`ErrorCall` проходят наверх, так что Ctrl+C и успешные команды не меняются.
+
 ## Граница с hewts
 
 Единственный модуль библиотеки с `import Convert` — `hibet/src/Translator.hs`.

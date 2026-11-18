@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [Unreleased]
+
+### Fixed
+
+* A failed command prints a readable error to `stderr` instead of the
+  constructor on `stdout`, and exits with code 1.
+
 ## [2.2.0] - 2026-11-18
 
 ### Added

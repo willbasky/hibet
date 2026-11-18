@@ -28,6 +28,7 @@ import Shell
     , queryHeader
     , sizedHeader
     )
+import Type (HibetError (..), renderError)
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty, pretty, vsep)
 import Prettyprinter.Render.Text (renderStrict)
@@ -94,6 +95,14 @@ main = do
             keysRowsSpec
             keySpec
             pagerSpec
+            renderErrorSpec
+
+renderErrorSpec :: Spec
+renderErrorSpec =
+    describe "renderError"
+        $ it "prints the summary and the detail without the constructor"
+        $ renderError (EffectError "Failed to parse titles.toml" "line 1")
+            `shouldBe` "Failed to parse titles.toml\nline 1"
 
 viewTranslationsSpec :: Spec
 viewTranslationsSpec =

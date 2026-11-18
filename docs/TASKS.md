@@ -912,6 +912,14 @@ Issue #134 предлагает `annotated-exception`.
 `hibet-env` — нет корня, `bad-toml`, `bad-utf8`; фикстуры в `test/env/data/`.
 `cabal test all` зелёный.
 
+**Сделано 18.11.2026 (этап 2).** `Type.renderError` печатает summary и detail
+без `Show`; `App.handleErrors` через `catches` ловит только `HibetError` и
+`IOException`, пишет в `stderr` и выходит кодом 1. `IOException` печатается
+`displayException`. Тест `hibet-render` проверяет текст ошибки; вручную:
+`hibet --data-dir=/nonexistent show names` — пустой stdout, ошибка в stderr,
+код 1; битый `titles.toml` — `Failed to parse …`, код 1; рабочий `--data-dir` —
+код 0. `cabal test all` зелёный.
+
 **Готово.**
 
 - Этап 1: `error` и частичные декодеры на границах убраны; тесты на
