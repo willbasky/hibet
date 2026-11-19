@@ -147,7 +147,6 @@ test-suite hibet-labels
     containers >=0.6.7 && <0.8,
     hibet,
     hspec >=2.11.12,
-    text,
 
 test-suite hibet-env
   type: exitcode-stdio-1.0
