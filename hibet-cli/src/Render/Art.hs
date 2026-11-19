@@ -6,6 +6,7 @@
 module Render.Art
     ( artLines
     , brailleRows
+    , findFont
     , fitHeight
     , renderQueryBlocks
     )
@@ -35,6 +36,7 @@ import Data.Word (Word32, Word8)
 import Foreign.Marshal.Array (peekArray)
 import Foreign.Storable (peek)
 import FreeType
+import Paths_hibet_cli (getDataFileName)
 import Render.Wrap (syllables)
 import System.Directory (doesDirectoryExist, getHomeDirectory, listDirectory)
 import System.Environment (lookupEnv)
@@ -307,12 +309,15 @@ drawGlyphs target pen ((glyph, pos) : rest) = do
         (pen + fromIntegral (x_advance pos) * target.scale)
         rest
 
--- | Font path: @HIBET_TIBETAN_FONT@, then fontconfig, then the usual font
--- directories. A candidate counts only when it carries a Tibetan glyph.
+-- | Font path: @HIBET_TIBETAN_FONT@, then the font shipped in @data-files@,
+-- then fontconfig, then the usual font directories. A candidate counts only
+-- when it carries a Tibetan glyph; a missing packaged file (a binary copied
+-- without the data directory) falls through to the system search.
 findFont :: IO (Maybe FilePath)
 findFont = do
     fromEnv <- maybe [] pure <$> lookupEnv "HIBET_TIBETAN_FONT"
-    found <- firstTibetan fromEnv
+    packaged <- getDataFileName ("fonts" </> "BabelStoneTibetan.ttf")
+    found <- firstTibetan (fromEnv ++ [packaged])
     case found of
         Just path -> pure (Just path)
         Nothing -> do
@@ -379,6 +384,10 @@ tibetanFonts dir = do
 -- | The renderer is not built, so only the default art height is known.
 artLines :: String -> Int -> IO Int
 artLines _ fallback = pure fallback
+
+-- | The renderer is not built, so no font is looked up.
+findFont :: IO (Maybe FilePath)
+findFont = pure Nothing
 
 -- | The renderer is not built, so there are no blocks to draw.
 renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])

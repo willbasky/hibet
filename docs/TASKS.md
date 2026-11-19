@@ -2231,7 +2231,7 @@ all` на GHC 9.10.3 и 9.8.4 в обоих режимах зелёный, `hibe
 
 ## T35. Тибетский шрифт для арта в `data-files`
 
-`[ ]`
+`[x]`
 
 **Сейчас.** Арт заголовка (T31–T33) берёт шрифт с машины: `findFont`
 (`hibet-cli/src/Render/Art.hs:322-385`) смотрит `HIBET_TIBETAN_FONT`, затем
@@ -2349,6 +2349,32 @@ Python: если 0,6 МБ станут проблемой, это отдельн
 словарный артефакт с манифестом и `data update`, а шрифт принадлежит пакету.
 Не менять геометрию растеризатора, порог Брайля и эталон `མ`; не трогать
 OSC 66, порядок уровней, `hibet` и `hewts`.
+
+**Сделано 19.11.2026.** Взят BabelStone Tibetan Regular
+(`hibet-cli/fonts/BabelStoneTibetan.ttf`, 3 105 328 байт, sha256
+`6791bab3919dfb16de9223817b40e3786fd567427a77790ecb17b4efe66fa667`), лицензия
+SIL OFL 1.1 — `hibet-cli/fonts/OFL.txt`. `data-files: fonts/*.ttf
+fonts/OFL.txt`; `findFont` идёт `HIBET_TIBETAN_FONT` →
+`getDataFileName "fonts/BabelStoneTibetan.ttf"` → `fc-match` → каталоги,
+каждый кандидат проходит `isTibetanFont`, отсутствие пакетного файла не
+падает. Тесты: `findFont` с `HIBET_TIBETAN_FONT=/nonexistent` находит
+пакетный шрифт, подмена на DejaVu Sans (шрифт без `ཀ`) не выключает арт;
+`pendingWith "no renderer or no Tibetan font"` удалён, в арт-сборке отсутствие
+арта — failure. Проверено на GHC 9.10.3 и 9.8.4: `cabal build -f ascii-art
+all`, `cabal test -f ascii-art hibet-render` — 87 examples, 0 failures, 7
+pending (только fallback-пути, где арт уже есть); `cabal test all` без флага —
+87 examples, 0 failures, 12 pending; `hibet om` с `FONTCONFIG_FILE=/dev/null` и
+`HIBET_OM_LINES=6` печатает брайль; установленный `cabal install` бинарник
+делает то же, а копия без пакетной папки `fonts` не падает и уходит в
+системный поиск; `cabal sdist` везёт `fonts/*`, `cabal check` чистый. Из
+`art.yml` убран `fonts-noto-core`.
+
+Отступление от ориентира: файл 3,0 МБ вместо ~1 МБ и 0,6 МБ Noto. Выбор
+осознанный: на 6 строках арт BabelStone плотнее и не рвёт подписные, OFL
+разрешает распространение; сабсеттинг T35 запрещает, поэтому берём полный
+файл. Отвергнуты: Noto Serif Tibetan (0,6 МБ, OFL — запасной, но тоньше),
+Tibetan Machine Uni Alpha (1,35 МБ, GPL-2.0+), Yagpo (GPL и чужой EULA в name
+table), MiSans/Monlam/TCRC (лицензия не ясна).
 
 ---
 

@@ -17,6 +17,10 @@ extra-doc-files:
   CHANGELOG.md
   README.md
 
+data-files:
+  fonts/*.ttf
+  fonts/OFL.txt
+
 source-repository head
   type: git
   location: https://github.com/willbasky/Hibet.git
@@ -215,6 +219,7 @@ test-suite hibet-render
   build-depends:
     base >=4.11 && <5,
     bytestring >=0.11.5.3 && <0.13,
+    directory >=1.3.7 && <1.4,
     hibet,
     hibet-cli,
     hspec >=2.11.12,
@@ -222,6 +227,9 @@ test-suite hibet-render
     process >=1.6 && <1.7,
     text >=2.0.2 && <2.2,
     unix >=2.8 && <2.9,
+
+  if flag(ascii-art)
+    cpp-options: -DASCII_ART
 
 test-suite hibet-cli-data
   type: exitcode-stdio-1.0

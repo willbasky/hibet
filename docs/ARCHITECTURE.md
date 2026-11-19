@@ -169,8 +169,11 @@ exe hibet (пакет hibet-cli)
 - **`hibet`** не зависит от консоли: `haskeline`, `optparse-applicative`,
   `terminal-size` и `prettyprinter-ansi-terminal` живут только в `hibet-cli`.
 - Растеризатор брайлевского арта (`harfbuzz-pure`, `freetype2`, системные
-  `freetype2`/`harfbuzz` и `fc-match`) необязателен: он входит в `hibet-cli`
+  `freetype2`/`harfbuzz`) необязателен: он входит в `hibet-cli`
   только за флагом `ascii-art`, без флага пакет собирается как раньше.
+  Шрифт BabelStone Tibetan едет в `data-files` пакета, поэтому арт не зависит
+  от системных шрифтов; `fc-match` и обход каталогов остаются последним
+  уровнем для бинарника, скопированного без data-dir.
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка и чтение файлов — `ki`,
   разбор — `parMap` (T8).
@@ -212,7 +215,7 @@ exe hibet (пакет hibet-cli)
 | `Render.Keys` | чтение клавиш пейджера в raw-режиме: стрелки, PgUp/PgDn, Ctrl-* |
 | `Render.Pretty` | вывод в терминал и пейджер |
 | `Render.Wrap` | перенос запроса по границам слогов |
-| `Render.Art` | брайлевский арт запроса и его блоки; рендерер собирается только с флагом `ascii-art`, без него — заглушка |
+| `Render.Art` | брайлевский арт запроса и его блоки; рендерер собирается только с флагом `ascii-art`, без него — заглушка; шрифт BabelStone Tibetan лежит в `fonts/` и объявлен в `data-files` |
 
 ### hibet-tools
 

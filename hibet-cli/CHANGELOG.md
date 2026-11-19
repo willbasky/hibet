@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [Unreleased]
+
+### Added
+
+* The Tibetan font used by the Braille art now ships with `hibet-cli`:
+  BabelStone Tibetan (SIL OFL 1.1, `fonts/OFL.txt`). The renderer looks for
+  `HIBET_TIBETAN_FONT`, then the packaged font, then fontconfig and the usual
+  font directories, so the art is the same on every machine and the art CI job
+  no longer installs `fonts-noto-core`. A binary copied without its data
+  directory still falls back to the system search.
+
 ## [3.0.0] - 2026-11-19
 
 ### Changed
