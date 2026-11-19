@@ -91,7 +91,8 @@ bash-версии; команда `check` ничего не пишет и зав
 манифеста (ссылки и пути с `..` отвергаются) и сверяет хэши. `--source`
 принимает HTTP URL, `file://` или локальный каталог; по умолчанию берётся
 `releases/download/hibet-data` основной репы. Сеть и tar живут в `hibet-cli`,
-не в библиотеке `hibet`.
+не в библиотеке `hibet`. Разбор и проверку `manifest.toml` оба пакета берут из
+`hibet-tools` (`Manifest`, `ManifestError`), своей копии в CLI больше нет.
 
 ## Релиз данных
 
@@ -206,7 +207,6 @@ exe hibet (пакет hibet-cli)
 |---|---|
 | `App` | разбор команды, `Ki`-scope, фоновая загрузка `Env` |
 | `Cli` | команды `shell`, `show names`, `show meta`, `om`, `data status`/`install`/`update` |
-| `Manifest` | разбор и проверка `manifest.toml` перед установкой |
 | `Install` | скачивание, распаковка и замена `data`/`data.old` |
 | `Shell` | диалог Haskeline, `getAnswer`, сборка вывода, выбор заголовка |
 | `Render.Keys` | чтение клавиш пейджера в raw-режиме: стрелки, PgUp/PgDn, Ctrl-* |
@@ -221,7 +221,7 @@ exe hibet (пакет hibet-cli)
 | `Fetch` | HTTP-загрузка и `file://` для тестов |
 | `Update` | карта upstream-файлов, NFC, локальные правки, сравнение и запись |
 | `KeyAliases` | генератор `hibet-data/key-aliases.tsv` |
-| `Manifest` | генерация и проверка `hibet-data/manifest.toml` (sha256 и размеры) |
+| `Manifest` | генерация, разбор и проверка `hibet-data/manifest.toml` (sha256 и размеры) |
 | `Release` | проверка манифеста и сборка `hibet-data-<version>.tar.gz` |
 
 ## Сборка и проверки

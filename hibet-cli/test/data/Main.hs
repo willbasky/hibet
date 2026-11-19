@@ -6,7 +6,13 @@ import Install
     , installFromRelease
     , installWith
     )
-import Manifest (Manifest (..), parseManifest, verifyDir)
+import Manifest
+    ( Manifest (..)
+    , ManifestError
+    , parseManifest
+    , renderManifestError
+    , verifyDir
+    )
 import Progress (withProgress)
 
 import qualified Codec.Archive.Tar as Tar
@@ -230,7 +236,8 @@ installWithSpec =
         it "removes data.new and keeps data when staging throws" $
             withSystemTempDirectory "hibet-install" $ \tmp -> do
                 let target = tmp </> "hibet"
-                    manifest = either error id (parseManifest manifestText)
+                    manifest =
+                        either (error . T.unpack . renderManifestError) id (parseManifest manifestText)
                 createDirectoryIfMissing True (target </> "data")
                 BS.writeFile (target </> "data" </> "keep.txt") "keep"
                 result <-
@@ -264,12 +271,12 @@ manifestSpec =
                                 )
         it "rejects a path outside the data root" $
             parseManifest (T.replace "dicts/A-T|E.txt" "../evil" manifestText)
-                `shouldSatisfy` isLeftWith "unsafe path"
+                `shouldSatisfy` hasManifestError "unsafe path"
         it "reports a missing data file" $
             withSystemTempDirectory "hibet-manifest" $ \tmp -> do
                 createDirectoryIfMissing True (tmp </> "dicts")
                 case parseManifest manifestText of
-                    Left err -> expectationFailure err
+                    Left err -> expectationFailure (T.unpack (renderManifestError err))
                     Right manifest -> do
                         problems <- verifyDir tmp manifest
                         problems
@@ -334,6 +341,11 @@ writeArchive path files =
 isLeftWith :: String -> Either String a -> Bool
 isLeftWith needle = \case
     Left err -> needle `isInfixOf` err
+    Right _ -> False
+
+hasManifestError :: String -> Either ManifestError a -> Bool
+hasManifestError needle = \case
+    Left err -> needle `isInfixOf` T.unpack (renderManifestError err)
     Right _ -> False
 
 isRight :: Either a b -> Bool

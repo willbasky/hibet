@@ -192,7 +192,8 @@ readManifestVersion path = do
 runShowStatic :: Maybe FilePath -> Opt -> IO ()
 runShowStatic mdir opt = do
     root <- resolveDataDir mdir >>= either throwIO pure
-    labels <- getLabels <$> BS.readFile (root </> "titles.toml")
+    let path = root </> "titles.toml"
+    labels <- getLabels path <$> BS.readFile path >>= either throwIO pure
     runShow labels opt
 
 runShow :: Labels -> Opt -> IO ()

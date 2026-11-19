@@ -224,6 +224,24 @@ manifestSpec =
                                             "manifest.toml" `T.isInfixOf` problem
                                         _ -> False
                                     )
+        it "reports a missing field" $
+            Manifest.parseManifest "version = \"2026.11.09\"\n"
+                `shouldSatisfy` isManifestError "schema" "missing"
+        it "reports a broken number" $
+            Manifest.parseManifest
+                ( T.unlines
+                    [ "schema = 1"
+                    , "version = \"2026.11.09\""
+                    , "[[files]]"
+                    , "name = \"dicts/A-T|E.txt\""
+                    , "sha256 = \"x\""
+                    , "size = big"
+                    ]
+                )
+                `shouldSatisfy` isManifestError "size" "not an integer"
+        it "reports an unquoted string" $
+            Manifest.parseManifest "schema = 1\nversion = 2026.11.09\n"
+                `shouldSatisfy` isManifestError "version" "not quoted"
 
 releaseSpec :: Spec
 releaseSpec =
@@ -285,6 +303,12 @@ setupData root = do
 isLeftWith :: String -> Either String a -> Bool
 isLeftWith needle = \case
     Left err -> needle `isInfixOf` err
+    Right _ -> False
+
+isManifestError :: T.Text -> T.Text -> Either Manifest.ManifestError a -> Bool
+isManifestError field needle = \case
+    Left (Manifest.ManifestError _ name reason) ->
+        name == field && needle `T.isInfixOf` reason
     Right _ -> False
 
 isLeft :: Either a b -> Bool

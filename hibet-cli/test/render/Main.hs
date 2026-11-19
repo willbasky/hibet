@@ -26,8 +26,10 @@ import Shell
     , pickHeader
     , queryArtLines
     , queryHeader
+    , queryReply
     , sizedHeader
     )
+import Type (HibetError (..), renderError)
 
 import Prettyprinter (Doc, defaultLayoutOptions, layoutPretty, pretty, vsep)
 import Prettyprinter.Render.Text (renderStrict)
@@ -94,6 +96,26 @@ main = do
             keysRowsSpec
             keySpec
             pagerSpec
+            renderErrorSpec
+            queryReplySpec
+
+renderErrorSpec :: Spec
+renderErrorSpec =
+    describe "renderError"
+        $ it "prints the summary and the detail without the constructor"
+        $ renderError (DataInvalid "titles.toml" "line 1")
+            `shouldBe` "Invalid data in titles.toml\nline 1"
+
+queryReplySpec :: Spec
+queryReplySpec = describe "queryReply" $ do
+    it "shows the reason of a rejected query" $
+        queryReply (Left (QueryInvalid "Token parser error"))
+            `shouldBe` Left "Invalid query\nToken parser error"
+    it "shows Nothing found only for an empty answer" $
+        queryReply (Right ("re ba", [])) `shouldBe` Left "Nothing found"
+    it "passes a non-empty answer through" $
+        queryReply (Right ("re ba", [answer1]))
+            `shouldBe` Right ("re ba", [answer1])
 
 viewTranslationsSpec :: Spec
 viewTranslationsSpec =

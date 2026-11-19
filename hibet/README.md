@@ -25,7 +25,9 @@ dictionaries inside the package. The console lives in
   dictionary by exact key.
 - **Labels** (`Label`): dictionary ids, titles, years, languages and
   descriptions from `titles.toml`.
-- **Errors** (`Type`): `HibetError`, with IO failures wrapped in `EffectError`.
+- **Errors** (`Type`): `HibetError` names the cause — `DataNotFound`,
+  `DataUnreadable`, `DataInvalid` or `QueryInvalid`; `renderError` turns it
+  into text.
 
 ## Use as a library
 

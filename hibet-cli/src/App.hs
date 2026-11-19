@@ -12,11 +12,18 @@ import Cli
     , runStatic
     )
 import Env (Env, makeEnvForDataDir)
-import Type (HibetError (..))
+import Type (HibetError, renderError)
 
 import Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar)
-import Control.Exception (IOException, catch, throwIO)
+import Control.Exception
+    ( Handler (..)
+    , IOException
+    , catches
+    , displayException
+    , throwIO
+    )
 import Control.Monad (void)
+import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Ki
@@ -27,7 +34,8 @@ import Options.Applicative
     , showHelpOnEmpty
     , showHelpOnError
     )
-import System.IO (hFlush, stdout)
+import System.Exit (exitFailure)
+import System.IO (stderr)
 
 app :: IO ()
 app = handleErrors $ do
@@ -52,14 +60,11 @@ prepareEnv dataDir selected mv =
 
 handleErrors :: IO a -> IO ()
 handleErrors action =
-    (void action `catch` reportHibet) `catch` reportIO
+    void action `catches` [Handler reportHibet, Handler reportIO]
     where
         reportHibet :: HibetError -> IO ()
-        reportHibet = report
+        reportHibet = report . renderError
         reportIO :: IOException -> IO ()
-        reportIO e = report (EffectError "IO error" (T.pack (show e)))
-        report :: HibetError -> IO ()
-        report err = do
-            TIO.putStrLn "Hibet application failed with exception:"
-            print err
-            hFlush stdout
+        reportIO = report . T.pack . displayException
+        report :: Text -> IO ()
+        report text = TIO.hPutStrLn stderr text >> exitFailure

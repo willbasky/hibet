@@ -38,8 +38,8 @@ hibet (движок)
 перечисляет проверенные пути. `getDataFileName` больше не используется:
 данные не входят в пакет.
 
-Внутри — `BS.readFile`, `listDirectory`, `try`; ошибки IO заворачиваются в
-`EffectError`. `App` запускает загрузку в фоне через `Ki.scoped` + `Ki.fork`;
+Внутри — `BS.readFile`, `listDirectory`; ошибка IO становится `DataUnreadable`
+с именем файла. `App` запускает загрузку в фоне через `Ki.scoped` + `Ki.fork`;
 поток-загрузчик кладёт `Env` в `MVar`, `readEnv` читает его. `scoped` гасит или
 дожидается поток при выходе. Команды без словарей (`om`, `data status`,
 `show names`/`show meta`) не загружают `Env` вовсе; `show` читает только
@@ -47,8 +47,8 @@ hibet (движок)
 
 Файлы словарей читаются строго, по одному зелёному потоку на файл
 (`Ki.scoped` + `Ki.fork`), и только потом разбираются `parMap rdeepseq` (T8).
-Загрузчик форсит `Env` до NF (`force`) внутри `try`: к моменту `putMVar`
-разобраны все словари. Поэтому первый запрос после готовности `Env` стоит
+Загрузчик форсит `Env` до NF (`force`) до возврата из `makeEnvAt`: к моменту
+`putMVar` разобраны все словари. Поэтому первый запрос после готовности `Env` стоит
 столько же, сколько второй, а `:q` сразу не ждёт загрузку: `Ki.scoped` гасит
 поток. `NFData` не помнит форсированность, так что `force` обходит хэш-таблицы
 целиком: это около 0,03 с на фоне 0,25 с разбора и +0,03 с к немедленному
@@ -121,6 +121,46 @@ hibet (движок)
 оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
 слово, в таблицу не попадают.
 
+## Ошибки
+
+Ошибки делим по назначению, а не по механизму:
+
+- ожидаемый сбой (нет данных, битый UTF-8/TOML, плохой запрос) — значение
+  `Either HibetError`;
+- баг или нарушенный инвариант — исключение (`error`/`throw`), в обычном
+  потоке не ловится;
+- асинхронность (`UserInterrupt`, `ThreadKilled`) — исключение, проходит
+  наверх;
+- «не найдено» — `Maybe` или пустой список, не ошибка.
+
+На границах нет нативных `ErrorCall` и `UnicodeException`. `HibetError`
+делится по причине:
+
+- `DataNotFound [FilePath]` — не найден корень данных; `renderError`
+  перечисляет проверенные пути и подсказывает `data install`/`update`;
+- `DataUnreadable FilePath Text` — файл или каталог не читается: путь и
+  сообщение IO в конструкторе;
+- `DataInvalid FilePath Text` — файл прочитан, но не разбирается (UTF-8,
+  TOML);
+- `QueryInvalid Text` — hewts отверг запрос.
+
+`Label.getLabels`, `Env.readAliases` и `Env.getFilesTexts` возвращают
+`Either HibetError`; `Env.makeEnvAt` ловит `IOException` на каждом чтении и
+возвращает `Left`, а не бросает. `Exception HibetError` остаётся транспортом на
+границу CLI: `Cli.runDataStatus` и `Cli.runShowStatic` бросают его наверх,
+`App` ловит.
+
+`annotated-exception` не берём: он не превращает ожидаемые сбои в значения,
+тянет `safe-exceptions` и `unliftio-core` и окупается только в глубоких
+IO-стеках. Здесь стек короткий, API уже `Either`; с GHC 9.8/9.10 совместим,
+отказ не из-за версий. Пересмотреть, если появится `hibet-web` с глубокими
+middleware-стеками.
+
+`ManifestError` — отдельный тип в `hibet-tools`, не в `hibet`: манифест не
+читает движок. Поля `line` (строка исходника, когда известна), `fieldName`
+(ключ манифеста) и `reason`, все `Text`; `renderManifestError` собирает из
+них одну строку на границе `Install`/`Release`/`hibet-dataset`.
+
 ## CLI
 
 - `hibet` — интерактивный shell.
@@ -144,6 +184,16 @@ hibet (движок)
 `:q` — выход, `:h` — история. Словари грузятся в фоне (`Ki.scoped` +
 `Ki.fork`), поэтому shell открывается до окончания загрузки.
 
+Ошибку, дошедшую до `App`, печатает `Type.renderError` — summary и detail без
+`Show`, поэтому в выводе нет имени конструктора. Текст идёт в `stderr`,
+процесс завершается кодом 1. Ловятся только `HibetError` и `IOException`
+(последний через `displayException`); `UserInterrupt`, `ExitSuccess` и
+`ErrorCall` проходят наверх, так что Ctrl+C и успешные команды не меняются.
+
+`Shell` отличает плохой запрос от пустого ответа: `Left` печатает
+`renderError` (например, `QueryInvalid`), «Nothing found» — только пустой
+список статей.
+
 ## Граница с hewts
 
 Единственный модуль библиотеки с `import Convert` — `hibet/src/Translator.hs`.
@@ -156,7 +206,9 @@ hibet (движок)
 
 `hibet` — движок (`Dictionary`, `Env`, `Translator`, `Type`, `Utility`,
 `Label`); `hibet-cli` — консоль (`Cli`, `App`, `Shell`, `Render`, Haskeline,
-optparse, exe `hibet`). Движок не зависит от консольных пакетов, поэтому
+optparse, exe `hibet`). `Manifest` живёт в `hibet-tools`: CLI и
+maintainer-инструменты делят разбор `manifest.toml`, `ManifestError` и
+проверку хэшей. Движок не зависит от консольных пакетов, поэтому
 серверный API (`hibet-web`) сможет зависеть от `hibet` без Haskeline.
 
 ## Тесты

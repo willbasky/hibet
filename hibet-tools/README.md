@@ -162,7 +162,8 @@ cabal test hibet-tools-test
 
 The suite covers normalization, NFC, the two local upstream fixes, `check`
 with a `file://` mirror, changed/added/missing-title counters, alias generation
-and manifest generation, ordering and hash mismatches.
+and manifest generation, ordering, typed parse errors (missing key, broken
+number, unquoted string) and hash mismatches.
 
 ## Modules
 
@@ -171,7 +172,7 @@ and manifest generation, ordering and hash mismatches.
 | `Fetch` | HTTP download and `file://` for tests |
 | `Update` | upstream map, NFC, local fixes, compare and write |
 | `KeyAliases` | `hibet-data/key-aliases.tsv` generator |
-| `Manifest` | `hibet-data/manifest.toml` generator and verifier |
+| `Manifest` | `hibet-data/manifest.toml` generator, parser and verifier |
 | `Release` | verifies the manifest and builds the gzipped release tarball |
 
 See `../docs/ARCHITECTURE.md` for the package boundaries and

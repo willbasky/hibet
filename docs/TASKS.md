@@ -5,15 +5,16 @@
 Статусы: `[ ]` не начато, `[~]` в работе, `[x]` закрыто. Задача закрывается
 только вместе с проверкой из раздела «Готово», а не вместе с кодом.
 
-Снимок: 18.11.2026.
+Снимок: 19.11.2026.
 
 ## Порядок
 
-Рекомендуемая очередь: **T35 → T16 → T22 → T3 → T4**. Закрыты T1, T2,
-T5–T13, T24, T25, T27, T29–T34, T36. T35 — шрифт для арта в `data-files`;
+Рекомендуемая очередь: **T35 → T22 → T3 → T4**. Закрыты T1, T2, T5–T13,
+T16, T24, T25, T27, T29–T34, T36. T35 — шрифт для арта в `data-files`;
 идёт первым, потому что правит `Render.Art`. T14–T23 — бэклог
-из разбора issue: порядок между ними не задан, T16 (#134) и T22 (#70) чинят
-дефекты и идут первыми, T17 отложена.
+из разбора issue: порядок между ними не задан, T22 (#70) чинит дефект и идёт
+первой, T17 отложена. T16 включала вывод и код возврата, категории
+`HibetError` и `ManifestError`.
 T26 (машинный интерфейс CLI) ни от чего не зависит и может идти параллельно.
 T28 (`DataRoot`) — опционально, после T25 шага 2. T3 и T4 — в конце: жалоб на
 скорость конвертера и запросов на веб-версию hewts пока нет.
@@ -42,7 +43,7 @@ T28 (`DataRoot`) — опционально, после T25 шага 2. T3 и T4
   остальных — обычный размер), пейджер показывает по странице и листает
   пробелом/`b`; `paginate`, `mkOutput` и `queryHeader` покрыты тестами
   `hibet-render`.
-- T14–T23 — бэклог из issue: порядок не задан, T16 и T22 идут первыми,
+- T14–T23 — бэклог из issue: порядок не задан, T22 идёт первой,
   T17 отложена.
 - T24 закрыта: `effectful` снят, фоновая загрузка идёт через `ki`; T2 после
   неё только переносила модули.
@@ -784,34 +785,204 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 
 ## T16. Границы исключений
 
-`[ ]`
+`[x]`
+
+**Подход.** Ошибки делим по назначению, а не по механизму:
+
+- ожидаемый сбой (нет данных, битый UTF-8/TOML, плохой запрос) — значение
+  `Either HibetError`;
+- баг или нарушенный инвариант — исключение (`error`/`throw`), в обычном
+  потоке не ловится;
+- асинхронность (`UserInterrupt`, `ThreadKilled`) — исключение, проходит
+  наверх;
+- «не найдено» — `Maybe` или пустой список, не ошибка.
+
+`Exception HibetError` остаётся только транспортом: протащить ошибку из
+`Ki.fork` в главный поток и поймать на верхнем уровне. В движке
+`throwIO HibetError` не появляется.
+
+**Решение по `annotated-exception`.** Не берём: он не превращает ожидаемые
+сбои в значения, тянет `safe-exceptions` и `unliftio-core` и окупается только
+в глубоких IO-стеках; здесь стек короткий, а API уже `Either`. Совместимость с
+GHC 9.8/9.10 есть (`base <5`), отказ не из-за версий. Пересмотреть, если
+появится `hibet-web` с глубокими middleware-стеками.
 
 **Сейчас.** Ошибки ходят через `HibetError` и `Either`. IO-исключения
 загрузчика (`BS.readFile`, `listDirectory`) уже заворачиваются в `HibetError`
 через `try @IOException` (T24). Остались частичные функции и исключения не-IO:
-`Label.hs` (`decodeUtf8`, `error` на ошибке TOML), `Env.hs` (`decodeUtf8` в
-`readAliases`). Issue #134 предлагает `annotated-exception`.
 
-**Цель.** Исключения на границах не роняют программу без `HibetError`;
-решение по `annotated-exception` принято и записано.
+- `Label.getLabels` — `decodeUtf8` и `error` на ошибке TOML;
+- `Env.readAliases` — `decodeUtf8`;
+- `Env.getFilesTexts` — `decodeUtf8` в каждом `Ki.fork`; `Ki.fork` передаёт
+  исключение родителю, но `try @IOException` его не ловит;
+- `Cli.runShowStatic` — тот же `getLabels`, поэтому битый `titles.toml` роняет
+  `hibet show` нативным `ErrorCall`/`UnicodeException`.
+
+`App.handleErrors` ловит `HibetError` и `IOException`, но не эти два типа;
+печатает `print err` (derived `Show`) и возвращает код 0. `HibetError` — две
+категории-блоба, `EffectError` и `UnknownError`; `Shell` на любой `Left`
+печатает «Nothing found». `Manifest` продублирован в
+`hibet-cli/src/Manifest.hs` и `hibet-tools/src/Manifest.hs`, оба парсят в
+`Either String`; `Install`/`Release`/`Update` тоже на `Either String`.
+Issue #134 предлагает `annotated-exception`.
+
+**Цель.** Весь слой ошибок доведён до одного подхода: на границах нет
+нативных `ErrorCall`/`UnicodeException`; ошибка движка читаема и даёт код 1;
+`HibetError` разделён на категории, `Shell` различает «плохой запрос» и «нет
+статьи»; `Manifest` один, его ошибки типизированы.
 
 **Работа.**
 
-1. Инвентаризация: какие исключения реально вылетают (файлы, UTF-8, TOML,
-   терминал, `exitSuccess`).
-2. Сравнить два пути: `annotated-exception` против `try`/`decodeUtf8'`/
-   `Either` на границах; проверить совместимость с GHC 9.8/9.10.
-3. Выбрать меньший путь; убрать `error` и частичные декодеры; не-IO исключения
-   (`decodeUtf8`, TOML) превращать в `HibetError`.
-4. Тесты: отсутствующий файл, битый UTF-8 и битый TOML дают `HibetError`, а не
-   падение.
-5. Записать решение в `DESIGN.md` и `CHANGELOG.md`.
+**Этап 1. Границы: значения вместо нативных исключений.**
 
-**Готово.** Решение записано; выбранный путь реализован; три теста зелёные;
+1. `Label.getLabels :: FilePath -> BS.ByteString -> Either HibetError Labels`:
+   - `TE.decodeUtf8'`; `Left e` →
+     `EffectError ("Failed to decode " <> T.pack path) (T.pack (show e))`;
+   - `Toml.decode` `Left err` →
+     `EffectError ("Failed to parse " <> T.pack path) (T.pack (show err))`;
+   - `error` удалить; импорт `Type (HibetError (..))`.
+2. `Env.readAliases :: FilePath -> IO (Either HibetError (HashMap Text Text))`:
+   `decodeUtf8'` и ошибка с путём.
+3. `Env.getFilesTexts :: [FilePath] -> IO (Either HibetError [(FilePath, Text)])`:
+   в каждом `Ki.fork` — `BS.readFile` и `decodeUtf8'`, вернуть `Either`; после
+   `atomically` — `sequence`. `IOException` чтения по-прежнему приходит из
+   `Ki.fork` в родителя.
+4. `Env.makeEnvAt`: весь IO-блок оставить в `try @IOException`; внутри —
+   `case` на `getLabels`/`readAliases`/`getFilesTexts`, ошибки возвращать как
+   `Left`, не бросать; снаружи `IOException` →
+   `EffectError "Failed to load dictionaries"`. Публичные `makeEnv*` не
+   меняются.
+5. `Cli.runShowStatic`: `getLabels path <$> BS.readFile path >>= either throwIO
+   pure`; `throwIO` уже импортирован, `App` ловит `HibetError`.
+6. Тесты:
+   - `hibet-labels`: успех → `Right labels`; битый TOML → `Left` с
+     `"Failed to parse"`; `BS.pack [0xff]` → `Left` с `"Failed to decode"`;
+   - `hibet-env`: `makeEnvFrom "test/env/no-such-data" []` → `Left` с
+     `"Failed to load dictionaries"`; `.../bad-toml` → `Left` с
+     `"Failed to parse"`; `.../bad-utf8` → `Left` с `"Failed to decode"`;
+   - фикстуры: `hibet/test/env/data/bad-toml/titles.toml`,
+     `hibet/test/env/data/bad-utf8/titles.toml`; `dicts/` и
+     `key-aliases.tsv` не нужны, ошибка возникает до `listDirectory`; оба
+     файла — в `extra-source-files` в `hibet/hibet.cabal`.
+7. Документация: в `docs/hibet/DESIGN.md` записать подход и решение по
+   `annotated-exception`; в `hibet/CHANGELOG.md` — `Fixed`.
+
+**Этап 2. Читаемый вывод и код возврата.**
+
+1. `renderError :: HibetError -> Text` — summary и detail, без `Show`; в
+   `Type` (чистая функция, только `text`), чтобы CLI и будущий web не
+   дублировали текст.
+2. `App.handleErrors`: `catches` с `Handler HibetError` и
+   `Handler IOException`; печать в `stderr`; `exitFailure` (код 1). Не ловить
+   `SomeException`, `ExitSuccess`, `UserInterrupt`, `ErrorCall`.
+3. Тест: юнит на `renderError` (summary и detail на месте, нет `EffectError`);
+   код возврата — вручную: `hibet show names --data-dir=<битый>` печатает в
+   stderr и возвращает 1.
+4. `hibet-cli/CHANGELOG.md`; `docs/hibet/DESIGN.md` — раздел «CLI».
+
+**Этап 3. Категории `HibetError`.**
+
+1. `Type.hs`: `DataNotFound [FilePath] | DataUnreadable FilePath Text |
+   DataInvalid FilePath Text | QueryInvalid Text`; `Exception`, `Eq`, `Show`
+   оставить.
+2. Обновить конструкции и паттерны в `Env`, `Translator`, `Cli`, `App`,
+   `hibet-labels`, `hibet-env`.
+3. `Shell`: `Left err` → `renderError err`; `Right (_, [])` → «Nothing found».
+4. Тесты: `DataNotFound` на отсутствующий корень; `DataInvalid` на битый
+   TOML/UTF-8; `QueryInvalid` на плохой Wylie; `DataUnreadable` — если
+   воспроизводится без прав.
+5. `docs/hibet/DESIGN.md` («Ошибки»), `hibet/CHANGELOG.md`.
+
+**Этап 4. Один `Manifest` и `ManifestError`.**
+
+1. Вынести `Manifest` в общий модуль (`hibet-tools` или отдельный маленький
+   пакет, если CLI не должен тянуть `http-client`/`tar`), не в движок `hibet`;
+   без этого шага типизацию не начинать.
+2. Ввести `ManifestError` с полями `Text` (строка/поле/причина);
+   `parseManifest`, `field` и `intField` возвращают его.
+3. Обновить `Install`/`Release`/`Update` и CLI; на границе —
+   `renderManifestError :: ManifestError -> Text`.
+4. Тесты: отсутствующее поле, битое число, битая строка, неверный хеш.
+5. `docs/ARCHITECTURE.md`/`DESIGN.md`, `CHANGELOG` обоих пакетов.
+
+**Сделано 18.11.2026 (этап 1).** `getLabels`, `readAliases` и `getFilesTexts`
+возвращают `Either HibetError`; `makeEnvAt` переводит `IOException` в
+`EffectError "Failed to load dictionaries"`, `runShowStatic` бросает
+`HibetError` наверх. Тесты: `hibet-labels` — успех, битый TOML, битый UTF-8;
+`hibet-env` — нет корня, `bad-toml`, `bad-utf8`; фикстуры в `test/env/data/`.
 `cabal test all` зелёный.
 
-**Не делать.** Не тащить библиотеку ради библиотеки; не менять `HibetError`
-без необходимости.
+**Сделано 18.11.2026 (этап 2).** `Type.renderError` печатает summary и detail
+без `Show`; `App.handleErrors` через `catches` ловит только `HibetError` и
+`IOException`, пишет в `stderr` и выходит кодом 1. `IOException` печатается
+`displayException`. Тест `hibet-render` проверяет текст ошибки; вручную:
+`hibet --data-dir=/nonexistent show names` — пустой stdout, ошибка в stderr,
+код 1; битый `titles.toml` — `Failed to parse …`, код 1; рабочий `--data-dir` —
+код 0. `cabal test all` зелёный.
+
+**Сделано 18.11.2026 (этап 3).** `HibetError` разделён на `DataNotFound`,
+`DataUnreadable`, `DataInvalid` и `QueryInvalid`; `EffectError`/`UnknownError`
+удалены. `makeEnvAt` ловит `IOException` на каждом чтении (`readData`) и
+возвращает `DataUnreadable` с путём; `Label.getLabels` и `Env.readAliases`
+возвращают `DataInvalid` с путём и читаемым текстом tomland. `Translator`
+переводит `Left` из hewts в `QueryInvalid`. `Shell.queryReply` печатает
+`renderError` для ошибки и «Nothing found» только для пустого ответа.
+Тесты: `DataNotFound` в `resolveDataDir`, `DataUnreadable` на отсутствующий
+файл, `DataInvalid` на битые TOML/UTF-8, `renderError`/`queryReply` в
+`hibet-render`. `cabal test all` зелёный. `QueryInvalid` пока недостижим:
+hewts не возвращает `Left` ни на одном входе (проверены все одиночные
+символы и пары), поэтому тест только на рендер.
+
+**Сделано 18.11.2026 (этап 4).** `Manifest` один: `hibet-tools` умеет и
+генерировать, и читать/проверять; `hibet-cli/src/Manifest.hs` удалён,
+`hibet-cli` зависит от `hibet-tools`. `ManifestError` — поля `line`,
+`fieldName`, `reason` (все `Text`); `parseManifest`, `field`, `intField`,
+`readManifest`, `writeManifest` возвращают его, `renderManifestError` печатает
+одну строку. `parseManifest` сам проверяет schema 1 и безопасные пути. Тесты:
+отсутствующее поле, битое число, строка без кавычек, неверный sha256 (был).
+`cabal build all`, `cabal test all` зелёные. Строка «Готово» уточнена:
+`Install`/`Release`/`Update` держат `ManifestError` типизированным до своей
+границы, но их внешний канал остаётся `Either String` — там IO/HTTP/архив, а
+не только манифест. T16 закрыта 19.11.2026.
+
+**Готово.**
+
+- Этап 1: `error` и частичные декодеры на границах убраны; тесты на
+  отсутствующий файл, битый UTF-8 и битый TOML зелёные.
+- Этап 2: ошибка движка идёт в stderr, читаема, код 1; `:q` и успешные
+  команды не изменились.
+- Этап 3: `Shell` различает причину и «нет статьи»; тесты на категории
+  зелёные.
+- Этап 4: один `Manifest`, `ManifestError`, тесты; `Manifest` больше не
+  возвращает `Either String`, а `Install`/`Release`/`Update` держат
+  `ManifestError` типизированным до своей границы и рендерят его
+  `renderManifestError`.
+- `cabal test all` зелёный после каждого этапа.
+
+**Не делать.**
+
+- Не заводить конструктор на каждое сообщение.
+- Не тащить `annotated-exception`, глобальный `ExceptT`, ловлю `SomeException`
+  или `ErrorCall` в обычном потоке.
+- Не менять формат словарей, формат манифеста и публичные `makeEnv*`.
+- Не класть `ManifestError` в `hibet`; не типизировать `Manifest`, пока он
+  дублируется.
+
+**Риски.**
+
+- `getLabels` меняет сигнатуру — ломающее изменение API. `hibet` ещё не на
+  Hackage (T17), поэтому сейчас это безопасно; после публикации — major bump.
+- `Ki.fork` пробрасывает исключение ребёнка родителю (проверено по
+  `ki-1.0.1.2`), поэтому `try @IOException` хватает; отдельного теста на битый
+  словарь в минимальный набор не кладу.
+- T16 теперь проходит через движок, CLI и tools. Делать этапами и после
+  каждого гонять `cabal test all`; этапы 2–4 не начинать, пока зелёный
+  предыдущий.
+- Этап 3 меняет UX `Shell`: «плохой запрос» перестаёт быть «Nothing found»;
+  это осознанно, тест обязателен.
+- Этап 4 начинается с выноса `Manifest`; типизация до выноса запрещена.
+
+**Дальше.** T22 (#70).
 
 ---
 
@@ -824,7 +995,7 @@ Stardict — не XML, а бинарный формат (`.ifo`, `.idx`, `.dict`
 `hibet-data/`, и библиотека `hibet` публикуема. Делать, когда появится внешний
 потребитель или по отдельному решению. Issue #128.
 
-**Сейчас.** hewts 0.1.0, `cabal check` в `hewts/` чистый; `hibet` 3.0.0
+**Сейчас.** hewts 0.1.0, `cabal check` в `hewts/` чистый; `hibet` 4.0.0
 больше не несёт словари в пакете (`cabal sdist` — около 20 КБ).
 
 **Цель.** hewts доступен на Hackage; hibet остаётся в проекте.
