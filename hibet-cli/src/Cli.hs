@@ -20,6 +20,7 @@ import Install
     )
 import Label (LabelFull (..), Labels (..), Title (unTitle), getLabels)
 import Paths_hibet_cli (version)
+import Render.Art (warnIfNoFont)
 import Render.Pretty
 import Shell (omHeader, translator)
 
@@ -104,7 +105,8 @@ runStatic (Command mdir action) = case action of
     DataStatus -> runDataStatus mdir
     DataUpdate msource -> runDataUpdate msource
     Om -> do
-        doc <- omHeader om
+        warnIfNoFont mdir
+        doc <- omHeader mdir om
         putColorDoc' magenta NewLine doc
     Shell _ -> pure ()
     ShowOption opt -> runShowStatic mdir opt
@@ -112,10 +114,10 @@ runStatic (Command mdir action) = case action of
 -- | Run 'hibet' with cli command. Only 'Shell' needs the loaded environment;
 -- the other actions are handled by 'runStatic' and stay for the exhaustiveness
 -- check.
-runCommand :: MVar Env -> Action -> IO ()
-runCommand mv action = case action of
+runCommand :: Maybe FilePath -> MVar Env -> Action -> IO ()
+runCommand dataDir mv action = case action of
     -- App.prepareEnv already filtered the dictionaries by these ids
-    Shell _ -> translator mv
+    Shell _ -> translator dataDir mv
     DataInstall _ -> pure ()
     DataStatus -> pure ()
     DataUpdate _ -> pure ()

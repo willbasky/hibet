@@ -16,7 +16,7 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
-import Render.Art (artLines, renderQueryBlocks)
+import Render.Art (artLines, renderQueryBlocks, warnIfNoFont)
 import Render.Pretty
     ( Line (NewLine)
     , blue
@@ -51,32 +51,34 @@ import System.IO (hIsTerminalDevice, stdout)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
-translator :: MVar Env -> IO ()
-translator mv = bracketOnError
+translator :: Maybe FilePath -> MVar Env -> IO ()
+translator dataDir mv = bracketOnError
     (Haskeline.initializeInput Haskeline.defaultSettings)
     Haskeline.cancelInput -- This will only be called if an exception such as a SigINT is received.
     $ \inputState -> do
+        warnIfNoFont dataDir
         putColorDoc
             blue
             NewLine
             "Input a word in the tibetan script or wylie transcription:"
-        loopDialog mv inputState
+        loopDialog dataDir mv inputState
         Haskeline.closeInput inputState
 
 -- Looped dialog with user
 loopDialog ::
-    MVar Env
+    Maybe FilePath
+    -> MVar Env
     -> InputState
     -> IO ()
 -- Not 'forever': at EOF 'getInput' keeps returning 'Nothing', so 'forever'
 -- would spin on the closed input. Returning lets 'translator' call 'closeInput'.
-loopDialog mv inputState = do
+loopDialog dataDir mv inputState = do
     mQuery <- Haskeline.queryInput inputState $ Haskeline.getInputLine "> "
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
         Just "" -> pure ()
         Just ":q" -> do
-            header <- farewellHeader
+            header <- farewellHeader dataDir
             putColorDoc' yellow NewLine header
             exitSuccess
         Just ":h" -> do
@@ -96,13 +98,13 @@ loopDialog mv inputState = do
                     Left message -> do
                         putColorDoc red NewLine message
                     Right (query, answer) -> do
-                        header <- queryHeader query
+                        header <- queryHeader dataDir query
                         pprint
                             header
                             (mkOutput header answer)
     case mQuery of
         Nothing -> pure ()
-        Just _ -> loopDialog mv inputState
+        Just _ -> loopDialog dataDir mv inputState
 
 -- | What the shell shows for a query: the reason of a rejected query, the
 -- «Nothing found» marker of an empty answer, or the answer to draw.
@@ -130,25 +132,25 @@ mkOutput header answers =
 -- Tibetan font, then OSC 66 in kitty, then the plain query. The art is sized
 -- only in text lines, so it follows the console font, not the window or the
 -- query.
-queryHeader :: Text -> IO (Doc AnsiStyle)
-queryHeader query = do
+queryHeader :: Maybe FilePath -> Text -> IO (Doc AnsiStyle)
+queryHeader dataDir query = do
     lines' <- queryArtLines
-    largeHeader lines' query query
+    largeHeader dataDir lines' query query
 
 -- | The farewell printed by @:q@: Tibetan only, no English text.
 farewell :: Text
 farewell = "ཞེས་བསྟན་འཛིན་བཟང་པོ།"
 
 -- | The farewell drawn through the same route and height as a query.
-farewellHeader :: IO (Doc AnsiStyle)
-farewellHeader = queryHeader farewell
+farewellHeader :: Maybe FilePath -> IO (Doc AnsiStyle)
+farewellHeader dataDir = queryHeader dataDir farewell
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.
-omHeader :: Text -> IO (Doc AnsiStyle)
-omHeader fallback = do
+omHeader :: Maybe FilePath -> Text -> IO (Doc AnsiStyle)
+omHeader dataDir fallback = do
     lines' <- omArtLines
-    largeHeader lines' omSyllable fallback
+    largeHeader dataDir lines' omSyllable fallback
 
 omSyllable :: Text
 omSyllable = "ༀ"
@@ -197,12 +199,12 @@ pickHeader width height kitty mArt
     | kitty = SizedHeader
     | otherwise = PlainHeader
 
-largeHeader :: Int -> Text -> Text -> IO (Doc AnsiStyle)
-largeHeader lines' query fallback = do
+largeHeader :: Maybe FilePath -> Int -> Text -> Text -> IO (Doc AnsiStyle)
+largeHeader dataDir lines' query fallback = do
     isTerminal <- hIsTerminalDevice stdout
     width <- terminalWidth
     height <- terminalHeight
-    blocks <- renderQueryBlocks width lines' query
+    blocks <- renderQueryBlocks dataDir width lines' query
     kitty <- supportsTextSizing
     -- A redirected stdout would keep the OSC 66 escape bytes around the query.
     pure $ case pickHeader width height (isTerminal && kitty) (concat <$> blocks) of

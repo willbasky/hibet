@@ -53,6 +53,7 @@ import System.Environment
     , setEnv
     , unsetEnv
     )
+import System.FilePath (takeDirectory, (</>))
 import System.IO (Handle, hClose, hFlush, hIsTerminalDevice, stdout)
 import System.Posix.IO (dup, fdToHandle)
 import System.Posix.Terminal (openPseudoTerminal)
@@ -80,6 +81,7 @@ import Test.Hspec
 
 main :: IO ()
 main = do
+    setDataRoot
     args <- getArgs
     case args of
         ["--pager-child"] -> pagerChild
@@ -182,19 +184,19 @@ queryHeaderSpec = describe "queryHeader" $ do
         art <- drawArt queryArtLines "མོ"
         rows <- requireArt "queryHeader" art
         withEnv "TERM" "xterm-kitty" $ do
-            header <- queryHeader "མོ"
+            header <- queryHeader Nothing "མོ"
             render header `shouldBe` T.intercalate "\n" rows
     it "sends OSC 66 in a kitty without art" $
         withArtlessKitty queryArtLines "མོ" $ do
-            header <- queryHeader "མོ"
+            header <- queryHeader Nothing "མོ"
             T.unpack (render header) `shouldContain` "\ESC]66;s="
     it "keeps OSC 66 out of a redirected stdout" $
         withArtlessRedirected queryArtLines "མོ" $ do
-            header <- queryHeader "མོ"
+            header <- queryHeader Nothing "མོ"
             render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
     it "keeps the plain query outside kitty without art" $
         withArtlessPlain queryArtLines "མོ" $ do
-            header <- queryHeader "མོ"
+            header <- queryHeader Nothing "མོ"
             render header `shouldBe` "མོ"
 
 farewellSpec :: Spec
@@ -206,11 +208,11 @@ farewellSpec = describe "farewell" $ do
         if terminal
             then pendingWith "stdout is a terminal"
             else withEnv "TERM" "xterm-kitty" $ do
-                header <- farewellHeader
+                header <- farewellHeader Nothing
                 render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
     it "draws the plain farewell outside kitty without art" $
         withArtlessPlain queryArtLines farewell $ do
-            header <- farewellHeader
+            header <- farewellHeader Nothing
             render header `shouldBe` farewell
 
 -- | Art is mandatory when the renderer and the packaged font are shipped; a
@@ -231,11 +233,28 @@ requireArt _ _ = pendingWith "the renderer is not built" >> fail "no renderer"
 #endif
 {- FOURMOLU_ENABLE -}
 
+-- | Point the renderer at the repository data, which carries the font. The
+-- data set is found by walking up from the test executable, so the suite works
+-- from @cabal test@ and from a copied binary.
+setDataRoot :: IO ()
+setDataRoot = do
+    exe <- getExecutablePath
+    root <-
+        firstDataRoot
+            [dir </> "hibet-data" | dir <- takeWhile (/= "/") (iterate takeDirectory exe)]
+    maybe (pure ()) (setEnv "HIBET_DATA_DIR") root
+
+firstDataRoot :: [FilePath] -> IO (Maybe FilePath)
+firstDataRoot [] = pure Nothing
+firstDataRoot (root : rest) = do
+    exists <- doesFileExist (root </> "fonts" </> "BabelStoneTibetan.ttf")
+    if exists then pure (Just root) else firstDataRoot rest
+
 -- | One syllable fits in a single block at 80 columns.
 drawArt :: IO Int -> T.Text -> IO (Maybe [T.Text])
 drawArt height query = do
     lines' <- height
-    fmap concat <$> renderQueryBlocks 80 lines' query
+    fmap concat <$> renderQueryBlocks Nothing 80 lines' query
 
 -- | Run the example only where the header has no art to pick and stdout is a
 -- kitty terminal that draws OSC 66; otherwise it is pending, so the table
@@ -325,21 +344,21 @@ omHeaderSpec = describe "omHeader" $ do
             art <- drawArt omArtLines "ༀ"
             rows <- requireArt "omHeader" art
             withEnv "TERM" "xterm-kitty" $ do
-                header <- omHeader "fallback"
+                header <- omHeader Nothing "fallback"
                 render header `shouldBe` T.intercalate "\n" rows
     it "draws Om through OSC 66 in a kitty without art" $
         withArtlessKitty omArtLines "ༀ" $ do
-            header <- omHeader "fallback"
+            header <- omHeader Nothing "fallback"
             let output = T.unpack (render header)
             output `shouldContain` "\ESC]66;s="
             output `shouldContain` "ༀ\a"
     it "keeps OSC 66 out of a redirected stdout" $
         withArtlessRedirected omArtLines "ༀ" $ do
-            header <- omHeader "fallback"
+            header <- omHeader Nothing "fallback"
             render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
     it "keeps the block art outside kitty without art" $
         withArtlessPlain omArtLines "ༀ" $ do
-            header <- omHeader "fallback"
+            header <- omHeader Nothing "fallback"
             render header `shouldBe` "fallback"
 
 artHeightSpec :: Spec
@@ -351,8 +370,8 @@ artHeightSpec = describe "art height" $
                 omRows <- drawArt omArtLines "ༀ"
                 expectedQuery <- requireArt "query art" queryRows
                 expectedOm <- requireArt "Om art" omRows
-                query <- queryHeader "མ"
-                om <- omHeader "fallback"
+                query <- queryHeader Nothing "མ"
+                om <- omHeader Nothing "fallback"
                 render query `shouldBe` T.intercalate "\n" expectedQuery
                 render om `shouldBe` T.intercalate "\n" expectedOm
                 length expectedQuery `shouldBe` 3
@@ -401,14 +420,27 @@ artSpec = describe "Render.Art" $ do
         long <- requireArt "three stacks" =<< drawArt (pure 4) "མམམ"
         length short `shouldBe` length long
 
-    it "finds the bundled font before the system" $
+    it "finds the data font before the system" $
         withEnv "HIBET_TIBETAN_FONT" "/nonexistent" $ do
-            path <- findFont
+            path <- findFont Nothing
             case path of
                 Nothing -> pendingWith "the renderer is not built"
                 Just found -> do
                     doesFileExist found `shouldReturn` True
                     found `shouldSatisfy` isInfixOf "BabelStoneTibetan.ttf"
+
+    it "takes the font from an explicit data dir" $ do
+        root <- lookupEnv "HIBET_DATA_DIR"
+        case root of
+            Nothing -> pendingWith "no data directory with the font"
+            Just dir -> do
+                built <- findFont Nothing
+                case built of
+                    Nothing -> pendingWith "the renderer is not built"
+                    Just _ ->
+                        withEnv "HIBET_DATA_DIR" "/nonexistent" $ do
+                            path <- findFont (Just dir)
+                            path `shouldSatisfy` maybe False (isInfixOf "BabelStoneTibetan.ttf")
 
     it "ignores an override without a Tibetan glyph" $ do
         latin <- firstExisting latinFonts
@@ -422,12 +454,12 @@ artSpec = describe "Render.Art" $ do
 artBlocksSpec :: Spec
 artBlocksSpec = describe "renderQueryBlocks" $ do
     it "draws a wide query as blocks that fit the window" $ do
-        blocks <- renderQueryBlocks 40 4 (T.replicate 20 "མ་")
+        blocks <- renderQueryBlocks Nothing 40 4 (T.replicate 20 "མ་")
         rows <- requireArt "blocks" blocks
         length rows `shouldSatisfy` (> 1)
         concatMap (map T.length) rows `shouldSatisfy` all (<= 36)
     it "keeps a syllable wider than the window whole" $ do
-        blocks <- renderQueryBlocks 10 4 (T.replicate 20 "ཀ")
+        blocks <- renderQueryBlocks Nothing 10 4 (T.replicate 20 "ཀ")
         rows <- requireArt "wide syllable" blocks
         length rows `shouldBe` 1
         maximum (map T.length (concat rows)) `shouldSatisfy` (> 6)

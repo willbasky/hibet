@@ -10,12 +10,13 @@ and this project adheres to
 
 ### Added
 
-* The Tibetan font used by the Braille art now ships with `hibet-cli`:
-  BabelStone Tibetan (SIL OFL 1.1, `fonts/OFL.txt`). The renderer looks for
-  `HIBET_TIBETAN_FONT`, then the packaged font, then fontconfig and the usual
-  font directories, so the art is the same on every machine and the art CI job
-  no longer installs `fonts-noto-core`. A binary copied without its data
-  directory still falls back to the system search.
+* The Tibetan font used by the Braille art now ships with the data set:
+  BabelStone Tibetan (SIL OFL 1.1, `fonts/OFL.txt` in the data root). The
+  renderer looks for `HIBET_TIBETAN_FONT`, then the font under the data root
+  (`--data-dir`, `HIBET_DATA_DIR`, or `$XDG_DATA_HOME/hibet/data`), then
+  fontconfig and the usual font directories. The CLI package no longer carries
+  the font; a data set without it falls back and `hibet om` warns. Data
+  version 2026.11.20 includes the font.
 
 ## [3.0.0] - 2026-11-19
 

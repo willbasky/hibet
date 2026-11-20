@@ -1,7 +1,7 @@
 # The `ascii-art` build is not covered by haskell-ci: without the flag
 # `Render.Art` is a stub and its tests are pending. This workflow builds the
 # real renderer and requires its tests to run, so a broken renderer or a
-# missing bundled font fails CI instead of passing as pending.
+# missing data font fails CI instead of passing as pending.
 name: Art
 
 on:

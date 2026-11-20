@@ -17,10 +17,6 @@ extra-doc-files:
   CHANGELOG.md
   README.md
 
-data-files:
-  fonts/*.ttf
-  fonts/OFL.txt
-
 source-repository head
   type: git
   location: https://github.com/willbasky/Hibet.git
@@ -220,6 +216,7 @@ test-suite hibet-render
     base >=4.11 && <5,
     bytestring >=0.11.5.3 && <0.13,
     directory >=1.3.7 && <1.4,
+    filepath >=1.4.2 && <1.6,
     hibet,
     hibet-cli,
     hspec >=2.11.12,

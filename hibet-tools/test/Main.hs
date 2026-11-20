@@ -194,6 +194,18 @@ manifestSpec =
                 map Manifest.name manifest.files
                     `shouldBe` ["dicts/A-T|E.txt", "titles.toml", "key-aliases.tsv"]
                 Manifest.checkManifest root `shouldReturn` []
+        it "includes the font directory in the manifest" $
+            withSystemTempDirectory "hibet-manifest" $ \root -> do
+                setupData root
+                createDirectoryIfMissing True (root </> "fonts")
+                BS.writeFile (root </> "fonts" </> "OFL.txt") "OFL\n"
+                manifest <- Manifest.buildManifest root "2026.11.20"
+                map Manifest.name manifest.files
+                    `shouldBe` [ "dicts/A-T|E.txt"
+                               , "titles.toml"
+                               , "key-aliases.tsv"
+                               , "fonts/OFL.txt"
+                               ]
         it "reports a changed file" $
             withSystemTempDirectory "hibet-manifest" $ \root -> do
                 setupData root

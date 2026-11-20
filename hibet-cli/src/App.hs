@@ -51,7 +51,7 @@ app = handleErrors $ do
             mv <- newEmptyMVar
             Ki.scoped $ \scope -> do
                 _ <- Ki.fork scope (prepareEnv com.dataDir selected mv)
-                runCommand mv com.action
+                runCommand com.dataDir mv com.action
         else runStatic com
 
 prepareEnv :: Maybe FilePath -> [Int] -> MVar Env -> IO ()

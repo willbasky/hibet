@@ -18,7 +18,7 @@ module Manifest
     ) where
 
 import Control.Exception (IOException, try)
-import Control.Monad (forM)
+import Control.Monad (filterM, forM)
 import Crypto.Hash (Digest, SHA256, hash)
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
@@ -29,7 +29,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time (getZonedTime, localDay, zonedTimeToLocalTime)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import System.Directory (doesFileExist, listDirectory)
+import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath (isAbsolute, splitDirectories, (</>))
 
 data Manifest = Manifest
@@ -74,16 +74,30 @@ defaultManifestVersion =
         <$> getZonedTime
 
 -- | Every file the application reads from the data root, in manifest order:
--- dictionaries sorted by name, then @titles.toml@ and @key-aliases.tsv@.
+-- dictionaries sorted by name, then @titles.toml@, @key-aliases.tsv@ and the
+-- font directory when it is present.
 manifestFiles :: FilePath -> IO [FilePath]
 manifestFiles root = do
     entries <- listDirectory (root </> "dicts")
+    fonts <- fontFiles root
     pure $
         [ "dicts" </> entry
         | entry <- sortOn (map toLower) entries
         , ".txt" `isSuffixOf` entry
         ]
             <> ["titles.toml", "key-aliases.tsv"]
+            <> fonts
+
+fontFiles :: FilePath -> IO [FilePath]
+fontFiles root = do
+    let dir = root </> "fonts"
+    exists <- doesDirectoryExist dir
+    if not exists
+        then pure []
+        else do
+            entries <- listDirectory dir
+            files <- filterM (doesFileExist . (dir </>)) entries
+            pure ["fonts" </> entry | entry <- sortOn (map toLower) files]
 
 buildManifest :: FilePath -> Text -> IO Manifest
 buildManifest root version = do
