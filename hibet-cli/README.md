@@ -61,8 +61,9 @@ hibet --data-dir ./hibet-data shell
 
 The header is tried in three ways, in this order:
 
-1. Braille art, when the executable is built with the `ascii-art` flag and the
-   system libraries and a Tibetan font are found. The art wins in every
+1. Braille art, when the executable is built with the `ascii-art` flag, the
+   system libraries are found and the data set with the Tibetan font is
+   installed. The art wins in every
    terminal, kitty included; a query wider than the window is drawn in blocks
    that fit it, and a header taller than the window falls through to the next
    level.
@@ -75,11 +76,15 @@ cabal build -f ascii-art exe:hibet
 just build      # adds the flag when pkg-config finds freetype2 and harfbuzz
 ```
 
-The renderer needs the system `freetype2` and `harfbuzz` libraries and a
-Tibetan font: `HIBET_TIBETAN_FONT`, then `fc-match "Noto Serif Tibetan"`, then
-the usual font directories. Without the flag, without those libraries or
-without a font the header falls through to OSC 66 in kitty and to plain text
-elsewhere.
+The renderer needs the system `freetype2` and `harfbuzz` libraries. The
+Tibetan font ships with the data set: **BabelStone Tibetan** (SIL OFL 1.1,
+`fonts/OFL.txt` in the data root), so install or update the data first
+(`hibet data install`, `hibet data update`). The search order is
+`HIBET_TIBETAN_FONT`, the font under the data root (`--data-dir`, then
+`HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`), `fc-match "Noto Serif
+Tibetan"`, then the usual font directories. Without a font the art falls back
+and `hibet om` prints a warning; without the flag or those libraries the
+header falls through to OSC 66 in kitty and to plain text elsewhere.
 
 The art's scale is set by the one-layer stack `མ` (ma): it is exactly `k` text
 lines tall, and every other query is drawn at the same scale. The rectangle

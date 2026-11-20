@@ -1,6 +1,6 @@
-# Generated from hibet-data/ on 2026-11-09. Do not edit by hand.
+# Generated from hibet-data/ on 2026-11-20. Do not edit by hand.
 schema = 1
-version = "2026.11.09"
+version = "2026.11.20"
 
 [[files]]
 name = "dicts/84000Definitions-T|E.txt"
@@ -306,3 +306,13 @@ size = 32186
 name = "key-aliases.tsv"
 sha256 = "3116a1d7f10f4065bdba8395d58e41cc7b2d5d2e1c0f95bd3af626b440142108"
 size = 264836
+
+[[files]]
+name = "fonts/BabelStoneTibetan.ttf"
+sha256 = "6791bab3919dfb16de9223817b40e3786fd567427a77790ecb17b4efe66fa667"
+size = 3105328
+
+[[files]]
+name = "fonts/OFL.txt"
+sha256 = "07211ebfcf837077fb1e58e7bfed3f65faabf127a392e98568f6fd97722293ad"
+size = 4400

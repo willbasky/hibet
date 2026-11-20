@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
+## [Unreleased]
+
+### Added
+
+* The Tibetan font used by the Braille art now ships with the data set:
+  BabelStone Tibetan (SIL OFL 1.1, `fonts/OFL.txt` in the data root). The
+  renderer looks for `HIBET_TIBETAN_FONT`, then the font under the data root
+  (`--data-dir`, `HIBET_DATA_DIR`, or `$XDG_DATA_HOME/hibet/data`), then
+  fontconfig and the usual font directories. The CLI package no longer carries
+  the font; a data set without it falls back and `hibet om` warns. Data
+  version 2026.11.20 includes the font.
+
 ## [3.0.0] - 2026-11-19
 
 ### Changed

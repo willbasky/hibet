@@ -6,8 +6,10 @@
 module Render.Art
     ( artLines
     , brailleRows
+    , findFont
     , fitHeight
     , renderQueryBlocks
+    , warnIfNoFont
     )
 where
 
@@ -29,6 +31,7 @@ import Data.Char (toLower)
 import Data.List (isInfixOf)
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Data.Text.Glyphize
 import qualified Data.Text.Lazy as TL
 import Data.Word (Word32, Word8)
@@ -36,9 +39,16 @@ import Foreign.Marshal.Array (peekArray)
 import Foreign.Storable (peek)
 import FreeType
 import Render.Wrap (syllables)
-import System.Directory (doesDirectoryExist, getHomeDirectory, listDirectory)
+import System.Directory
+    ( XdgDirectory (XdgData)
+    , doesDirectoryExist
+    , getHomeDirectory
+    , getXdgDirectory
+    , listDirectory
+    )
 import System.Environment (lookupEnv)
 import System.FilePath (takeExtension, (</>))
+import System.IO (stderr)
 import System.Process (readProcess)
 import Text.Read (readMaybe)
 
@@ -46,10 +56,10 @@ import Text.Read (readMaybe)
 -- added greedily until the drawn art no longer fits, then the block closes; a
 -- syllable wider by itself is kept whole. The ppem comes from the reference
 -- stack, so every block has the same scale.
-renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])
-renderQueryBlocks width lines' query = do
+renderQueryBlocks :: Maybe FilePath -> Int -> Int -> Text -> IO (Maybe [[Text]])
+renderQueryBlocks dataDir width lines' query = do
     blocks <-
-        withQueryFont lines' $ \ftFace upem hbFont ppem ->
+        withQueryFont dataDir lines' $ \ftFace upem hbFont ppem ->
             drawBlocks
                 (width - 4)
                 (drawChunk ftFace upem hbFont ppem)
@@ -58,11 +68,12 @@ renderQueryBlocks width lines' query = do
 
 -- | Font lookup, face loading and the ppem shared by every block of a header.
 withQueryFont ::
+    Maybe FilePath ->
     Int ->
     (FT_Face -> Double -> Font -> Int -> IO a) ->
     IO (Maybe a)
-withQueryFont target action = do
-    mFont <- findFont
+withQueryFont dataDir target action = do
+    mFont <- findFont dataDir
     case mFont of
         Nothing -> pure Nothing
         Just path -> do
@@ -307,12 +318,16 @@ drawGlyphs target pen ((glyph, pos) : rest) = do
         (pen + fromIntegral (x_advance pos) * target.scale)
         rest
 
--- | Font path: @HIBET_TIBETAN_FONT@, then fontconfig, then the usual font
--- directories. A candidate counts only when it carries a Tibetan glyph.
-findFont :: IO (Maybe FilePath)
-findFont = do
+-- | Font path: @HIBET_TIBETAN_FONT@, then the font under the data root
+-- (@--data-dir@, then @HIBET_DATA_DIR@, then @$XDG_DATA_HOME/hibet/data@),
+-- then fontconfig and the usual font directories. A candidate counts only
+-- when it carries a Tibetan glyph; a missing data font falls through to the
+-- system search.
+findFont :: Maybe FilePath -> IO (Maybe FilePath)
+findFont dataDir = do
     fromEnv <- maybe [] pure <$> lookupEnv "HIBET_TIBETAN_FONT"
-    found <- firstTibetan fromEnv
+    fromData <- dataFontFiles dataDir
+    found <- firstTibetan (fromEnv ++ fromData)
     case found of
         Just path -> pure (Just path)
         Nothing -> do
@@ -328,6 +343,33 @@ findFont = do
                             , "/usr/local/share/fonts"
                             , home </> ".local/share/fonts"
                             ]
+
+-- | The data set font, in the same order the environment and the XDG layout
+-- use. The file is checked by 'isTibetanFont' later.
+dataFontFiles :: Maybe FilePath -> IO [FilePath]
+dataFontFiles explicit = do
+    fromEnv <- lookupEnv "HIBET_DATA_DIR"
+    xdg <- getXdgDirectory XdgData "hibet"
+    let roots =
+            maybe [] pure explicit
+                <> maybe [] pure (fromEnv >>= nonEmpty)
+                <> [xdg </> "data"]
+    pure [root </> "fonts" </> "BabelStoneTibetan.ttf" | root <- roots]
+  where
+    nonEmpty "" = Nothing
+    nonEmpty root = Just root
+
+-- | Warn when no font is available at all, so a data set without the font
+-- does not lose the art silently.
+warnIfNoFont :: Maybe FilePath -> IO ()
+warnIfNoFont dataDir = do
+    font <- findFont dataDir
+    case font of
+        Just _ -> pure ()
+        Nothing ->
+            TIO.hPutStrLn
+                stderr
+                "no Tibetan font: Braille art is off; run `hibet data update` or set HIBET_TIBETAN_FONT"
 
 firstTibetan :: [FilePath] -> IO (Maybe FilePath)
 firstTibetan [] = pure Nothing
@@ -380,9 +422,17 @@ tibetanFonts dir = do
 artLines :: String -> Int -> IO Int
 artLines _ fallback = pure fallback
 
+-- | The renderer is not built, so no font is looked up.
+findFont :: Maybe FilePath -> IO (Maybe FilePath)
+findFont _ = pure Nothing
+
+-- | The renderer is not built, so there is nothing to warn about.
+warnIfNoFont :: Maybe FilePath -> IO ()
+warnIfNoFont _ = pure ()
+
 -- | The renderer is not built, so there are no blocks to draw.
-renderQueryBlocks :: Int -> Int -> Text -> IO (Maybe [[Text]])
-renderQueryBlocks _ _ _ = pure Nothing
+renderQueryBlocks :: Maybe FilePath -> Int -> Int -> Text -> IO (Maybe [[Text]])
+renderQueryBlocks _ _ _ _ = pure Nothing
 
 {- FOURMOLU_DISABLE -}
 #endif
