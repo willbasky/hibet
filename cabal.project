@@ -1,15 +1,15 @@
-packages: 
-    hewts
-    hibet
-    hibet-cli
-    hibet-tools
+packages:
+  hewts
+  hibet
+  hibet-cli
+  hibet-tools
 
 tests: True
 benchmarks: True
-
+multi-repl: True
 index-state:
   -- Bump this if you need newer packages from Hackage
-  , hackage.haskell.org 2026-09-07T04:49:09Z
+  , hackage.haskell.org 2026-11-12T19:04:46Z
 
-constraints: 
+constraints:
   text >= 2.1.2

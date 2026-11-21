@@ -30,6 +30,11 @@ jobs:
     strategy:
       matrix:
         include:
+          - compiler: ghc-9.14.1
+            compilerKind: ghc
+            compilerVersion: 9.14.1
+            setup-method: ghcup
+            allow-failure: false
           - compiler: ghc-9.10.3
             compilerKind: ghc
             compilerVersion: 9.10.3
@@ -185,7 +190,8 @@ jobs:
           constraints: text >= 2.1.2
           tests:       True
           benchmarks:  True
-          index-state: , hackage.haskell.org 2026-09-07T04:49:09Z
+          multi-repl:  True
+          index-state: , hackage.haskell.org 2026-11-12T19:04:46Z
           EOF
           $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: any.$_ installed\n" unless /^(hewts|hibet|hibet-cli|hibet-tools|parsec|text)$/; }' >> cabal.project.local
           cat cabal.project

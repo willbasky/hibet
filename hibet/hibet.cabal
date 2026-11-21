@@ -6,7 +6,7 @@ license-file: LICENSE
 copyright: 2023 willbasky
 maintainer: willgame(at)mail(dot)ru
 author: willbasky
-tested-with: ghc ==9.8.4 || ==9.10.3
+tested-with: ghc ==9.8.4 || ==9.10.3 || ==9.14.1
 homepage: https://github.com/willbasky/Hibet
 bug-reports: https://github.com/willbasky/Hibet/issues
 synopsis: translator
@@ -87,7 +87,7 @@ library
     filepath >=1.4.2 && <1.6,
     hewts >=0.1 && <0.2,
     ki >=1.0 && <1.1,
-    parallel >=3.2.2 && <3.3,
+    parallel >=3.2.2 && <3.4,
     stm >=2.5 && <2.6,
     text >=2.0.2 && <2.2,
     text-rope >=0.3 && <0.4,

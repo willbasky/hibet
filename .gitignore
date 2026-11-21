@@ -56,13 +56,6 @@ TAGS
 .gitignore
 *.html
 
-# custom
-thinking.txt
-src/Sandbox.hs
-*.prof.html
-*.svg
-hewts/test/parity/parity_report.txt
-
 # Build_files
 PKGBUILD
 *.pkg.tar.xz
@@ -73,3 +66,10 @@ pkg/
 result
 .direnv
 .env
+
+# custom
+*.prof.html
+*.svg
+hewts/test/parity/parity_report.txt
+convertors/
+Documents/
