@@ -107,7 +107,7 @@ runStatic (Command mdir action) = case action of
     Om -> do
         warnIfNoFont mdir
         doc <- omHeader mdir om
-        putColorDoc' magenta NewLine doc
+        putColorDoc' id NewLine doc
     Shell _ -> pure ()
     ShowOption opt -> runShowStatic mdir opt
 
