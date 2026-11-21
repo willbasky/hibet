@@ -85,7 +85,7 @@ library
     http-types >=0.12.3 && <0.13,
     tar >=0.6 && <0.7,
     text >=2.0.2 && <2.2,
-    time >=1.9 && <1.15,
+    time >=1.9 && <1.16,
     unicode-transforms >=0.4 && <0.5,
     unordered-containers >=0.2.20 && <0.3,
     zlib >=0.7 && <0.8,
