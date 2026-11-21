@@ -29,9 +29,9 @@
 - CLI: `shell`, `show names`, `show meta`, `om`, `data status`/`install`/
   `update`, глобальный `--data-dir`. Консоль вынесена в пакет `hibet-cli`
   (T2): `hibet` — движок без Haskeline и optparse.
-- Заголовок запроса: брайлевский арт за флагом `ascii-art`, иначе OSC 66 в
-  kitty 0.40+, иначе обычный текст (T13, T31, T32); запрос шире окна
-  переносится по границам слогов, арт рисуется блоками (T33).
+- Заголовок запроса: брайлевский арт за флагом `ascii-art`, иначе обычный
+  текст (T13, T31, T32); запрос шире окна переносится по границам слогов,
+  арт рисуется блоками (T33).
 - Обновление словарей — `hibet-tools` (T12): `just update-dicts`,
   `just update-dicts-check`, `just generate-key-aliases`; bash/python/curl не
   нужны. Alias-таблица пересобирается в том же процессе.

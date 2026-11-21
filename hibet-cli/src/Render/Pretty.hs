@@ -5,6 +5,7 @@ module Render.Pretty
     , green
     , magenta
     , red
+    , white
     , yellow
     , Colorize
     -- Functions
@@ -15,16 +16,12 @@ module Render.Pretty
     -- Output
     , Line (..)
     , keysRows
-    , kittyTextSizing
     , pageRows
     , paginate
-    , parseKittyVersion
     , pprint
     , putColorDoc
     , putColorDoc'
     , putColorList
-    , sized
-    , supportsTextSizing
     , terminalWidth
     , terminalHeight
     ) where
@@ -34,10 +31,10 @@ import Label (Title (..))
 import Render.Keys (Key (..), withRawKeys)
 import Utility (showT)
 
-import Control.Exception (IOException, bracket_, try)
-import Data.Char (isDigit, isSpace)
+import Control.Exception (bracket_)
+import Data.Char (isSpace)
 import Data.Foldable (traverse_)
-import Data.List (intersperse, isInfixOf)
+import Data.List (intersperse)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
@@ -63,12 +60,7 @@ import Prettyprinter.Render.Terminal
     , renderStrict
     )
 import qualified System.Console.Terminal.Size as Terminal
-import System.Environment (lookupEnv)
-import System.Exit (ExitCode (..))
 import System.IO (hFlush, hIsTerminalDevice, stdin, stdout)
-import System.IO.Unsafe (unsafePerformIO)
-import System.Process (readProcessWithExitCode)
-import Text.Read (readMaybe)
 
 -- | Header
 withHeader :: Colorize -> Text -> Doc AnsiStyle -> Doc AnsiStyle
@@ -80,35 +72,6 @@ withHeaderSpaces :: Colorize -> Doc AnsiStyle -> Doc AnsiStyle -> Doc AnsiStyle
 withHeaderSpaces col header value =
     hang indentation $ vsep [space, col header, space, value]
 
--- | kitty's text sizing protocol: the terminal draws the text at @scale@ times
--- its cell size, so it takes @scale@ rows and @scale@ times the width. The
--- protocol leaves the cursor on the first of those rows, so move it down to the
--- last one; the following newline then starts below the block. Only call this
--- for a terminal that supports the protocol: others may drop the text.
-sized :: Int -> Text -> Text
-sized scale text =
-    "\ESC]66;s="
-        <> showT scale
-        <> ";"
-        <> text
-        <> "\a"
-        <> if scale > 1 then "\ESC[" <> showT (scale - 1) <> "B" else ""
-
--- | Rows a rendered line takes: a line drawn through the sizing protocol at
--- scale N occupies N rows, everything else takes one.
-lineRows :: Text -> Int
-lineRows line = case T.breakOn oscSizePrefix line of
-    (_, rest)
-        | not (T.null rest) ->
-            case readMaybe . T.unpack . T.takeWhile isDigit $
-                T.drop (T.length oscSizePrefix) rest of
-                Just scale -> max 1 scale
-                Nothing -> 1
-    _ -> 1
-
-oscSizePrefix :: Text
-oscSizePrefix = "\ESC]66;s="
-
 -- | Terminal width, 80 when the size is unknown.
 terminalWidth :: IO Int
 terminalWidth = maybe 80 Terminal.width <$> Terminal.size
@@ -116,42 +79,6 @@ terminalWidth = maybe 80 Terminal.width <$> Terminal.size
 -- | Terminal height, 24 when the size is unknown.
 terminalHeight :: IO Int
 terminalHeight = maybe 24 Terminal.height <$> Terminal.size
-
--- | Whether the terminal draws OSC 66 text: only kitty does, and only from 0.40
--- on, where the text sizing protocol appeared. kitty exports no version
--- variable and the protocol has no reply, so the version is asked from the
--- @kitty@ binary. A missing binary (ssh, a macOS app bundle) leaves the version
--- unknown, and the text is drawn as it was before the check.
-supportsTextSizing :: IO Bool
-supportsTextSizing = do
-    term <- maybe "" id <$> lookupEnv "TERM"
-    pure $ "kitty" `isInfixOf` term && maybe True (>= kittyTextSizing) kittyVersion
-
--- | First kitty version with the text sizing protocol.
-kittyTextSizing :: (Int, Int)
-kittyTextSizing = (0, 40)
-
--- | Version of the installed kitty, asked once per process: the shell wants it
--- for every query and it cannot change under a running one.
-kittyVersion :: Maybe (Int, Int)
-kittyVersion = unsafePerformIO $ do
-    result <-
-        try (readProcessWithExitCode "kitty" ["--version"] "") ::
-            IO (Either IOException (ExitCode, String, String))
-    pure $ case result of
-        Right (ExitSuccess, out, _) -> parseKittyVersion out
-        _ -> Nothing
-{-# NOINLINE kittyVersion #-}
-
--- | Major and minor version from the line @kitty --version@ prints, e.g.
--- @kitty 0.50.0 created by Kovid Goyal@.
-parseKittyVersion :: String -> Maybe (Int, Int)
-parseKittyVersion output = case words output of
-    ("kitty" : version : _) -> case break (== '.') version of
-        (major, '.' : minor) ->
-            (,) <$> readMaybe major <*> readMaybe (takeWhile isDigit minor)
-        _ -> Nothing
-    _ -> Nothing
 
 indentation :: Int
 indentation = 2
@@ -186,6 +113,9 @@ magenta = annotate $ color Magenta <> bold
 
 yellow :: Colorize
 yellow = annotate $ color Yellow <> bold
+
+white :: Colorize
+white = annotate $ color White <> bold
 
 ---------------------------------------------------------------------
 -- Pretty functions
@@ -251,12 +181,11 @@ pprint header doc = do
         then paged width height headerLines bodyLines output
         else TIO.putStr (T.snoc output '\n')
 
--- | Show the answers a window at a time with the header pinned above. A pager
--- like @less@ cannot be used: it strips OSC 66 (the scaled query) and does not
--- know how much room the scaled line takes. The window lives on the alternate
--- screen, so it leaves no copies behind; on exit the full answer is printed to
--- the normal screen once, and the scrollback holds the query and the text as
--- without a pager. Keys are read raw by "Render.Keys", so arrows and PgUp/PgDn work;
+-- | Show the answers a window at a time with the header pinned above. The
+-- window lives on the alternate screen, so it leaves no copies behind; on exit
+-- the full answer is printed to the normal screen once, and the scrollback
+-- holds the query and the text as without a pager. Keys are read raw by
+-- "Render.Keys", so arrows and PgUp/PgDn work;
 -- @j@/@k@ and Ctrl-N/Ctrl-P move a line, Space/@b@, PgUp/PgDn and
 -- Ctrl-F/Ctrl-B or Ctrl-V/Alt-V move a page, @q@ quits.
 paged :: Int -> Int -> [Text] -> [Text] -> Text -> IO ()
@@ -300,9 +229,9 @@ paged width height header body output =
             PageDown -> min lastStart (offset + pageSize)
             _ -> offset
 
--- | Rows a page takes on screen: a scaled line takes as many rows as its scale.
+-- | Rows a page takes on screen.
 pageRows :: [Text] -> Int
-pageRows = sum . map lineRows
+pageRows = length
 
 -- | Keys that work from this offset.
 keys :: Int -> Int -> Text
@@ -325,17 +254,12 @@ keysRows width = max 1 ((longestHint + width' - 1) `div` width')
         width' = max 1 width
         longestHint = maximum (map T.length [keysStart, keysEnd, keysMiddle])
 
--- | Split rendered lines into pages of at most @size@ terminal rows. A line
--- drawn at scale N takes N rows, so it lowers the number of lines per page.
+-- | Split rendered lines into pages of at most @size@ terminal rows.
 paginate :: Int -> [Text] -> [[Text]]
 paginate size = go
     where
         n = max 1 size
         go [] = []
-        go (line : rest) =
-            let (page, left) = fill (lineRows line) [line] rest
-             in page : go left
-        fill _ page [] = (reverse page, [])
-        fill used page (line : rest)
-            | used + lineRows line <= n = fill (used + lineRows line) (line : page) rest
-            | otherwise = (reverse page, line : rest)
+        go lines' =
+            let (page, rest) = splitAt n lines'
+             in page : go rest

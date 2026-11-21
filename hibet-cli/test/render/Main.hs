@@ -8,12 +8,9 @@ import Render.Art (brailleRows, findFont, fitHeight, renderQueryBlocks)
 import Render.Keys (Key (..), readKeyWith)
 import Render.Pretty
     ( keysRows
-    , kittyTextSizing
     , pageRows
     , paginate
-    , parseKittyVersion
     , pprint
-    , supportsTextSizing
     , viewTranslations
     , withHeaderSpaces
     )
@@ -29,7 +26,6 @@ import Shell
     , queryArtLines
     , queryHeader
     , queryReply
-    , sizedHeader
     )
 import Type (HibetError (..), renderError)
 
@@ -54,7 +50,7 @@ import System.Environment
     , unsetEnv
     )
 import System.FilePath (takeDirectory, (</>))
-import System.IO (Handle, hClose, hFlush, hIsTerminalDevice, stdout)
+import System.IO (Handle, hClose, hFlush)
 import System.Posix.IO (dup, fdToHandle)
 import System.Posix.Terminal (openPseudoTerminal)
 import System.Process
@@ -91,9 +87,7 @@ main = do
             pickHeaderSpec
             queryHeaderSpec
             farewellSpec
-            sizedHeaderSpec
             wrapQuerySpec
-            kittyVersionSpec
             omHeaderSpec
             artHeightSpec
             artSpec
@@ -150,9 +144,11 @@ answer2 =
 mkOutputSpec :: Spec
 mkOutputSpec =
     describe "mkOutput"
-        $ it "puts the drawn query above the entries"
-        $ T.unpack (render $ mkOutput (sizedHeader 80 "མོ") [answer1])
-            `shouldContain` "\ESC]66;s=4;མོ\a\ESC[3B"
+        $ it "puts the query above the entries"
+        $ let output = T.unpack (render $ mkOutput (pretty ("མོ" :: T.Text)) [answer1])
+           in do
+                output `shouldContain` "མོ"
+                output `shouldContain` "1. Dict1"
 
 pickHeaderSpec :: Spec
 pickHeaderSpec = describe "pickHeader" $ do
@@ -161,40 +157,27 @@ pickHeaderSpec = describe "pickHeader" $ do
         wide = [T.replicate 77 "⣿"]
         tall = replicate 20 "⣿"
         tooTall = replicate 21 "⣿"
-    it "prefers art that fits, even in kitty" $
-        pickHeader 80 24 True (Just art) `shouldBe` ArtHeader art
-    it "takes OSC 66 in kitty when there is no art" $
-        pickHeader 80 24 True Nothing `shouldBe` SizedHeader
-    it "keeps the fallback outside kitty when there is no art" $
-        pickHeader 80 24 False Nothing `shouldBe` PlainHeader
-    it "sends art wider than the window to OSC 66 in kitty" $
-        pickHeader 80 24 True (Just wide) `shouldBe` SizedHeader
-    it "sends art wider than the window to the fallback outside kitty" $
-        pickHeader 80 24 False (Just wide) `shouldBe` PlainHeader
+    it "prefers art that fits" $
+        pickHeader 80 24 (Just art) `shouldBe` ArtHeader art
+    it "falls back when there is no art" $
+        pickHeader 80 24 Nothing `shouldBe` PlainHeader
+    it "falls back when art is wider than the window" $
+        pickHeader 80 24 (Just wide) `shouldBe` PlainHeader
     it "leaves a four-cell margin at the window edge" $
-        pickHeader 80 24 True (Just edge) `shouldBe` ArtHeader edge
+        pickHeader 80 24 (Just edge) `shouldBe` ArtHeader edge
     it "keeps a row for the answer and one for the pager keys" $
-        pickHeader 80 24 True (Just tall) `shouldBe` ArtHeader tall
-    it "sends art taller than the window to the next level" $
-        pickHeader 80 24 True (Just tooTall) `shouldBe` SizedHeader
+        pickHeader 80 24 (Just tall) `shouldBe` ArtHeader tall
+    it "falls back when art is taller than the window" $
+        pickHeader 80 24 (Just tooTall) `shouldBe` PlainHeader
 
 queryHeaderSpec :: Spec
 queryHeaderSpec = describe "queryHeader" $ do
     it "draws Braille art first when the renderer has one" $ do
         art <- drawArt queryArtLines "མོ"
         rows <- requireArt "queryHeader" art
-        withEnv "TERM" "xterm-kitty" $ do
-            header <- queryHeader Nothing "མོ"
-            render header `shouldBe` T.intercalate "\n" rows
-    it "sends OSC 66 in a kitty without art" $
-        withArtlessKitty queryArtLines "མོ" $ do
-            header <- queryHeader Nothing "མོ"
-            T.unpack (render header) `shouldContain` "\ESC]66;s="
-    it "keeps OSC 66 out of a redirected stdout" $
-        withArtlessRedirected queryArtLines "མོ" $ do
-            header <- queryHeader Nothing "མོ"
-            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
-    it "keeps the plain query outside kitty without art" $
+        header <- queryHeader Nothing "མོ"
+        render header `shouldBe` T.intercalate "\n" rows
+    it "keeps the plain query without art" $
         withArtlessPlain queryArtLines "མོ" $ do
             header <- queryHeader Nothing "མོ"
             render header `shouldBe` "མོ"
@@ -203,14 +186,7 @@ farewellSpec :: Spec
 farewellSpec = describe "farewell" $ do
     it "keeps the goodbye free of English text" $
         T.all (not . isAscii) farewell `shouldBe` True
-    it "keeps OSC 66 out of a redirected stdout" $ do
-        terminal <- hIsTerminalDevice stdout
-        if terminal
-            then pendingWith "stdout is a terminal"
-            else withEnv "TERM" "xterm-kitty" $ do
-                header <- farewellHeader Nothing
-                render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
-    it "draws the plain farewell outside kitty without art" $
+    it "draws the plain farewell without art" $
         withArtlessPlain queryArtLines farewell $ do
             header <- farewellHeader Nothing
             render header `shouldBe` farewell
@@ -256,52 +232,12 @@ drawArt height query = do
     lines' <- height
     fmap concat <$> renderQueryBlocks Nothing 80 lines' query
 
--- | Run the example only where the header has no art to pick and stdout is a
--- kitty terminal that draws OSC 66; otherwise it is pending, so the table
--- above stays machine-free.
-withArtlessKitty :: IO Int -> T.Text -> IO () -> IO ()
-withArtlessKitty height query action = do
-    art <- drawArt height query
-    terminal <- hIsTerminalDevice stdout
-    withEnv "TERM" "xterm-kitty" $ do
-        kitty <- supportsTextSizing
-        case (art, kitty, terminal) of
-            (Just _, _, _) -> pendingWith "the art takes the header in this build"
-            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
-            (_, True, False) -> pendingWith "stdout is not a terminal"
-            (Nothing, True, True) -> action
-
--- | Run the example where stdout is redirected: OSC 66 must stay out of the
--- output. Pending when there is no art or no kitty, or when stdout is a
--- terminal and the sequence is expected.
-withArtlessRedirected :: IO Int -> T.Text -> IO () -> IO ()
-withArtlessRedirected height query action = do
-    art <- drawArt height query
-    terminal <- hIsTerminalDevice stdout
-    withEnv "TERM" "xterm-kitty" $ do
-        kitty <- supportsTextSizing
-        case (art, kitty, terminal) of
-            (Just _, _, _) -> pendingWith "the art takes the header in this build"
-            (_, False, _) -> pendingWith "no kitty 0.40 or newer here"
-            (_, True, True) -> pendingWith "stdout is a terminal"
-            (Nothing, True, False) -> action
-
 withArtlessPlain :: IO Int -> T.Text -> IO () -> IO ()
 withArtlessPlain height query action = do
     art <- drawArt height query
     case art of
         Just _ -> pendingWith "the art takes the header in this build"
-        Nothing -> withEnv "TERM" "xterm-256color" action
-
-sizedHeaderSpec :: Spec
-sizedHeaderSpec = describe "sizedHeader" $ do
-    let query = T.replicate 20 "ཀ་"
-    it "scales the query for kitty up to four times" $
-        render (sizedHeader 80 "མོ") `shouldBe` "\ESC]66;s=4;མོ\a\ESC[3B"
-    it "keeps a long kitty query at normal size" $
-        render (sizedHeader 12 "སེམས་ཅན") `shouldBe` "སེམས་ཅན"
-    it "wraps a wide query and keeps every line at one size" $
-        render (sizedHeader 30 query) `shouldBe` T.intercalate "\n" (wrapQuery 30 query)
+        Nothing -> action
 
 wrapQuerySpec :: Spec
 wrapQuerySpec = describe "wrapQuery" $ do
@@ -321,42 +257,15 @@ wrapQuerySpec = describe "wrapQuery" $ do
     it "keeps a short query on one line" $
         wrapQuery 80 "མོ" `shouldBe` ["མོ"]
 
-kittyVersionSpec :: Spec
-kittyVersionSpec = describe "parseKittyVersion" $ do
-    it "reads the major and minor version kitty prints" $
-        parseKittyVersion "kitty 0.50.0 created by Kovid Goyal\n"
-            `shouldBe` Just (0, 50)
-    it "reads a version without a patch number" $
-        parseKittyVersion "kitty 0.40" `shouldBe` Just (0, 40)
-    it "gives nothing for other output" $
-        parseKittyVersion "no version here" `shouldBe` Nothing
-    it "takes 0.40 as the first version with the protocol" $
-        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.40.0")
-            `shouldBe` Just True
-    it "rejects the kitty before the protocol" $
-        fmap (>= kittyTextSizing) (parseKittyVersion "kitty 0.39.1")
-            `shouldBe` Just False
-
 omHeaderSpec :: Spec
 omHeaderSpec = describe "omHeader" $ do
     it "draws the Om art first when the renderer has one" $ do
         withEnv "HIBET_OM_LINES" "6" $ do
             art <- drawArt omArtLines "ༀ"
             rows <- requireArt "omHeader" art
-            withEnv "TERM" "xterm-kitty" $ do
-                header <- omHeader Nothing "fallback"
-                render header `shouldBe` T.intercalate "\n" rows
-    it "draws Om through OSC 66 in a kitty without art" $
-        withArtlessKitty omArtLines "ༀ" $ do
             header <- omHeader Nothing "fallback"
-            let output = T.unpack (render header)
-            output `shouldContain` "\ESC]66;s="
-            output `shouldContain` "ༀ\a"
-    it "keeps OSC 66 out of a redirected stdout" $
-        withArtlessRedirected omArtLines "ༀ" $ do
-            header <- omHeader Nothing "fallback"
-            render header `shouldSatisfy` not . T.isInfixOf "\ESC]66"
-    it "keeps the block art outside kitty without art" $
+            render header `shouldBe` T.intercalate "\n" rows
+    it "keeps the block art without art" $
         withArtlessPlain omArtLines "ༀ" $ do
             header <- omHeader Nothing "fallback"
             render header `shouldBe` "fallback"
@@ -479,9 +388,6 @@ paginateSpec =
         it "keeps order and splits by page size" $
             paginate 2 ["a", "b", "c", "d", "e"]
                 `shouldBe` [["a", "b"], ["c", "d"], ["e"]]
-        it "counts a scaled line as its scale rows" $
-            paginate 3 ["a", "\ESC]66;s=2;x\a", "b", "c"]
-                `shouldBe` [["a", "\ESC]66;s=2;x\a"], ["b", "c"]]
         it "gives nothing for no lines" $
             paginate 2 [] `shouldBe` []
         it "never loops on a zero page size" $

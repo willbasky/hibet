@@ -390,7 +390,7 @@ isTibetanFont path = do
 fcMatch :: IO [FilePath]
 fcMatch = do
     result <-
-        try (readProcess "fc-match" ["-f", "%{file}\\n", "Noto Serif Tibetan"] "") ::
+        try (readProcess "fc-match" ["-f", "%{file}\\n", ":lang=bo"] "") ::
             IO (Either IOException String)
     pure $ case result of
         Left _ -> []

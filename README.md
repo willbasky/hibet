@@ -45,6 +45,10 @@ The data root is resolved in this order: `--data-dir`, `HIBET_DATA_DIR`, then
 `$XDG_DATA_HOME/hibet/data`. `hibet data status` prints what was resolved and
 the dataset version.
 
+These are user commands. The `just` recipes below maintain the repository copy
+`hibet-data/`; they do not touch the installed data under
+`$XDG_DATA_HOME/hibet/data`.
+
 ## Quick start
 
 Wylie and Tibetan script reach the same article; `-s 7` loads only dictionary 7
@@ -107,8 +111,9 @@ cabal test all
 ```
 
 `just` wraps the dictionary workflows: `just update-dicts`,
-`just check-manifest`, `just data-release` and `just data-publish`. Nix and
-direnv users get the same toolchain:
+`just check-manifest`, `just data-release` and `just data-publish`. These are
+maintainer recipes for the repository copy; users update their installed data
+with `hibet data update`. Nix and direnv users get the same toolchain:
 
 ```
 direnv allow          # or: nix develop

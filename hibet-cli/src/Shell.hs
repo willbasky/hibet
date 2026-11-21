@@ -9,7 +9,6 @@ module Shell
     , queryArtLines
     , queryHeader
     , queryReply
-    , sizedHeader
     , translator
     )
 where
@@ -18,17 +17,17 @@ import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
 import Render.Art (artLines, renderQueryBlocks, warnIfNoFont)
 import Render.Pretty
-    ( Line (NewLine)
+    ( Colorize
+    , Line (NewLine)
     , blue
     , pprint
     , putColorDoc
     , putColorDoc'
     , red
-    , sized
-    , supportsTextSizing
     , terminalHeight
     , terminalWidth
     , viewTranslations
+    , white
     , withHeaderSpaces
     , yellow
     )
@@ -47,7 +46,6 @@ import System.Console.Haskeline.History (History, historyLines)
 import System.Console.Haskeline.IO (InputState)
 import qualified System.Console.Haskeline.IO as Haskeline
 import System.Exit (exitSuccess)
-import System.IO (hIsTerminalDevice, stdout)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
@@ -79,7 +77,7 @@ loopDialog dataDir mv inputState = do
         Just "" -> pure ()
         Just ":q" -> do
             header <- farewellHeader dataDir
-            putColorDoc' yellow NewLine header
+            putColorDoc' id NewLine header
             exitSuccess
         Just ":h" -> do
             history <-
@@ -129,28 +127,39 @@ mkOutput header answers =
         $ sortOutput answers
 
 -- | How the query is drawn: Braille art when the renderer is built and found a
--- Tibetan font, then OSC 66 in kitty, then the plain query. The art is sized
--- only in text lines, so it follows the console font, not the window or the
--- query.
+-- Tibetan font, then the plain query. The art is sized only in text lines, so
+-- it follows the console font, not the window or the query.
 queryHeader :: Maybe FilePath -> Text -> IO (Doc AnsiStyle)
 queryHeader dataDir query = do
     lines' <- queryArtLines
-    largeHeader dataDir lines' query query
+    largeHeader (const id) dataDir lines' query query
 
 -- | The farewell printed by @:q@: Tibetan only, no English text.
 farewell :: Text
 farewell = "ཞེས་བསྟན་འཛིན་བཟང་པོ།"
 
--- | The farewell drawn through the same route and height as a query.
+-- | The farewell drawn through the same route and height as a query, in the
+-- colors of the Tibetan flag.
 farewellHeader :: Maybe FilePath -> IO (Doc AnsiStyle)
-farewellHeader dataDir = queryHeader dataDir farewell
+farewellHeader dataDir = do
+    lines' <- queryArtLines
+    largeHeader flagBand dataDir lines' farewell farewell
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.
 omHeader :: Maybe FilePath -> Text -> IO (Doc AnsiStyle)
 omHeader dataDir fallback = do
     lines' <- omArtLines
-    largeHeader dataDir lines' omSyllable fallback
+    largeHeader flagBand dataDir lines' omSyllable fallback
+
+-- | Colors of the Tibetan flag, one per line: the sun, the red and blue rays,
+-- the snow mountain.
+flagBand :: Int -> Colorize
+flagBand i = case i `mod` 4 of
+    0 -> yellow
+    1 -> red
+    2 -> blue
+    _ -> white
 
 omSyllable :: Text
 omSyllable = "ༀ"
@@ -179,47 +188,42 @@ omArtLines = artLines "HIBET_OM_LINES" defaultOmLines
 data HeaderStyle
     = -- | Braille art that fits the window.
       ArtHeader [Text]
-    | -- | OSC 66 in a kitty that draws it.
-      SizedHeader
     | -- | Plain query, or the block art of @hibet om@.
       PlainHeader
     deriving stock (Eq, Show)
 
--- | The first level that works: drawn art that fits the window, then OSC 66 in
--- a terminal that draws it, then the fallback. The four-cell margin keeps the
--- art off the window edge; one row is left for the answer and one for the
--- pager keys.
-pickHeader :: Int -> Int -> Bool -> Maybe [Text] -> HeaderStyle
-pickHeader width height kitty mArt
+-- | The first level that works: drawn art that fits the window, then the
+-- fallback. The four-cell margin keeps the art off the window edge; one row is
+-- left for the answer and one for the pager keys.
+pickHeader :: Int -> Int -> Maybe [Text] -> HeaderStyle
+pickHeader width height mArt
     | Just rows <- mArt
     , not (null rows)
     , all ((<= width - 4) . T.length) rows
     , length rows <= height - 4 =
         ArtHeader rows
-    | kitty = SizedHeader
     | otherwise = PlainHeader
 
-largeHeader :: Maybe FilePath -> Int -> Text -> Text -> IO (Doc AnsiStyle)
-largeHeader dataDir lines' query fallback = do
-    isTerminal <- hIsTerminalDevice stdout
+largeHeader ::
+    (Int -> Colorize) -> Maybe FilePath -> Int -> Text -> Text -> IO (Doc AnsiStyle)
+largeHeader colorAt dataDir lines' query fallback = do
     width <- terminalWidth
     height <- terminalHeight
     blocks <- renderQueryBlocks dataDir width lines' query
-    kitty <- supportsTextSizing
-    -- A redirected stdout would keep the OSC 66 escape bytes around the query.
-    pure $ case pickHeader width height (isTerminal && kitty) (concat <$> blocks) of
-        ArtHeader rows -> vsep (map pretty rows)
-        SizedHeader -> sizedHeader width query
-        PlainHeader -> vsep (map pretty (wrapQuery width fallback))
+    pure $ case pickHeader width height (concat <$> blocks) of
+        ArtHeader rows -> vsep (colorRows colorAt rows)
+        PlainHeader ->
+            vsep $
+                colorRows
+                    colorAt
+                    (concatMap (T.splitOn "\n") (wrapQuery width fallback))
 
--- | The query drawn through OSC 66 at the largest scale that fits @width@.
--- The scale is chosen once for the widest wrapped line, so the lines do not
--- jump in size.
-sizedHeader :: Int -> Text -> Doc AnsiStyle
-sizedHeader width query
-    | scale > 1 = vsep (map (pretty . sized scale) rows)
-    | otherwise = vsep (map pretty rows)
+-- | Color the rows, giving each row with ink the next color; blank separators
+-- keep the art's spacing and take no band.
+colorRows :: (Int -> Colorize) -> [Text] -> [Doc AnsiStyle]
+colorRows colorAt = go 0
     where
-        rows = wrapQuery width query
-        widest = maximum (0 : map T.length rows)
-        scale = max 1 (min 4 ((width - 4) `div` max 1 widest))
+        go _ [] = []
+        go i (row : rows)
+            | T.null (T.strip row) = pretty row : go i rows
+            | otherwise = colorAt i (pretty row) : go (i + 1) rows

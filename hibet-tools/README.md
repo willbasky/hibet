@@ -47,7 +47,9 @@ The repository `justfile` wraps the same commands:
 `just update-dicts`, `just update-dicts-check`, `just generate-key-aliases`,
 `just generate-manifest`, `just check-manifest` and `just data-release`.
 `just data-publish` builds the artifacts and publishes them to GitHub Releases
-in one step.
+in one step. These recipes maintain the repository copy `hibet-data/`; the
+installed data under `$XDG_DATA_HOME/hibet/data` is updated by the user with
+`hibet data update`.
 
 `cabal run exe:hibet-dataset -- --help` prints the generated help;
 `release --help` shows its optional `DIR` (default `dist/data-release`). Exit

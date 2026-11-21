@@ -18,6 +18,17 @@ and this project adheres to
   the font; a data set without it falls back and `hibet om` warns. Data
   version 2026.11.20 includes the font.
 
+### Changed
+
+* The system fallback asks fontconfig for any Tibetan font
+  (`fc-match ':lang=bo'`) instead of the Noto Serif Tibetan family by name.
+
+### Removed
+
+* OSC 66 text sizing is gone: the query header uses Braille art or plain text,
+  `hibet om` uses Braille art or the fixed block art, and the `kitty --version`
+  probe (`supportsTextSizing`, `sizedHeader`, `parseKittyVersion`) is removed.
+
 ## [3.0.0] - 2026-11-19
 
 ### Changed

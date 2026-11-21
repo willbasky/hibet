@@ -15,9 +15,11 @@
 
 1. `ARCHITECTURE.md` — как пакеты связаны и как идёт поток данных.
 2. `hewts/DESIGN.md` или `hibet/DESIGN.md` — устройство нужного пакета.
-3. `hewts/SPEC.md` — что `hewts` обязан делать. Это единственный нормативный
+3. `hibet/RENDERING-MATRIX.md` — что увидит пользователь при разном наличии
+   данных, шрифта и в разных терминалах.
+4. `hewts/SPEC.md` — что `hewts` обязан делать. Это единственный нормативный
    документ.
-4. `hewts/ROADMAP.md` или `hibet/ROADMAP.md` — что дальше.
+5. `hewts/ROADMAP.md` или `hibet/ROADMAP.md` — что дальше.
 
 ## Карта
 
@@ -25,11 +27,12 @@
 |---|---|
 | `ARCHITECTURE.md` | общий: пакеты, зависимости, поток данных, модули |
 | `TERMINOLOGY.md` | словарь проекта: слог, стек, роль, нотация, корпус |
-| `TASKS.md` | очередь работ T1–T30 со статусами и критериями |
+| `TASKS.md` | очередь работ T1–T37 со статусами и критериями |
 | `hewts/DESIGN.md` | устройство hewts: три слоя, модель слога, границы |
 | `hewts/SPEC.md` | нормативные требования S1–S12, открытые пункты, долги |
 | `hewts/ROADMAP.md` | что осталось у hewts и в каком порядке |
 | `hibet/DESIGN.md` | устройство движка: Env, Dictionary, Translator |
+| `hibet/RENDERING-MATRIX.md` | фактическое поведение `shell`/`om`: данные, шрифт, сборка, терминал |
 | `hibet/ROADMAP.md` | что осталось у hibet |
 | `../README.md` | README проекта: пакеты, установка, команды |
 | `../hewts/README.md` | README пакета hewts |

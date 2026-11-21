@@ -2,15 +2,23 @@
 # only when both are installed; the plain build always works.
 art_flag := `pkg-config --exists freetype2 harfbuzz && echo "-f ascii-art" || echo ""`
 
+# Developer recipes. Users install with cabal and update the installed data
+# with `hibet data update`; `just` is not part of the user workflow.
+# `hibet-data/` below is the repository copy, not $XDG_DATA_HOME/hibet/data.
+
+# --- build, install, run ---
+
 # first-time setup: cabal index and generated files
 bootstrap:
     cabal update
     gen-hie > hie.yaml
     haskell-ci regenerate
 
+# install the CLI for the current user
 install: 
     cabal new-install {{art_flag}} exe:hibet --overwrite-policy=always
 
+# build all packages
 build: 
     cabal build {{art_flag}} all
 
@@ -18,12 +26,17 @@ build:
 build-art:
     cabal build -f ascii-art all
 
-# update the bounds of dependencies
-update:
-    cabal-bounds update
-
+# run from the checkout against the repository data
 run:
     HIBET_DATA_DIR=$PWD/hibet-data cabal run {{art_flag}} exe:hibet
+
+# --- dependency bounds ---
+
+# update the bounds of dependencies
+update-bounds:
+    cabal-bounds update
+
+# --- repository data (hibet-data/), not the installed data ---
 
 # regenerate hibet-data/key-aliases.tsv and hibet-data/manifest.toml
 generate-key-aliases:
@@ -61,10 +74,10 @@ data-publish: data-release
             --title "Hibet data" --notes "$notes"
     fi
 
-# download upstream dictionaries and update hibet-data/dicts
+# download upstream dictionaries into hibet-data/dicts (repository copy)
 update-dicts:
     cabal run exe:hibet-dataset -- update
 
-# report upstream and manifest differences without writing
+# read-only: compare hibet-data/dicts with upstream; no writes, no installed data
 update-dicts-check:
     cabal run exe:hibet-dataset -- check
