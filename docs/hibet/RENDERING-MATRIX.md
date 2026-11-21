@@ -81,7 +81,7 @@
 1. `HIBET_TIBETAN_FONT`;
 2. `<data-root>/fonts/BabelStoneTibetan.ttf`, где data-root — это
    `--data-dir`, затем `HIBET_DATA_DIR`, затем `$XDG_DATA_HOME/hibet/data`;
-3. `fc-match "Noto Serif Tibetan"`;
+3. `fc-match ':lang=bo'`;
 4. `/usr/share/fonts`, `/usr/local/share/fonts`, `~/.local/share/fonts`.
 
 Каждый кандидат проходит `isTibetanFont`: файл должен читаться и содержать

@@ -78,8 +78,8 @@ Tibetan font ships with the data set: **BabelStone Tibetan** (SIL OFL 1.1,
 `fonts/OFL.txt` in the data root), so install or update the data first
 (`hibet data install`, `hibet data update`). The search order is
 `HIBET_TIBETAN_FONT`, the font under the data root (`--data-dir`, then
-`HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`), `fc-match "Noto Serif
-Tibetan"`, then the usual font directories. Without a font the art falls back
+`HIBET_DATA_DIR`, then `$XDG_DATA_HOME/hibet/data`), `fc-match ':lang=bo'`,
+then the usual font directories. Without a font the art falls back
 and `hibet om` prints a warning; without the flag or those libraries the
 header falls through to plain text.
 
