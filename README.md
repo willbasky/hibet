@@ -24,8 +24,9 @@ or [Tibetan script](https://en.wikipedia.org/wiki/Tibetan_script).
 
 ## Install
 
-You need GHC 9.8.4 or 9.10.3 and Cabal; [ghcup](https://www.haskell.org/ghcup/)
-installs both. From the repository:
+You need GHC 9.8.4, 9.10.3 or 9.14.1 and Cabal; [ghcup](https://www.haskell.org/ghcup/)
+installs both. To pick a compiler, pass `cabal -w ghc-9.10.3 …` or
+`GHC=ghc-9.10.3 just build`. From the repository:
 
 ```
 git clone https://github.com/willbasky/hibet.git

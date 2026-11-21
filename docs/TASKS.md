@@ -211,7 +211,7 @@ CI, `flake.nix` и доки обновлены.
 символов Кангьюра, best of 3, падает при росте больше 2.5x. Сравнения с
 эталонами нет.
 
-**Референсы.** `/home/metaxis/source/apps/tibetan_translator/convertors/main`:
+**Референсы.** `convertors/main`:
 `ewts-converter`, `ewts-js`, `ewts-rs`, `jsewts`, `Lingua-BO-Wylie`.
 
 **Работа.**

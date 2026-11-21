@@ -229,7 +229,7 @@ exe hibet (пакет hibet-cli)
 
 ## Сборка и проверки
 
-- GHC 9.8.4 или 9.10.3, Cabal.
+- GHC 9.8.4, 9.10.3 или 9.14.1, Cabal.
 - `cabal build all` — четыре пакета.
 - `cabal build -f ascii-art hibet-cli` — с брайлевским артом; нужны системные
   `freetype2` и `harfbuzz`. `just build` ставит флаг сам, если `pkg-config

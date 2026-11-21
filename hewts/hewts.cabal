@@ -27,7 +27,7 @@ extra-doc-files:
   test/vectors/kang.txt
   test/vectors/wkang.txt
 
-tested-with: ghc ==9.8.4 || ==9.10.3
+tested-with: ghc ==9.8.4 || ==9.10.3 || ==9.14.1
 
 source-repository head
   type: git
@@ -106,7 +106,7 @@ library
   build-depends:
     bytestring >=0.11 && <0.13,
     bytestring-trie >=0.2.7 && <0.3,
-    containers >=0.6.7 && <0.8,
+    containers >=0.6.7 && <0.9,
     megaparsec >=9.6 && <10,
     text >=2.0.2 && <2.2,
     transformers >=0.5 && <0.7,

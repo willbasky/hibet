@@ -6,7 +6,7 @@ license-file: LICENSE
 copyright: 2023 willbasky
 maintainer: willgame(at)mail(dot)ru
 author: willbasky
-tested-with: ghc ==9.8.4 || ==9.10.3
+tested-with: ghc ==9.8.4 || ==9.10.3 || ==9.14.1
 homepage: https://github.com/willbasky/Hibet
 bug-reports: https://github.com/willbasky/Hibet/issues
 synopsis: maintainer tools for hibet
@@ -85,7 +85,7 @@ library
     http-types >=0.12.3 && <0.13,
     tar >=0.6 && <0.7,
     text >=2.0.2 && <2.2,
-    time >=1.9 && <1.15,
+    time >=1.9 && <1.16,
     unicode-transforms >=0.4 && <0.5,
     unordered-containers >=0.2.20 && <0.3,
     zlib >=0.7 && <0.8,
