@@ -2629,6 +2629,31 @@ hibet-tools-test` и `LC_ALL=C hibet --data-dir hibet-data data status`
 
 ---
 
+## T39. Прощание при выходе по Ctrl-D и Esc
+
+`[x]`
+
+**Сейчас.** `:q` печатает `farewellHeader`, а Ctrl-D и Esc дают EOF:
+`loopDialog` возвращается молча, и `translator` завершается без прощания.
+
+**Цель.** Любой выход из shell печатает прощание.
+
+**Работа.**
+
+1. Вынести печать в `putFarewell`:
+   `farewellHeader dataDir >>= putColorDoc' id NewLine`.
+2. Использовать её в ветке `:q` и после `runInputTWithPrefs`, когда цикл
+   вернулся по EOF.
+3. CHANGELOG.
+
+**Готово.** `:q`, Ctrl-D и Esc (в том числе на непустой строке) печатают
+тибетскую фразу и выходят с кодом 0; в pty проверены все четыре пути.
+
+**Не делать.** Не менять привязку Esc и `farewellHeader`; не печатать
+прощание через пейджер.
+
+---
+
 ## Не входит в список, но связано
 
 - **Публикация hibet на Hackage.** T25 убрала данные из пакета:

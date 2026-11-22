@@ -74,6 +74,7 @@ translator dataDir mv = do
         prefs
         Haskeline.defaultSettings
         (loopDialog dataDir mv)
+    putFarewell dataDir
 
 quitHint :: Bool -> Text
 quitHint escQuits
@@ -154,10 +155,7 @@ loopDialog dataDir mv = do
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
         Just "" -> pure ()
-        Just ":q" -> liftIO $ do
-            header <- farewellHeader dataDir
-            putColorDoc' id NewLine header
-            exitSuccess
+        Just ":q" -> liftIO $ putFarewell dataDir >> exitSuccess
         Just ":h" -> do
             history <- fromHistory <$> Haskeline.getHistory
             liftIO $ mapM_ (putColorDoc id NewLine) history
@@ -219,6 +217,10 @@ farewellHeader :: Maybe FilePath -> IO (Doc AnsiStyle)
 farewellHeader dataDir = do
     lines' <- queryArtLines
     largeHeader flagBand dataDir lines' farewell farewell
+
+-- | Print the farewell on every way out of the shell: @:q@, Ctrl-D and Esc.
+putFarewell :: Maybe FilePath -> IO ()
+putFarewell dataDir = farewellHeader dataDir >>= putColorDoc' id NewLine
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.

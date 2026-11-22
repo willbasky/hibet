@@ -39,6 +39,10 @@ and this project adheres to
   `hibet om` uses Braille art or the fixed block art, and the `kitty --version`
   probe (`supportsTextSizing`, `sizedHeader`, `parseKittyVersion`) is removed.
 
+### Fixed
+
+* The shell prints the farewell on Ctrl-D and Esc as well as on `:q`.
+
 ## [3.0.0] - 2026-11-19
 
 ### Changed
