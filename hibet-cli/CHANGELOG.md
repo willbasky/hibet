@@ -17,6 +17,10 @@ and this project adheres to
   fontconfig and the usual font directories. The CLI package no longer carries
   the font; a data set without it falls back and `hibet om` warns. Data
   version 2026.11.20 includes the font.
+* The shell prints the ways out under the input prompt: `:q` or Ctrl-D.
+  Ctrl-D works in any keyboard layout. A lone `Esc` is not a quit key:
+  Haskeline does not pass single-key events to the application and only rings
+  the bell.
 
 ### Changed
 

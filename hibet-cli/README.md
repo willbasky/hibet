@@ -139,6 +139,7 @@ single dictionary. `hibet <command> -h` prints the options of that command.
 ```
 $ hibet shell -s 7
 Input a word in the tibetan script or wylie transcription:
+Leave: :q or Ctrl-D.
 > mo
   མོ
   7. Rangjung Yeshe
@@ -175,9 +176,14 @@ keep the query pinned above every page.
 Shell keys:
 
 - `:q` - leave the shell;
+- `Ctrl-D` - leave the shell too, and it works in any layout;
 - `:h` - print the queries of this session;
 - arrows - previous and next query;
 - an empty line is ignored; unknown or illegal input prints `Nothing found`.
+
+A lone `Esc` cannot quit: Haskeline does not pass single-key events to the
+application and only rings the bell. The ways out are also printed under the
+input prompt at start.
 
 ## Build and tests
 

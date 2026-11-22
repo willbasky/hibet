@@ -59,6 +59,7 @@ translator dataDir mv = bracketOnError
             blue
             NewLine
             "Input a word in the tibetan script or wylie transcription:"
+        putColorDoc white NewLine "Leave: :q or Ctrl-D."
         loopDialog dataDir mv inputState
         Haskeline.closeInput inputState
 
