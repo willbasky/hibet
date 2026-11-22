@@ -139,6 +139,7 @@ single dictionary. `hibet <command> -h` prints the options of that command.
 ```
 $ hibet shell -s 7
 Input a word in the tibetan script or wylie transcription:
+Leave: :q, Ctrl-D, or Esc.
 > mo
   མོ
   7. Rangjung Yeshe
@@ -175,9 +176,20 @@ keep the query pinned above every page.
 Shell keys:
 
 - `:q` - leave the shell;
+- `Ctrl-D` - leave the shell too, and it works in any layout;
+- `Esc` - clear the line and leave; it also works in any layout. With
+  `editmode: Vi` in `~/.haskeline` Esc keeps its Vi meaning (the shell leaves
+  this mode alone), and the start hint shows only `:q`/Ctrl-D;
 - `:h` - print the queries of this session;
 - arrows - previous and next query;
 - an empty line is ignored; unknown or illegal input prints `Nothing found`.
+
+The start hint lists the ways out. Haskeline's own `~/.haskeline` settings
+(Vi/Emacs mode, history size, bell) are kept: the shell appends the Esc
+binding and reads the merged file. The binding is
+`bind: escape ctrl-a ctrl-k ctrl-d`: Esc clears the line and then becomes EOF.
+Haskeline 0.8.5 waits for the rest of an escape sequence before treating an
+Esc byte as a key, so a slow arrow key is not taken for Esc.
 
 ## Build and tests
 

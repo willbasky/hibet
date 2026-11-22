@@ -58,6 +58,7 @@ Wylie and Tibetan script reach the same article; `-s 7` loads only dictionary 7
 ```
 $ hibet shell -s 7
 Input a word in the tibetan script or wylie transcription:
+Leave: :q, Ctrl-D, or Esc.
 > mo
   མོ
   7. Rangjung Yeshe
@@ -71,8 +72,10 @@ Input a word in the tibetan script or wylie transcription:
     ...
 ```
 
-`:q` leaves the shell, `:h` prints the session history, and the arrows work
-too. Without `-s`, every dictionary is loaded and searched.
+`:q`, Ctrl-D and Esc leave the shell (`Esc` clears the line first; with
+`editmode: Vi` in `~/.haskeline` it keeps its Vi meaning), `:h` prints the
+session history, and the arrows work too. Without `-s`, every dictionary is
+loaded and searched.
 
 ## Commands
 
