@@ -1154,7 +1154,9 @@ callback: `Prefs` умеет `bind`, и последовательности к�
 превращает Esc в Ctrl-A (в начало), Ctrl-K (убить строку) и Ctrl-D (на пустой
 строке — EOF). Haskeline 0.8.5.0 добавила `keyseqTimeoutMs`: на медленном
 вводе Esc-байт ждёт остаток escape-последовательности, поэтому стрелки не
-срабатывают как выход; граница в cabal поднята до `>=0.8.5`.
+срабатывают как выход; граница в cabal поднята до `>=0.8.5`. В CI `haskell-ci`
+исключает `haskeline` из `--installed` (`-text,-parsec,-haskeline`), иначе
+солвер требует встроенную в GHC версию и не берёт 0.8.5.
 
 `initializeInput`/`queryInput` заменены на `runInputTWithPrefs`;
 `loopDialog` теперь `InputT IO`, IO-действия обёрнуты в `liftIO`. `Prefs` —
