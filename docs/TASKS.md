@@ -11,7 +11,8 @@
 
 Рекомендуемая очередь: **T3 → T4**. Закрыты T1, T2, T5–T13, T16, T22,
 T24, T25, T27, T29–T37. T35 закрыт: шрифт для арта в данных;
-T37 закрыт: OSC 66 удалён.
+T37 закрыт: OSC 66 удалён. T38 — файлы на `ByteString`, консоль на
+`Text.IO`, внутри `Text`; ни от чего не зависит.
 T14–T23 — бэклог
 из разбора issue: порядок между ними не задан, T17 отложена. T16 включала
 вывод и код возврата, категории `HibetError` и `ManifestError`.
@@ -71,6 +72,9 @@ T28 (`DataRoot`) — опционально, после T25 шага 2. T3 и T4
 - T35 — шрифт для арта в данных: сначала выбор шрифта и начертания
   по читаемости на ppem арта, потом поставка с датасетом и лицензией;
   отменяет пункт T31 «не класть шрифт в репозиторий».
+- T38 — границы ввода-вывода: файлы читаются и пишутся `ByteString` с явным
+  UTF-8, консоль остаётся на `Data.Text.IO` (locale), текст внутри — `Text`;
+  ни от чего не зависит.
 
 ---
 
@@ -2489,6 +2493,118 @@ T35 не блокирует: шрифт из данных улучшает ар�
 Проверено на GHC 9.10.3 и 9.8.4: `cabal test -f ascii-art hibet-render` —
 72 examples, 0 failures, 3 pending. На GHC 9.10.3 без флага — 72 examples,
 0 failures, 11 pending.
+
+---
+
+## T38. Файлы — `ByteString`, консоль — `Text.IO`, внутри — `Text`
+
+`[ ]`
+
+**Сейчас.** Граница «байты ↔ текст» проведена неравномерно. `Env`, `Manifest`
+и `Release` уже читают файлы строго через `BS.readFile`; текст из них
+декодируется `TE.decodeUtf8'` с путём в ошибке (`Env`, `Label`, `Manifest`);
+так же поступают тесты `hewts`. Консоль в `Render.Pretty`, `Progress`, `App`,
+`Cli` и `Render.Art` уже идёт через `Data.Text.IO` — это правильный слой для
+терминала. Остались две группы:
+
+- **Файлы через `TIO`** — locale вместо UTF-8: `KeyAliases` читает словари и
+  пишет alias-таблицу, `Update` читает `titles.toml`, `Cli.readManifestVersion`
+  читает `manifest.toml`, `Shell.shellPrefs`/`mergedPrefs` читают и пишут
+  prefs, тесты `hibet-*` читают и пишут фикстуры.
+- **Консоль через `String`** — `hibet-tools/app/Main.hs` (`putStrLn`/
+  `hPutStrLn`), `Update` (`putStrLn`), `KeyAliases` (`printf` как `IO ()`);
+  сообщения инструментов живут в `Either String` (`Install`, `Update`,
+  `Release`, `Fetch`) и только на печати становятся `Text`.
+
+`Data.Text.IO` на файле берёт кодировку из locale. При `LC_ALL=C`/`POSIX`
+(cron, минимальный Docker, ssh без `LANG`) чтение тибетского словаря падает
+с `hGetContents: invalid argument (cannot decode byte sequence starting from
+…)`; файл, записанный `TIO.writeFile`, зависит от той же locale. Для консоли
+это, наоборот, правильное поведение: кодировку выбирает терминал.
+
+**Цель.** `Text` — доменный тип: содержимое словарей, `Env`, `Dictionary`,
+`Labels`, `Manifest`, ответы и сообщения. `ByteString` — только файлы,
+архивы и сеть; между файлом и `Text` явные `TE.decodeUtf8'`/`TE.encodeUtf8`.
+Консоль — `Data.Text.IO`: locale — это ровно то, что нужно терминалу
+пользователя. `String` остаётся только там, где его навязывает API:
+`FilePath`, `Show`/`Read`, `IOException`/`HttpException`,
+`optparse-applicative`, URL для `http-client`.
+
+**Ссылка.** Michael Snoyman, «Beware of readFile» (22.12.2016),
+<https://www.snoyman.com/blog/2016/12/beware-of-readfile/>: файлы, сокеты и
+сеть — `ByteString` плюс явный `decodeUtf8`; stdin/stdout/stderr —
+`Data.Text.IO`, потому что locale там уместна. Шире — FP Complete,
+«String Types» (материал школы Snoyman, без подписи):
+<https://www.fpcomplete.com/haskell/tutorial/string-types/>.
+
+**Почему консоль не `ByteString`.** У файла формат задаёт приложение, поэтому
+кодировка должна быть фиксированной (UTF-8) и не зависеть от окружения. У
+консоли кодировку выбирает терминал пользователя, и `Data.Text.IO` — тот слой,
+который её соблюдает; `BS.hPut` с UTF-8 дал бы мусор в терминале с другой
+локалью. Поэтому `TIO.putStr*`/`hPutStr*` в `Render.Pretty`, `Progress`, `App`,
+`Cli` и `Art` остаются, а `putDoc` не трогаем.
+
+**Работа.**
+
+1. Добавить в `hibet` один модуль границы (`Io`, exposed): им пользуются
+   `hibet`, `hibet-cli` и `hibet-tools`.
+   - `readUtf8 :: FilePath -> IO (Either Utf8Error Text)` — строгий
+     `BS.readFile` + `TE.decodeUtf8'`; `Utf8Error` несёт путь и различает
+     ошибку IO и битый UTF-8.
+   - `writeUtf8 :: FilePath -> Text -> IO ()` — `TE.encodeUtf8` +
+     `BS.writeFile`.
+   `Env.getFilesTexts`/`readAliases`, `Label.getLabels` (сузить аргумент до
+   `Text`), `Manifest.readManifest`, `KeyAliases`, `Update`, `Cli`, `Shell`
+   переводятся на них; `Env.readData` остаётся только для `listDirectory`.
+   `HibetError`/`ManifestError` собираются на месте, чтобы сохранить
+   `DataUnreadable`/`DataInvalid` и контекст манифеста. `Utf8Error` —
+   `Exception`: `generateAliases` может бросить, как сейчас.
+2. Консоль: `Data.Text.IO` остаётся. Заменить `String`-вывод на `TIO`:
+   `hibet-tools/app/Main.hs`, `Update` (`putStrLn`/`printf`), `KeyAliases`
+   (`printf` как `IO ()`). Аргументы печати — `Text`, не `String`; `printf`
+   допустим только как чистое форматирование в `T.pack`. `putDoc`,
+   `TIO.putStr*`, `hPutStr*` в `src` остаются.
+3. `Shell.shellPrefs` читает prefs через `readUtf8`, `mergedPrefs` пишет
+   временный prefs-файл через `writeUtf8` (вместо `T.unpack` +
+   `hPutStrLn`). `Haskeline.readPrefs` читает файл сам и кодировку не
+   отдаёт; это ограничение библиотеки — не-ASCII prefs под не-UTF-8 локалью
+   остаются вне гарантии.
+4. Сообщения инструментов: `Either String` в `Install`, `Update`, `Release`,
+   `Fetch` и `Cli.reportFailure` перевести на `Either Text`/`Text`; чужие
+   ошибки заворачиваются `T.pack . displayException`/`show` один раз на
+   границе. URL, `FilePath` и аргументы `http-client` остаются `String`.
+5. Тесты: `hibet-*` читают и пишут файлы через `Io`; `hewts-*` — локальный
+   `BS.readFile` + `decodeUtf8'`, как в `Test.Corpus`/`Golden`. Добавить
+   проверку границы: при `setLocaleEncoding latin1` `readUtf8` всё равно
+   читает UTF-8, а битые байты дают ошибку с путём, а не исключение.
+   Прогнать `LC_ALL=C` для `hibet data status` и
+   `hibet-dataset generate-key-aliases` на маленьком каталоге; тибетский
+   вывод `shell` под `C` не проверять — консоль следует locale.
+6. Документация: раздел «Границы IO» в `docs/hibet/DESIGN.md` (и строка в
+   `ARCHITECTURE.md`); `CHANGELOG.md` затронутых пакетов; снимок в
+   `TASKS.md`.
+
+**Готово.** В `hibet*/src` и `hibet-tools/app` нет `TIO.readFile`/
+`TIO.writeFile` (файлы идут через `Io`/`ByteString`), нет
+`Prelude.readFile/writeFile/putStr/hPutStr` и `printf` как `IO ()`;
+консольные сообщения — `Text` через `Data.Text.IO`; `Either String` в
+сообщениях инструментов заменён на `Text`; чтение UTF-8-файлов не зависит
+от locale (`LC_ALL=C`), битый UTF-8 даёт `DataInvalid`/`ManifestError` с
+путём; тест границы зелёный; `cabal test all` зелёный на GHC 9.8.4 и
+9.10.3.
+
+**Не делать.** Не переводить stdout/stderr на `ByteString`/`BS.hPut`: это
+противоречит статье и ломает locale консоли; `TIO.putStr*` и `putDoc`
+остаются. Не ставить глобально `hSetEncoding`. Не менять `FilePath` на
+`Text`/`OsPath`: путь — не доменный текст, `path` не возвращаем (T28). Не
+тащить `conduit`/`streaming`: словари читаются строго, ленивый `ByteString`
+остаётся только у `tar.gz`, это бинарный формат. Не использовать
+`Data.ByteString.Char8` для текста (только ASCII-числа вроде `parseLength`).
+Не менять формат словарей, манифеста и alias-таблицы. Не трогать `hewts`:
+там нет IO.
+
+**Зависит от.** Ничего. T26 (NDJSON) — отдельный случай: пайп со статьёй
+ближе к данным, чем к консоли; консольный вывод остаётся `Text.IO`.
 
 ---
 
