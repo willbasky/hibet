@@ -19,23 +19,23 @@ bootstrap:
 
 # install the CLI for the current user
 install: 
-    cabal -w {{ghc}} new-install {{art_flag}} exe:hibet --overwrite-policy=always
+    cabal --with-compiler={{ghc}} install {{art_flag}} exe:hibet --overwrite-policy=always
 
 # build all packages
 build: 
-    cabal -w {{ghc}} build {{art_flag}} all
+    cabal --with-compiler={{ghc}} build {{art_flag}} all
 
 # build the Braille renderer; fails when freetype2 or harfbuzz is missing
 build-art:
-    cabal -w {{ghc}} build -f ascii-art all
+    cabal --with-compiler={{ghc}} build -f ascii-art all
 
 # run from the checkout against the repository data
 run:
-    HIBET_DATA_DIR=$PWD/hibet-data cabal -w {{ghc}} run {{art_flag}} exe:hibet
+    HIBET_DATA_DIR=$PWD/hibet-data cabal --with-compiler={{ghc}} run {{art_flag}} exe:hibet
 
 # typecheck all libraries on every save; log in /tmp/hibet-ghcid.log
 ghcid:
-    ghcid --command "cabal -w {{ghc}} repl {{art_flag}} all --enable-multi-repl --repl-options=-ignore-dot-ghci" --outputfile /tmp/hibet-ghcid.log --no-height
+    ghcid --command "cabal --with-compiler={{ghc}} repl {{art_flag}} all --enable-multi-repl --repl-options=-ignore-dot-ghci" --outputfile /tmp/hibet-ghcid.log --no-height
 
 # --- dependency bounds ---
 
@@ -47,19 +47,19 @@ update-bounds:
 
 # regenerate hibet-data/key-aliases.tsv and hibet-data/manifest.toml
 generate-key-aliases:
-    cabal -w {{ghc}} run exe:hibet-dataset -- generate-key-aliases
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- generate-key-aliases
 
 # regenerate hibet-data/manifest.toml from the current hibet-data/
 generate-manifest:
-    cabal -w {{ghc}} run exe:hibet-dataset -- generate-manifest
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- generate-manifest
 
 # verify hibet-data/manifest.toml against hibet-data/ without network
 check-manifest:
-    cabal -w {{ghc}} run exe:hibet-dataset -- check-manifest
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- check-manifest
 
 # build dist/data-release/hibet-data-<version>.tar.gz and manifest.toml
 data-release:
-    cabal -w {{ghc}} run exe:hibet-dataset -- release dist/data-release
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- release dist/data-release
 
 # publish the current artifacts to the rolling hibet-data GitHub release
 data-publish: data-release
@@ -83,8 +83,8 @@ data-publish: data-release
 
 # download upstream dictionaries into hibet-data/dicts (repository copy)
 update-dicts:
-    cabal -w {{ghc}} run exe:hibet-dataset -- update
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- update
 
 # read-only: compare hibet-data/dicts with upstream; no writes, no installed data
 update-dicts-check:
-    cabal -w {{ghc}} run exe:hibet-dataset -- check
+    cabal --with-compiler={{ghc}} run exe:hibet-dataset -- check
