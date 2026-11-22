@@ -30,6 +30,10 @@
               hself.callCabal2nix "falsify"
                 (hackageSrc "falsify" "0.4.0" "sha256-VqeMmuRiYh9M6A/Dv0ZWR60AYvtU5CcVSYYDFWxNUi8=")
                 { };
+            haskeline =
+              hself.callCabal2nix "haskeline"
+                (hackageSrc "haskeline" "0.8.5.0" "sha256-tCt21Eh0+n2zHuCeajH5UsQjMIrfJZD1FXObFAtgzhU=")
+                { };
             tasty-falsify =
               hself.callCabal2nix "tasty-falsify"
                 (hackageSrc "tasty-falsify" "0.1.0" "sha256-9CFa7ko/KaIHrDiOHzv9u5X93SmlQO50fny5qExaGdA=")
