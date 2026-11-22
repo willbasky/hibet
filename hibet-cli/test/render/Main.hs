@@ -26,6 +26,7 @@ import Shell
     , queryArtLines
     , queryHeader
     , queryReply
+    , viMode
     )
 import Type (HibetError (..), renderError)
 
@@ -98,6 +99,7 @@ main = do
             pagerSpec
             renderErrorSpec
             queryReplySpec
+            viModeSpec
 
 renderErrorSpec :: Spec
 renderErrorSpec =
@@ -105,6 +107,19 @@ renderErrorSpec =
         $ it "prints the summary and the detail without the constructor"
         $ renderError (DataInvalid "titles.toml" "line 1")
             `shouldBe` "Invalid data in titles.toml\nline 1"
+
+viModeSpec :: Spec
+viModeSpec = describe "viMode" $ do
+    it "sees Haskeline's Vi mode" $
+        viMode "editmode: Vi\n" `shouldBe` True
+    it "leaves the Esc binding on in Emacs mode" $
+        map viMode ["", "editmode: Emacs", "bind: escape ctrl-d"]
+            `shouldBe` replicate 3 False
+    it "ignores a lowercase editmode value Haskeline would not parse" $
+        viMode "editmode: vi" `shouldBe` False
+    it "takes the last editmode line" $ do
+        viMode "editmode: Vi\neditmode: Emacs" `shouldBe` False
+        viMode "editmode: Emacs\neditmode: Vi" `shouldBe` True
 
 queryReplySpec :: Spec
 queryReplySpec = describe "queryReply" $ do

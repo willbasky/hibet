@@ -25,7 +25,7 @@ or [Tibetan script](https://en.wikipedia.org/wiki/Tibetan_script).
 ## Install
 
 You need GHC 9.8.4, 9.10.3 or 9.14.1 and Cabal; [ghcup](https://www.haskell.org/ghcup/)
-installs both. To pick a compiler, pass `cabal -w ghc-9.10.3 …` or
+installs both. To pick a compiler, pass `cabal --with-compiler=ghc-9.10.3 …` or
 `GHC=ghc-9.10.3 just build`. From the repository:
 
 ```
@@ -58,6 +58,7 @@ Wylie and Tibetan script reach the same article; `-s 7` loads only dictionary 7
 ```
 $ hibet shell -s 7
 Input a word in the tibetan script or wylie transcription:
+Leave: :q, Ctrl-D, or Esc.
 > mo
   མོ
   7. Rangjung Yeshe
@@ -71,8 +72,10 @@ Input a word in the tibetan script or wylie transcription:
     ...
 ```
 
-`:q` leaves the shell, `:h` prints the session history, and the arrows work
-too. Without `-s`, every dictionary is loaded and searched.
+`:q`, Ctrl-D and Esc leave the shell (`Esc` clears the line first; with
+`editmode: Vi` in `~/.haskeline` it keeps its Vi meaning), `:h` prints the
+session history, and the arrows work too. Without `-s`, every dictionary is
+loaded and searched.
 
 ## Commands
 

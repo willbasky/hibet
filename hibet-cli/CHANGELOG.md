@@ -17,6 +17,12 @@ and this project adheres to
   fontconfig and the usual font directories. The CLI package no longer carries
   the font; a data set without it falls back and `hibet om` warns. Data
   version 2026.11.20 includes the font.
+* The shell leaves on `Esc` as well as `:q` and Ctrl-D, so no Latin layout is
+  needed. Esc is bound to `ctrl-a ctrl-k ctrl-d` (clear the line, then EOF)
+  in Haskeline prefs; the user's `~/.haskeline` settings are kept. In Vi mode
+  Esc stays the mode switch, and the start hint lists only the remaining ways
+  out. The input session now runs through `runInputTWithPrefs`, and Haskeline
+  0.8.5 gives the Esc byte a key-sequence timeout.
 
 ### Changed
 
