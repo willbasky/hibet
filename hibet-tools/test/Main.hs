@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Fetch (newFetcher)
+import Io (readUtf8, writeUtf8)
 import KeyAliases (generateAliases)
 import qualified Manifest
 import Release (ReleaseInfo (..), buildRelease)
@@ -17,9 +18,7 @@ import qualified Codec.Archive.Tar as Tar
 import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import Data.List (isInfixOf)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile)
 import System.FilePath ((</>))
 import System.IO.Temp (withSystemTempDirectory)
@@ -101,7 +100,7 @@ updateSpec =
                             , added = 2
                             , missingTitles = []
                             }
-                TIO.readFile dest `shouldReturn` "re ba|hope\n"
+                readTextFile dest `shouldReturn` "re ba|hope\n"
                 again <- runUpdate config{checkOnly = False} entries
                 again
                     `shouldBe` Right
@@ -128,7 +127,7 @@ updateSpec =
         it "reports a missing title" $
             withSystemTempDirectory "hibet-update" $ \tmp -> do
                 (config, entries) <- setup tmp
-                TIO.writeFile
+                writeUtf8
                     (dataRoot config </> "titles.toml")
                     "[[titles]]\npath = \"A-T|E\"\n"
                 checked <- runUpdate config{checkOnly = True} entries
@@ -153,7 +152,7 @@ updateSpec =
             createDirectoryIfMissing True (root </> "dicts")
             BS.writeFile (upstream </> "a.txt") "re ba|hope\n"
             BS.writeFile (upstream </> "b.txt") "ri ma|land\n"
-            TIO.writeFile
+            writeUtf8
                 (root </> "titles.toml")
                 "[[titles]]\npath = \"A-T|E\"\n\n[[titles]]\npath = \"B-T|E\"\n"
             fetcher <- newFetcher
@@ -174,7 +173,7 @@ aliasSpec =
             withSystemTempDirectory "hibet-aliases" $ \tmp -> do
                 let out = tmp </> "key-aliases.tsv"
                 generateAliases "test/data/dicts" out
-                content <- TIO.readFile out
+                content <- readTextFile out
                 content
                     `shouldSatisfy` T.isInfixOf "bha ga\tb+ha ga"
 
@@ -186,7 +185,7 @@ manifestSpec =
                 setupData root
                 written <- Manifest.writeManifest root "2026.11.09"
                 written `shouldBe` Right 3
-                content <- TIO.readFile (root </> "manifest.toml")
+                content <- readTextFile (root </> "manifest.toml")
                 content
                     `shouldSatisfy` T.isInfixOf
                         "sha256 = \"92d944fe43bd6797e4ce6df996aab7b8243566737090d2e84790e539ea8fd78f\""
@@ -266,7 +265,7 @@ releaseSpec =
                 _ <- Manifest.writeManifest root "2026.11.09"
                 built <- buildRelease root out
                 case built of
-                    Left err -> expectationFailure err
+                    Left err -> expectationFailure (T.unpack err)
                     Right info -> do
                         info.releaseVersion `shouldBe` "2026.11.09"
                         info.releaseFiles `shouldBe` 3
@@ -312,9 +311,12 @@ setupData root = do
     BS.writeFile (root </> "titles.toml") "[[titles]]\n"
     BS.writeFile (root </> "key-aliases.tsv") "bha ga\tb+ha ga\n"
 
-isLeftWith :: String -> Either String a -> Bool
+readTextFile :: FilePath -> IO T.Text
+readTextFile path = readUtf8 path >>= either (fail . show) pure
+
+isLeftWith :: T.Text -> Either T.Text a -> Bool
 isLeftWith needle = \case
-    Left err -> needle `isInfixOf` err
+    Left err -> needle `T.isInfixOf` err
     Right _ -> False
 
 isManifestError :: T.Text -> T.Text -> Either Manifest.ManifestError a -> Bool

@@ -29,6 +29,9 @@
 - CLI: `shell`, `show names`, `show meta`, `om`, `data status`/`install`/
   `update`, глобальный `--data-dir`. Консоль вынесена в пакет `hibet-cli`
   (T2): `hibet` — движок без Haskeline и optparse.
+- Границы IO (T38): файлы — `ByteString` с явным UTF-8, консоль —
+  `Data.Text.IO` (locale), внутри — `Text`; `LC_ALL=C` не влияет на чтение
+  словарей.
 - Заголовок запроса: брайлевский арт за флагом `ascii-art`, иначе обычный
   текст (T13, T31, T32); запрос шире окна переносится по границам слогов,
   арт рисуется блоками (T33).

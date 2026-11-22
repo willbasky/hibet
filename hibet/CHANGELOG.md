@@ -7,6 +7,16 @@ and this project adheres to
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
 
+## [Unreleased]
+
+### Changed
+
+* File text IO goes through the new `Io` module: strictly read as UTF-8
+  `ByteString` and decoded to `Text`, written back with `encodeUtf8`. The
+  locale is no longer involved, so dictionaries read under `LC_ALL=C`.
+  `Label.getLabels` now takes `Text`; `Env.readAliases` and `getFilesTexts`
+  use `Io.readUtf8`. Console output still uses `Data.Text.IO`.
+
 ## [4.0.0] - 2026-11-19
 
 ### Changed

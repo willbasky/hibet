@@ -19,9 +19,10 @@ import Convert.Diagnostic
     , diagnosticList
     , renderDiagnostics
     )
+import qualified Data.ByteString as BS
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
+import qualified Data.Text.Encoding as TE
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, testCase)
 
@@ -33,7 +34,7 @@ tests =
 
 check :: Assertion
 check = do
-    readme <- TIO.readFile "README.md"
+    readme <- TE.decodeUtf8 <$> BS.readFile "README.md"
     let examples = transcript readme
     assertBool "README.md has no ```ghci transcript" (not (null examples))
     assertBool

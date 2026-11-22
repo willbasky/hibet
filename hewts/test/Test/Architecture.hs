@@ -13,10 +13,11 @@
 module Test.Architecture (tests) where
 
 import Control.Monad (forM)
+import qualified Data.ByteString as BS
 import Data.Char (isSpace)
 import Data.List (isInfixOf, nub, sort)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
+import qualified Data.Text.Encoding as TE
 import System.Directory (doesDirectoryExist, listDirectory)
 import System.FilePath (takeExtension, (</>))
 import Test.Tasty (TestTree, testGroup)
@@ -245,7 +246,7 @@ importsOfModule moduleName = filter (moduleName `isInfixOf`)
 
 importsOf :: FilePath -> IO [String]
 importsOf path = do
-    source <- TIO.readFile path
+    source <- TE.decodeUtf8 <$> BS.readFile path
     pure
         [ T.unpack line
         | line <- T.lines source
@@ -257,7 +258,7 @@ importsOf path = do
 -- inside a list lose their constructors: @Stack (..)@ is @Stack@.
 importedNames :: FilePath -> IO [(String, [String])]
 importedNames path = do
-    source <- TIO.readFile path
+    source <- TE.decodeUtf8 <$> BS.readFile path
     pure (map names (importBlocks (T.lines source)))
     where
         names chunk = (moduleOf chunk, entries chunk)
@@ -297,7 +298,7 @@ importBlocks = go
 -- violation of 6d hid in another module - so imports are not sites.
 symbolSites :: FilePath -> [String] -> IO [(String, String)]
 symbolSites path symbols = do
-    source <- TIO.readFile path
+    source <- TE.decodeUtf8 <$> BS.readFile path
     pure
         [ (symbol, decl)
         | (decl, line) <- declarations (T.lines source)

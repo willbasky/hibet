@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+* Dictionary updates, alias generation and manifest reads/writes go through
+  `Io` (UTF-8 `ByteString` + `Text`); `hibet-dataset` output and `Either`
+  errors are `Text` and print through `Data.Text.IO`. A `LC_ALL=C` run no
+  longer fails while reading dictionaries.
+
 ## [0.3.0] - 2026-11-19
 
 ### Added

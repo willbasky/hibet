@@ -18,6 +18,7 @@ import Install
     , installFromDir
     , installFromRelease
     )
+import Io (readUtf8, toHibetError)
 import Label (LabelFull (..), Labels (..), Title (unTitle), getLabels)
 import Paths_hibet_cli (version)
 import Render.Art (warnIfNoFont)
@@ -29,7 +30,6 @@ import Utility (showT)
 import Control.Applicative (many, optional, (<|>))
 import Control.Concurrent.MVar (MVar)
 import Control.Exception (throwIO)
-import qualified Data.ByteString as BS
 import Data.Foldable (find, toList)
 import Data.List (sortBy)
 import Data.Maybe (fromMaybe, listToMaybe)
@@ -151,14 +151,14 @@ runDataUpdate msource = do
                     <> maybe "" (\v -> " (" <> v <> ")") mversion
         Right (Just installed) -> reportSuccess installed
 
-reportInstalled :: String -> Either String Installed -> IO ()
+reportInstalled :: Text -> Either Text Installed -> IO ()
 reportInstalled verb = either (reportFailure verb) reportSuccess
 
-reportFailure :: String -> String -> IO ()
+reportFailure :: Text -> Text -> IO ()
 reportFailure verb err = do
     TIO.hPutStrLn
         stderr
-        ("data " <> T.pack verb <> " failed: " <> T.pack err)
+        ("data " <> verb <> " failed: " <> err)
     exitFailure
 
 reportSuccess :: Installed -> IO ()
@@ -179,7 +179,7 @@ readManifestVersion path = do
     if not exists
         then pure Nothing
         else do
-            content <- TIO.readFile path
+            content <- readUtf8 path >>= either (throwIO . toHibetError) pure
             pure $
                 listToMaybe
                     [ T.dropAround (== '"') $ T.strip (T.drop 1 rest)
@@ -195,7 +195,8 @@ runShowStatic :: Maybe FilePath -> Opt -> IO ()
 runShowStatic mdir opt = do
     root <- resolveDataDir mdir >>= either throwIO pure
     let path = root </> "titles.toml"
-    labels <- getLabels path <$> BS.readFile path >>= either throwIO pure
+    content <- readUtf8 path >>= either (throwIO . toHibetError) pure
+    labels <- either throwIO pure (getLabels path content)
     runShow labels opt
 
 runShow :: Labels -> Opt -> IO ()

@@ -10,9 +10,9 @@
 ## Порядок
 
 Рекомендуемая очередь: **T3 → T4**. Закрыты T1, T2, T5–T13, T16, T22,
-T24, T25, T27, T29–T37. T35 закрыт: шрифт для арта в данных;
-T37 закрыт: OSC 66 удалён. T38 — файлы на `ByteString`, консоль на
-`Text.IO`, внутри `Text`; ни от чего не зависит.
+T24, T25, T27, T29–T38. T35 закрыт: шрифт для арта в данных;
+T37 закрыт: OSC 66 удалён. T38 закрыт: файлы на `ByteString`, консоль на
+`Text.IO`, внутри `Text`.
 T14–T23 — бэклог
 из разбора issue: порядок между ними не задан, T17 отложена. T16 включала
 вывод и код возврата, категории `HibetError` и `ManifestError`.
@@ -72,9 +72,9 @@ T28 (`DataRoot`) — опционально, после T25 шага 2. T3 и T4
 - T35 — шрифт для арта в данных: сначала выбор шрифта и начертания
   по читаемости на ppem арта, потом поставка с датасетом и лицензией;
   отменяет пункт T31 «не класть шрифт в репозиторий».
-- T38 — границы ввода-вывода: файлы читаются и пишутся `ByteString` с явным
-  UTF-8, консоль остаётся на `Data.Text.IO` (locale), текст внутри — `Text`;
-  ни от чего не зависит.
+- T38 закрыта — границы ввода-вывода: файлы читаются и пишутся `ByteString`
+  с явным UTF-8, консоль осталась на `Data.Text.IO` (locale), текст внутри —
+  `Text`.
 
 ---
 
@@ -2502,7 +2502,7 @@ T35 не блокирует: шрифт из данных улучшает ар�
 
 ## T38. Файлы — `ByteString`, консоль — `Text.IO`, внутри — `Text`
 
-`[ ]`
+`[x]`
 
 **Сейчас.** Граница «байты ↔ текст» проведена неравномерно. `Env`, `Manifest`
 и `Release` уже читают файлы строго через `BS.readFile`; текст из них
@@ -2609,6 +2609,23 @@ T35 не блокирует: шрифт из данных улучшает ар�
 
 **Зависит от.** Ничего. T26 (NDJSON) — отдельный случай: пайп со статьёй
 ближе к данным, чем к консоли; консольный вывод остаётся `Text.IO`.
+
+**Сделано 22.11.2026.** Новый модуль `Io`: `readUtf8`/`writeUtf8` и
+`Utf8Error` с путём. `Env`, `Cli`, `Shell`, `Manifest`, `KeyAliases`,
+`Update` читают и пишут файлы через него; `Label.getLabels` принимает
+`Text`. Консоль осталась на `Data.Text.IO`; `String`-вывод
+`hibet-tools` и `Update` переведён на `TIO` с `Text`; `Either String` в
+`Install`, `Update`, `Release`, `Fetch` и `Cli.reportFailure` стал
+`Either Text`/`Text`. `putDoc` и `TIO.putStr*` не трогали. `hewts`-тесты
+читают README и исходники через `BS.readFile` + `decodeUtf8`.
+
+Проверка: `cabal test all` зелёный на GHC 9.8.4, 9.10.3 и 9.14.1;
+`hibet-labels` проверяет `readUtf8`/`writeUtf8` при
+`setLocaleEncoding latin1`; `LC_ALL=C cabal test hibet-labels hibet-env
+hibet-tools-test` и `LC_ALL=C hibet --data-dir hibet-data data status`
+зелёные; `hibet-dataset check-manifest` под `C` печатает `manifest: ok`.
+Документация: раздел «Границы IO» в `docs/hibet/DESIGN.md`, строка в
+`docs/ARCHITECTURE.md`, changelog `hibet`, `hibet-cli` и `hibet-tools`.
 
 ---
 

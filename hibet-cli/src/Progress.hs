@@ -88,7 +88,8 @@ render p = do
     current <- readIORef p.bytes
     index <- atomicModifyIORef' p.frame (\n -> (n + 1, n))
     let glyph
-            | p.animate = T.singleton (spinner !! (index `mod` length spinner)) <> " "
+            | p.animate =
+                T.singleton (T.index spinner (index `mod` T.length spinner)) <> " "
             | otherwise = ""
     TIO.hPutStr stderr ("\r" <> glyph <> name <> bytesSuffix current)
     hFlush stderr
@@ -133,7 +134,7 @@ megabytes :: Int64 -> Text
 megabytes n =
     T.pack (showFFloat (Just 1) (fromIntegral n / 1000000 :: Double) " MB")
 
-spinner :: String
+spinner :: Text
 spinner = "|/-\\"
 
 spinnerEnabled :: IO Bool

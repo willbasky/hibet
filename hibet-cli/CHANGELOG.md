@@ -28,6 +28,10 @@ and this project adheres to
 
 * The system fallback asks fontconfig for any Tibetan font
   (`fc-match ':lang=bo'`) instead of the Noto Serif Tibetan family by name.
+* `manifest.toml`, `titles.toml` and Haskeline prefs are read and written as
+  UTF-8 bytes through `Io`, not through the locale-dependent `Data.Text.IO`.
+  `Install` and `Cli` messages are `Text`; console output stays on
+  `Data.Text.IO` as the locale layer.
 
 ### Removed
 

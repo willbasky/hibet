@@ -45,7 +45,6 @@ import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.Text.IO as TIO
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, testCase)
 
@@ -603,8 +602,10 @@ writeReport :: Assertion
 writeReport = do
     corpusItems <- mapM (\c -> (c,) <$> itemsFor c) [minBound .. maxBound]
     baseline <- readBaseline
-    TIO.writeFile reportFile (T.unlines (render corpusItems baseline))
-    written <- TIO.readFile reportFile
+    BS.writeFile
+        reportFile
+        (TE.encodeUtf8 (T.unlines (render corpusItems baseline)))
+    written <- TE.decodeUtf8 <$> BS.readFile reportFile
     assertBool ("report file " <> reportFile <> " is empty") (not (T.null written))
     where
         render corpusItems baselines = concatMap (one baselines) corpusItems

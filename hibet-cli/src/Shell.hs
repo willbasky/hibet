@@ -16,6 +16,7 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
+import Io (readUtf8, writeUtf8)
 import Render.Art (artLines, renderQueryBlocks, warnIfNoFont)
 import Render.Pretty
     ( Colorize
@@ -42,7 +43,6 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import Prettyprinter (Doc, pretty, vsep)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import qualified System.Console.Haskeline as Haskeline
@@ -57,7 +57,7 @@ import System.Directory
     )
 import System.Exit (exitSuccess)
 import System.FilePath ((</>))
-import System.IO (hClose, hPutStrLn, openTempFile)
+import System.IO (hClose, openTempFile)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
@@ -86,9 +86,9 @@ quitHint escQuits
 shellPrefs :: IO (Haskeline.Prefs, Bool)
 shellPrefs = do
     mUser <- userPrefsFile
-    user <-
-        maybe (pure "") TIO.readFile mUser
-            `catch` \(_ :: IOException) -> pure ""
+    user <- case mUser of
+        Nothing -> pure ""
+        Just path -> either (const "") id <$> readUtf8 path
     if viMode user
         then do
             prefs <- maybe (pure Haskeline.defaultPrefs) Haskeline.readPrefs mUser
@@ -121,9 +121,8 @@ mergedPrefs user = do
         (openTempFile dir "hibet-haskeline.prefs")
         release
         $ \(path, handle) -> do
-            hPutStrLn handle (T.unpack user)
-            hPutStrLn handle "bind: escape ctrl-a ctrl-k ctrl-d"
             hClose handle
+            writeUtf8 path (user <> "\nbind: escape ctrl-a ctrl-k ctrl-d\n")
             Haskeline.readPrefs path
     where
         release (path, handle) = do

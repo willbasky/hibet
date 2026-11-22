@@ -6,6 +6,8 @@ import Control.Exception (IOException, try)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.List (stripPrefix)
+import Data.Text (Text)
+import qualified Data.Text as T
 import Network.HTTP.Client
     ( HttpException
     , Manager
@@ -19,16 +21,16 @@ import Network.HTTP.Types.Status (statusCode)
 
 -- | A fetcher returns the body or a human-readable error. @file://@ is handled
 -- locally so tests and offline runs do not need a manager or the network.
-newFetcher :: IO (String -> IO (Either String BS.ByteString))
+newFetcher :: IO (String -> IO (Either Text BS.ByteString))
 newFetcher = do
     manager <- newTlsManager
     pure (fetch manager)
 
-fetch :: Manager -> String -> IO (Either String BS.ByteString)
+fetch :: Manager -> String -> IO (Either Text BS.ByteString)
 fetch manager url
     | Just path <- stripPrefix "file://" url = do
         result <- try @IOException (BS.readFile path)
-        pure $ either (Left . show) Right result
+        pure $ either (Left . T.pack . show) Right result
     | otherwise = do
         result <- try @HttpException $ do
             request <- parseRequest url
@@ -37,5 +39,5 @@ fetch manager url
             pure $
                 if code >= 200 && code < 300
                     then Right (BSL.toStrict (responseBody response))
-                    else Left ("HTTP " <> show code <> " for " <> url)
-        pure $ either (Left . show) id result
+                    else Left ("HTTP " <> T.pack (show code) <> " for " <> T.pack url)
+        pure $ either (Left . T.pack . show) id result

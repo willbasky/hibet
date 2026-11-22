@@ -177,6 +177,10 @@ exe hibet (пакет hibet-cli)
 - **`hibet`** не использует effect system: загрузка словарей — обычный `IO`
   (`makeEnv*` возвращает `Either`), фоновая загрузка и чтение файлов — `ki`,
   разбор — `parMap` (T8).
+- **Границы IO:** текст внутри — `Text`; файлы читаются и пишутся
+  `ByteString` с явным UTF-8 (`Io.readUtf8`/`writeUtf8`), консоль остаётся на
+  `Data.Text.IO` (locale терминала). `String` — только `FilePath`,
+  `Show`/`Read`, исключения, `optparse-applicative` и URL `http-client`.
 - **Словари** (59 файлов, ~103 МБ) — данные репозитория и установки, не
   `data-files` пакета; `hibet-data/key-aliases.tsv` — производная таблица
   написаний ключей, `hibet-data/manifest.toml` — версия и хэши. В браузер они не едут:
@@ -202,6 +206,7 @@ exe hibet (пакет hibet-cli)
 | `Translator` | чистый `getAnswer`, `tibetToWylieKey`, граница с hewts |
 | `Dictionary` | формат словаря, поиск, добавление alias-ключей |
 | `Env` | загрузка словарей и меток в `IO`, `MVar Env` |
+| `Io` | файловая граница: строгое UTF-8-чтение/запись, `Utf8Error` |
 | `Label`, `Type`, `Utility` | метаданные, ошибки, мелочи |
 
 ### hibet-cli
