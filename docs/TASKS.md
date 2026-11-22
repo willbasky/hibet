@@ -1157,8 +1157,8 @@ callback: `Prefs` умеет `bind`, и последовательности к�
 срабатывают как выход; граница в cabal поднята до `>=0.8.5`. В CI `haskell-ci`
 исключает `haskeline` из `--installed` (`-text,-parsec,-haskeline`), иначе
 солвер требует встроенную в GHC версию и не берёт 0.8.5. В `flake.nix`
-haskeline 0.8.5 добавлен override: nixpkgs даёт 0.8.3, а `cabal2nix` иначе
-падает на границе.
+haskeline 0.8.5 добавлен override с `dontCheck`: nixpkgs даёт 0.8.3, а тесты
+Haskeline требуют `which` в sandbox.
 
 `initializeInput`/`queryInput` заменены на `runInputTWithPrefs`;
 `loopDialog` теперь `InputT IO`, IO-действия обёрнуты в `liftIO`. `Prefs` —
