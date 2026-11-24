@@ -6,6 +6,7 @@ import Install
     , installFromRelease
     , installWith
     )
+import Io (readUtf8, writeUtf8)
 import Manifest
     ( Manifest (..)
     , ManifestError
@@ -25,9 +26,7 @@ import Control.Exception
     )
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import Data.List (isInfixOf)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import System.Directory
     ( createDirectoryIfMissing
     , doesDirectoryExist
@@ -64,12 +63,12 @@ installSpec =
                 writeDataDir source
                 result <- installFromDir source target
                 case result of
-                    Left err -> expectationFailure err
+                    Left err -> expectationFailure (T.unpack err)
                     Right installed -> do
                         installed.installedVersion `shouldBe` "2026.11.09"
                         installed.installedFiles `shouldBe` 3
                         installed.installedPath `shouldBe` target </> "data"
-                        TIO.readFile
+                        readTextFile
                             (target </> "data" </> "dicts" </> "A-T|E.txt")
                             `shouldReturn` "re ba|hope\n"
                         doesFileExist (target </> "data" </> "manifest.toml")
@@ -104,7 +103,7 @@ installSpec =
             withSystemTempDirectory "hibet-install" $ \tmp -> do
                 let source = tmp </> "source"
                 createDirectoryIfMissing True source
-                TIO.writeFile (source </> "manifest.toml") manifestText
+                writeUtf8 (source </> "manifest.toml") manifestText
                 result <- installFromDir source (tmp </> "hibet")
                 result `shouldSatisfy` isLeftWith "cannot list"
 
@@ -124,11 +123,11 @@ releaseSpec =
                         ("file://" <> release)
                         target
                 case result of
-                    Left err -> expectationFailure err
+                    Left err -> expectationFailure (T.unpack err)
                     Right Nothing -> expectationFailure "expected an install"
                     Right (Just installed) -> do
                         installed.installedVersion `shouldBe` "2026.11.09"
-                        TIO.readFile
+                        readTextFile
                             (target </> "data" </> "dicts" </> "A-T|E.txt")
                             `shouldReturn` "re ba|hope\n"
         it "installs from a plain directory path" $
@@ -176,7 +175,7 @@ releaseSpec =
             withSystemTempDirectory "hibet-release" $ \tmp -> do
                 let release = tmp </> "release"
                 createDirectoryIfMissing True release
-                TIO.writeFile (release </> "manifest.toml") manifestText
+                writeUtf8 (release </> "manifest.toml") manifestText
                 result <- installFromRelease release (tmp </> "hibet")
                 result `shouldSatisfy` isLeftWith "tar.gz"
         it "skips the download when the installed version is current" $
@@ -202,7 +201,7 @@ releaseSpec =
                     (release </> "hibet-data-2026.11.09.tar.gz")
                     dataFiles
                 _ <- installFromRelease release target
-                TIO.writeFile
+                writeUtf8
                     (release </> "manifest.toml")
                     (manifestTextFor "2026.11.10")
                 writeArchive
@@ -248,7 +247,7 @@ installWithSpec =
                                 BS.writeFile (stage </> "partial.txt") "partial"
                                 throwIO UserInterrupt
                         ) ::
-                        IO (Either AsyncException (Either String Installed))
+                        IO (Either AsyncException (Either T.Text Installed))
                 result `shouldSatisfy` \case
                     Left UserInterrupt -> True
                     _ -> False
@@ -314,7 +313,7 @@ writeDataDir root = do
     BS.writeFile (root </> "dicts" </> "A-T|E.txt") "re ba|hope\n"
     BS.writeFile (root </> "titles.toml") "[[titles]]\n"
     BS.writeFile (root </> "key-aliases.tsv") ""
-    TIO.writeFile (root </> "manifest.toml") manifestText
+    writeUtf8 (root </> "manifest.toml") manifestText
 
 dataFiles :: [(FilePath, BS.ByteString)]
 dataFiles =
@@ -338,14 +337,17 @@ writeArchive path files =
                 Left err -> error err
                 Right tarPath -> Tare.fileEntry tarPath (BSL.fromStrict content)
 
-isLeftWith :: String -> Either String a -> Bool
+readTextFile :: FilePath -> IO T.Text
+readTextFile path = readUtf8 path >>= either (fail . show) pure
+
+isLeftWith :: T.Text -> Either T.Text a -> Bool
 isLeftWith needle = \case
-    Left err -> needle `isInfixOf` err
+    Left err -> needle `T.isInfixOf` err
     Right _ -> False
 
-hasManifestError :: String -> Either ManifestError a -> Bool
+hasManifestError :: T.Text -> Either ManifestError a -> Bool
 hasManifestError needle = \case
-    Left err -> needle `isInfixOf` T.unpack (renderManifestError err)
+    Left err -> needle `T.isInfixOf` renderManifestError err
     Right _ -> False
 
 isRight :: Either a b -> Bool

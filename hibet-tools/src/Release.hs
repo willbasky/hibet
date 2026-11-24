@@ -35,14 +35,14 @@ data ReleaseInfo = ReleaseInfo
 -- | Verify @dataRoot@ against its manifest and write @manifest.toml@ and
 -- @hibet-data-<version>.tar.gz@ into @outDir@. Nothing is written when the
 -- data does not match the manifest.
-buildRelease :: FilePath -> FilePath -> IO (Either String ReleaseInfo)
+buildRelease :: FilePath -> FilePath -> IO (Either Text ReleaseInfo)
 buildRelease dataRoot outDir = do
     problems <- checkManifest dataRoot
     case problems of
-        _ : _ -> pure (Left (T.unpack (T.intercalate "; " problems)))
+        _ : _ -> pure (Left (T.intercalate "; " problems))
         [] ->
             readManifest dataRoot >>= \case
-                Left err -> pure (Left (T.unpack (renderManifestError err)))
+                Left err -> pure (Left (renderManifestError err))
                 Right manifest -> do
                     -- The manifest comes first; its file list keeps the release
                     -- order reproducible.
@@ -67,7 +67,7 @@ buildRelease dataRoot outDir = do
                                 , releaseManifest = manifestPath
                                 , releaseFiles = length manifest.files
                                 }
-                    pure (either (Left . show) Right built)
+                    pure (either (Left . T.pack . show) Right built)
 
 tarEntry :: FilePath -> FilePath -> IO Tare.Entry
 tarEntry root name = do

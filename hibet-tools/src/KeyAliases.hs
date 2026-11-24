@@ -17,9 +17,10 @@ import Convert
     , defaultSettings
     , syllables
     )
+import Io (readUtf8, writeUtf8)
 import Translator (tibetToWylieKey)
 
-import Control.Exception (evaluate)
+import Control.Exception (evaluate, throwIO)
 import Control.Monad (foldM, forM_)
 import qualified Data.HashMap.Strict as HMS
 import Data.List (sortOn)
@@ -34,7 +35,8 @@ generateAliases :: FilePath -> FilePath -> IO ()
 generateAliases dictDir outFile = do
     files <- sortOn id . filter (\f -> take 1 f /= ".") <$> listDirectory dictDir
     keys <- foldM addFileKeys HMS.empty files
-    printf "files: %d, distinct keys: %d\n" (length files) (HMS.size keys)
+    TIO.putStr
+        (T.pack (printf "files: %d, distinct keys: %d\n" (length files) (HMS.size keys)))
 
     t0 <- getMonotonicTime
     let parsed =
@@ -63,20 +65,24 @@ generateAliases dictDir outFile = do
                 [ key <> "\t" <> canonical
                 | (key, canonical) <- sortOn fst faithful
                 ]
-    TIO.writeFile outFile output
+    writeUtf8 outFile output
 
-    printf "scan: %.1f s\n" (t1 - t0 :: Double)
-    printf "keys hewts cannot read: %d\n" unreadable
-    printf
-        "same spelling (no alias needed): %d\n"
-        (HMS.size keys - length rows - unreadable)
-    printf "aliases written: %d\n" nFaithful
-    printf "skipped, canonical changes the word: %d\n" nLossy
+    TIO.putStr (T.pack (printf "scan: %.1f s\n" (t1 - t0 :: Double)))
+    TIO.putStr (T.pack (printf "keys hewts cannot read: %d\n" unreadable))
+    TIO.putStr
+        ( T.pack
+            ( printf
+                "same spelling (no alias needed): %d\n"
+                (HMS.size keys - length rows - unreadable)
+            )
+        )
+    TIO.putStr (T.pack (printf "aliases written: %d\n" nFaithful))
+    TIO.putStr (T.pack (printf "skipped, canonical changes the word: %d\n" nLossy))
     forM_ (take 10 lossy) $ \(key, canonical) ->
-        printf "  %s -> %s\n" (show key) (show canonical)
+        TIO.putStrLn ("  " <> T.pack (show key) <> " -> " <> T.pack (show canonical))
     where
         addFileKeys acc file = do
-            text <- TIO.readFile (dictDir </> file)
+            text <- readUtf8 (dictDir </> file) >>= either throwIO pure
             let new =
                     HMS.fromList
                         [ (key, ())

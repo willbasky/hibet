@@ -16,6 +16,7 @@ where
 
 import Dictionary (Answer, sortOutput)
 import Env (Env (..), readEnv)
+import Io (readUtf8, writeUtf8)
 import Render.Art (artLines, renderQueryBlocks, warnIfNoFont)
 import Render.Pretty
     ( Colorize
@@ -42,7 +43,6 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.List as List
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import Prettyprinter (Doc, pretty, vsep)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 import qualified System.Console.Haskeline as Haskeline
@@ -57,7 +57,7 @@ import System.Directory
     )
 import System.Exit (exitSuccess)
 import System.FilePath ((</>))
-import System.IO (hClose, hPutStrLn, openTempFile)
+import System.IO (hClose, openTempFile)
 
 -- | Start the interactive translator over an environment that is loaded in
 -- the background.
@@ -74,6 +74,7 @@ translator dataDir mv = do
         prefs
         Haskeline.defaultSettings
         (loopDialog dataDir mv)
+    putFarewell dataDir
 
 quitHint :: Bool -> Text
 quitHint escQuits
@@ -86,9 +87,9 @@ quitHint escQuits
 shellPrefs :: IO (Haskeline.Prefs, Bool)
 shellPrefs = do
     mUser <- userPrefsFile
-    user <-
-        maybe (pure "") TIO.readFile mUser
-            `catch` \(_ :: IOException) -> pure ""
+    user <- case mUser of
+        Nothing -> pure ""
+        Just path -> either (const "") id <$> readUtf8 path
     if viMode user
         then do
             prefs <- maybe (pure Haskeline.defaultPrefs) Haskeline.readPrefs mUser
@@ -121,9 +122,8 @@ mergedPrefs user = do
         (openTempFile dir "hibet-haskeline.prefs")
         release
         $ \(path, handle) -> do
-            hPutStrLn handle (T.unpack user)
-            hPutStrLn handle "bind: escape ctrl-a ctrl-k ctrl-d"
             hClose handle
+            writeUtf8 path (user <> "\nbind: escape ctrl-a ctrl-k ctrl-d\n")
             Haskeline.readPrefs path
     where
         release (path, handle) = do
@@ -155,10 +155,7 @@ loopDialog dataDir mv = do
     case T.strip . T.pack <$> mQuery of
         Nothing -> pure ()
         Just "" -> pure ()
-        Just ":q" -> liftIO $ do
-            header <- farewellHeader dataDir
-            putColorDoc' id NewLine header
-            exitSuccess
+        Just ":q" -> liftIO $ putFarewell dataDir >> exitSuccess
         Just ":h" -> do
             history <- fromHistory <$> Haskeline.getHistory
             liftIO $ mapM_ (putColorDoc id NewLine) history
@@ -220,6 +217,10 @@ farewellHeader :: Maybe FilePath -> IO (Doc AnsiStyle)
 farewellHeader dataDir = do
     lines' <- queryArtLines
     largeHeader flagBand dataDir lines' farewell farewell
+
+-- | Print the farewell on every way out of the shell: @:q@, Ctrl-D and Esc.
+putFarewell :: Maybe FilePath -> IO ()
+putFarewell dataDir = farewellHeader dataDir >>= putColorDoc' id NewLine
 
 -- | The syllable drawn by @hibet om@: the same route as the query header, but
 -- the fixed block art stays as the fallback instead of plain text.

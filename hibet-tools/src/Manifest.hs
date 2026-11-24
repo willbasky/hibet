@@ -17,6 +17,8 @@ module Manifest
     , writeManifest
     ) where
 
+import Io (Utf8Error (..), readUtf8, renderUtf8Error, writeUtf8)
+
 import Control.Exception (IOException, try)
 import Control.Monad (filterM, forM)
 import Crypto.Hash (Digest, SHA256, hash)
@@ -26,7 +28,6 @@ import Data.List (isSuffixOf, sortOn)
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import Data.Time (getZonedTime, localDay, zonedTimeToLocalTime)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
@@ -120,7 +121,7 @@ writeManifest root version = do
             let path = root </> "manifest.toml"
             written <-
                 try @IOException $
-                    BS.writeFile path (TE.encodeUtf8 (renderManifest manifest))
+                    writeUtf8 path (renderManifest manifest)
             pure $ case written of
                 Left err ->
                     Left $
@@ -138,22 +139,21 @@ readManifest root = do
     if not exists
         then pure (Left (ManifestError (T.pack path) "" "missing"))
         else do
-            loaded <- try @IOException (BS.readFile path)
+            loaded <- readUtf8 path
             pure $ case loaded of
-                Left err ->
+                Left err@(Unreadable _ _) ->
                     Left $
                         ManifestError
                             (T.pack path)
                             ""
-                            ("cannot read: " <> T.pack (show err))
-                Right raw -> case TE.decodeUtf8' raw of
-                    Left err ->
-                        Left $
-                            ManifestError
-                                (T.pack path)
-                                ""
-                                ("cannot decode: " <> T.pack (show err))
-                    Right content -> parseManifest content
+                            ("cannot read: " <> renderUtf8Error err)
+                Left err@(InvalidUtf8 _ _) ->
+                    Left $
+                        ManifestError
+                            (T.pack path)
+                            ""
+                            ("cannot decode: " <> renderUtf8Error err)
+                Right content -> parseManifest content
 
 -- | Problems with the manifest itself and with every data file it describes.
 -- An empty list means the manifest is current.

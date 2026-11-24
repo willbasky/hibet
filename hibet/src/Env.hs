@@ -16,6 +16,7 @@ module Env
 where
 
 import Dictionary (DictionaryMeta, addAliases, makeDictionary, toDictionaryMeta)
+import Io (readUtf8, toHibetError)
 import Label (LabelFull (..), Labels (..), getLabels)
 import Type (HibetError (..))
 
@@ -27,13 +28,11 @@ import Control.Monad (filterM)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Except (ExceptT (..), runExceptT, throwE)
 import Control.Parallel.Strategies (NFData, parMap, rdeepseq)
-import qualified Data.ByteString as BS
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HMS
 import Data.List (find)
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import GHC.Generics (Generic)
 import qualified Ki
 import System.Directory
@@ -112,7 +111,7 @@ makeEnvAt ::
     -> IO (Either HibetError Env)
 makeEnvAt titlesPath aliasesPath dictsDir selected =
     runExceptT $ do
-        titles <- ExceptT $ readData titlesPath (BS.readFile titlesPath)
+        titles <- ExceptT $ readText titlesPath
         labels@(Labels ls) <- either throwE pure $ getLabels titlesPath titles
         aliases <- ExceptT $ readAliases aliasesPath
         names <- ExceptT $ readData dictsDir (listDirectory dictsDir)
@@ -143,7 +142,7 @@ makeEnvAt titlesPath aliasesPath dictsDir selected =
         pure env
 
 -- | Run one IO step of the loader; an IO failure names the path it was
--- reading.
+-- reading. Used for directory listing; text files go through 'readText'.
 readData :: FilePath -> IO a -> IO (Either HibetError a)
 readData path action = do
     result <- try @IOException action
@@ -151,19 +150,17 @@ readData path action = do
         Left e -> Left $ DataUnreadable path (T.pack (displayException e))
         Right value -> Right value
 
--- | Read UTF-8, naming the file when the bytes are not valid text.
-decodeData :: FilePath -> BS.ByteString -> Either HibetError Text
-decodeData path content = case TE.decodeUtf8' content of
-    Left err -> Left $ DataInvalid path (T.pack (show err))
-    Right text -> Right text
+-- | Read a UTF-8 text file, naming the path and the cause on failure.
+readText :: FilePath -> IO (Either HibetError Text)
+readText path = either (Left . toHibetError) Right <$> readUtf8 path
 
 -- | Legacy key spelling and the canonical Wylie key a Unicode query gets for
 -- the same word. The table is generated from the dictionaries; see
 -- @hibet-dataset generate-key-aliases@.
 readAliases :: FilePath -> IO (Either HibetError (HashMap Text Text))
 readAliases path = do
-    content <- readData path (BS.readFile path)
-    pure $ case content >>= decodeData path of
+    content <- readText path
+    pure $ case content of
         Left err -> Left err
         Right text ->
             let aliases =
@@ -190,10 +187,8 @@ getFilesTexts paths =
         sequence <$> atomically (traverse Ki.await threads)
     where
         readOne path = do
-            content <- readData path (BS.readFile path)
-            pure $ case content >>= decodeData path of
-                Left err -> Left err
-                Right text -> Right (path, text)
+            content <- readText path
+            pure ((,) path <$> content)
 
 readEnv :: MVar Env -> IO Env
 readEnv = readMVar

@@ -28,12 +28,20 @@ and this project adheres to
 
 * The system fallback asks fontconfig for any Tibetan font
   (`fc-match ':lang=bo'`) instead of the Noto Serif Tibetan family by name.
+* `manifest.toml`, `titles.toml` and Haskeline prefs are read and written as
+  UTF-8 bytes through `Io`, not through the locale-dependent `Data.Text.IO`.
+  `Install` and `Cli` messages are `Text`; console output stays on
+  `Data.Text.IO` as the locale layer.
 
 ### Removed
 
 * OSC 66 text sizing is gone: the query header uses Braille art or plain text,
   `hibet om` uses Braille art or the fixed block art, and the `kitty --version`
   probe (`supportsTextSizing`, `sizedHeader`, `parseKittyVersion`) is removed.
+
+### Fixed
+
+* The shell prints the farewell on Ctrl-D and Esc as well as on `:q`.
 
 ## [3.0.0] - 2026-11-19
 

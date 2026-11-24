@@ -8,6 +8,7 @@ import Convert
     )
 import Dictionary
 import Env (Env (..), makeEnvFrom, readAliases, resolveDataDir)
+import Io (readUtf8)
 import Label (Title (..))
 import Paths (testDir)
 import Translator (getAnswer, tibetToWylieKey)
@@ -18,7 +19,6 @@ import Data.List (find, sortOn)
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import System.Directory (doesFileExist)
 import System.Environment (lookupEnv)
 import System.FilePath ((</>))
@@ -176,7 +176,8 @@ keyAliasSpec =
 
 readAliasRows :: FilePath -> IO [(Text, Text)]
 readAliasRows root = do
-    text <- TIO.readFile (root </> "key-aliases.tsv")
+    loaded <- readUtf8 (root </> "key-aliases.tsv")
+    text <- either (fail . show) pure loaded
     pure
         [ (legacy, T.drop 1 rest)
         | line <- T.lines text

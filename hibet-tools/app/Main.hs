@@ -42,7 +42,7 @@ import Options.Applicative
 import System.Environment (lookupEnv)
 import System.Exit (exitFailure)
 import System.FilePath ((</>))
-import System.IO (hPutStrLn, stderr)
+import System.IO (stderr)
 import Text.Printf (printf)
 
 datasetDir :: FilePath
@@ -131,19 +131,19 @@ releaseMode :: FilePath -> IO ()
 releaseMode outDir = do
     built <- buildRelease datasetDir outDir
     case built of
-        Left err -> hPutStrLn stderr ("release failed: " <> err) >> exitFailure
+        Left err -> TIO.hPutStrLn stderr ("release failed: " <> err) >> exitFailure
         Right result -> do
-            putStrLn ("artifact: " <> result.releaseArchive)
-            putStrLn ("manifest: " <> result.releaseManifest)
-            putStrLn ("version: " <> T.unpack result.releaseVersion)
-            putStrLn (show result.releaseFiles <> " data files")
+            TIO.putStrLn ("artifact: " <> T.pack result.releaseArchive)
+            TIO.putStrLn ("manifest: " <> T.pack result.releaseManifest)
+            TIO.putStrLn ("version: " <> result.releaseVersion)
+            TIO.putStrLn (T.pack (show result.releaseFiles) <> " data files")
 
 checkManifestMode :: IO ()
 checkManifestMode = do
     problems <- checkManifest datasetDir
     mapM_ (TIO.hPutStrLn stderr . ("manifest: " <>)) problems
     if null problems
-        then putStrLn "manifest: ok"
+        then TIO.putStrLn "manifest: ok"
         else exitFailure
 
 refreshManifest :: IO ()
@@ -151,21 +151,21 @@ refreshManifest = do
     version <- defaultManifestVersion
     result <- writeManifest datasetDir version
     case result of
-        Left err -> hPutStrLn stderr (T.unpack (renderManifestError err)) >> exitFailure
+        Left err -> TIO.hPutStrLn stderr (renderManifestError err) >> exitFailure
         Right count ->
-            putStrLn
+            TIO.putStrLn
                 ( "wrote hibet-data/manifest.toml: "
-                    <> show count
+                    <> T.pack (show count)
                     <> " files, version "
-                    <> T.unpack version
+                    <> version
                 )
 
 updateMode :: Bool -> IO ()
 updateMode checkOnly = do
     ref <- fromMaybe "master" <$> lookupEnv "REF"
     base <- fromMaybe (defaultBaseUrl ref) <$> lookupEnv "BASE_URL"
-    putStrLn ("source: " <> base)
-    putStrLn "target: hibet-data/dicts"
+    TIO.putStrLn ("source: " <> T.pack base)
+    TIO.putStrLn "target: hibet-data/dicts"
     fetcher <- newFetcher
     result <-
         runUpdate
@@ -178,17 +178,21 @@ updateMode checkOnly = do
             defaultEntries
     case result of
         Left err -> do
-            hPutStrLn stderr err
+            TIO.hPutStrLn stderr err
             exitFailure
         Right stats -> do
             mapM_
-                (\path -> hPutStrLn stderr ("no title in titles.toml: " <> path))
+                (\path -> TIO.hPutStrLn stderr ("no title in titles.toml: " <> T.pack path))
                 stats.missingTitles
-            printf
-                "up to date: %d, changed: %d, added: %d\n"
-                stats.same
-                stats.changed
-                stats.added
+            TIO.putStrLn
+                ( T.pack
+                    ( printf
+                        "up to date: %d, changed: %d, added: %d"
+                        stats.same
+                        stats.changed
+                        stats.added
+                    )
+                )
             manifestProblems <-
                 if checkOnly then checkManifest datasetDir else pure []
             mapM_
@@ -202,7 +206,7 @@ updateMode checkOnly = do
             if failed
                 then exitFailure
                 else when (not checkOnly && dirty) $ do
-                    putStrLn "regenerating hibet-data/key-aliases.tsv"
+                    TIO.putStrLn "regenerating hibet-data/key-aliases.tsv"
                     generateAliases
                         (datasetDir </> "dicts")
                         (datasetDir </> "key-aliases.tsv")

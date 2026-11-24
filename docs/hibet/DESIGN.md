@@ -121,6 +121,22 @@ hibet (движок)
 оба написания — читаться в те же слоги. 26 ключей, у которых hewts меняет
 слово, в таблицу не попадают.
 
+## Границы IO
+
+`Text` — доменный тип: словари, `Env`, `Dictionary`, `Labels`, `Manifest`,
+ответы и сообщения. `ByteString` — файлы, архивы и сеть. Текст из файла
+читается строго (`BS.readFile`) и декодируется `TE.decodeUtf8'`; ошибка несёт
+путь (`Io.readUtf8`, `Utf8Error`). Запись — `TE.encodeUtf8` + `BS.writeFile`
+(`Io.writeUtf8`). Locale не участвует: под `LC_ALL=C` словарь читается так же,
+как под UTF-8.
+
+Консоль — исключение: `Data.Text.IO` кодирует в locale терминала, и это
+правильно (Snoyman, «Beware of readFile»). Поэтому `TIO.putStr*`/`hPutStr*`
+остаются в `Render.Pretty`, `Progress`, `App`, `Cli` и `Art`; `BS.hPut` на
+stdout/stderr не используется. Внутри сообщения — `Text`; `String` остаётся
+только у `FilePath`, `Show`/`Read`, исключений, `optparse-applicative` и URL
+для `http-client`.
+
 ## Ошибки
 
 Ошибки делим по назначению, а не по механизму:
@@ -133,8 +149,9 @@ hibet (движок)
   наверх;
 - «не найдено» — `Maybe` или пустой список, не ошибка.
 
-На границах нет нативных `ErrorCall` и `UnicodeException`. `HibetError`
-делится по причине:
+На границах нет нативных `ErrorCall`; `UnicodeException` заворачивается в
+`Io.Utf8Error` и на файловой границе превращается в значение
+(`Either HibetError`/`Either Text`). `HibetError` делится по причине:
 
 - `DataNotFound [FilePath]` — не найден корень данных; `renderError`
   перечисляет проверенные пути и подсказывает `data install`/`update`;

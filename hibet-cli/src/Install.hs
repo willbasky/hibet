@@ -78,13 +78,13 @@ hibetDataDir = getXdgDirectory XdgData "hibet"
 
 -- | Copy a verified data directory (with @manifest.toml@, @titles.toml@,
 -- @key-aliases.tsv@ and @dicts/@) into the XDG data directory.
-installFromDir :: FilePath -> FilePath -> IO (Either String Installed)
+installFromDir :: FilePath -> FilePath -> IO (Either Text Installed)
 installFromDir source targetBase = withProgress $ \progress -> do
     beginStep progress "manifest"
     loaded <- readManifest source
     endStep progress
     case loaded of
-        Left err -> pure (Left (T.unpack (renderManifestError err)))
+        Left err -> pure (Left (renderManifestError err))
         Right manifest -> do
             beginStep progress "verify"
             problems <- verifyDir source manifest
@@ -101,7 +101,7 @@ installFromDir source targetBase = withProgress $ \progress -> do
                     endStep progress
                     pure $
                         either
-                            (Left . ("cannot copy data: " <>) . show)
+                            (Left . ("cannot copy data: " <>) . T.pack . show)
                             Right
                             copied
                 else pure (Left (renderProblems problems))
@@ -109,7 +109,7 @@ installFromDir source targetBase = withProgress $ \progress -> do
 -- | Download @manifest.toml@ and @hibet-data-<version>.tar.gz@ from a release
 -- base (HTTP URL, @file://@ URL or local directory) and install them. Returns
 -- 'Nothing' when the active set already has the released version.
-installFromRelease :: String -> FilePath -> IO (Either String (Maybe Installed))
+installFromRelease :: String -> FilePath -> IO (Either Text (Maybe Installed))
 installFromRelease source targetBase = withProgress $ \progress -> do
     fetch <- makeFetcher source
     beginStep progress "manifest"
@@ -119,13 +119,13 @@ installFromRelease source targetBase = withProgress $ \progress -> do
         Left err -> pure (Left err)
         Right raw -> case TE.decodeUtf8' raw of
             Left err ->
-                pure (Left ("cannot decode manifest.toml: " <> show err))
+                pure (Left ("cannot decode manifest.toml: " <> T.pack (show err)))
             Right content -> case parseManifest content of
                 Left err ->
                     pure
                         ( Left
                             ( "cannot parse manifest.toml: "
-                                <> T.unpack (renderManifestError err)
+                                <> renderManifestError err
                             )
                         )
                 Right manifest -> do
@@ -165,7 +165,7 @@ installFromRelease source targetBase = withProgress $ \progress -> do
                                                                         raw
                                                             pure $
                                                                 either
-                                                                    (Left . show)
+                                                                    (Left . T.pack . show)
                                                                     Right
                                                                     written
                                                         else pure (Left (renderProblems problems))
@@ -175,8 +175,8 @@ installWith ::
     Progress
     -> FilePath
     -> Manifest
-    -> (FilePath -> IO (Either String ()))
-    -> IO (Either String Installed)
+    -> (FilePath -> IO (Either Text ()))
+    -> IO (Either Text Installed)
 installWith progress targetBase manifest action = do
     createDirectoryIfMissing True targetBase
     let stage = targetBase </> "data.new"
@@ -213,7 +213,7 @@ copyRelative source stage name = do
 
 -- | Remove @data.old@, move @data@ aside and move the staged set in place.
 -- Masked from asynchronous exceptions: a Ctrl+C must not leave no active set.
-swapIn :: FilePath -> FilePath -> IO (Either String FilePath)
+swapIn :: FilePath -> FilePath -> IO (Either Text FilePath)
 swapIn targetBase stage = do
     let active = targetBase </> "data"
         old = targetBase </> "data.old"
@@ -224,29 +224,29 @@ swapIn targetBase stage = do
             renameDirectory active old
         renameDirectory stage active
     pure $ case result of
-        Left err -> Left ("cannot switch data: " <> show err)
+        Left err -> Left ("cannot switch data: " <> T.pack (show err))
         Right () -> Right active
 
-renderProblems :: [Text] -> String
-renderProblems = T.unpack . T.intercalate "; "
+renderProblems :: [Text] -> Text
+renderProblems = T.intercalate "; "
 
 -- | Extract only the files named by the manifest plus @manifest.toml@.
 -- Directories are created on demand; links and device files are rejected.
-extractArchive :: FilePath -> Manifest -> BS.ByteString -> IO (Either String ())
+extractArchive :: FilePath -> Manifest -> BS.ByteString -> IO (Either Text ())
 extractArchive stage manifest bytes = do
     forced <-
         try @IOException
             $ try @GZip.DecompressError
             $ evaluate (BSL.toStrict (GZip.decompress (BSL.fromStrict bytes)))
     case forced of
-        Left err -> pure (Left ("cannot decompress archive: " <> show err))
-        Right (Left err) -> pure (Left ("cannot decompress archive: " <> show err))
+        Left err -> pure (Left ("cannot decompress archive: " <> T.pack (show err)))
+        Right (Left err) -> pure (Left ("cannot decompress archive: " <> T.pack (show err)))
         Right (Right unpacked) -> do
             extracted <-
                 try @IOException $
                     unpackEntries stage allowed (Tar.read (BSL.fromStrict unpacked))
             pure $ case extracted of
-                Left err -> Left ("cannot extract archive: " <> show err)
+                Left err -> Left ("cannot extract archive: " <> T.pack (show err))
                 Right result -> result
     where
         allowed = "manifest.toml" : [file.name | file <- manifest.files]
@@ -255,25 +255,25 @@ unpackEntries ::
     FilePath
     -> [FilePath]
     -> Tar.Entries Tar.FormatError
-    -> IO (Either String ())
+    -> IO (Either Text ())
 unpackEntries stage allowed = \case
-    Tar.Fail err -> pure (Left ("broken archive: " <> show err))
+    Tar.Fail err -> pure (Left ("broken archive: " <> T.pack (show err)))
     Tar.Done -> pure (Right ())
     Tar.Next entry rest -> do
         let path = Tar.entryPath entry
         if not (safeArchivePath path)
-            then pure (Left ("unsafe archive path: " <> path))
+            then pure (Left ("unsafe archive path: " <> T.pack path))
             else case Tar.entryContent entry of
                 Tar.NormalFile content _
                     | path `notElem` allowed ->
-                        pure (Left ("unexpected archive file: " <> path))
+                        pure (Left ("unexpected archive file: " <> T.pack path))
                     | otherwise -> do
                         let dest = stage </> path
                         createDirectoryIfMissing True (takeDirectory dest)
                         BSL.writeFile dest content
                         unpackEntries stage allowed rest
                 Tar.Directory -> unpackEntries stage allowed rest
-                _ -> pure (Left ("unsupported archive entry: " <> path))
+                _ -> pure (Left ("unsupported archive entry: " <> T.pack path))
 
 safeArchivePath :: FilePath -> Bool
 safeArchivePath path =
@@ -284,7 +284,7 @@ safeArchivePath path =
 type Fetch =
     FilePath
     -> (Int64 -> Maybe Int64 -> IO ())
-    -> IO (Either String BS.ByteString)
+    -> IO (Either Text BS.ByteString)
 
 makeFetcher :: String -> IO Fetch
 makeFetcher source
@@ -301,7 +301,7 @@ localFetcher :: FilePath -> Fetch
 localFetcher dir name report = do
     result <- try @IOException (BS.readFile (dir </> name))
     case result of
-        Left err -> pure (Left (show err))
+        Left err -> pure (Left (T.pack (show err)))
         Right bytes -> do
             report (fromIntegral (BS.length bytes)) Nothing
             pure (Right bytes)
@@ -320,8 +320,8 @@ httpFetcher manager base name report = do
                             lookup hContentLength (responseHeaders response)
                                 >>= parseLength
                     collect total (responseBody response) 0 []
-                else pure (Left ("HTTP " <> show code <> " for " <> url))
-    pure (either (Left . show) id result)
+                else pure (Left ("HTTP " <> T.pack (show code) <> " for " <> T.pack url))
+    pure (either (Left . T.pack . show) id result)
     where
         collect total body done chunks = do
             chunk <- brRead body

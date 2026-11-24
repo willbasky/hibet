@@ -9,7 +9,8 @@ module Update
     , runUpdate
     ) where
 
-import Control.Exception (IOException, try)
+import Io (readUtf8, renderUtf8Error)
+
 import Control.Monad (foldM, forM, unless, when)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
@@ -34,7 +35,7 @@ data Config = Config
     { dataRoot :: !FilePath
     , baseUrl :: !String
     , checkOnly :: !Bool
-    , fetch :: String -> IO (Either String ByteString)
+    , fetch :: String -> IO (Either Text ByteString)
     }
 
 data Result = Result
@@ -53,16 +54,18 @@ defaultBaseUrl ref =
 
 -- | Fetch and normalize every upstream file first, then compare and write. A
 -- network failure leaves the existing dictionaries untouched.
-runUpdate :: Config -> [Entry] -> IO (Either String Result)
+runUpdate :: Config -> [Entry] -> IO (Either Text Result)
 runUpdate config entries = do
     downloaded <- forM entries $ \entry -> do
         fetched <- config.fetch (joinUrl config.baseUrl (upstream entry))
         pure $ case fetched of
-            Left err -> Left ("FAIL: " <> upstream entry <> " (" <> err <> ")")
+            Left err ->
+                Left ("FAIL: " <> T.pack (upstream entry) <> " (" <> err <> ")")
             Right bytes
-                | BS.null bytes -> Left ("FAIL: empty " <> upstream entry)
+                | BS.null bytes -> Left ("FAIL: empty " <> T.pack (upstream entry))
                 | otherwise -> case normalizeBytes (local entry) bytes of
-                    Left err -> Left ("FAIL: " <> upstream entry <> " (" <> err <> ")")
+                    Left err ->
+                        Left ("FAIL: " <> T.pack (upstream entry) <> " (" <> err <> ")")
                     Right text -> Right (entry, TE.encodeUtf8 text)
     case firstLeft downloaded of
         Just err -> pure (Left err)
@@ -73,14 +76,14 @@ runUpdate config entries = do
                 createDirectoryIfMissing True dictsDir
             (nSame, nChanged, nAdded) <-
                 foldM (compareEntry config dictsDir) (0, 0, 0) files
-            titles <- try @IOException (TIO.readFile (dataRoot config </> "titles.toml"))
+            titles <- readUtf8 (dataRoot config </> "titles.toml")
             pure $ case titles of
                 Left err ->
                     Left
                         ( "cannot read "
-                            <> (dataRoot config </> "titles.toml")
+                            <> T.pack (dataRoot config </> "titles.toml")
                             <> ": "
-                            <> show err
+                            <> renderUtf8Error err
                         )
                 Right content ->
                     Right
@@ -111,13 +114,13 @@ compareEntry config dictsDir (nSame, nChanged, nAdded) (entry, bytes) = do
                 then pure (nSame + 1, nChanged, nAdded)
                 else do
                     when (checkOnly config) $
-                        putStrLn ("changed " <> local entry)
+                        TIO.putStrLn ("changed " <> T.pack (local entry))
                     unless (checkOnly config) $
                         BS.writeFile dest bytes
                     pure (nSame, nChanged + 1, nAdded)
         else do
             when (checkOnly config) $
-                putStrLn ("added   " <> local entry)
+                TIO.putStrLn ("added   " <> T.pack (local entry))
             unless (checkOnly config) $
                 BS.writeFile dest bytes
             pure (nSame, nChanged, nAdded + 1)
@@ -126,10 +129,10 @@ hasTitle :: Text -> FilePath -> Bool
 hasTitle content path =
     ("path = \"" <> T.pack path <> "\"") `T.isInfixOf` content
 
-normalizeBytes :: FilePath -> ByteString -> Either String Text
+normalizeBytes :: FilePath -> ByteString -> Either Text Text
 normalizeBytes local bytes =
     case TE.decodeUtf8' bytes of
-        Left err -> Left (show err)
+        Left err -> Left (T.pack (show err))
         Right text -> Right (normalizeDictionary (applyLocalFixes local text))
 
 -- | One entry per line, @upstream-name@ and the local stem used by the
